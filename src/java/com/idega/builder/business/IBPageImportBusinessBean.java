@@ -21,9 +21,9 @@ public class IBPageImportBusinessBean extends IBOServiceBean implements IBPageIm
 	
 	private FileBusiness fileBusiness = null;
 	
-	public void importPages(UploadFile file, int parentPageId) throws RemoteException, IOException {
+	public void importPages(UploadFile file, int parentPageId, int templatePageId) throws RemoteException, IOException {
 		FileBusiness fileBusiness = getFileBusiness();
-		fileBusiness.getIBExportImportData(file);
+		fileBusiness.getIBExportImportData(file, parentPageId, templatePageId);
 		
 	}
 
