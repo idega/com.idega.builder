@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.35 2004/05/24 13:46:39 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.36 2004/06/01 14:50:05 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
+import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -348,10 +348,10 @@ public class IBPageHelper {
 						e.printStackTrace();
 						return false;
 					}
-					if (obj instanceof Builderaware) {
-							boolean ok = ((Builderaware) obj).copyBlock(xmlpage.getKey(),instance.getID(),cSession);
+					if (obj instanceof DPTInheritable) {
+							boolean ok = ((DPTInheritable) obj).copyICObjectInstance(xmlpage.getKey(),instance.getID(),cSession);
 							if (!ok) {
-								System.err.println("changeInstanceId - copyBlock failed");
+								System.err.println("changeInstanceId - copyICObjectInstance failed");
 								return false;
 							}
 					}
