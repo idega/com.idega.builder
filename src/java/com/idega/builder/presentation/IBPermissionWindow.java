@@ -39,7 +39,11 @@ public class IBPermissionWindow extends IBAdminWindow{
 
   private static final String ic_object_id_parameter = BuilderLogic.ic_object_id_parameter;
   private static final String ib_page_parameter = BuilderLogic.ib_page_parameter;
-  private static final String permissionTypeParameterString = "permission_type";
+
+  public static final String _PARAMETERSTRING_IDENTIFIER = AccessControl._PARAMETERSTRING_IDENTIFIER;
+  public static final String _PARAMETERSTRING_PERMISSION_CATEGORY = AccessControl._PARAMETERSTRING_PERMISSION_CATEGORY;
+
+  private static final String permissionKeyParameterString = "permission_type";
   private static final String lastPermissionKeyParameterString = "last_permission_key";
   private static final String permissionGroupParameterString = "permission_groups";
   private static final String SessionAddressPermissionMap = "ib_permission_hashtable";
@@ -50,10 +54,11 @@ public class IBPermissionWindow extends IBAdminWindow{
 
   private Table lineUpElements(ModuleInfo modinfo,String permissionType) throws Exception{
 
-    String objectInstaceId = modinfo.getParameter(ic_object_id_parameter);
+    String identifier = modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER);
+    String category = modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
     Table frameTable = new Table(1,4);
-    if(objectInstaceId != null){
-      int intObjectInstaceId = Integer.parseInt(objectInstaceId);
+    if(identifier != null && category != null){
+      int intPermissionCategory = Integer.parseInt(category);
 
       frameTable.setAlignment("center");
       frameTable.setVerticalAlignment("middle");
@@ -65,10 +70,33 @@ public class IBPermissionWindow extends IBAdminWindow{
       // PermissionString
       Text permissionKeyText = new Text("Permission Key");
 
-      DropdownMenu permissionTypes = new DropdownMenu(permissionTypeParameterString);
+      DropdownMenu permissionTypes = new DropdownMenu(permissionKeyParameterString);
       permissionTypes.keepStatusOnAction();
       permissionTypes.setToSubmit();
-      String[] keys = AccessControl.getICObjectPermissionKeys(ICObjectBusiness.getICObjectClass(intObjectInstaceId));
+
+      String[] keys = null;
+
+      switch (intPermissionCategory) {
+        case AccessControl._CATEGORY_OBJECT_INSTANCE :
+          keys = AccessControl.getICObjectPermissionKeys(ICObjectBusiness.getICObjectClassForInstance(Integer.parseInt(identifier)));
+          break;
+        case AccessControl._CATEGORY_OBJECT :
+          keys = AccessControl.getICObjectPermissionKeys(ICObjectBusiness.getICObjectClass(Integer.parseInt(identifier)));
+          break;
+        case AccessControl._CATEGORY_BUNDLE :
+          keys = AccessControl.getBundlePermissionKeys(Class.forName(identifier));
+          break;
+        case AccessControl._CATEGORY_PAGE_INSTANCE :
+          keys = new String[0];
+          break;
+        case AccessControl._CATEGORY_PAGE :
+          keys = new String[0];
+          break;
+        case AccessControl._CATEGORY_JSP_PAGE :
+          keys = new String[0];
+          break;
+      }
+
 
       for (int i = 0; i < keys.length; i++) {
         permissionTypes.addMenuElement(keys[i],keys[i]);
@@ -101,7 +129,7 @@ public class IBPermissionWindow extends IBAdminWindow{
         directGroups = UserGroupBusiness.getGroups((String[])hash.get(permissionType));
         collectOld = false;
       } else {
-        directGroups = AccessControl.getAllowedGroups(intObjectInstaceId,permissionType);
+        directGroups = AccessControl.getAllowedGroups(intPermissionCategory, identifier,permissionType);
         collectOld = true;
 
       }
@@ -169,11 +197,12 @@ public class IBPermissionWindow extends IBAdminWindow{
       super.addTitle("IBPermissionWindow");
       String submit = modinfo.getParameter("submit");
       Form myForm = new Form();
-      myForm.maintainParameter(ic_object_id_parameter);
+      myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
+      myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
 
       if(submit != null){
         if(submit.equals("save")){
-          String permissionType = modinfo.getParameter(permissionTypeParameterString);
+          String permissionType = modinfo.getParameter(permissionKeyParameterString);
           if(permissionType != null){
             this.collect(modinfo);
             this.store(modinfo);
@@ -187,14 +216,14 @@ public class IBPermissionWindow extends IBAdminWindow{
           this.dispose(modinfo);
           this.close();
         } else {
-          String permissionType = modinfo.getParameter(permissionTypeParameterString);
+          String permissionType = modinfo.getParameter(permissionKeyParameterString);
           if(permissionType != null){
             collect(modinfo);
           }
           myForm.add(this.lineUpElements(modinfo,permissionType));
         }
       }else{
-        String permissionType = modinfo.getParameter(permissionTypeParameterString);
+        String permissionType = modinfo.getParameter(permissionKeyParameterString);
         if(permissionType != null){
           collect(modinfo);
         }
@@ -212,14 +241,16 @@ public class IBPermissionWindow extends IBAdminWindow{
     Map hash = null;
     if(obj != null){
       hash = (Map)obj;
-      if(!hash.get(ic_object_id_parameter).equals(modinfo.getParameter(ic_object_id_parameter))){
+      if(!hash.get(_PARAMETERSTRING_IDENTIFIER).equals(modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER)) && !hash.get(_PARAMETERSTRING_PERMISSION_CATEGORY).equals(modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY))){
         hash = new Hashtable();
-        hash.put(ic_object_id_parameter,modinfo.getParameter(ic_object_id_parameter));
+        hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
+        hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
         modinfo.setSessionAttribute(SessionAddressPermissionMap,hash);
       }
     }else{
       hash = new Hashtable();
-      hash.put(ic_object_id_parameter,modinfo.getParameter(ic_object_id_parameter));
+      hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
+      hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
       modinfo.setSessionAttribute(SessionAddressPermissionMap,hash);
     }
     String[] groups = modinfo.getParameterValues(permissionGroupParameterString);
@@ -236,14 +267,16 @@ public class IBPermissionWindow extends IBAdminWindow{
     Map hash = null;
     if(obj != null){
       hash = (Map)obj;
-      if(!hash.get(ic_object_id_parameter).equals(modinfo.getParameter(ic_object_id_parameter))){
+      if(!hash.get(_PARAMETERSTRING_IDENTIFIER).equals(modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER)) && !hash.get(_PARAMETERSTRING_PERMISSION_CATEGORY).equals(modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY))){
         hash = new Hashtable();
-        hash.put(ic_object_id_parameter,modinfo.getParameter(ic_object_id_parameter));
+        hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
+        hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
         modinfo.setSessionAttribute(SessionAddressPermissionMapOldValue,hash);
       }
     }else{
       hash = new Hashtable();
-      hash.put(ic_object_id_parameter,modinfo.getParameter(ic_object_id_parameter));
+      hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
+      hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
       modinfo.setSessionAttribute(SessionAddressPermissionMapOldValue,hash);
     }
     if(hash.get(permissionKey) == null){
@@ -263,9 +296,10 @@ public class IBPermissionWindow extends IBAdminWindow{
     if(obj != null && oldObj != null){
       Map map = (Map)obj;
       Map oldMap = (Map)oldObj;
-      String instanceId = (String)map.remove(ic_object_id_parameter);
+      String instanceId = (String)map.remove(_PARAMETERSTRING_IDENTIFIER);
+      String category = (String)map.remove(_PARAMETERSTRING_PERMISSION_CATEGORY);
 
-      if(instanceId != null && instanceId.equals(modinfo.getParameter(ic_object_id_parameter)) && instanceId.equals(oldMap.get(ic_object_id_parameter))){
+      if((instanceId != null && instanceId.equals(modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER)) && instanceId.equals(oldMap.get(_PARAMETERSTRING_IDENTIFIER)))&&(category != null && category.equals(modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)) && category.equals(oldMap.get(_PARAMETERSTRING_PERMISSION_CATEGORY)))){
         Iterator iter = map.keySet().iterator();
         while (iter.hasNext()) {
           Object item = iter.next();
@@ -274,9 +308,10 @@ public class IBPermissionWindow extends IBAdminWindow{
           if(oldGroups == null){
             oldGroups = new Vector();
           }
+          int intCategory = Integer.parseInt(category);
           for (int i = 0; i < groups.length; i++) {
             oldGroups.remove(groups[i]);
-            AccessControl.setObjectInstacePermission(modinfo, groups[i],instanceId,(String)item,Boolean.TRUE);
+            AccessControl.setPermission(intCategory, modinfo, groups[i],instanceId,(String)item,Boolean.TRUE);
           }
           if(oldGroups.size()>0){
             String[] groupsToRemove = new String[oldGroups.size()];
@@ -285,11 +320,11 @@ public class IBPermissionWindow extends IBAdminWindow{
             while (iter2.hasNext()) {
               groupsToRemove[index2++] = (String)iter2.next();
             }
-            AccessControl.removeICObjectInstancePermissionRecords(modinfo, instanceId,(String)item, groupsToRemove);
+            AccessControl.removePermissionRecords(intCategory,modinfo, instanceId,(String)item, groupsToRemove);
           }
         }
       }else{
-        throw new RuntimeException("ICObjectInstanceId not set or does not match");
+        throw new RuntimeException("identifier or permissionCategory not set or does not match");
       }
     }
   }

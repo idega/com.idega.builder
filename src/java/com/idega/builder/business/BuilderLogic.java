@@ -18,6 +18,7 @@ import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
 
 import com.idega.core.data.ICObject;
+import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICObjectInstance;
 
 import com.idega.idegaweb.IWBundle;
@@ -318,7 +319,9 @@ public class BuilderLogic{
     link.setWindowToOpen(IBPermissionWindow.class);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_PERMISSION);
-    link.addParameter(ic_object_id_parameter,key);
+    link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,key);
+    link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,AccessControl._CATEGORY_OBJECT_INSTANCE);
+
     return link;
   }
 
