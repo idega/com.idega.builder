@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.14 2001/12/19 12:02:19 palli Exp $
+ * $Id: IBMainServlet.java,v 1.15 2001/12/19 12:11:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -48,9 +48,13 @@ public class IBMainServlet extends IWJSPPresentationServlet {
 
     if(inBuilder){
       page_id = (String) iwc.getSessionAttribute(BuilderLogic.SESSION_PAGE_KEY);
+      System.out.println("inBuilder");
+      System.out.println("page_id = " + page_id);
     }
     else{
       page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+      System.out.println("not inBuilder");
+      System.out.println("page_id = " + page_id);
     }
 
     //if(page_id == null){
