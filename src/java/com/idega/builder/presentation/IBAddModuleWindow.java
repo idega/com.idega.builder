@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.9 2001/10/19 13:57:03 palli Exp $
+ * $Id: IBAddModuleWindow.java,v 1.10 2001/10/21 15:40:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.builder.presentation;
 
 import java.util.List;
 import java.util.Iterator;
+import com.idega.builder.business.ModuleComparator;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICObject;
@@ -148,6 +149,16 @@ System.out.println("label = " + label);
       List elements = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_ELEMENT);
       List blocks = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_BLOCK);
       List applications = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_APPLICATION);
+
+      if ( elements != null ) {
+        java.util.Collections.sort(elements,new ModuleComparator());
+      }
+      if ( blocks != null ) {
+        java.util.Collections.sort(blocks,new ModuleComparator());
+      }
+      if ( applications != null ) {
+        java.util.Collections.sort(applications,new ModuleComparator());
+      }
 
       String sElements = iwrb.getLocalizedString("elements_header","Elements");
       String sBlocks = iwrb.getLocalizedString("blocks_header","Blocks");
