@@ -1,14 +1,13 @@
-package com.idega.builder.business;
-
-/**
- * Title:        idegaclasses
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
- * @author       <a href="tryggvi@idega.is">Tryggvi Larusson</a>,<a href="palli@idega.is">Pall Helgason</a>
- * @version 1.0
+/*
+ * $Id: XMLReader.java,v 1.5 2001/09/13 17:38:17 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
  */
-
+package com.idega.builder.business;
 
 import com.idega.builder.data.*;
 import com.idega.jmodule.object.*;
@@ -33,6 +32,10 @@ import com.idega.core.data.ICObjectInstance;
 
 import com.idega.exception.PageDoesNotExist;
 
+/**
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>,<a href="palli@idega.is">Pall Helgason</a>
+ * @version 1.0
+ */
 public class XMLReader {
 
     private static final String PAGE_STRING = "page";

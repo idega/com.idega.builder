@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.13 2001/09/12 17:22:22 eiki Exp $
+ * $Id: IBPage.java,v 1.14 2001/09/13 17:38:17 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import com.idega.core.data.ICFile;
 import com.idega.data.TreeableEntity;
-
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>

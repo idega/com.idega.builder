@@ -15,10 +15,10 @@ import com.idega.jmodule.object.Image;
  */
 
 public class IBPageChooser extends AbstractChooser {
-
-  public IBPageChooser() {
+  public IBPageChooser(String chooserName) {
     addForm(false);
     setChooseButtonImage(new Image("/common/pics/arachnea/toolbar_open_1.gif","Choose"));
+    setChooserParameter(chooserName);
   }
 
   public Class getChooserWindowClass() {

@@ -181,8 +181,9 @@ public class IBApplication extends IWApplication {
       }
 
       public void main(ModuleInfo modinfo){
-        int i_page_id=1;
-        try{
+        int i_page_id = 1;
+        int i_template_id = 2;
+        try {
           TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),modinfo);
           viewer.setTarget(IB_LEFT_MENU_FRAME);
           //viewer.setTarget(IB_CONTENT_FRAME);
@@ -195,6 +196,21 @@ public class IBApplication extends IWApplication {
           //link.setTarget(IB_CONTENT_FRAME);
           viewer.setLinkProtototype(l);
           add(viewer);
+
+          add(Text.getBreak());
+
+          TreeViewer viewer2 = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),modinfo);
+          viewer2.setTarget(IB_LEFT_MENU_FRAME);
+          //viewer.setTarget(IB_CONTENT_FRAME);
+          viewer2.setNodeActionParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+          Link l2 = new Link();
+          l2.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+          viewer2.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+          //Link link = new Link();
+          //link.addParameter("view","builder");
+          //link.setTarget(IB_CONTENT_FRAME);
+          viewer2.setLinkProtototype(l2);
+          add(viewer2);
           String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
           if(page_id!=null){
             modinfo.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);

@@ -58,12 +58,24 @@ public class IBDomain extends GenericEntity {
     return cachedDomains;
   }
 
-  public void insertStartData()throws Exception{
+  public void insertStartData() throws Exception {
     IBDomain domain = new IBDomain();
     domain.setName("Default Site");
 
     IBPage page = new IBPage();
     page.setName("Default Site");
+    page.setType(IBPage.page);
+    page.insert();
+
+    domain.setIBPage(page);
+    domain.insert();
+
+    domain = new IBDomain();
+    domain.setName("Default Template");
+
+    page = new IBPage();
+    page.setName("Default Template");
+    page.setType(IBPage.template);
     page.insert();
 
     domain.setIBPage(page);
