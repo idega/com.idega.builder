@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.98 2002/01/29 13:58:37 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.99 2002/02/01 10:16:17 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -100,7 +100,7 @@ public class BuilderLogic {
 
   private static final String IB_APPLICATION_RUNNING_SESSION = "ib_application_running";
 
-  private static final String DEFAULT_PAGE = "1";
+  //private static final String DEFAULT_PAGE = "1";
 
   private static final String CLIPBOARD = "user_clipboard";
 
@@ -468,7 +468,7 @@ public class BuilderLogic {
   public String getCurrentIBPage(IWContext iwc) {
     String theReturn = (String)iwc.getSessionAttribute(SESSION_PAGE_KEY);
     if (theReturn == null) {
-      return(DEFAULT_PAGE);
+      return Integer.toString(getCurrentDomain(iwc).getStartPageID());
     }
     else
       return theReturn;
