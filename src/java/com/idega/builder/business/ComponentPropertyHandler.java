@@ -13,16 +13,8 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import com.idega.core.builder.data.ICPage;
-import com.idega.core.file.data.ICFile;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.BooleanInput;
-import com.idega.presentation.ui.IntegerInput;
-import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.Group;
-import com.idega.user.data.GroupHome;
+import com.idega.util.reflect.Property;
 import com.idega.xml.XMLElement;
 
 public class ComponentPropertyHandler {
@@ -54,6 +46,17 @@ public class ComponentPropertyHandler {
     }
 
      
+     private static String[] emptyStringArray = new String[0];
+     void setReflectionProperty(PresentationObject instance,Method method,Vector stringPropertyValues){
+     	Property property = new Property(method);
+     	String[] sPropertyValuesArray = (String[])stringPropertyValues.toArray(emptyStringArray);
+     	property.setPropertyValues(sPropertyValuesArray);
+     	
+     	instance.addReflectionProperty(property);
+     	
+     }
+     
+     /*
      void setReflectionProperty(PresentationObject instance,Method method,Vector stringValues){
         //Object[] args = getObjectArguments(stringValues);
         //method.invoke(instance,args);
@@ -143,7 +146,7 @@ public class ComponentPropertyHandler {
           }
         }
         return argument;
-    }
+    }*/
 
      private  Object[] getObjectArguments(XMLElement value){
         List children = value.getChildren();
@@ -182,7 +185,7 @@ public class ComponentPropertyHandler {
       return null;
     }
 
-
+/*
     public PresentationObject getSetPropertyComponent(String className,String name){
       if(className.equals("int")){
         return new IntegerInput(name);
@@ -195,6 +198,6 @@ public class ComponentPropertyHandler {
       }
       return null;
     }
-
+*/
 
 }

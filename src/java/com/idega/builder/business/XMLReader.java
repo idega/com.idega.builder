@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.58 2004/12/20 08:55:06 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.59 2004/12/28 00:20:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
+import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -434,6 +435,14 @@ public class XMLReader {
 					setObjectInstance(ibxml, id, inst);
 				}
 			}
+			
+			//This is a hack to refresh the property cache so that we don't get old properties.
+			//(this is used in JSF state restoring for PresentationObjects)
+			if(inst != null){
+				String objectCacheKey = Integer.toString(inst.getICObjectInstanceID());
+				PropertyCache.getInstance().clearPropertiesForKey(objectCacheKey);
+			}
+				
 
 			if (inst instanceof PresentationObjectContainer) {
 				if (isLocked)
