@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.28 2001/12/18 15:10:04 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.29 2001/12/18 18:38:40 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -394,25 +394,26 @@ public class IBPropertyHandler {
      * @todo handle page, template, file if the inputs already hava a value
      */
     else if (parameterClass.equals(com.idega.core.data.ICFile.class)) {
+      obj = new com.idega.builder.presentation.IBFileChooser(name);
       try{
         //extends block.media.presentation.FileChooser
         com.idega.core.data.ICFile file = new com.idega.core.data.ICFile(Integer.parseInt(stringValue));
-        obj = new com.idega.builder.presentation.IBFileChooser(name);
+        ((com.idega.builder.presentation.IBFileChooser)obj).setValue(file);
       }
       catch(Exception e){
-        throw new RuntimeException(e.getMessage());
+        //throw new RuntimeException(e.getMessage());
       }
     }
     else if (parameterClass.equals(com.idega.builder.data.IBPage.class)) {
+      com.idega.builder.presentation.IBPageChooser chooser =  new com.idega.builder.presentation.IBPageChooser(name);
       try{
-        com.idega.builder.presentation.IBPageChooser chooser =  new com.idega.builder.presentation.IBPageChooser(name);
-        com.idega.builder.data.IBPage page = new com.idega.builder.data.IBPage(Integer.parseInt(stringValue));
-        chooser.setValue(page);
-        obj = chooser;
+          com.idega.builder.data.IBPage page = new com.idega.builder.data.IBPage(Integer.parseInt(stringValue));
+          chooser.setValue(page);
       }
       catch(Exception e){
-        throw new RuntimeException(e.getMessage());
+        //throw new RuntimeException(e.getMessage());
       }
+      obj = chooser;
     }
     else {
       obj = new TextInput(name);
