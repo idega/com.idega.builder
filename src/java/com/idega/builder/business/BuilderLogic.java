@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.166 2005/02/03 11:06:07 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.167 2005/02/10 10:42:49 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -962,7 +962,7 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public String getIBPageURL(IWApplicationContext iwc, int ib_page_id) {
-		if(IWMainApplication.USE_NEW_URL_SCHEME){
+		if(IWMainApplication.useNewURLScheme){
 			return iwc.getIWMainApplication().getBuilderPagePrefixURI()+ib_page_id+"/";
 		}
 		else{
