@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.48 2004/06/24 20:12:25 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.49 2004/07/07 18:11:15 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
@@ -26,6 +27,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOLookupException;
 import com.idega.exception.PageDoesNotExist;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.Page;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -294,11 +296,11 @@ public class IBXMLPage implements IBXMLAble {
 			else if(this.getPageFormat().equals("HTML")){
 				//convert the string to utf-8
 				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
-				String theString = new String(this.toString().getBytes(),"UTF-8");
-				//String theString = this.toString();
+				//String theString = new String(this.toString().getBytes(),"UTF-8");
+				String theString = this.toString();
 				StringReader sr = new StringReader(theString);
 				
-				OutputStreamWriter out = new OutputStreamWriter(stream);
+				OutputStreamWriter out = new OutputStreamWriter(stream,"UTF-8");
 				
 				
 				int bufferlength=1000;
@@ -418,8 +420,11 @@ public class IBXMLPage implements IBXMLAble {
 	 * @throws com.idega.exception.PageDescriptionDoesNotExists The given XML file does not exists.
 	 */
 	public void readXMLDocument(InputStream stream) throws PageDoesNotExist {
+		String encoding = IWMainApplication.getDefaultIWApplicationContext().getApplicationSettings().getCharacterEncoding();
+
 		boolean streamopen = true;
 		try {
+			InputStreamReader reader = new InputStreamReader(stream,encoding);
 			this.setXMLDocument(getParser().parse(stream));
 			//_xmlDocument = _parser.parse(stream);
 			stream.close();
