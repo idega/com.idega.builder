@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.31 2002/02/12 13:20:36 palli Exp $
+ * $Id: IBPage.java,v 1.32 2002/03/06 23:59:07 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.io.InputStream;
 import java.io.OutputStream;
 import com.idega.core.data.ICFile;
+import com.idega.core.data.ICMimeType;
 import com.idega.core.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
@@ -242,6 +243,7 @@ public class IBPage extends TreeableEntity {
    *
    */
   public void setFile(ICFile file) {
+    file.setMimeType(ICMimeType.IC_MIME_TYPE_XML);
     setColumn(getColumnFile(),file);
     _file = file;
   }

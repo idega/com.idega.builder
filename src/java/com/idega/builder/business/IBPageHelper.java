@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.8 2002/02/22 16:27:50 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.9 2002/03/06 23:58:45 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Iterator;
 import com.idega.presentation.IWContext;
 import java.util.Map;
+import com.idega.core.data.ICMimeType;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -59,6 +60,7 @@ public class IBPageHelper {
       name = "Untitled";
     ibPage.setName(name);
     ICFile file = new ICFile();
+    file.setMimeType(ICMimeType.IC_MIME_TYPE_XML);
     ibPage.setFile(file);
 
     if (type.equals(PAGE)) {
