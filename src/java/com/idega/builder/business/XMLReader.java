@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.21 2001/10/19 13:56:55 palli Exp $
+ * $Id: XMLReader.java,v 1.22 2001/10/22 10:07:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -212,7 +212,14 @@ public class XMLReader {
         newRegionParent = (PresentationObjectContainer)regionParent.getContainedObject(regionID);
 
         if (newRegionParent == null) {
-          parseChildren = false;
+          if (label != null) {
+            newRegionParent = (PresentationObjectContainer)regionParent.getContainedLabeledObject(label.getValue());
+            if (newRegionParent == null) {
+              parseChildren = false;
+            }
+          }
+          else
+            parseChildren = false;
         }
         else {
           if ((newRegionParent.getBelongsToParent()) && (newRegionParent.isLocked()))
