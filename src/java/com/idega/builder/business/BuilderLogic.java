@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.103 2002/02/22 16:27:32 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.104 2002/02/26 23:02:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -463,6 +463,14 @@ public class BuilderLogic {
       //if(sID!=null){
       return new IBPage(Integer.parseInt(sID));
       //}
+  }
+
+  /**
+   * Returns the current IBPageID that the user has requested
+   */
+  public int getCurrentIBPageID(IWContext iwc) {
+    String theReturn = getCurrentIBPage(iwc);
+    return Integer.parseInt(theReturn);
   }
 
   public String getCurrentIBPage(IWContext iwc) {
