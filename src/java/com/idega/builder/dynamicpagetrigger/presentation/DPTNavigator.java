@@ -11,7 +11,7 @@ import com.idega.presentation.PresentationObject;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.data.IPProject;
 import com.idega.data.GenericEntity;
-import com.idega.builder.dynamicpagetrigger.business.DPTriggerBusiness;
+import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public abstract class DPTNavigator extends Block {
 
   protected Table table = null;
   protected Table rowTemplateTable = null;
-  protected DPTriggerBusiness business = null;
+  protected DPTTriggerBusiness business = null;
 
   protected int columns = 1;
   protected int extraRows = 0;
@@ -72,7 +72,7 @@ public abstract class DPTNavigator extends Block {
 
   public void _main(IWContext iwc) throws Exception {
     if(this.getICObjectInstanceID() > 0){
-      business = DPTriggerBusiness.getInstance();
+      business = DPTTriggerBusiness.getInstance();
 
       table.empty();
 //      initColumns(iwc);

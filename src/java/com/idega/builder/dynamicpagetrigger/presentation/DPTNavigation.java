@@ -2,7 +2,7 @@ package com.idega.builder.dynamicpagetrigger.presentation;
 
 import com.idega.presentation.Table;
 import com.idega.presentation.Block;
-import com.idega.builder.dynamicpagetrigger.business.DPTriggerBusiness;
+import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.IWContext;
@@ -26,11 +26,11 @@ import java.util.ListIterator;
 public class DPTNavigation extends Block {
 
   Table linkTable;
-  DPTriggerBusiness business;
+  DPTTriggerBusiness business;
 
   public DPTNavigation() {
     linkTable = new Table();
-    business = new DPTriggerBusiness();
+    business = new DPTTriggerBusiness();
   }
 
 

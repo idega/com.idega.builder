@@ -33,13 +33,13 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class DPTriggerBusiness {
+public class DPTTriggerBusiness {
 
-  public DPTriggerBusiness() {
+  public DPTTriggerBusiness() {
   }
 
-  public static DPTriggerBusiness getInstance(){
-    return new DPTriggerBusiness();
+  public static DPTTriggerBusiness getInstance(){
+    return new DPTTriggerBusiness();
   }
 
   public int createTriggerRule(ICObject source, int defaultTemplateId,int[] objectInstanceIds, IBPage[] templatesAllowed) throws SQLException{
