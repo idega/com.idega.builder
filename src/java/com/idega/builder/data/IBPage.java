@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.5 2001/05/18 15:18:15 palli Exp $
+ * $Id: IBPage.java,v 1.6 2001/06/18 15:49:46 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ public class IBPage extends GenericEntity {
 		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
 		addAttribute(getIDColumnName());
 		addAttribute("name","Nafn",true,true,"java.lang.String");
-    addAttribute("page_value","Page value",true,true,"com.idega.data.BlobWrapper");
+                addAttribute("page_value","Page value",true,true,"com.idega.data.BlobWrapper");
 	}
 
 	public String getEntityName() {
