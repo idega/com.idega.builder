@@ -193,8 +193,8 @@ public class IBObjectControl extends PresentationObjectContainer
 			table.setWidth("100%");
 			table.setHeight("100%");
 			table.setColor("#CCCCCC");
-			table.setAttribute("onMouseOver", showLayers);
-			table.setAttribute("onClick", hideLayers);
+			table.setMarkupAttribute("onMouseOver", showLayers);
+			table.setMarkupAttribute("onClick", hideLayers);
 			rTable.add(table, 2, 2);
 			Image separator = getBundle(iwc).getImage("shared/menu/menu_separator.gif");
 			separator.setWidth("100%");
@@ -298,7 +298,7 @@ public class IBObjectControl extends PresentationObjectContainer
 	}
 	private void addToTable(PresentationObject obj, int col, int row)
 	{
-		obj.setAttribute("onMouseOver", showLayers);
+		obj.setMarkupAttribute("onMouseOver", showLayers);
 		table.add(obj, col, row);
 	}
 	private void addToTable(PresentationObject obj, String textString, Class className, int col, int row)
@@ -314,32 +314,32 @@ public class IBObjectControl extends PresentationObjectContainer
 	}
 	public void add(PresentationObject obj)
 	{
-		if (obj.isAttributeSet(obj.WIDTH))
+		if (obj.isMarkupAttributeSet(obj.WIDTH))
 		{
 			_layer.setWidth(obj.getWidth());
 			_table.setWidth(obj.getWidth());
 		}
-		if (obj.isAttributeSet(obj.HEIGHT))
+		if (obj.isMarkupAttributeSet(obj.HEIGHT))
 		{
 			_layer.setHeight(obj.getHeight());
 			_table.setHeight(obj.getHeight());
 		}
-		if (obj.isAttributeSet(obj.HORIZONTAL_ALIGNMENT))
+		if (obj.isMarkupAttributeSet(obj.HORIZONTAL_ALIGNMENT))
 		{
 			_layer.setHorizontalAlignment(obj.getHorizontalAlignment());
 		}
 		if (obj instanceof Layer)
 		{
-			if (obj.isAttributeSet(Layer.LEFT))
-				_layer.setLeftPosition(obj.getAttribute(Layer.LEFT));
-			if (obj.isAttributeSet(Layer.TOP))
-				_layer.setTopPosition(obj.getAttribute(Layer.TOP));
-			if (obj.isAttributeSet(Layer.ZINDEX))
-				_layer.setZIndex(obj.getAttribute(Layer.ZINDEX));
-			obj.removeAttribute(Layer.LEFT);
-			obj.removeAttribute(Layer.TOP);
-			obj.removeAttribute(Layer.POSITION);
-			obj.removeAttribute(Layer.ZINDEX);
+			if (obj.isMarkupAttributeSet(Layer.LEFT))
+				_layer.setLeftPosition(obj.getMarkupAttribute(Layer.LEFT));
+			if (obj.isMarkupAttributeSet(Layer.TOP))
+				_layer.setTopPosition(obj.getMarkupAttribute(Layer.TOP));
+			if (obj.isMarkupAttributeSet(Layer.ZINDEX))
+				_layer.setZIndex(obj.getMarkupAttribute(Layer.ZINDEX));
+			obj.removeMarkupAttribute(Layer.LEFT);
+			obj.removeMarkupAttribute(Layer.TOP);
+			obj.removeMarkupAttribute(Layer.POSITION);
+			obj.removeMarkupAttribute(Layer.ZINDEX);
 		}
 		_tableLayer.add(obj);
 		obj.setParentObject(_parent);
