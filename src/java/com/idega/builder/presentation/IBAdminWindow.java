@@ -39,7 +39,7 @@ public class IBAdminWindow extends JModuleAdminWindow{
   private static final String ACTION_DELETE = BuilderLogic.ACTION_DELETE;
   private static final String ACTION_EDIT = BuilderLogic.ACTION_EDIT;
   private static final String ACTION_ADD = BuilderLogic.ACTION_ADD;
-  private static final String ACTION_CHANGE = BuilderLogic.ACTION_CHANGE;
+  private static final String ACTION_MOVE = BuilderLogic.ACTION_MOVE;
 
   private static final String IW_BUNDLE_IDENTIFIER=BuilderLogic.IW_BUNDLE_IDENTIFIER;
 
@@ -52,8 +52,8 @@ public class IBAdminWindow extends JModuleAdminWindow{
     if(action.equals(ACTION_ADD)){
       addNewObject(modinfo);
     }
-    else if(action.equals(ACTION_CHANGE)){
-      changeObject(modinfo);
+    else if(action.equals(ACTION_MOVE)){
+      //changeObject(modinfo);
     }
     else if(action.equals(ACTION_DELETE)){
       deleteObjectInstance(modinfo);

@@ -43,7 +43,7 @@ public class BuilderLogic{
     public static final String ACTION_DELETE ="ACTION_DELETE";
     public static final String ACTION_EDIT ="ACTION_EDIT";
     public static final String ACTION_ADD ="ACTION_ADD";
-    public static final String ACTION_CHANGE ="ACTION_CHANGE";
+    public static final String ACTION_MOVE ="ACTION_MOVE";
 
     public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
 
@@ -190,6 +190,19 @@ public class BuilderLogic{
     Link link = new Link(deleteImage,window);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_DELETE);
+    link.addParameter(ib_parent_parameter,parentKey);
+    link.addParameter(ic_object_id_parameter,key);
+    return link;
+  }
+
+
+  public  ModuleObject getMoveIcon(int key,String parentKey,ModuleInfo modinfo){
+    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image deleteImage = bundle.getImage("move.gif");
+    Window window = new IBAdminWindow();
+    Link link = new Link(deleteImage,window);
+    link.addParameter(ib_page_parameter,"1");
+    link.addParameter(ib_control_parameter,ACTION_MOVE);
     link.addParameter(ib_parent_parameter,parentKey);
     link.addParameter(ic_object_id_parameter,key);
     return link;
