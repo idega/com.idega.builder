@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.17 2001/09/13 18:49:44 tryggvil Exp $
+ * $Id: IBPage.java,v 1.16 2001/09/13 18:49:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -115,7 +115,7 @@ public class IBPage extends TreeableEntity {
   }
 
   public void setFile(ICFile file) {
-    //System.out.println("Calling setFile");
+    System.out.println("Calling setFile");
     setColumn(getColumnFile(),file);
     file_ = file;
   }
