@@ -2,17 +2,11 @@ package com.idega.builder.presentation;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.FinderException;
 
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPageImportBusiness;
-import com.idega.builder.business.PageTreeNode;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -25,8 +19,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.FileInput;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 
 /**
@@ -43,7 +35,8 @@ public class IBPageImporterWindow extends IBPageWindow {
   public static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
   
   public static final String IMPORT_KEY = "ib_page_import_key";
-  public static final String TOP_LEVEL_KEY = "ib_page_import_top_level_key";
+  public static final String TOP_LEVEL_PAGE_KEY = "ib_page_import_top_level_key";
+  public static final String TOP_LEVEL_TEMPLATE_KEY = "ib_template_import_top-level_key";
   
   public static final String SUBMIT_IMPORT_KEY = "ib_page_import_submit_key";
   
@@ -56,14 +49,12 @@ public class IBPageImporterWindow extends IBPageWindow {
   
   public static final String NODE_DELIMITER = " > ";
   
-  boolean topLevelIsChosen = false;
-  private int parentPageId = -1; 
+  boolean topLevelForPagesIsChosen = false;
+  boolean topLevelForTemplatesIsChosen = false;
   
-  // list of page ids (type Integer) 
-  //private List pageIds = null; 
-  // list of template ids (type Intger)
-	//private List templateIds = null;
-	// download link
+  private int parentPageId = -1; 
+  private int templatePageId = -1;
+  
 	private String downloadLink = null;
 	
 	private IBPageImportBusiness pageImportBusiness = null;
@@ -87,29 +78,23 @@ public class IBPageImporterWindow extends IBPageWindow {
 
   }
   
-  private void getContent(IWResourceBundle resourceBundle, IWContext iwc) throws IDOLookupException, FinderException {
-  	Table table = new Table(1, 4);
+  private void getContent(IWResourceBundle resourceBundle, IWContext iwc)  {
+  	Table table = new Table(1, 6);
   	int row = 1;
   	// add file input
   	table.add(getFileInput(), 1, row++);
   	// top level checkbox
-  	table.add(getTopLevelCheckBox(resourceBundle), 1, row++);
+  	table.add(getTopLevelCheckBox(TOP_LEVEL_PAGE_KEY, topLevelForPagesIsChosen,  resourceBundle), 1, row++);
 		// page chooser
-  	if (! topLevelIsChosen) {
+  	if (! topLevelForPagesIsChosen) {
   		table.add(getPageChooser(PAGE_CHOOSER_NAME, iwc), 1, row++);
   	}
-		// 
+  	table.add(getTopLevelCheckBox(TOP_LEVEL_TEMPLATE_KEY, topLevelForTemplatesIsChosen, resourceBundle), 1, row++);
+  	if (! topLevelForTemplatesIsChosen) {
+  		table.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME, iwc, IBPageHelper.TEMPLATE), 1, row++);
+  	}
   	Form form = new Form();
   	form.add(table);
-  	
-  	
-  	IBPageHelper pageHelper = IBPageHelper.getInstance();
-  	List startPages = pageHelper.getFirstLevelPageTreeNodesDomainFirst(iwc);
-  	List templateStartPages = pageHelper.getFirstLevelPageTreeNodesTemplateDomainFirst(iwc);
-  	PresentationObject pageViewer = getPageViewer(startPages, PAGE_KEY);
-  	PresentationObject templateViewer = getPageViewer(templateStartPages, TEMPLATE_KEY);
-  	form.add(pageViewer);
-  	form.add(templateViewer);
   	form.add(getButtons(resourceBundle));
   	add(form);
   	if (downloadLink != null) {
@@ -118,11 +103,11 @@ public class IBPageImporterWindow extends IBPageWindow {
   	}
   }
   
-  private PresentationObject getTopLevelCheckBox(IWResourceBundle resourceBundle) {
+  private PresentationObject getTopLevelCheckBox(String keyName, boolean setChecked, IWResourceBundle resourceBundle) {
   	Table table = new Table(2,1);
- 		CheckBox topLevelCheckBox = new CheckBox(TOP_LEVEL_KEY, "true");
-		topLevelCheckBox.setChecked(topLevelIsChosen);
-		Text topLevelText = new Text(resourceBundle.getLocalizedString(TOP_LEVEL_KEY, "Top level") + ":");
+ 		CheckBox topLevelCheckBox = new CheckBox(keyName, "true");
+		topLevelCheckBox.setChecked(setChecked);
+		Text topLevelText = new Text(resourceBundle.getLocalizedString(keyName, "Top level") + ":");
 		topLevelText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		table.add(topLevelText, 1, 1);
 		table.add(topLevelCheckBox, 2, 1);
@@ -138,19 +123,10 @@ public class IBPageImporterWindow extends IBPageWindow {
   	
   private String parseAction(IWContext iwc) {
   	String action = null;
-  	topLevelIsChosen = (new Boolean(iwc.getParameter(TOP_LEVEL_KEY))).booleanValue();
-  	String parentPageIdString = iwc.getParameter(PAGE_CHOOSER_NAME);
-  	if (parentPageIdString != null) {
-  		try {
-  			parentPageId = Integer.parseInt(parentPageIdString);
-  		}
-  		catch (NumberFormatException ex) {
-  			parentPageId = -1;
-  		}
-  	}
-  	
-//  	pageIds = getSelectedIds(PAGE_KEY, iwc);
-//  	templateIds = getSelectedIds(TEMPLATE_KEY, iwc);
+  	topLevelForPagesIsChosen = (new Boolean(iwc.getParameter(TOP_LEVEL_PAGE_KEY))).booleanValue();
+  	topLevelForTemplatesIsChosen = (new Boolean(iwc.getParameter(TOP_LEVEL_TEMPLATE_KEY))).booleanValue();
+  	parentPageId = getParentPageId(PAGE_CHOOSER_NAME,iwc);
+  	templatePageId = getParentPageId(TEMPLATE_CHOOSER_NAME, iwc);
   	if (iwc.isParameterSet(SUBMIT_IMPORT_KEY)) {
   		action = IMPORT_ACTION;
   	}
@@ -173,21 +149,21 @@ public class IBPageImporterWindow extends IBPageWindow {
   	return true;
   }
 
-//  private List getSelectedIds(String key, IWContext iwc) {
-//  	List list = null;
-//  	if (iwc.isParameterSet(key)) {
-//  		String[] selectedPageIds = iwc.getParameterValues(key);
-//  		list = new ArrayList(selectedPageIds.length);
-//  		for (int i = 0; i < selectedPageIds.length; i++) {
-//				String string = selectedPageIds[i];
-//				list.add(new Integer(string));
-//  		}
-//  	}
-//  	return list;
-//  }
+  private int getParentPageId(String keyName, IWContext iwc) {
+  	if (! iwc.isParameterSet(keyName)) {
+  		return -1;
+  	}
+  	String parentPageIdString = iwc.getParameter(keyName);
+  	try {
+			return Integer.parseInt(parentPageIdString);
+		}
+		catch (NumberFormatException ex) {
+			return -1;
+		}
+  }
   
   private void importPages(IWContext iwc, UploadFile file) throws IBOLookupException, RemoteException, IOException { 
-  	getPageImportBusiness(iwc).importPages(file,  parentPageId);
+  	getPageImportBusiness(iwc).importPages(file,  parentPageId, templatePageId);
 	}
   	
   		
@@ -206,48 +182,6 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
   	
   		
-	private PresentationObject getPageViewer( List startPages, String key) {
-		return getDoubleSelectionBox(startPages, key);
-  }
-
-	private SelectionDoubleBox getDoubleSelectionBox(List startPages, String rightSelectionKey) {
-		// create selection double box and set parameter string
-		SelectionDoubleBox selectionDoubleBox = new SelectionDoubleBox(rightSelectionKey);
-    // set size
-		SelectionBox rightBox = selectionDoubleBox.getRightBox();
-		SelectionBox leftBox = selectionDoubleBox.getLeftBox();
-    rightBox.setHeight("20");
-    leftBox.setHeight("20");   
-		// submit selection on right box
-		rightBox.selectAllOnSubmit();
-		Iterator iterator = startPages.iterator();
-		while (iterator.hasNext()) {
-			PageTreeNode pageTreeNode = (PageTreeNode) iterator.next();
-			addItems(leftBox, pageTreeNode, "");
-		}
-		return selectionDoubleBox;
-	}
-
-	private void addItems(SelectionBox selectionBox, PageTreeNode node, String parentNodeDescription) {
-		String id = Integer.toString(node.getNodeID());
-		String nodeName = node.getNodeName();
-		StringBuffer buffer = new StringBuffer(parentNodeDescription);
-		buffer.append(NODE_DELIMITER);
-		buffer.append(nodeName);
-		String nodeNameDescription = buffer.toString();
-		selectionBox.addMenuElement(id, nodeNameDescription);
-		Iterator childrenIterator = node.getChildren();
-		if (childrenIterator == null) {
-			return;
-		}
-		else {
-			while (childrenIterator.hasNext()) {
-				PageTreeNode childNode = (PageTreeNode) childrenIterator.next();
-				addItems(selectionBox, childNode, nodeNameDescription);
-			}
-		}
-	}
-		
 	private IBPageImportBusiness getPageImportBusiness(IWApplicationContext iwac) throws IBOLookupException {
 		if (pageImportBusiness == null) {
 			pageImportBusiness =  (IBPageImportBusiness) IBOLookup.getServiceInstance(iwac,IBPageImportBusiness.class);
