@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.20 2001/10/20 12:52:57 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.21 2001/10/20 17:42:41 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -245,10 +245,11 @@ public class IBXMLPage {
 
 
   IBPage getIBPage()throws Exception{
-    if(_ibPage==null){
+    /*if(_ibPage==null){
       _ibPage=new IBPage(Integer.parseInt(_key));
     }
-    return _ibPage;
+    return _ibPage;*/
+    return new IBPage(Integer.parseInt(_key));
   }
 
 
