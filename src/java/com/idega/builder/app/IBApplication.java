@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.42 2001/12/14 13:08:04 gummi Exp $
+ * $Id: IBApplication.java,v 1.43 2001/12/19 11:50:08 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -110,6 +110,7 @@ public class IBApplication extends IWApplication {
     }
     l.add(PageTree.class);
     l.add(TemplateTree.class);
+//    l.add(LibraryTree.class);
   }
 
 
@@ -324,6 +325,54 @@ public class IBApplication extends IWApplication {
   /**
    *
    */
+/*  public static class LibraryTree extends Page {
+    public LibraryTree() {
+    }
+
+    public void main(IWContext iwc){
+      boolean startupInProgress = startupInProgress(iwc);
+      if (!startupInProgress && iwc.getParameter("reload") != null) {
+        if (noCurtain) {
+          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+        }
+        else {
+          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+        }
+      }
+      getParentPage().setAllMargins(2);
+
+      int i_template_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartTemplateID();
+
+      try {
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc),iwc);
+//        vi
+        viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+        Link l = new Link();
+        l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        l.addParameter("reload","t");
+        viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
+
+        viewer.setLinkProtototype(l);
+        add(viewer);
+
+        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+        if (page_id != null) {
+          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);
+        }
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+      endStartup(iwc,LibraryTree.class);
+    }
+  }*/
+
+  /**
+   *
+   */
   public static class IBLeftMenu extends IWApplicationComponent {
     /**
      *
@@ -357,6 +406,8 @@ public class IBApplication extends IWApplication {
           pageText.setFontSize(1);
         Text templateText = new Text("Template Tree:");
           templateText.setFontSize(1);
+        Text libraryText = new Text("Library Tree:");
+        libraryText.setFontSize(1);
 
         IFrame frame = new IFrame("PageTree",PageTree.class);
           frame.setWidth(170);
@@ -373,6 +424,14 @@ public class IBApplication extends IWApplication {
         menuTable.add(templateText,1,3);
         menuTable.add(Text.getBreak(),1,3);
         menuTable.add(frame2,1,3);
+
+/*        IFrame frame3 = new IFrame("LibraryTree",LibraryTree.class);
+          frame3.setWidth(170);
+          frame3.setHeight(200);
+          frame3.setScrolling(IFrame.SCROLLING_YES);
+        menuTable.add(libraryText,1,4);
+        menuTable.add(Text.getBreak(),1,4);
+        menuTable.add(frame3,1,4);*/
 
         add(menuTable);
       }
@@ -642,8 +701,10 @@ public class IBApplication extends IWApplication {
         toolTable.add(sourceLink,3,1);
 
         String id = (String)iwc.getSessionAttribute("ib_page_id");
-        if (id == null)
-          id = "1";
+        if (id == null) {
+          int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
+          id = Integer.toString(i_page_id);
+        }
         String name = null;
         if (id != null && !id.equals("")) {
           java.util.Map tree = PageTreeNode.getTree(iwc);
