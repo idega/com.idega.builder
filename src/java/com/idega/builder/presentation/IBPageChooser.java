@@ -47,7 +47,7 @@ public class IBPageChooser extends AbstractChooser {
   }
 
   public void setValue(Object page){
-    super.setValue((IBPage)page);
+    setSelectedPage((IBPage)page);
   }
 
 }
