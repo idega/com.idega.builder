@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.42 2001/10/11 15:35:38 palli Exp $
+ * $Id: BuilderLogic.java,v 1.43 2001/10/11 16:55:48 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,8 +37,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Window;
-import com.idega.jmodule.image.presentation.ImageInserter;
-import com.idega.jmodule.image.presentation.ImageEditorWindow;
+
 import java.util.ListIterator;
 import java.util.List;
 import java.util.Hashtable;
@@ -260,7 +259,7 @@ public class BuilderLogic {
     if(obj instanceof Image){
       Image imageObj = (Image)obj;
       boolean useBuilderObjectControl = obj.getUseBuilderObjectControl();
-      ImageInserter inserter = null;
+      com.idega.block.media.presentation.ImageInserter inserter = null;
       int ICObjectIntanceID = imageObj.getICObjectInstanceID();
       String sessionID="ic_"+ICObjectIntanceID;
       String session_image_id = (String)iwc.getSessionAttribute(sessionID);
@@ -274,7 +273,7 @@ public class BuilderLogic {
         iwc.removeSessionAttribute(sessionID);
         imageObj.setImageID(image_id);
       }
-      inserter = new ImageInserter();
+      inserter = new com.idega.block.media.presentation.ImageInserter();
       inserter.setHasUseBox(false);
       inserter.limitImageWidth(false);
       int image_id=imageObj.getImageID();
