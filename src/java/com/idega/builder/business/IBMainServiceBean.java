@@ -139,4 +139,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	{
 		return getPageTree(startNodeId,-1);
 	}
+	
+	/**
+	 * Unloads all the resources associated with the Builder
+	 */
+	public void unload(){
+		getBuilderLogic().unload();
+	}
 }

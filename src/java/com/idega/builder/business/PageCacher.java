@@ -20,14 +20,30 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 public class PageCacher
 {
-	private static Map pageCache = new WeakHashMap();
-	private static Map pagesValid = new HashMap();
+	//Static variables:
+	private static PageCacher instance;
+	
+	//Instance variables:
+	private Map pageCache = new WeakHashMap();
+	private Map pagesValid = new HashMap();
 	private PageCacher()
 	{}
+	protected static PageCacher getInstance(){
+		if(instance==null){
+			instance=new PageCacher();
+		}
+		return instance;
+	}
+	
+	public void unload(){
+		instance=null;
+	}
+	
+	
 	protected static boolean isPageValid(String key)
 	{
 		boolean theReturn = false;
-		Boolean fetched = (Boolean) pagesValid.get(key);
+		Boolean fetched = (Boolean) getInstance().pagesValid.get(key);
 		if (fetched != null)
 		{
 			if (getPageCacheMap().get(key) != null)
@@ -49,11 +65,11 @@ public class PageCacher
 	{
 		if (trueOrFalse)
 		{
-			pagesValid.put(key, Boolean.TRUE);
+			getInstance().pagesValid.put(key, Boolean.TRUE);
 		}
 		else
 		{
-			pagesValid.put(key, Boolean.FALSE);
+			getInstance().pagesValid.put(key, Boolean.FALSE);
 		}
 	}
 	public static Page getPage(String key, IWContext iwc)
@@ -187,7 +203,7 @@ public class PageCacher
 	}
 	private static Map getPageCacheMap()
 	{
-		return pageCache;
+		return getInstance().pageCache;
 	}
 	public static IBXMLPage getXMLPageCached(String key)
 	{
@@ -217,7 +233,7 @@ public class PageCacher
 	 */
 	public synchronized static void flagAllPagesInvalid()
 	{
-		pagesValid.clear();
-		pageCache.clear();
+		getInstance().pagesValid.clear();
+		getInstance().pageCache.clear();
 	}
 }

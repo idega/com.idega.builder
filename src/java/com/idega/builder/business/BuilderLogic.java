@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.161 2004/08/05 22:10:39 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.162 2004/12/03 02:25:07 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1111,5 +1111,10 @@ public class BuilderLogic {
 	 */
 	public void invalidatePage(String pageKey){
 		PageCacher.flagPageInvalid(pageKey);
+	}
+	
+	public void unload(){
+		PageCacher.getInstance().unload();
+		_instance=null;
 	}
 }
