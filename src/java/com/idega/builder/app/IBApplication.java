@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.80 2004/08/05 22:10:39 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.81 2004/09/03 15:05:23 eiki Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -666,7 +666,7 @@ public class IBApplication extends IWApplication {
 		 */
 		private DropdownMenu getLocaleMenu(IWContext iwc) {
 			StringBuffer buffer = new StringBuffer();
-			String prefix = "/servlet/IBMainServlet/?";
+			String prefix = iwc.getIWMainApplication().getBuilderPagePrefixURI()+"?";
 			buffer.append(IWMainApplication.IdegaEventListenerClassParameter);
 			buffer.append("=");
 			buffer.append(IWMainApplication.getEncryptedClassName(LocaleSwitcher.class.getName()));
@@ -679,13 +679,14 @@ public class IBApplication extends IWApplication {
 			script.addFunction("jumpMenu", "function jumpMenu(targ,selObj,restore){ eval(targ+\".location='\"+selObj.options[selObj.selectedIndex].value+\"'\"); if (restore) selObj.selectedIndex=0; }");
 			getParentPage().setAssociatedScript(script);
 			String url = prefix + buffer.toString();
-			List locales = ICLocaleBusiness.listOfLocalesJAVA();
+			List locales = ICLocaleBusiness.getListOfLocalesJAVA();
 			DropdownMenu down = new DropdownMenu(LocaleSwitcher.languageParameterString);
 			Iterator iter = locales.iterator();
 			while (iter.hasNext()) {
 				Locale item = (Locale) iter.next();
 				down.addMenuElement(url + item.toString(), item.getDisplayLanguage());
 			}
+			//IWMainApplication.getBuilderServletURI()
 			down.setSelectedElement(url + iwc.getCurrentLocale().toString());
 			down.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE_SMALL);
 			down.setOnChange("javascript:jumpMenu('parent.frames[\\'" + IB_CONTENT_FRAME + "\\']',this,0)");
