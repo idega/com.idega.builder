@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.9 2004/03/28 11:47:12 aron Exp $
+ * $Id: TreeNodeFinder.java,v 1.10 2004/10/13 12:52:01 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,6 @@
  */
 package com.idega.builder.business;
 
-import com.idega.builder.data.IBPageName;
-import com.idega.builder.data.IBPageNameHome;
-import com.idega.core.builder.data.ICPage;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLookup;
-
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -23,8 +17,12 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
+import com.idega.builder.data.IBPageName;
+import com.idega.builder.data.IBPageNameHome;
+import com.idega.core.builder.data.ICPage;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -118,6 +116,7 @@ public class TreeNodeFinder {
 		ICPage pages = null;
 		Connection conn = null;
 		Statement stmt = null;
+		ResultSet result = null;
 		try {
 			pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			conn = pages.getConnection();
@@ -146,7 +145,7 @@ public class TreeNodeFinder {
 			sql.append("')");
 			
 
-			ResultSet result = stmt.executeQuery(sql.toString());
+			result = stmt.executeQuery(sql.toString());
 
 			if (result != null) {
 				while (result.next()) {
@@ -163,16 +162,33 @@ public class TreeNodeFinder {
 				}
 			}
 		}
-		finally {
-			if (stmt != null) {
-				stmt.close();
-			}
-			if (conn != null) {
-				if (pages != null)
-					pages.freeConnection(conn);
-			}
-		}
-
+	    finally {
+	    	// do not hide an existing exception
+	    	try { 
+	    		if (result != null) {
+	    			result.close();
+		      	}
+	    	}
+		    catch (SQLException resultCloseEx) {		    	
+		    	System.err.println("[TreeNodeFinder] result set could not be closed");
+		     	resultCloseEx.printStackTrace(System.err);
+		    }
+		    // do not hide an existing exception
+		    try {
+		    	if (stmt != null)  {
+		    		stmt.close();
+					if (conn != null) {
+						if (pages != null) {
+							pages.freeConnection(conn);
+						}
+					}
+		    	}
+		    }
+	 	    catch (SQLException statementCloseEx) {
+		     	System.err.println("[TreeNodeFinder] statement could not be closed");
+		     	statementCloseEx.printStackTrace(System.err);
+		    }
+	    }		
 		return (ret);
 	}
 
@@ -181,6 +197,7 @@ public class TreeNodeFinder {
 		ICPage pages = null;
 		Connection conn = null;
 		Statement stmt = null;
+		ResultSet result = null;
 		try {
 			pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			conn = pages.getConnection();
@@ -204,7 +221,7 @@ public class TreeNodeFinder {
 			sql.append("')");
 			
 
-			ResultSet result = stmt.executeQuery(sql.toString());
+			result = stmt.executeQuery(sql.toString());
 
 			if (result != null) {
 				while (result.next()) {
@@ -221,17 +238,34 @@ public class TreeNodeFinder {
 				}
 			}
 		}
-		finally {
-			if (stmt != null) {
-				stmt.close();
-			}
-			if (conn != null) {
-				if (pages != null)
-					pages.freeConnection(conn);
-			}
-		}
-
-		return (ret);
+	    finally {
+	    	// do not hide an existing exception
+	    	try { 
+	    		if (result != null) {
+	    			result.close();
+		      	}
+	    	}
+		    catch (SQLException resultCloseEx) {		    	
+		    	System.err.println("[TreeNodeFinder] result set could not be closed");
+		     	resultCloseEx.printStackTrace(System.err);
+		    }
+		    // do not hide an existing exception
+		    try {
+		    	if (stmt != null)  {
+		    		stmt.close();
+					if (conn != null) {
+						if (pages != null) {
+							pages.freeConnection(conn);
+						}
+					}
+		    	}
+		    }
+	 	    catch (SQLException statementCloseEx) {
+		     	System.err.println("[TreeNodeFinder] statement could not be closed");
+		     	statementCloseEx.printStackTrace(System.err);
+		    }
+	    }
+	    return (ret);
 	}
 
 	public static List listOfAllDraftRelationships() {
