@@ -72,6 +72,10 @@ private String _colorString;
     int row = 1;
     int column = 1;
 
+    if ( iwc.isParameterSet("from_editor") ) {
+      form.maintainParameter("from_editor");
+    }
+
     Image image = formTable.getTransparentCell(iwc);
       image.setWidth(10);
       image.setHeight(10);
@@ -247,7 +251,10 @@ private String _colorString;
     formTable.setAlignment(column,row,Table.HORIZONTAL_ALIGN_RIGHT);
     formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("preview","Preview"),"preview"),column,row);
     formTable.add(Text.getNonBrakingSpace(),column,row);
-    formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("submit","Submit"),"submit"),column,row);
+    SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("submit","Submit"),"submit");
+    if ( iwc.isParameterSet("from_editor") )
+      submit.setOnClick("javascript:save()");
+    formTable.add(submit,column,row);
 
     form.add(formTable);
     return(form);
@@ -330,12 +337,25 @@ private String _colorString;
 	_colorString = color.getHexColorString();
     }
 
+    if ( iwc.isParameterSet("bgcolor") ) {
+      _colorString = "bgcolor";
+    }
+
     if ( iwc.isParameterSet(SCRIPT_PREFIX_PARAMETER) ) {
       iwc.setSessionAttribute(SCRIPT_PREFIX_PARAMETER,iwc.getParameter(SCRIPT_PREFIX_PARAMETER));
       iwc.setSessionAttribute(SCRIPT_SUFFIX_PARAMETER,iwc.getParameter(SCRIPT_SUFFIX_PARAMETER));
       iwc.setSessionAttribute(DISPLAYSTRING_PARAMETER_NAME,iwc.getParameter(DISPLAYSTRING_PARAMETER_NAME));
       iwc.setSessionAttribute(VALUE_PARAMETER_NAME,iwc.getParameter(VALUE_PARAMETER_NAME));
     }
+
+    if ( iwc.isParameterSet("from_editor") )
+      addScript();
+  }
+
+  private void addScript() {
+    Script script = getParentPage().getAssociatedScript();
+    script.addFunction("save","function save() { window.returnValue = "+this._colorString+"; window.close; }");
+    getParentPage().setAssociatedScript(script);
   }
 
   private void doBusiness(IWContext iwc,boolean remove) {
