@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.154 2004/06/24 20:12:25 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.155 2004/06/28 11:15:09 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -477,10 +477,6 @@ public class BuilderLogic {
 		//if(sID!=null){
 		return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(sID));
 		//}
-	}
-
-	public void setCurrentPriorityPageID(IWContext iwc, String pageId) {
-		iwc.setSessionAttribute(SESSION_PRIORITY_PAGE_KEY, pageId);
 	}
 
 	/**
