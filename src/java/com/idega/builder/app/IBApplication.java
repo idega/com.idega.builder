@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.84 2004/12/20 08:55:07 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.85 2005/02/16 09:33:51 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -172,7 +172,15 @@ public class IBApplication extends IWApplication {
 	 */
 	public void main(IWContext iwc) {
 		startIBApplication(iwc);
-		add(IBBanner.class);
+		
+	    IWMainApplication iwma = iwc.getIWMainApplication();
+	    if(iwma.getProductInfo().isMajorVersionEqualOrHigherThan(3)){
+	    		//Not add the top for new versions
+	    }
+	    else{
+			add(IBBanner.class);
+	    }
+	    
 		if (iwc.getParameter("toolbar") != null) {
 			iwc.setSessionAttribute("toolbar", iwc.getParameter("toolbar"));
 		}
