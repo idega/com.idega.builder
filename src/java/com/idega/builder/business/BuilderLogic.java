@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.59 2001/10/30 17:41:40 palli Exp $
+ * $Id: BuilderLogic.java,v 1.60 2001/10/31 11:56:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -302,6 +302,7 @@ public class BuilderLogic {
     else if(obj instanceof PresentationObjectContainer){
       if(obj instanceof Table){
         Table tab = (Table)obj;
+        tab.setBorder(1);
         int cols = tab.getColumns();
         int rows = tab.getRows();
         for (int x=1;x<=cols ;x++ ) {
