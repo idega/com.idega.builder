@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.12 2001/10/08 21:04:18 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.13 2001/10/10 10:37:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import com.idega.builder.data.IBPage;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.Page;
@@ -355,5 +356,30 @@ public class IBXMLPage {
    */
   public String getType() {
     return(_type);
+  }
+
+
+  public void setSourceFromString(String xmlRepresentation)throws Exception{
+    StringReader reader = new StringReader(xmlRepresentation);
+    SAXBuilder builder = new SAXBuilder();
+    Document doc = builder.build(reader);
+    this._rootElement = doc.getRootElement();
+    this._xmlDocument.setRootElement(_rootElement);
+    update();
+  }
+
+  public String toString(){
+    Element root = getRootElement();
+    if(root!=null){
+      try{
+        XMLOutputter outputter = new XMLOutputter();
+        return outputter.outputString(root);
+      }
+      catch(Exception e){
+        e.printStackTrace();
+        return super.toString();
+      }
+    }
+    return super.toString();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.39 2001/10/09 18:36:07 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.40 2001/10/10 10:37:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -405,6 +405,15 @@ public class BuilderLogic {
     }
     else
       return theReturn;
+  }
+
+
+  public IBXMLPage getCurrentIBXMLPage(IWContext iwc){
+    String key = getCurrentIBPage(iwc);
+    if(key!=null){
+      return this.getIBXMLPage(key);
+    }
+    return null;
   }
 
   public  PresentationObject getAddIcon(String parentKey,IWContext iwc){

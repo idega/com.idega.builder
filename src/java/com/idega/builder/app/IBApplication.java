@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.18 2001/10/09 18:38:49 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.19 2001/10/10 10:37:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBDeletePageWindow;
 import com.idega.builder.presentation.IBSaveAsPageWindow;
 import com.idega.builder.presentation.IBSavePageWindow;
+import com.idega.builder.presentation.IBSourceView;
 import com.idega.presentation.app.IWApplication;
 import com.idega.presentation.app.IWApplicationComponent;
 import com.idega.presentation.FrameSet;
@@ -420,7 +421,7 @@ public class IBApplication extends IWApplication {
         text1.setFontSize(1);
         text1.setFontColor("Black");
 
-        Table toolTable = new Table(2,1);
+        Table toolTable = new Table(3,1);
         toolTable.setCellpadding(0);
         toolTable.setCellspacing(0);
 
@@ -433,6 +434,13 @@ public class IBApplication extends IWApplication {
         previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
         previewLink.setURL(com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL);
         toolTable.add(previewLink,2,1);
+
+        //Link sourceLink = new Link(_iwrb.getImage("editorwindow/source.gif"));
+        Link sourceLink = new Link("Source");
+        sourceLink.setWindowToOpen(IBSourceView.class);
+        toolTable.add(sourceLink,3,1);
+
+
 
         toolbarTable.add(toolTable,1,1);
         toolbarTable.add(text1,2,1);
