@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.44 2004/06/28 14:07:44 thomas Exp $
+ * $Id: IBPropertyHandler.java,v 1.45 2004/08/05 18:07:24 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -650,10 +650,9 @@ public class IBPropertyHandler {
 		IWPropertyList component = iwb.getComponentPropertyList(componentIdentifier);
 		IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
 		IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
-		if (method != null) {
-			return false;
+		if (method == null) {
+			method = methodList.getNewPropertyList(methodIdentifier);
 		}
-		method = methodList.getNewPropertyList(methodIdentifier);
 		Map options = new Hashtable();
 		options.put(METHOD_PROPERTY_DESCRIPTION, description);
 		options.put(METHOD_PROPERTY_ALLOW_MULTIVALUED, new Boolean(isMultivalued));
@@ -667,10 +666,7 @@ public class IBPropertyHandler {
 			parameters.put(new Integer(i), paramMap);
 			paramMap.put(METHOD_PARAMETER_PROPERTY_DESCRIPTION, desc);
 			paramMap.put(METHOD_PARAMETER_PROPERTY_HANDLER_CLASS, handler);
-			boolean primaryKey = primaryKeys[i];
-			if (primaryKey) {
-				paramMap.put(METHOD_PARAMETER_PROPERTY_PRIMARY_KEY, Boolean.TRUE);
-			}
+			paramMap.put(METHOD_PARAMETER_PROPERTY_PRIMARY_KEY, new Boolean(primaryKeys[i]));
 		}
 		method.setProperties(options);
 		return true;
