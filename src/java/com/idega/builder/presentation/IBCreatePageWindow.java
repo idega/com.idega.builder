@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.5 2001/09/18 17:19:45 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.6 2001/09/18 22:53:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,8 +93,13 @@ public class IBCreatePageWindow extends IWAdminWindow {
         else
           ibPage.setType(IBPage.PAGE);
 
-        if (templateId != null)
-          ibPage.setTemplateId(Integer.parseInt(templateId));
+        int tid = -1;
+        try {
+          tid = Integer.parseInt(templateId);
+          ibPage.setTemplateId(tid);
+        }
+        catch(java.lang.NumberFormatException e) {
+        }
 
         ibPage.insert();
         IBPage ibPageParent = new IBPage(Integer.parseInt(pageId));
