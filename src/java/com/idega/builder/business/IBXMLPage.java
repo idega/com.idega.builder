@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.3 2001/09/18 17:19:45 palli Exp $
+ * $Id: IBXMLPage.java,v 1.4 2001/09/18 22:28:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,17 +15,14 @@ import org.jdom.Element;
 import org.jdom.Attribute;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
-
 import java.util.List;
 import java.util.Iterator;
-
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-
 import com.idega.builder.data.IBPage;
 
 import com.idega.exception.PageDoesNotExist;
@@ -42,7 +39,6 @@ import com.idega.jmodule.object.Page;
  */
 
 public class IBXMLPage {
-
   private SAXBuilder builder = null;
   private Document xmlDocument = null;
   private Element rootElement = null;
@@ -58,7 +54,7 @@ public class IBXMLPage {
     setXMLPageDescriptionFile(stream);
   }*/
 
-  public IBXMLPage(boolean verify,String key){
+  public IBXMLPage(boolean verify, String key) {
     this(verify);
     this.key = key;
 
@@ -68,11 +64,20 @@ public class IBXMLPage {
         setXMLPageDescriptionFile(ibpage.getPageValue());
       }
       catch(PageDoesNotExist pe) {
-
+        int template = ibpage.getTemplateId();
+        String templateString = null;
+        if (template != -1)
+          templateString = Integer.toString(template);
         if (ibpage.getType().equals(ibpage.PAGE))
-          setPageAsEmptyPage(null,null);
+          setPageAsEmptyPage(XMLConstants.PAGE_TYPE_PAGE,templateString);
+        if (ibpage.getType().equals(ibpage.DRAFT))
+          setPageAsEmptyPage(XMLConstants.PAGE_TYPE_DRAFT,templateString);
+        if (ibpage.getType().equals(ibpage.TEMPLATE))
+          setPageAsEmptyPage(XMLConstants.PAGE_TYPE_TEMPLATE,templateString);
+        else
+          setPageAsEmptyPage(XMLConstants.PAGE_TYPE_PAGE,templateString);
       }
-      catch(NumberFormatException ne){
+      catch(NumberFormatException ne) {
         try{
           InputStream stream = new FileInputStream(key);
           setXMLPageDescriptionFile(stream);
