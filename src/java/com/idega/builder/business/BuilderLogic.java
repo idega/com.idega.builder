@@ -15,6 +15,7 @@ import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBDeleteModuleWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
+import com.idega.builder.presentation.IBLockRegionWindow;
 
 import com.idega.core.data.ICObject;
 
@@ -50,6 +51,8 @@ public class BuilderLogic{
     public static final String ACTION_EDIT ="ACTION_EDIT";
     public static final String ACTION_ADD ="ACTION_ADD";
     public static final String ACTION_MOVE ="ACTION_MOVE";
+    public static final String ACTION_LOCK_REGION ="ACTION_LOCK";
+    public static final String ACTION_UNLOCK_REGION ="ACTION_UNLOCK";
     public static final String ACTION_PERMISSION ="ACTION_PERMISSION";
 
     public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
@@ -124,7 +127,10 @@ public class BuilderLogic{
         }
       }
       //"-1" is identified as the top page object (parent)
-      page.add(getAddIcon(Integer.toString(-1),modinfo));
+      if (!page.isLocked())
+        page.add(getAddIcon(Integer.toString(-1),modinfo));
+      if (page.getIsTemplate())
+        page.add(getLockIcon(Integer.toString(-1),modinfo));
       return page;
   }
 
@@ -178,7 +184,10 @@ public class BuilderLogic{
               if(moc!=null){
                 transformObject(pageKey,moc,-1,tab,newParentKey,modinfo);
               }
-              tab.add(getAddIcon(newParentKey,modinfo),x,y);
+              if (!tab.isLocked(x,y))
+                tab.add(getAddIcon(newParentKey,modinfo),x,y);
+              if (tab.getParentPage().getIsTemplate())
+                tab.add(getLockIcon(newParentKey,modinfo),x,y);
           }
         }
       }
@@ -202,13 +211,16 @@ public class BuilderLogic{
           }
         }
 
-        if(index!=-1){
-          ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+        if (index != -1) {
+          if (!((ModuleObjectContainer)obj).isLocked())
+            ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+          if (obj.getParentPage().getIsTemplate())
+            ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
         }
       }
     }
 
-    if(useBuilderObjectControl){
+    if (useBuilderObjectControl) {
       if(index != -1){
         //parent.remove(obj);
         //parent.add(new BuilderObjectControl(obj,parent));
@@ -237,6 +249,30 @@ public class BuilderLogic{
     link.addParameter(ib_parent_parameter,parentKey);
 
     return link;
+  }
+
+  public ModuleObject getLockIcon(String parentKey, ModuleInfo modinfo) {
+    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image lockImage = bundle.getImage("las_open.gif","Lock region");
+    Link link = new Link(lockImage);
+    link.setWindowToOpen(IBLockRegionWindow.class);
+    link.addParameter(ib_page_parameter,"1");
+    link.addParameter(ib_control_parameter,ACTION_LOCK_REGION);
+    link.addParameter(ib_parent_parameter,parentKey);
+
+    return(link);
+  }
+
+  public ModuleObject getUnlockIcon(String parentKey, ModuleInfo modinfo) {
+    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image lockImage = bundle.getImage("las_close.gif","Unlock region");
+    Link link = new Link(lockImage);
+    link.setWindowToOpen(IBLockRegionWindow.class);
+    link.addParameter(ib_page_parameter,"1");
+    link.addParameter(ib_control_parameter,ACTION_UNLOCK_REGION);
+    link.addParameter(ib_parent_parameter,parentKey);
+
+    return(link);
   }
 
   public  ModuleObject getDeleteIcon(int key,String parentKey,ModuleInfo modinfo){
@@ -348,56 +384,78 @@ public class BuilderLogic{
 
 
   public String getProperty(String pageKey,int ObjectInstanceId,String propertyName){
-      IBXMLPage xml = getIBXMLPage(pageKey);
-      return XMLWriter.getProperty(xml,ObjectInstanceId,propertyName);
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    return XMLWriter.getProperty(xml,ObjectInstanceId,propertyName);
   }
 
 
   public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String propertyValue){
-      IBXMLPage xml = getIBXMLPage(pageKey);
-      if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValue)){
-        //System.out.println("propertyName="+propertyName);
-        //System.out.println("propertyValue="+propertyValue);
-        xml.update();
-        return true;
-      }
-      else{
-        System.out.println("SetProperty failed for ic_object_instance_id="+ObjectInstanceId);
-        return false;
-      }
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValue)){
+      //System.out.println("propertyName="+propertyName);
+      //System.out.println("propertyValue="+propertyValue);
+      xml.update();
+      return true;
+    }
+    else{
+      System.out.println("SetProperty failed for ic_object_instance_id="+ObjectInstanceId);
+      return false;
+    }
   }
 
   public boolean deleteModule(String pageKey,String parentObjectInstanceID,int ICObjectInstanceID){
-      IBXMLPage xml = getIBXMLPage(pageKey);
-      if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)){
-        xml.update();
-        return true;
-      }
-      else{
-        return false;
-      }
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)){
+      xml.update();
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  public boolean lockRegion(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    if (XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)) {
+      xml.update();
+      return true;
+    }
+
+    return(false);
+  }
+
+  public boolean unlockRegion(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
+/*    IBXMLPage xml = getIBXMLPage(pageKey);
+    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)){
+      xml.update();
+      return true;
+    }
+    else {
+      return false;
+    }*/
+    return(false);
   }
 
   public boolean addNewModule(String pageKey,String parentObjectInstanceID,int newICObjectID){
-      IBXMLPage xml = getIBXMLPage(pageKey);
-      if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newICObjectID)){
-        xml.update();
-        return true;
-      }
-      else{
-        return false;
-      }
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newICObjectID)){
+      xml.update();
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 
   public boolean addNewModule(String pageKey,String parentObjectInstanceID,ICObject newObjectType){
-      IBXMLPage xml = getIBXMLPage(pageKey);
-      if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newObjectType)){
-        xml.update();
-        return true;
-      }
-      else{
-        return false;
-      }
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newObjectType)){
+      xml.update();
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 
 
