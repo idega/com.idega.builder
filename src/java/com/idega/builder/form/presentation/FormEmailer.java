@@ -153,6 +153,7 @@ public class FormEmailer extends Block {
 			com.idega.util.SendMail.send(emailFrom, emailToSendTo, "", "", emailServer, subject, bodyText, uploadFile);
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			com.idega.util.SendMail.send(senderEmail, emailToSendTo, "", "", emailServer, subject, bodyText, uploadFile);
 		}
 		cleanUpFromSession(iwc);
