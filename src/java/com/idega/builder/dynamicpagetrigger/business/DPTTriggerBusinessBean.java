@@ -24,6 +24,7 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Link;
@@ -112,9 +113,12 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   public void removeRuleFromInstance(ICObjectInstance icoi, int icoiID) throws SQLException{
     icoi.removeFrom(PageTriggerInfo.class,icoiID);
   }
+  
+//  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws SQLException {
+//  	
+//  }
 
-
-  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws SQLException {
+  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws Exception {
     PageLink pl = ((com.idega.builder.dynamicpagetrigger.data.PageLinkHome)com.idega.data.IDOLookup.getHomeLegacy(PageLink.class)).createLegacy();
 
     pl.setPageTriggerInfoId(pti.getID());
@@ -271,8 +275,12 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   }
 
 
-  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name) throws SQLException{
-    return createPage(iwc, dptTemplateId, parentId, name, new Hashtable());
+  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name) throws Exception{
+    DPTCopySession cSession = ((DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class));
+  	cSession.startCopySession();
+    int pageID = createPage(iwc, dptTemplateId, parentId, name, new Hashtable());
+    cSession.endCopySession();
+    return pageID;
   }
 
 
@@ -389,7 +397,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   }
 
 
-  public boolean addObjectInstancToSubPages(ICObjectInstance objectTemplate){
+  public boolean addObjectInstancToSubPages(ICObjectInstance objectTemplate,IWUserContext iwuc){
     System.out.println("addObjectInstancToSubPages begins");
     List pages = IBPageFinder.getAllPagesExtendingTemplate(objectTemplate.getIBPageID());
     if(pages != null){
@@ -400,7 +408,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
         System.out.println("-----------");
         System.out.println("addObjectInstancToSubPages - addElementToPage : "+counter++);
         ICPage item = (ICPage)iter.next();
-        IBPageHelper.getInstance().addElementToPage(item,objectTemplate.getID());
+        IBPageHelper.getInstance().addElementToPage(item,objectTemplate.getID(),iwuc);
       }
     }else {
       System.out.println("addObjectInstancToSubPages - pages == null");
@@ -409,9 +417,9 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     return(true);
   }
 
-  public boolean addObjectInstancToSubPages(int templateObjectInstanceID) throws SQLException{
+  public boolean addObjectInstancToSubPages(int templateObjectInstanceID,IWUserContext iwuc) throws SQLException{
     ICObjectInstance objinst = (ICObjectInstance)com.idega.data.IDOLookup.findByPrimaryKeyLegacy(ICObjectInstance.class,templateObjectInstanceID);
-    return addObjectInstancToSubPages(objinst);
+    return addObjectInstancToSubPages(objinst,iwuc);
   }
 
 

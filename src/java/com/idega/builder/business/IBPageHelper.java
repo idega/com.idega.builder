@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.31 2004/03/25 15:42:31 thomas Exp $
+ * $Id: IBPageHelper.java,v 1.32 2004/05/05 12:49:07 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,9 @@ import javax.ejb.FinderException;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
+import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
@@ -228,7 +231,7 @@ public class IBPageHelper {
 				Iterator it = children.iterator();
 				while (it.hasNext()) {
 					PresentationObject obj = (PresentationObject) it.next();
-					boolean ok = changeInstanceId(obj, currentXMLPage, true);
+					boolean ok = changeInstanceId(obj, currentXMLPage, true,creatorContext);
 					if (!ok) {
 //						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
 						return (-1);
@@ -258,8 +261,8 @@ public class IBPageHelper {
 		}
 		return (id);
 	}
-	public boolean addElementToPage(ICPage ibPage, int[] templateObjInstID) {
-		//		System.out.println("addElementToPage begins");
+	public boolean addElementToPage(ICPage ibPage, int[] templateObjInstID, IWUserContext iwuc) {
+		System.out.println("addElementToPage begins");
 		if (templateObjInstID != null) {
 			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
 			Page current = currentXMLPage.getPopulatedPage();
@@ -270,9 +273,9 @@ public class IBPageHelper {
 					PresentationObject obj = (PresentationObject) it.next();
 					for (int i = 0; i < templateObjInstID.length; i++) {
 						if (obj.getICObjectInstanceID() == templateObjInstID[i]) {
-							boolean ok = changeInstanceId(obj, currentXMLPage, true);
+							boolean ok = changeInstanceId(obj, currentXMLPage, true,iwuc);
 							if (!ok) {
-								//								System.out.println("addElementToPage - changeInstanceId failed");
+								System.out.println("addElementToPage - changeInstanceId failed");
 								return false;
 							}
 						}
@@ -291,17 +294,17 @@ public class IBPageHelper {
 		//		System.out.println("addElementToPage ends");
 		return true;
 	}
-	public boolean addElementToPage(ICPage ibPage, int templateObjInstID) {
+	public boolean addElementToPage(ICPage ibPage, int templateObjInstID, IWUserContext iwuc) {
 		int[] ids = new int[1];
 		ids[0] = templateObjInstID;
-		return addElementToPage(ibPage, ids);
+		return addElementToPage(ibPage, ids,iwuc);
 	}
-	private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
-//		System.out.println("changeInstanceId begins");
-//		System.out.println("obj.name = " + obj.getName());
-//		System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
-//		System.out.println("obj.getId = " + obj.getICObjectID());
-//		System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
+	private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions, IWUserContext iwuc) {
+		System.out.println("changeInstanceId begins");
+		System.out.println("obj.name = " + obj.getName());
+		System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
+		System.out.println("obj.getId = " + obj.getICObjectID());
+		System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
 		if (obj.getChangeInstanceIDOnInheritance()) {
 			int object_id = obj.getICObjectID();
 			int ic_instance_id = obj.getICObjectInstanceID();
@@ -320,14 +323,21 @@ public class IBPageHelper {
 				}
 			}
 			catch (Exception e) {
-//				System.out.println("changeInstanceId - exception");
+				System.out.println("changeInstanceId - exception");
 				e.printStackTrace();
 				return false;
 			}
 			if (obj instanceof Builderaware) {
-				boolean ok = ((Builderaware) obj).copyBlock(instance.getID());
-				if (!ok) {
-//					System.out.println("changeInstanceId - copyBlock failed");
+				try {
+					DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwuc,DPTCopySession.class);
+					boolean ok = ((Builderaware) obj).copyBlock(instance.getID(),cSession);
+					if (!ok) {
+						System.out.println("changeInstanceId - copyBlock failed");
+						return false;
+					}
+				} catch (IBOLookupException e1) {
+					e1.printStackTrace();
+					System.out.println("changeInstanceId - copyBlock failed");
 					return false;
 				}
 			}
@@ -338,7 +348,7 @@ public class IBPageHelper {
 			element.setAttribute(to);
 			XMLWriter.addNewElement(xmlpage, -1, element);
 		}
-		//		System.out.println("changeInstanceId ends");
+		System.out.println("changeInstanceId ends");
 		return true;
 	}
 	/**

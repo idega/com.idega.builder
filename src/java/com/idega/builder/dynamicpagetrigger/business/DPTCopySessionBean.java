@@ -4,6 +4,7 @@
 package com.idega.builder.dynamicpagetrigger.business;
 
 import com.idega.business.IBOSessionBean;
+import com.idega.util.datastructures.HashMatrix;
 
 
 /**
@@ -16,8 +17,13 @@ import com.idega.business.IBOSessionBean;
  * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
-public class DPTCopySessionBean extends IBOSessionBean {
-
+public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession {
+	
+	private boolean runingSession = false;
+	
+	private HashMatrix matrix = null;
+	
+	
 	/**
 	 * 
 	 */
@@ -27,30 +33,55 @@ public class DPTCopySessionBean extends IBOSessionBean {
 	
 	
 	
-	public void startCopySession(String sessionKey) {
-		
+	public void startCopySession() throws Exception {
+		if(runingSession) {
+			throw new Exception("Not allowed to run more than one copySession at ones.");
+		} else {
+			runingSession = true;
+			matrix = new HashMatrix();
+		}
 	}
 	
-	public void endCopySession(String sessionKey) {
-		
+	public void endCopySession() {
+		if(runingSession) {
+			runingSession = false;
+			matrix = null;
+		} else {
+			System.out.println("No copySession to end.  Either it has not started or already ended.");
+		}
 	}
 	
 	/**
+	 * This method can be used inside of a Builderaware object e.g. to find out which existing category to use or if it should create a new one
 	 * 
-	 * @param sessionKey some key generated in DPTTriggerBusiness or passed into it.  Used to prevent mixing data when possiby generating more than one tree at a time.
 	 * @param dataClass
 	 * @param oldValue
 	 * @return Returns a stored primarykey value if the oldvalue has been stored else it returns null
 	 */
 	
-	public String getNewValue(String sessionKey,Class dataClass, String oldValue) {
-		
-		
+	public Object getNewValue(Class dataClassKey, Object oldValue) {
+		if(sessionIsRunnig()) {
+			return matrix.get(dataClassKey,oldValue);
+		}
 		return null;
 	}
 	
-	public void setNewValue(String sessionKey, Class dataclass, String oldValue, String newValue) {
+	public void setNewValue(Class dataClassKey, Object oldValue, Object newValue) {
+		if(sessionIsRunnig()) {
+			matrix.put(dataClassKey,oldValue,newValue);
+		}
+	}
+	
+	/**
+	 * 
+	 * @return is copySession running
+	 */
+	private boolean sessionIsRunnig() {
+		if(!runingSession) {
+			System.out.println("[WARNING]: trying to use "+this.getClass().getName()+" but no copySession has started.");
+		}
 		
+		return runingSession;
 	}
 	
 	
