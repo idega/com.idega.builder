@@ -9,8 +9,9 @@ import java.util.Map;
 
 import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.XMLConstants;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
@@ -29,13 +30,13 @@ public class IBReferences {
 	
 	private Map moduleReference = null;
 	
-	public IBReferences(IWMainApplication iwac) throws IOException  {
-		initialize(iwac);
+	public IBReferences(IWContext iwc) throws IOException  {
+		initialize(iwc);
 	}
 	
-	private void initialize(IWMainApplication iwac) throws IOException {
+	private void initialize(IWContext iwc) throws IOException {
 		moduleReference = new HashMap();
-		IWBundle bundle = IWBundle.getBundle(IBApplication.IB_BUNDLE_IDENTIFIER, iwac);
+		IWBundle bundle = IWBundle.getBundle(IBApplication.IB_BUNDLE_IDENTIFIER, iwc.getIWMainApplication());
 		String exportDefinitionPath = bundle.getRealPathWithFileNameString(EXPORT_DEFINITION);
 		XMLData exportDefinition = XMLData.getInstanceForFile(exportDefinitionPath);
 		XMLElement root = exportDefinition.getDocument().getRootElement();
@@ -43,7 +44,7 @@ public class IBReferences {
 		Iterator iterator = children.iterator();
 		while (iterator.hasNext()) {
 			XMLElement module = (XMLElement) iterator.next();
-			IBReference reference = new IBReference(module);
+			IBReference reference = new IBReference(module, iwc);
 			moduleReference.put(reference.getModuleClass(), reference);
 		}
 	}
@@ -56,18 +57,24 @@ public class IBReferences {
 			return null;
 		}
 		String name = metaDataFileElement.getTextTrim(XMLConstants.FILE_NAME);
+		String value = metaDataFileElement.getTextTrim(XMLConstants.FILE_VALUE);
 		IBReference.Entry entry = reference.getReferenceByName(name);
-		return entry.createSource();
+		return entry.createSource(value);
 	}
 		
 			
 	
 	public void checkElementForReferencesNoteNecessaryModules(XMLElement element,IBExportImportData metadata) throws IOException {
 		String nameOfElement = element.getName();
-		// is it a module?
-		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement)) {
+		// is it a module or a page?
+		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement) || 
+				XMLConstants.PAGE_STRING.equalsIgnoreCase(nameOfElement)) {
 			// ask for the class
 			String moduleClass = element.getAttributeValue(XMLConstants.CLASS_STRING);
+			// special case: pages aren't modules
+			if (moduleClass == null) {
+				moduleClass = ICPage.class.getName();
+			}
 			// mark the module as necessary
 			metadata.addNecessaryModule(moduleClass);
 			if (moduleReference.containsKey(moduleClass)) {

@@ -15,7 +15,9 @@ import com.idega.data.IDOEntity;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.io.Storable;
+import com.idega.io.export.Storable;
+import com.idega.io.export.StorableProvider;
+import com.idega.presentation.IWContext;
 import com.idega.xml.XMLElement;
 
 /**
@@ -29,10 +31,12 @@ import com.idega.xml.XMLElement;
  */
 public class IBReference {
 	
+	protected IWContext iwc = null;
 	private Map nameEntries = null;
 	protected String moduleClass = null;
 
-	public IBReference(XMLElement moduleElement) {
+	public IBReference(XMLElement moduleElement, IWContext iwc) {
+		this.iwc = iwc;
 		initialize(moduleElement);
 	}
 	
@@ -69,7 +73,6 @@ public class IBReference {
 		private String valueName = null;
 		private String sourceClassName = null;
 		private String providerClassName = null;
-		//private String providerMethodName = null;
 		private boolean isEjb = false;
 		
 		public void initialize(XMLElement propertyElement) {
@@ -78,7 +81,6 @@ public class IBReference {
 			XMLElement providerElement = propertyElement.getChild(XMLConstants.EXPORT_PROVIDER);
 			isEjb = (new Boolean(providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_EJB))).booleanValue();
 			providerClassName = providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_CLASS);
-			//providerMethodName = providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_METHOD);
 		}
 		
 		public String getModuleClass() {
@@ -93,18 +95,18 @@ public class IBReference {
 				String valueName = propertyElement.getTextTrim(XMLConstants.NAME_STRING);
 				if (this.valueName.equalsIgnoreCase(valueName)) {
 					// right propertyElement has been found
+					String value = propertyElement.getTextTrim(XMLConstants.VALUE_STRING);
+					Storable storable = null;
 					if (isEjb) {
-						String value = propertyElement.getTextTrim(XMLConstants.VALUE_STRING);
-						Storable storable = getSourceFromPropertyElementUsingEjb(value);
-						metadata.addFileEntry(this, storable, value);
-						return;
+						storable = getSourceFromPropertyElementUsingEjb(value);
 					}
 					else {
-						// not yet implemented
+						storable = getSourceFromPropertyElementUsingProvider(value);
 					}
+					metadata.addFileEntry(this, storable, value);
+					return;
 				}
 			}
-			throw new IOException("[IBReference] Source could not be found");
 		}
 
 		private Storable getSourceFromPropertyElementUsingEjb(String value) throws IOException {
@@ -114,20 +116,40 @@ public class IBReference {
 				return (Storable) home.findByPrimaryKeyIDO(new Integer(value));
 			}
 			catch (ClassNotFoundException ex) {
-				throw new IOException("[IBReference] Provider class doesn't exist");
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't exist");
 			}
 			catch (IDOLookupException ex) {
-				throw new IOException("[IBReference] Provider class could not be found (Look up problem)");
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be found (Look up problem)");
 			}
 			catch (NumberFormatException ex) {
-				throw new IOException("[IBReference] Identifier is not a number");
+				throw new IOException("[IBReference] Identifier is not a number:" + value + "Provider is: " + providerClassName); 
 			}
 			catch (FinderException ex) {
-				throw new IOException("[IBReference] Instance with identifier" + value + "could not be found");
+				throw new IOException("[IBReference] Instance with identifier" + value + "could not be found. Provider is: " + providerClassName);
 			}
 		}
 		
-					
+		private Storable getSourceFromPropertyElementUsingProvider(String value) throws IOException {
+			try {
+				Class providerClass = Class.forName(providerClassName);
+				// get an instance
+				StorableProvider provider = (StorableProvider) providerClass.newInstance();
+				return provider.getSource(value, iwc);
+			}
+			catch (ClassCastException e) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't implement StorableProvider");
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't exist");
+			}
+			catch (InstantiationException e) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated");
+			} 
+			catch (IllegalAccessException e) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated (illegal access)");
+			} 
+		}
+		
 //		use the code below if the simple solution above is not sufficient.
 //    at the moment the code below seems to be an overkill.
 //		private Storable getSourceFromPropertyElementUsingEjb(XMLElement propertyElement) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IDOLookupException, ClassNotFoundException {
@@ -144,14 +166,13 @@ public class IBReference {
 //			return (Storable) method.invoke(home, parameters);
 //		}
 			
-		public StorableHolder createSource() throws IOException {
+		public StorableHolder createSource(String value) throws IOException {
 			if (isEjb) {
 				return createSourceUsingEjb();
 			}
 			else {
-				// not yet implemented
+				return createSourceUsingProvider(value);
 			}
-			throw new IOException("[IBReference] Source could not be found");
 		}
 		
 		private StorableHolder createSourceUsingEjb() throws IOException {
@@ -176,6 +197,27 @@ public class IBReference {
 			}
 		}
 			
+		private StorableHolder createSourceUsingProvider(String value) throws IOException {
+			try {
+				Class providerClass = Class.forName(providerClassName);
+				// get an instance
+				StorableProvider provider = (StorableProvider) providerClass.newInstance();
+				return provider.createSource(value, iwc);
+			}
+			catch (ClassCastException e) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't implement StorableProvider");
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't exist");
+			}
+			catch (InstantiationException e) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated");
+			} 
+			catch (IllegalAccessException e) {
+				throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated (illegal access)");
+			} 
+		}
+
 
 			
 		
