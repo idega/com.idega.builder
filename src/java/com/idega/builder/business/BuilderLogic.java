@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.82 2001/12/13 12:13:32 palli Exp $
+ * $Id: BuilderLogic.java,v 1.83 2001/12/17 15:48:39 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -53,7 +53,7 @@ import com.idega.core.data.GenericGroup;
 import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
-
+import java.util.StringTokenizer;
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -1133,7 +1133,17 @@ public class BuilderLogic {
 
 
   public PresentationObject[] getIWPOListeners(IWContext iwc){
-    String[] coordinates = iwc.getParameterValues(this.IB_OBJECT_INSTANCE_COORDINATE);
+    String prm = iwc.getParameter(this.IB_OBJECT_INSTANCE_COORDINATE);
+    String[] coordinates = null;
+    if(prm != null){
+      StringTokenizer tokens = new StringTokenizer(prm,",");
+      coordinates = new String[tokens.countTokens()];
+      int index = 0;
+      while (tokens.hasMoreTokens()) {
+        coordinates[index++] = tokens.nextToken();
+      }
+    }
+
     if(coordinates != null && coordinates.length > 0){
       List l = new Vector();
       for (int i = 0; i < coordinates.length; i++) {
@@ -1150,12 +1160,21 @@ public class BuilderLogic {
         }
       }
       PresentationObject[] toReturn = (PresentationObject[])l.toArray(new PresentationObject[0]);
+
       if(toReturn.length > 0){
+        /*
+        System.err.println("BuilderLogic Listeners");
+        for (int i = 0; i < toReturn.length; i++) {
+          System.err.println(" - "+toReturn[i].getParentPageID()+"_"+toReturn[i].getICObjectInstanceID());
+        }*/
+
         return toReturn;
       }else{
+        //System.err.println("BuilderLogic Listeners are null");
         return null;
       }
     } else{
+      //System.err.println("BuilderLogic Listeners are null");
       return null;
     }
   }

@@ -6,6 +6,7 @@ import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
+import com.idega.builder.business.BuilderLogic;
 
 import com.idega.business.GenericEntityComparator;
 import java.util.Collections;
@@ -135,5 +136,29 @@ public class DPTriggerBusiness {
       return null;
     }
   }
+
+
+
+  public int triggerPage(int dptTemplateId, String name) throws SQLException{
+    BuilderLogic instance = BuilderLogic.getInstance();
+
+    IBPage page = new IBPage();
+    page.setName(name);
+    page.setType(IBPage.DPT_PAGE);
+    page.insert();
+
+    //instance.unlockRegion(Integer.toString(page.getID()),"-1",null);
+
+    page.setTemplateId(dptTemplateId);
+    page.update();
+
+    instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
+    instance.getIBXMLPage(dptTemplateId).addUsingTemplate(Integer.toString(page.getID()));
+
+    return page.getID();
+  }
+
+
+
 
 }

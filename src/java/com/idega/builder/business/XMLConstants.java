@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.8 2001/12/03 16:17:57 palli Exp $
+ * $Id: XMLConstants.java,v 1.9 2001/12/17 15:48:39 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,8 @@ public abstract class XMLConstants {
   static final String PAGE_TYPE_PAGE = "page";
   static final String PAGE_TYPE_DRAFT = "draft";
   static final String PAGE_TYPE_TEMPLATE = "template";
+  static final String PAGE_TYPE_DPT_TEMPLATE = "dpt_template";
+  static final String PAGE_TYPE_DPT_PAGE = "dpt_page";
 
   static final String FRAGMENT_TYPE_LIBRARY = "library";
   static final String FRAGMENT_TYPE_CLIPBOARD = "clipboard";
