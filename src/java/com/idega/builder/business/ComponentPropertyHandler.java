@@ -97,7 +97,12 @@ public class ComponentPropertyHandler {
     static Object handleParameter(Class parameterType,String stringValue){
         Object argument=null;
         if(parameterType.equals(Integer.class) || parameterType.equals(Integer.TYPE)){
+          try{
             argument = new Integer(stringValue);
+          }
+          catch(NumberFormatException e){
+            e.printStackTrace(System.out);
+          }
         }
         else if(parameterType.equals(String.class)){
             argument =  stringValue;

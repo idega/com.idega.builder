@@ -243,8 +243,10 @@ public class IBPropertiesWindowSetter extends Page {
         String sParamDescription = paramDescriptions[i];
         PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,icObjectInstanceID,methodIdentifier,i,parameterClass,sName,sValue);
         Parameter param = new Parameter(VALUE_PARAMETER,sName);
-        Text tDescription = formatDescription(sParamDescription);
-        table.add(tDescription,1,ypos);
+        if(sParamDescription!=null){
+          Text tDescription = formatDescription(sParamDescription);
+          table.add(tDescription,1,ypos);
+        }
         table.add(param,2,ypos);
         table.add(handlerBox,2,ypos);
         ypos++;

@@ -65,7 +65,7 @@ public class IBDomain extends GenericEntity {
     domain.setName("Default Site");
 
     IBPage page = new IBPage();
-    page.setName("Default Site");
+    page.setName("Web root");
     page.setType(IBPage.PAGE);
     page.insert();
 

@@ -22,6 +22,7 @@ public class ColorHandler implements PropertyHandler {
   public List getDefaultHandlerTypes(){
     return null;
   }
+
   public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
     /*DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");

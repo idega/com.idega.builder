@@ -15,9 +15,9 @@ import com.idega.presentation.text.Text;
  * @version 1.0
  */
 
-public class FontHandler implements PropertyHandler {
+public class FontStyleHandler implements PropertyHandler {
 
-  public FontHandler() {
+  public FontStyleHandler() {
   }
   public List getDefaultHandlerTypes() {
     return null;
@@ -25,11 +25,9 @@ public class FontHandler implements PropertyHandler {
   public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
-    menu.addMenuElement(Text.FONT_FACE_ARIAL,"Arial-Helvetica");
-    menu.addMenuElement(Text.FONT_FACE_TIMES,"Times");
-    menu.addMenuElement(Text.FONT_FACE_COURIER,"Courier");
-    menu.addMenuElement(Text.FONT_FACE_GENEVA,"Geneva");
-    menu.addMenuElement(Text.FONT_FACE_VERDANA,"Verdana");
+    menu.addMenuElement(Text.FONT_FACE_STYLE_BOLD,"Bold");
+    menu.addMenuElement(Text.FONT_FACE_STYLE_ITALIC,"Italic");
+    //menu.addMenuElement(Text.FONT_FACE_STYLE_NORMAL,"Normal");
     menu.setSelectedElement(value);
     return menu;
   }

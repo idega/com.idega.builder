@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.25 2001/10/30 14:57:02 palli Exp $
+ * $Id: IBPage.java,v 1.26 2001/10/31 11:25:01 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -362,11 +362,11 @@ public class IBPage extends TreeableEntity {
         }
       }
       catch(Exception e) {
-        e.printStackTrace();
+        e.printStackTrace(System.err);
       }
     }
     else {
-      //System.out.println("file == null in update");
+      System.out.println("IBPage, file == null in update");
     }
     super.update();
   }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.22 2001/10/26 14:23:41 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.23 2001/10/31 11:25:01 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -205,7 +205,7 @@ public class IBXMLPage {
       stream.close();
     }
     catch(IOException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.err);
     }
   }
 
