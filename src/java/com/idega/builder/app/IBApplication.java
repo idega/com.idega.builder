@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.64 2002/05/10 15:55:26 palli Exp $
+ *  $Id: IBApplication.java,v 1.65 2002/06/10 15:42:28 gummi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -318,6 +318,11 @@ public class IBApplication extends IWApplication {
       try {
       	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
         add(viewer);
+        viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_pages");
+        viewer.getLocation().setApplicationClass(IBApplication.class);
+        viewer.getLocation().isInFrameSet(true);
+
+        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
 
         String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         if (page_id != null) {
@@ -377,6 +382,11 @@ public class IBApplication extends IWApplication {
       try {
         TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
         add(viewer);
+        viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_templates");
+        viewer.getLocation().setApplicationClass(IBApplication.class);
+        viewer.getLocation().isInFrameSet(true);
+
+        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
 
         String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         if (page_id != null) {
