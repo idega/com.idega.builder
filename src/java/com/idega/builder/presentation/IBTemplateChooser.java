@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.4 2001/10/15 17:35:57 tryggvil Exp $
+ * $Id: IBTemplateChooser.java,v 1.5 2001/10/31 13:12:46 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,8 @@ import com.idega.presentation.Image;
 import com.idega.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.builder.business.BuilderLogic;
+
+import com.idega.builder.data.IBPage;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -41,4 +43,10 @@ public class IBTemplateChooser extends AbstractChooser {
   public Class getChooserWindowClass() {
     return(IBTemplateChooserWindow.class);
   }
+
+
+  public void setSelectedPage(IBPage page){
+    super.setChooserValue(page.getName(),page.getID());
+  }
+
 }

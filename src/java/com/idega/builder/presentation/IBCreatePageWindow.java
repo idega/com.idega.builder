@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.11 2001/10/30 17:41:40 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.12 2001/10/31 13:12:46 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,15 +70,15 @@ public class IBCreatePageWindow extends IWAdminWindow {
     tab.add(iwrb.getLocalizedString("parent_page","Create page under:"),1,3);
     if (type != null) {
       if (type.equals("2"))
-        tab.add(getTemplateChooser(PAGE_CHOOSER_NAME),2,3);
+        tab.add(getTemplateChooser(PAGE_CHOOSER_NAME,iwc),2,3);
       else
-        tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+        tab.add(getPageChooser(PAGE_CHOOSER_NAME,iwc),2,3);
     }
     else
-      tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+      tab.add(getPageChooser(PAGE_CHOOSER_NAME,iwc),2,3);
 
     tab.add(iwrb.getLocalizedString("using_template","Using template:"),1,4);
-    tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME),2,4);
+    tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME,iwc),2,4);
 
     SubmitButton button = new SubmitButton("subbi",iwrb.getLocalizedString("save","Save"));
     tab.add(button,2,5);
@@ -165,15 +165,24 @@ public class IBCreatePageWindow extends IWAdminWindow {
   /*
    *
    */
-  private PresentationObject getPageChooser(String name){
-    return new IBPageChooser(name);
+  private PresentationObject getPageChooser(String name,IWContext iwc){
+    IBPageChooser chooser = new IBPageChooser(name);
+    try{
+      chooser.setSelectedPage(BuilderLogic.getInstance().getCurrentIBPageEntity(iwc));
+    }
+    catch(Exception e){
+      //does nothing
+    }
+    return chooser;
   }
 
   /*
    *
    */
-  private PresentationObject getTemplateChooser(String name){
-    return new IBTemplateChooser(name);
+  private PresentationObject getTemplateChooser(String name,IWContext iwc){
+    IBTemplateChooser chooser = new IBTemplateChooser(name);
+    //chooser.setSelectedPage(BuilderLogic.getInstance().getCurrentIBPage(iwc));
+    return chooser;
   }
 }
 

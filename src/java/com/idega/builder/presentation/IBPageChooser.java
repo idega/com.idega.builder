@@ -7,6 +7,8 @@ import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.builder.business.BuilderLogic;
 
+import com.idega.builder.data.IBPage;
+
 /**
  * Title:        idegaclasses
  * Description:
@@ -38,6 +40,10 @@ public class IBPageChooser extends AbstractChooser {
 
   public Class getChooserWindowClass() {
     return IBPageChooserWindow.class;
+  }
+
+  public void setSelectedPage(IBPage page){
+    super.setChooserValue(page.getName(),page.getID());
   }
 
 }

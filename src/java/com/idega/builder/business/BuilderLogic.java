@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.60 2001/10/31 11:56:58 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.61 2001/10/31 13:12:46 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -410,7 +410,14 @@ public class BuilderLogic {
         parent.set(index,new BuilderObjectControl(obj,parent,parentKey,iwc));
       }
     }
+  }
 
+
+  public IBPage getCurrentIBPageEntity(IWContext iwc)throws Exception{
+      String sID = getCurrentIBPage(iwc);
+      //if(sID!=null){
+      return new IBPage(Integer.parseInt(sID));
+      //}
   }
 
   public String getCurrentIBPage(IWContext iwc) {
