@@ -98,15 +98,9 @@ public class IBObjectControl extends PresentationObjectContainer
 		//_layer.setPositionType(Layer.RELATIVE);
 		/** To work around layer stacking in Opera browser version 5, revise for newer versions */
 		boolean hideLayer = iwc.isOpera();
-		/** @todo Make a plug-in presentation/interface object which all plug-ins inherit */
-		if (_theObject instanceof com.idega.block.messenger.presentation.Messenger)
+		if (_theObject instanceof InvisibleInBuilder) {
 			hideLayer = true;
-		if (_theObject instanceof com.idega.presentation.Applet)
-			hideLayer = true;
-		if (_theObject instanceof com.idega.presentation.GenericPlugin)
-			hideLayer = true;
-		if (_theObject instanceof DropdownMenu)
-			hideLayer = true;
+		}
 		/*Layer controlLayer = new Layer(Layer.DIV);
 		controlLayer.setPositionType(Layer.RELATIVE);
 		controlLayer.setWidth(1);

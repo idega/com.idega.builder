@@ -1,5 +1,5 @@
 /*
- * $Id: ImageHandler.java,v 1.5 2003/04/03 09:10:10 laddi Exp $
+ * $Id: ImageHandler.java,v 1.6 2004/06/15 18:25:32 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,8 +10,8 @@
 package com.idega.builder.handler;
 
 import java.util.List;
-
-import com.idega.block.media.presentation.ImageInserter;
+import com.idega.builder.business.IBImageInserter;
+import com.idega.builder.business.IBClassesFactory;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 
@@ -24,6 +24,7 @@ public class ImageHandler implements PropertyHandler {
    *
    */
   public ImageHandler() {
+  	// default constructor
   }
 
   /**
@@ -37,20 +38,25 @@ public class ImageHandler implements PropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-    ImageInserter po = new ImageInserter(name,false);
-    po.setNullImageIDDefault();
+  	IBClassesFactory builderClassesFactory = new IBClassesFactory();
+  	IBImageInserter inserter = builderClassesFactory.createImageInserterImpl();
+  	inserter.setImSessionImageName(name);
+  	inserter.setHasUseBox(false);
+  	inserter.setNullImageIDDefault();
     try {
-      po.setImageId(Integer.parseInt(value));
+      inserter.setImageId(Integer.parseInt(value));
     }
     catch(NumberFormatException e) {
+    	// thomas: can we really ignore this?
     }
-
-    return(po);
+    // IBImageInserter extends PresentationObjectType
+    return (PresentationObject) inserter;
   }
 
   /**
    *
    */
   public void onUpdate(String values[], IWContext iwc) {
+  	// do nothing
   }
 }
