@@ -1,5 +1,5 @@
 /*
- * $Id: ColorHandler.java,v 1.5 2001/12/12 21:06:32 palli Exp $
+ * $Id: ColorHandler.java,v 1.6 2002/03/15 03:11:18 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.handler;
 
+import com.idega.builder.presentation.IBColorChooser;
 import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
@@ -37,14 +38,9 @@ public class ColorHandler implements PropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-    TextInput input = new TextInput(name);
-    input.setMaxlength(7);
-    input.setLength(7);
-    if (value != null) {
-      input.setValue(value);
-    }
-
-    return(input);
+    IBColorChooser chooser = new IBColorChooser(name,"font-size: 8pt; border: 1 solid #000000");
+    chooser.setSelected(value);
+    return(chooser);
   }
 
   /**
