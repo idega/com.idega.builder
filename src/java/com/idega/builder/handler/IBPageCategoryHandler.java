@@ -4,12 +4,9 @@
 package com.idega.builder.handler;
 
 import java.util.List;
-import java.util.Map;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageUpdater;
-import com.idega.builder.business.PageTreeNode;
-import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.BooleanInput;
