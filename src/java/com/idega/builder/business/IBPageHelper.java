@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.28 2003/10/13 08:52:07 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.29 2003/11/21 23:59:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -315,7 +315,7 @@ public class IBPageHelper {
 					AccessControl.copyObjectInstancePermissions(Integer.toString(ic_instance_id), Integer.toString(instance.getID()));
 				}
 			}
-			catch (SQLException e) {
+			catch (Exception e) {
 //				System.out.println("changeInstanceId - exception");
 				e.printStackTrace();
 				return false;
