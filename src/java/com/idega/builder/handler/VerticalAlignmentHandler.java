@@ -16,6 +16,11 @@ import com.idega.presentation.ui.DropdownMenu;
 
 public class VerticalAlignmentHandler implements PropertyHandler {
 
+	public final static String TOP = "top";
+	public final static String MIDDLE = "middle";
+	public final static String BOTTOM = "bottom";
+
+
   public VerticalAlignmentHandler(){
   }
 
@@ -25,9 +30,9 @@ public class VerticalAlignmentHandler implements PropertyHandler {
   public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Default");
-    menu.addMenuElement("top","Top");
-    menu.addMenuElement("middle","Middle");
-    menu.addMenuElement("bottom","Bottom");
+    menu.addMenuElement(TOP,"Top");
+    menu.addMenuElement(MIDDLE,"Middle");
+    menu.addMenuElement(BOTTOM,"Bottom");
     menu.setSelectedElement(value);
     return menu;
   }
