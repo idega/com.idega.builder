@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.85 2001/12/20 19:16:09 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.86 2002/01/02 12:14:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,6 +44,8 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.IFrameContainer;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLAttribute;
 
 import java.util.ListIterator;
 import java.util.List;
@@ -1221,18 +1223,19 @@ public class BuilderLogic {
   /**
    *
    */
-  public void changeLinkPageId(IWMainApplication iwma, Link link, String linkParentPageId, String newPageId) {
+  public void changeLinkPageId(Link link, String linkParentPageId, String newPageId) {
     int moduleId = link.getICObjectInstanceID();
     //int pageId = link.getParentPageID();
 
-    /**
-     * @todo Laga þetta!!!
-     */
-    String element = ":method:1:implied:void:setPage:com.idega.builder.data.IBPage:";
-
     //IBXMLPage page = getIBXMLPage(pageId);
     IBXMLPage page = getIBXMLPage(linkParentPageId);
-    XMLWriter.setProperty(iwma,page,moduleId,element,newPageId);
+    XMLElement element = new XMLElement(XMLConstants.CHANGE_PAGE_LINK);
+    XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,Integer.toString(moduleId));
+    XMLAttribute newPageLink = new XMLAttribute(XMLConstants.IC_OBJECT_ID_to,newPageId);
+    element.setAttribute(id);
+    element.setAttribute(newPageLink);
+    XMLWriter.addNewElement(page,-1,element);
+
     page.update();
   }
 }

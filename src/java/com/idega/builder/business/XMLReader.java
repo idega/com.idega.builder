@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.26 2001/12/19 11:24:57 palli Exp $
+ * $Id: XMLReader.java,v 1.27 2002/01/02 12:14:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
@@ -139,6 +140,9 @@ public class XMLReader {
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
           parseRegion(child,parentContainer);
+        }
+        else if (child.getName().equalsIgnoreCase(XMLConstants.CHANGE_PAGE_LINK)) {
+          changeLinkProperty(child,parentContainer);
         }
         else {
           System.err.println("Unknown tag in xml description file : " + child.getName());
@@ -449,5 +453,44 @@ public class XMLReader {
       System.err.println("Exception");
       e4.printStackTrace();
     }
+  }
+
+  /**
+   *
+   */
+  static void changeLinkProperty(XMLElement change, PresentationObjectContainer parent) {
+System.out.println("Entering changeLinkProperty");
+    List regionAttrList = change.getAttributes();
+    if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
+      System.err.println("Table region has no attributes");
+      return;
+    }
+
+    XMLAttribute id = change.getAttribute(XMLConstants.ID_STRING);
+    XMLAttribute newPageLink = change.getAttribute(XMLConstants.IC_OBJECT_ID_to);
+
+
+    int intId = -1;
+    int intNewPage = -1;
+    try {
+      intId = id.getIntValue();
+      intNewPage = newPageLink.getIntValue();
+    }
+    catch(com.idega.xml.XMLException e) {
+      System.out.println("Error in converting values to int");
+    }
+    List li = parent.getAllContainedObjectsRecursive();
+    Iterator it = li.iterator();
+    while (it.hasNext()) {
+      PresentationObject obj = (PresentationObject)it.next();
+      if (obj instanceof Link) {
+        Link l = (Link)obj;
+        if (intId == l.getICObjectInstanceID()) {
+          l.setPage(intNewPage);
+        }
+      }
+    }
+
+//    if (regionParent instanceof com.idega.presentation.Page) {
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.19 2001/12/17 11:13:52 palli Exp $
+ * $Id: XMLWriter.java,v 1.20 2002/01/02 12:14:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -724,4 +724,61 @@ public class XMLWriter {
 
     return(false);
   }
+
+  /**
+   *
+   */
+  static boolean copyModule(IBXMLAble xml, String parentObjectInstanceID, int ICObjectInstanceID) {
+    XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
+    if (parent != null) {
+      try {
+        XMLElement module = findModule(xml,ICObjectInstanceID,parent);
+        return(copyModule(parent,module));
+      }
+      catch(Exception e) {
+        e.printStackTrace();
+        return(false);
+      }
+    }
+
+    return(false);
+  }
+
+  /**
+   *
+   */
+  private static boolean copyModule(XMLElement parent, XMLElement child) throws Exception {
+    List children = getChildElements(child);
+    if (children != null) {
+      Iterator iter = children.iterator();
+      while (iter.hasNext()) {
+        XMLElement childchild = (XMLElement)iter.next();
+        copyModule(child,childchild);
+      }
+      XMLAttribute attribute = child.getAttribute(XMLConstants.ID_STRING);
+      if (attribute != null) {
+        String ICObjectInstanceID = attribute.getValue();
+        try {
+          ICObjectInstance instance = new ICObjectInstance(Integer.parseInt(ICObjectInstanceID));
+          instance.delete();
+        }
+        catch(NumberFormatException e){
+        }
+      }
+    }
+
+    return(true);
+  }
+
+  /**
+   *
+   */
+  static boolean addNewElement(IBXMLAble xml, int parentObjectInstanceID, XMLElement element) {
+    XMLElement parent = findModule(xml,parentObjectInstanceID);
+    if (parent != null)
+      parent.addContent(element);
+
+    return true;
+  }
+
 }

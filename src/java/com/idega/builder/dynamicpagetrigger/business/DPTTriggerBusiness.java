@@ -207,9 +207,9 @@ public class DPTTriggerBusiness {
         String createdPage = (String)createdPages.get(Integer.toString(templateId));
         if(createdPage == null){
           int newID = this.createPage(iwc,templateId, name+" subpage",createdPages);
-          instance.changeLinkPageId(iwc.getApplication(),item,pageIDString,Integer.toString(newID));
+          instance.changeLinkPageId(item,pageIDString,Integer.toString(newID));
         } else {
-          instance.changeLinkPageId(iwc.getApplication(),item,pageIDString,createdPage);
+          instance.changeLinkPageId(item,pageIDString,createdPage);
         }
       }
     }
