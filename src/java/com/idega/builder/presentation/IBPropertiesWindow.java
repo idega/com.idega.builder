@@ -128,24 +128,28 @@ public IBPropertiesWindow() {
       setBackgroundColor(IWAdminWindow.HEADER_COLOR);
       setAllMargins(0);
       Script script = this.getAssociatedScript();
-      script.addFunction("doClose","function doClose(){doUpdate();parent.opener.location.reload();parent.close();}");
-      script.addFunction("doUpdate","function doUpdate(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();top.ib_prop_win_middle.ib_prop_list_frame.location.reload();}");
+      script.addFunction("doClose","function doClose(){parent.close();}");
+      script.addFunction("doApply","function doUpdate(){doSet();parent.opener.location.reload();");
+      script.addFunction("doSet","function doSet(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();top.ib_prop_win_middle.ib_prop_list_frame.location.reload();}");
 
     }
 
     public void main(IWContext iwc){
       IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
-      Image b1 = iwrb.getLocalizedImageButton("ok","OK");
+      Image b1 = iwrb.getLocalizedImageButton("close","CLOSE");
       b1.setOnClick("doClose()");
-      Image b2 = iwrb.getLocalizedImageButton("apply","Apply");
-      b2.setOnClick("doUpdate()");
-      Table t = new Table(2,1);
+      Image b2 = iwrb.getLocalizedImageButton("set","SET");
+      b2.setOnClick("doSet()");
+      Image b3 = iwrb.getLocalizedImageButton("apply","Apply");
+      b3.setOnClick("doApply()");
+      Table t = new Table(3,1);
       t.setHeight("100%");
       t.setAlignment("right");
       add(t);
       t.add(b1,1,1);
       t.add(b2,2,1);
+      t.add(b3,3,1);
     }
   }
 
