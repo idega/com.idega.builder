@@ -62,6 +62,7 @@ public class FormEmailer extends Block {
 				t.setAlignment(1, 3, com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 				Table t = new Table();
 				add(t);
 				String errorText =
@@ -127,7 +128,7 @@ public class FormEmailer extends Block {
 		}
 		if (formText == null) {
 			//System.out.println("formText==null");
-			formText = "Error-Nothing";
+			formText = iwrb.getLocalizedString("formemailer.error_no_email_body", "<<No email body found>>");
 		}
 		if (emailServer == null) {
 			String error2 = iwrb.getLocalizedString("formemailer.error2", "Email Server not specified");

@@ -61,8 +61,10 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	public String processPlainTextFormatted(IWContext iwc) {
 		StringBuffer buffer = new StringBuffer();
 		int count = parameterNames.size();
+		StringBuffer debugBuf = new StringBuffer();
 		for (int j = 0; j < count; j++) {
 			String paramName = (String) parameterNames.get(j);
+			debugBuf.append(paramName).append(" ");
 			String[] paramValues = iwc.getParameterValues(paramName);
 			if (paramValues != null) {
 				String desc = getDescriptionForParameter(paramName);
@@ -89,6 +91,7 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 				}
 			}
 		}
+		System.out.println("Added " + count + " parameters to message, " + debugBuf);
 		return buffer.toString();
 	}
 	
