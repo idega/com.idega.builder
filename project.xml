@@ -63,7 +63,7 @@
             <version>2.0</version>
             <type>jar</type>
             <url>http://www.idega.com/</url>
-            <properties/>
+            <properties><eclipse.dependency>true</eclipse.dependency></properties>
         </dependency>
         <dependency>
             <groupId>jdom</groupId>
