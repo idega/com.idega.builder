@@ -1,5 +1,7 @@
 package com.idega.builder.form.presentation;
 
+import javax.mail.MessagingException;
+
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -29,6 +31,8 @@ public class FormEmailer extends Block {
 
   private String emailServer;
   private String emailToSendTo;
+	private String senderEmail ="idegaweb@idega.com";
+	private String senderEmailParameter;
   private boolean displayConfirmation=true;
   private final static String SUBJECT_CONSTANT = "From idegaWeb Builder";
   private String subject = SUBJECT_CONSTANT;
@@ -122,6 +126,11 @@ public class FormEmailer extends Block {
     IWResourceBundle iwrb = super.getBundle(iwc).getResourceBundle(iwc);
     String formText = getSentText(iwc);
     String bodyText;
+    String emailFrom = senderEmail;
+    if (senderEmailParameter != null) {
+    	emailFrom = iwc.getParameter(senderEmailParameter);
+    } 
+    
     if(_beginningText==null){
       bodyText=formText;
     }
@@ -141,7 +150,13 @@ public class FormEmailer extends Block {
       String error3 = iwrb.getLocalizedString("formemailer.error3","No email to send to");
       throw new Exception(error3);
     }
-    com.idega.util.SendMail.send("idegaweb@idega.com",emailToSendTo,"","",emailServer,subject,bodyText);
+    
+		try {
+			com.idega.util.SendMail.send(emailFrom,emailToSendTo,"","",emailServer,subject,bodyText);
+		} catch (Exception e) {
+			com.idega.util.SendMail.send(senderEmail,emailToSendTo,"","",emailServer,subject,bodyText);
+		}
+		
     cleanUpFromSession(iwc);
   }
 
@@ -170,6 +185,13 @@ public class FormEmailer extends Block {
     this.displayConfirmation=doConfirmation;
   }
 
+	public void setSenderEmail(String senderEmail) {
+		this.senderEmail = senderEmail;	
+	}
+	
+	public void setSenderEmailParameter(String parameterName) {
+		this.senderEmailParameter = parameterName;	
+	}
 
   public Object clone(){
     Object newObject = super.clone();
