@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.71 2001/11/01 18:51:12 palli Exp $
+ * $Id: BuilderLogic.java,v 1.72 2001/11/01 22:31:38 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -157,8 +157,8 @@ public class BuilderLogic {
    */
   public Page getBuilderTransformed(String pageKey,Page page,IWContext iwc) {
     List list = page.getAllContainingObjects();
-    Layer layer = new Layer();
-      layer.setZIndex(0);
+    //Layer layer = new Layer();
+      //layer.setZIndex(0);
     if (list != null) {
       ListIterator iter = list.listIterator();
       PresentationObjectContainer parent = page;
@@ -171,20 +171,20 @@ public class BuilderLogic {
     //"-1" is identified as the top page object (parent)
     if (page.getIsExtendingTemplate()) {
       if (!page.isLocked()) {
-        layer.add(getAddIcon(Integer.toString(-1),iwc,null));
-        layer.add(getPasteIcon(Integer.toString(-1),iwc));
-        page.add(layer);
+        page.add(getAddIcon(Integer.toString(-1),iwc,null));
+        page.add(getPasteIcon(Integer.toString(-1),iwc));
+        //page.add(layer);
       }
     }
     else {
-      layer.add(getAddIcon(Integer.toString(-1),iwc,null));
-      layer.add(getPasteIcon(Integer.toString(-1),iwc));
+      page.add(getAddIcon(Integer.toString(-1),iwc,null));
+      page.add(getPasteIcon(Integer.toString(-1),iwc));
       if (page.getIsTemplate())
         if (page.isLocked())
-          layer.add(getLockedIcon(Integer.toString(-1),iwc));
+          page.add(getLockedIcon(Integer.toString(-1),iwc));
         else
-          layer.add(getUnlockedIcon(Integer.toString(-1),iwc));
-      page.add(layer);
+          page.add(getUnlockedIcon(Integer.toString(-1),iwc));
+      //page.add(layer);
     }
 
     return(page);
@@ -451,7 +451,7 @@ public class BuilderLogic {
   public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif","Add new component");
-    addImage.setAttribute("style","z-index: 0;");
+    //addImage.setAttribute("style","z-index: 0;");
     Link link = new Link(addImage);
     link.setWindowToOpen(IBAddModuleWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
@@ -494,7 +494,7 @@ public class BuilderLogic {
 
   public PresentationObject getDeleteIcon(int key,String parentKey,IWContext iwc){
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image deleteImage = bundle.getImage("delete.gif","Delete component");
+    Image deleteImage = bundle.getImage("shared/menu/delete.gif","Delete component");
     Link link = new Link(deleteImage);
     link.setWindowToOpen(IBDeleteModuleWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
@@ -519,7 +519,7 @@ public class BuilderLogic {
 
   public  PresentationObject getPermissionIcon(int key,IWContext iwc){
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image editImage = bundle.getImage("key_small.gif","Set permissions");
+    Image editImage = bundle.getImage("shared/menu/permission.gif","Set permissions");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPermissionWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
@@ -532,7 +532,7 @@ public class BuilderLogic {
 
   public  PresentationObject getEditIcon(int key,IWContext iwc){
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image editImage = bundle.getImage("edit.gif","Properties");
+    Image editImage = bundle.getImage("shared/menu/edit.gif","Properties");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPropertiesWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
@@ -545,10 +545,13 @@ public class BuilderLogic {
     private com.idega.presentation.Layer _layer;
     private Table _table;
     private Table table;
+    private Layer _tableLayer;
     private PresentationObjectContainer _parent;
     private String _parentKey;
     private PresentationObject _theObject;
     private int number = 0;
+    String showLayers;
+    String hideLayers;
 
     public BuilderObjectControl(PresentationObject obj, PresentationObjectContainer objectParent, String theParentKey, IWContext iwc,int index) {
       _parent = objectParent;
@@ -577,40 +580,61 @@ public class BuilderLogic {
 
     private void init(IWContext iwc){
       _layer = new Layer();
+      _tableLayer = new Layer();
+      _tableLayer.setZIndex(-1);
+
+      /** To work around layer stacking in Opera browser version 5, revise for newer versions */
+      boolean hideLayer = iwc.isOpera();
+
+      /** @todo Make a plug-in presentation/interface object which all plug-ins inherit */
+      if ( _theObject instanceof com.idega.block.messenger.presentation.Messenger )
+        hideLayer = true;
+      if ( _theObject instanceof com.idega.presentation.Applet )
+        hideLayer = true;
 
       Layer controlLayer = new Layer(Layer.DIV);
         controlLayer.setPositionType(Layer.RELATIVE);
-        controlLayer.setWidth(0);
-        controlLayer.setHeight(0);
+        controlLayer.setWidth(1);
+        controlLayer.setHeight(1);
 
       Layer layer = new Layer(Layer.DIV);
         layer.setID(_layer.getID()+"a");
         layer.setPositionType(Layer.ABSOLUTE);
-        layer.setTopPosition(0);
-        layer.setLeftPosition(0);
+        layer.setTopPosition(-1);
+        layer.setLeftPosition(-1);
         layer.setBackgroundColor("#CCCCCC");
         layer.setVisibility("hidden");
-        layer.setZIndex(1);
+        layer.setZIndex(37999);
         layer.setWidth(0);
         layer.setHeight(0);
-        layer.setOnMouseOut("showHideLayers('"+layer.getID()+"','','hide')");
+
+      hideLayers = "showHideLayers('"+layer.getID()+"','','hide');";
+      if ( hideLayer ) hideLayers += " showHideLayers('"+_tableLayer.getID()+"','','show');";
+
+      showLayers = "showHideLayers('"+layer.getID()+"','','show');";
+      if ( hideLayer ) showLayers += " showHideLayers('"+_tableLayer.getID()+"','','hide');";
+
+      layer.setOnMouseOut(hideLayers);
 
       controlLayer.add(layer);
 
       _table = new Table(1,2);
       _table.add(controlLayer);
+      _table.add(_tableLayer,1,2);
       _layer.add(_table);
-      _layer.setZIndex(1000-number);
+      _layer.setZIndex(number);
       super.add(_layer);
       _table.setBorder(0);
       _table.setCellpadding(0);
-      _table.setCellspacing(2);
-      _table.setColor("gray");
+      _table.setCellspacing(1);
+      _table.setColor("#000000");
       _table.setColor(1,2,"white");
+      _table.setColor(1,1,"#CCCCCC");
       _table.setHeight(1,1,"11");
 
       Image image = getBundle(iwc).getImage("menuicon.gif");
-      image.setOnClick("showHideLayers('"+layer.getID()+"','','show')");
+      image.setHorizontalSpacing(1);
+      image.setOnClick(showLayers);
 
 
       if(_theObject!=null){
@@ -618,27 +642,38 @@ public class BuilderLogic {
         _table.add(image);
 
         RaisedTable rTable = new RaisedTable();
-          rTable.setWidth(100);
+          rTable.setWidth(80);
+          rTable.setHeight(50);
+          rTable.setLightShadowColor("#000000");
+          rTable.setDarkShadowColor("#000000");
 
         table = new Table();
-        table.setCellpadding(2);
-        table.setCellspacing(0);
-        table.setWidth("100%");
-        table.setHeight("100%");
-        table.setColor("#CCCCCC");
-        table.setAttribute("onMouseOver","showHideLayers('"+layer.getID()+"','','show')");
-        table.setAttribute("onClick","showHideLayers('"+layer.getID()+"','','hide')");
+          table.setCellpadding(3);
+          table.setCellspacing(0);
+          table.setWidth("100%");
+          table.setHeight("100%");
+          table.setColor("#CCCCCC");
+          table.setAttribute("onMouseOver",showLayers);
+          table.setAttribute("onClick",hideLayers);
         rTable.add(table);
 
-        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1,layer.getID());
-        addToTable(new Text("Copy"),2,1,layer.getID());
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2,layer.getID());
-        addToTable(new Text("Delete"),2,2,layer.getID());
-        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,3,layer.getID());
-        addToTable(new Text("Permission"),2,3,layer.getID());
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,4,layer.getID());
-        addToTable(new Text("Properties"),2,4,layer.getID());
+        Image separator = getBundle(iwc).getImage("menu_separator.gif");
+          separator.setWidth("100%");
+          separator.setHeight(2);
 
+        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",null,2,1);
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
+        table.add(separator,2,3);
+        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
+        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
+
+        table.setColumnColor(1,"#D8D8D1");
+        table.setColumnColor(2,"#F9F8F7");
+        table.setColumnAlignment(1,"center");
         layer.add(rTable);
       }
       else{
@@ -647,9 +682,18 @@ public class BuilderLogic {
       }
     }
 
-    private void addToTable(PresentationObject obj,int col,int row,String ID) {
-      obj.setAttribute("onMouseOver","showHideLayers('"+ID+"','','show')");
+    private void addToTable(PresentationObject obj,int col,int row) {
+      obj.setAttribute("onMouseOver",showLayers);
       table.add(obj,col,row);
+    }
+
+    private void addToTable(PresentationObject obj,String textString,Class className,int col,int row) {
+      Text text = new Text(textString);
+        text.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 8pt; text-decoration: none;");
+      Link link = (Link) obj;
+      link.setObject(text);
+      if ( className != null ) link.setWindowToOpen(className);
+      addToTable(link,col,row);
     }
 
     public void add(PresentationObject obj){
@@ -668,7 +712,7 @@ public class BuilderLogic {
         }
 
       }
-      _table.add(obj,1,2);
+      _tableLayer.add(obj);
 
       obj.setParentObject(_parent);
     }
@@ -909,8 +953,8 @@ public class BuilderLogic {
    */
   public PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image copyImage = bundle.getImage("copy.gif","Copy component");
-    copyImage.setAttribute("style","z-index: 0;");
+    Image copyImage = bundle.getImage("shared/menu/copy.gif","Copy component");
+    //copyImage.setAttribute("style","z-index: 0;");
     Link link = new Link(copyImage);
 //    link.setWindowToOpen(IBDeleteModuleWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));

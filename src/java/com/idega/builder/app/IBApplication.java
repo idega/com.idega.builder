@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.34 2001/11/01 18:22:32 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.35 2001/11/01 22:31:42 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -185,6 +185,7 @@ public class IBApplication extends IWApplication {
       setNoresize(3,true);
       setSpanPixels(1,24);
       setScrolling(1,false);
+      setScrolling(2,true);
       setSpanAdaptive(2);
       setSpanPixels(3,25);
       setScrolling(3,false);
@@ -207,15 +208,12 @@ public class IBApplication extends IWApplication {
       //setBackgroundColor("#FFFFFF");
       Table table = new Table(2,1);
         table.setCellpadding(0);
-        table.setCellspacing(3);
+        table.setCellspacing(0);
       add(table);
-      Image image;
-      image = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("header.gif");
+      Image image = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/logo.gif");
       table.add(image,1,1);
-      Text buildText = new Text("build 220c");
-        buildText.setFontColor("#FFFFFF");
-        buildText.setFontSize(1);
-      table.add(buildText,2,1);
+      Image image2 = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/top_image.gif");
+      table.add(image2,2,1);
       table.setWidth("100%");
       table.setHeight("100%");
       table.setAlignment(2,1,"right");
@@ -422,30 +420,30 @@ public class IBApplication extends IWApplication {
 
         Image separator = iwb.getImage("toolbar_separator.gif");
 
-        Image tool_new = iwb.getImage("toolbar_new.gif","New Page");
+        Image tool_new = iwb.getImage("shared/toolbar/new.gif","shared/toolbar/new1.gif","New Page",20,20);
         tool_new.setHorizontalSpacing(2);
         Link link_new = new Link(tool_new);
         link_new.setWindowToOpen(IBCreatePageWindow.class);
         toolbarTable.add(link_new,xpos,1);
 
-        Image tool_open = iwb.getImage("toolbar_open.gif","Open Page");
+        Image tool_open = iwb.getImage("shared/toolbar/open.gif","shared/toolbar/open1.gif","Open Page",20,20);
         tool_open.setHorizontalSpacing(2);
         Link link_open = new Link(tool_open);
         toolbarTable.add(link_open,xpos,1);
 
-        Image tool_save = iwb.getImage("toolbar_save.gif","Save Page");
+        Image tool_save = iwb.getImage("shared/toolbar/save.gif","shared/toolbar/save1.gif","Save Page",20,20);
         tool_save.setHorizontalSpacing(2);
         Link link_save = new Link(tool_save);
         link_save.setWindowToOpen(IBSavePageWindow.class);
         toolbarTable.add(link_save,xpos,1);
 
-        Image tool_save_as = iwb.getImage("toolbar_save.gif","Save As Page");
+        Image tool_save_as = iwb.getImage("shared/toolbar/saveas.gif","shared/toolbar/saveas1.gif","Save As Page",20,20);
         tool_save_as.setHorizontalSpacing(2);
         Link link_save_as = new Link(tool_save_as);
         link_save_as.setWindowToOpen(IBSaveAsPageWindow.class);
         toolbarTable.add(link_save_as,xpos,1);
 
-        Image tool_delete = iwb.getImage("toolbar_delete.gif","Delete Page");
+        Image tool_delete = iwb.getImage("shared/toolbar/delete.gif","shared/toolbar/delete1.gif","Delete Page",20,20);
         tool_delete.setHorizontalSpacing(2);
         Link link_delete = new Link(tool_delete);
         link_delete.setWindowToOpen(IBDeletePageWindow.class);
@@ -461,39 +459,45 @@ public class IBApplication extends IWApplication {
         toolbarTable.add(separator,xpos,1);
 
         xpos++;
-        Image tool_1 = iwb.getImage("toolbar_back.gif","Go back");
+        Image tool_1 = iwb.getImage("shared/toolbar/back.gif","shared/toolbar/back1.gif","Go back",20,20);
         tool_1.setHorizontalSpacing(2);
         Link link_1 = new Link(tool_1);
         link_1.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].history.go(-1)");
         toolbarTable.add(link_1,xpos,1);
 
-        Image tool_2 = iwb.getImage("toolbar_forward.gif","Go forward");
+        Image tool_2 = iwb.getImage("shared/toolbar/forward.gif","shared/toolbar/forward1.gif","Go forward",20,20);
         tool_2.setHorizontalSpacing(2);
         Link link_2 = new Link(tool_2);
         link_2.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].history.go(1)");
         toolbarTable.add(link_2,xpos,1);
 
-        Image tool_3 = iwb.getImage("toolbar_stop.gif","Stop loading");
+        Image tool_3 = iwb.getImage("shared/toolbar/stop.gif","shared/toolbar/stop1.gif","Stop loading",20,20);
         tool_3.setHorizontalSpacing(2);
         Link link_3 = new Link(tool_3);
         link_3.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].stop()");
         toolbarTable.add(link_3,xpos,1);
 
-        Image tool_4 = iwb.getImage("toolbar_reload.gif","Reload page");
+        Image tool_4 = iwb.getImage("shared/toolbar/refresh.gif","shared/toolbar/refresh1.gif","Reload page",20,20);
         tool_4.setHorizontalSpacing(2);
         Link link_4 = new Link(tool_4);
         link_4.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
         toolbarTable.add(link_4,xpos,1);
 
-        /*Image tool_5 = iwb.getImage("toolbar_home_1.gif","Go to startpage");
+        /*Image tool_5 = iwb.getImage("shared/toolbar/home.gif","shared/toolbar/home1.gif","Go to startpage",20,20);
         Link link_5 = new Link(tool_5);
         link_5.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_EDIT_URL+"'");
         toolbarTable.add(link_5,xpos,1);*/
+        /*Image tool_5 = iwb.getImage("shared/toolbar/home.gif","",20,20);
+        toolbarTable.add(tool_5,xpos,1);*/
 
         xpos++;
         toolbarTable.add(separator,xpos,1);
 
-        Image leftMenuImage = iwb.getImage("toolbar_addtoolbar.gif","Show Curtain");
+        Image leftMenuImage = null;
+        if ( noCurtain )
+          leftMenuImage = iwb.getImage("shared/toolbar/show_curtain.gif","shared/toolbar/show_curtain1.gif","Show Curtain",20,20);
+        else
+          leftMenuImage = iwb.getImage("shared/toolbar/no_curtain.gif","shared/toolbar/no_curtain1.gif","Show Curtain",20,20);
         leftMenuImage.setHorizontalSpacing(2);
 
         Link leftMenuLink = new Link(leftMenuImage);
@@ -527,7 +531,7 @@ public class IBApplication extends IWApplication {
      */
     public PresentationObject getPropertiesIcon(IWContext iwc) {
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
-      Image image = iwb.getImage("toolbar_properties.gif","Page Properties");
+      Image image = iwb.getImage("shared/toolbar/page_properties.gif","shared/toolbar/page_properties1.gif","Page Properties",20,20);
         image.setHorizontalSpacing(2);
       Link link = new Link(image);
       link.setWindowToOpen(IBPropertiesWindow.class);
@@ -541,7 +545,7 @@ public class IBApplication extends IWApplication {
 
     public PresentationObject getPermissionIcon(IWContext iwc){
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
-      Image image = iwb.getImage("toolbar_permissions.gif","Page Permissions");
+      Image image = iwb.getImage("shared/toolbar/permissions.gif","shared/toolbar/permissions1.gif","Page Permissions",20,20);
         image.setHorizontalSpacing(2);
       Link link = new Link(image);
       link.setWindowToOpen(IBPermissionWindow.class);
@@ -556,7 +560,7 @@ public class IBApplication extends IWApplication {
    *
    */
   public static class IBStatusBar extends IWApplicationComponent {
-    private final static String IW_BUNDLE_IDENTIFIER = "com.idega.core";
+    private final static String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 
     /**
      *
@@ -574,7 +578,8 @@ public class IBApplication extends IWApplication {
       setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
       setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
       setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
-
+      Image tilerCell = Table.getTransparentCell(iwc);
+        tilerCell.setHeight("100%");
 
       //setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
       //Image background = iwb.getImage("status_tiler.gif");
@@ -587,7 +592,8 @@ public class IBApplication extends IWApplication {
       toolbarTable.setCellpadding(0);
       toolbarTable.setCellspacing(0);
       toolbarTable.setWidth(1,1,"100%");
-      toolbarTable.setAlignment(2,1,"top");
+      toolbarTable.setAlignment(2,1,"right");
+      toolbarTable.setVerticalAlignment(2,1,"top");
       toolbarTable.setVerticalAlignment(1,1,"middle");
       add(toolbarTable);
 
@@ -606,24 +612,34 @@ public class IBApplication extends IWApplication {
         toolTable.setCellpadding(0);
         toolTable.setCellspacing(0);
 
-        Link editLink = new Link(_iwrb.getImage("editorwindow/edit.gif"));
+        Image editImage = _iwrb.getImage("shared/status/edit1.gif","Edit",64,17);
+          editImage.setOnClickImage(_iwrb.getImage("shared/status/edit.gif"));
+        Link editLink = new Link(editImage);
         editLink.setTarget(IBApplication.IB_CONTENT_FRAME);
         editLink.setURL(IBApplication.CONTENT_EDIT_URL);
         toolTable.add(editLink,1,1);
 
-        Link previewLink = new Link(_iwrb.getImage("editorwindow/preview.gif"));
+        getParentPage().setOnLoad("javascript: swapImage('"+editImage.getName()+"','','"+_iwrb.getImage("shared/status/edit.gif").getURL()+"',1)");
+
+        Image previewImage = _iwrb.getImage("shared/status/preview1.gif","Preview",64,17);
+          previewImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
+        Link previewLink = new Link(previewImage);
         previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
         previewLink.setURL(IBApplication.CONTENT_PREVIEW_URL);
         toolTable.add(previewLink,2,1);
 
-        Link sourceLink = new Link(_iwrb.getImage("editorwindow/source.gif"));
-        sourceLink.setWindowToOpen(IBSourceView.class);
+        Image sourceImage = _iwrb.getImage("shared/status/source1.gif","Source",64,17);
+          sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
+        Link sourceLink = new Link(sourceImage,IBSourceView.class);
+        sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
         toolTable.add(sourceLink,3,1);
 
 
-//        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
-        String name = Text.NON_BREAKING_SPACE+"Page name"; //BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
-        toolbarTable.add(new Text(name,true,false,false),1,1);
+        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
+        Text pageName = new Text(name);
+          pageName.setFontStyle("font-face: Geneva, Helvetica, sans-serif; font-weight: bold; font-size: 8pt;");
+        toolbarTable.add(tilerCell,1,1);
+        toolbarTable.add(pageName,1,1);
         toolbarTable.add(toolTable,2,1);
       }
       else if (action.equals(ACTION_TEMPLATES)) {
