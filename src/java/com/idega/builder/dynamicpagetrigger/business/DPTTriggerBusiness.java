@@ -137,6 +137,10 @@ public class DPTTriggerBusiness {
 
     int pageId = createPage(iwc,pti.getDefaultTemplateId(), pti.getRootPageId(), defaultLinkText);
 
+    if(pageId == -1){
+      return (null);
+    }
+
     pl.setPageId(pageId);
 
 
@@ -184,13 +188,16 @@ public class DPTTriggerBusiness {
 
     int id = IBPageHelper.getInstance().createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree,iwc);
 
+    if(id == -1){
+      return (-1);
+    }
 
     IBPage page = null;
     try {
       page = new IBPage(id);
     }
     catch(SQLException e) {
-
+      return (-1);
     }
 /*    IBPage page = new IBPage();
     if (name == null){
@@ -261,6 +268,9 @@ public class DPTTriggerBusiness {
             subpageName = "Untitled";
           }
           int newID = this.createPage(iwc,templateId, id, subpageName,createdPages);
+          if(newID == -1){
+            return (-1);
+          }
           instance.changeLinkPageId(item,pageIDString,Integer.toString(newID));
         } else {
           instance.changeLinkPageId(item,pageIDString,createdPage);

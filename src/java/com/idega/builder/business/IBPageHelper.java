@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.11 2002/04/03 12:43:59 palli Exp $
+ * $Id: IBPageHelper.java,v 1.12 2002/04/04 04:39:23 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -203,16 +203,21 @@ public class IBPageHelper {
       ICObjectInstance instance = null;
 
       try {
+        ICObjectInstance inst = obj.getICObjectInstance();
         instance = new ICObjectInstance();
         instance.setICObjectID(object_id);
+        instance.setIBPageByKey(xmlpage.getKey());
         instance.insert();
+        if(inst != null){
+          inst.addChild(instance);
+        }
         if(copyPermissions){
           AccessControl.copyObjectInstancePermissions(Integer.toString(ic_instance_id),Integer.toString(instance.getID()));
         }
       }
       catch(SQLException e) {
-        //System.err.println("DPTTriggerBusiness: "+e.getMessage());
-        //e.printStackTrace();
+//        System.err.println("DPTTriggerBusiness: "+e.getMessage());
+//        e.printStackTrace();
         return(false);
       }
 
