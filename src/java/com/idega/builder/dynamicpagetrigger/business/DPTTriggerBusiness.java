@@ -22,6 +22,7 @@ import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.util.idegaTimestamp;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
+import com.idega.builder.business.IBPageFinder;
 
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
@@ -398,6 +399,25 @@ public class DPTTriggerBusiness {
       return false;
     }
   }
+
+
+  public static boolean addObjectInstancToSubPages(ICObjectInstance objectTemplate){
+    List pages = IBPageFinder.getAllPagesExtendingTemplate(objectTemplate.getIBPageID());
+    if(pages != null){
+      Iterator iter = pages.iterator();
+      while (iter.hasNext()) {
+        IBPage item = (IBPage)iter.next();
+        IBPageHelper.getInstance().addElementToPage(item,objectTemplate.getID());
+      }
+    }
+    return(true);
+  }
+
+  public static boolean addObjectInstancToSubPages(int templateObjectInstanceID) throws SQLException{
+    ICObjectInstance objinst = (ICObjectInstance)com.idega.data.IDOLookup.findByPrimaryKeyLegacy(ICObjectInstance.class,templateObjectInstanceID);
+    return addObjectInstancToSubPages(objinst);
+  }
+
 
 
 }

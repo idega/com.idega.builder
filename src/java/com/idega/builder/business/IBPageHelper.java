@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.14 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.15 2002/05/05 21:57:52 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -195,6 +195,40 @@ public class IBPageHelper {
 
     return(id);
   }
+
+
+  public boolean addElementToPage(IBPage ibPage, int[] templateObjInstID ){
+    if (templateObjInstID != null) {
+      IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
+      Page current = currentXMLPage.getPopulatedPage();
+      List children = current.getAllContainedObjectsRecursive();
+      if (children != null) {
+        Iterator it = children.iterator();
+        while (it.hasNext()) {
+          PresentationObject obj = (PresentationObject)it.next();
+          for (int i = 0; i < templateObjInstID.length; i++) {
+            if(obj.getICObjectInstanceID() == templateObjInstID[i] ){
+              boolean ok = changeInstanceId(obj,currentXMLPage, true);
+              if (!ok)
+                return(false);
+            }
+          }
+        }
+      }else {
+        return(false);
+      }
+    } else {
+      return(false);
+    }
+    return(true);
+  }
+
+  public boolean addElementToPage(IBPage ibPage, int templateObjInstID ){
+    int[] ids = new int[1];
+    ids[0] = templateObjInstID;
+    return addElementToPage(ibPage, ids);
+  }
+
 
   private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
     if (obj.getChangeInstanceIDOnInheritance()) {
