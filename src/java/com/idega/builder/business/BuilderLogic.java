@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.162 2004/12/03 02:25:07 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.163 2004/12/06 15:33:53 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.Vector;
-
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
@@ -96,18 +95,18 @@ public class BuilderLogic {
 
 	public boolean updatePage(int id) {
 		String theID = Integer.toString(id);
-		IBXMLPage xml = PageCacher.getXML(theID);
+		IBXMLPage xml = getPageCacher().getXML(theID);
 		xml.store();
-		PageCacher.flagPageInvalid(theID);
+		getPageCacher().flagPageInvalid(theID);
 		return (true);
 	}
 
 	public IBXMLPage getIBXMLPage(String key) {
-		return PageCacher.getXML(key);
+		return getPageCacher().getXML(key);
 	}
 
 	public IBXMLPage getIBXMLPage(int id) {
-		return PageCacher.getXML(Integer.toString(id));
+		return getPageCacher().getXML(Integer.toString(id));
 	}
 
 	/**
@@ -119,7 +118,7 @@ public class BuilderLogic {
 			if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
 				permissionview = true;
 			}
-			Page page = PageCacher.getPage(Integer.toString(id), iwc);
+			Page page = getPageCacher().getPage(Integer.toString(id), iwc);
 			if (builderview && iwc.hasEditPermission(page)) {
 				return (BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id), page, iwc));
 			}
@@ -133,7 +132,7 @@ public class BuilderLogic {
 					catch (NumberFormatException ex) {
 					}
 				}
-				page = PageCacher.getPage(Integer.toString(id));
+				page = getPageCacher().getPage(Integer.toString(id));
 				return (BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id), page, iwc));
 			}
 			else {
@@ -428,7 +427,7 @@ public class BuilderLogic {
 					}
 				}
 				if (index != -1) {
-					Page curr = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
+					Page curr = getPageCacher().getPage(getCurrentIBPage(iwc), iwc);
 					if (curr.getIsExtendingTemplate()) {
 						if (obj.getBelongsToParent()) {
 							if (!((PresentationObjectContainer) obj).isLocked()) {
@@ -527,7 +526,7 @@ public class BuilderLogic {
 		}
 		// otherwise use startpage
 		else
-			theReturn = String.valueOf(getStartPageIdByServerName(iwc,iwc.getServerName()));
+			theReturn = String.valueOf(getInstance().getStartPageIdByServerName(iwc,iwc.getServerName()));
 		if (theReturn == null) {
 			return Integer.toString(getCurrentDomain(iwc).getStartPageID());
 		}
@@ -565,7 +564,7 @@ public class BuilderLogic {
 	 */
 	public boolean setPageSource(String pageKey,String pageFormat,String stringSourceMarkup){
 		try{
-			PageCacher.storePage(pageKey,pageFormat,stringSourceMarkup);
+			getPageCacher().storePage(pageKey,pageFormat,stringSourceMarkup);
 			return true;
 		}
 		catch(Exception e){
@@ -1058,22 +1057,22 @@ public class BuilderLogic {
 		element.setAttribute(newPageLink);
 		XMLWriter.addNewElement(page, -1, element);
 		page.store();
-		PageCacher.flagPageInvalid(currentPageID);
+		getPageCacher().flagPageInvalid(currentPageID);
 	}
 
 	/**
 	 *  	 *
 	 */
-	public static int getStartPageId(IWApplicationContext iwac) {
-		ICDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwac);
+	public int getStartPageId(IWApplicationContext iwac) {
+		ICDomain domain = getCurrentDomain(iwac);
 		return domain.getStartPageID();
 	}
 	
 	/**
 	 *  	 *
 	 */
-	public static int getStartPageIdByServerName(IWApplicationContext iwac,String serverName) {
-		ICDomain domain = BuilderLogic.getInstance().getCurrentDomainByServerName(iwac,serverName);
+	public int getStartPageIdByServerName(IWApplicationContext iwac,String serverName) {
+		ICDomain domain = getCurrentDomainByServerName(iwac,serverName);
 		return domain.getStartPageID();
 	}
 
@@ -1102,7 +1101,7 @@ public class BuilderLogic {
 	 * Invalidates cache for all pages
 	 */
 	public void clearAllCachedPages() {
-		PageCacher.flagAllPagesInvalid();
+		getPageCacher().flagAllPagesInvalid();
 	}
 
 	/**
@@ -1110,11 +1109,43 @@ public class BuilderLogic {
 	 * @param pageKey
 	 */
 	public void invalidatePage(String pageKey){
-		PageCacher.flagPageInvalid(pageKey);
+		getPageCacher().flagPageInvalid(pageKey);
+	}
+	
+	private PageCacher pageCacher;
+	/**
+	 * Return the singleton instance of PageCacher
+	 * @return
+	 */
+	public PageCacher getPageCacher(){
+		if(pageCacher==null){
+			setPageCacher(new PageCacher());
+		}		
+		return pageCacher;
+	}
+	
+	public void setPageCacher(PageCacher pageCacherInstance){
+		this.pageCacher=pageCacherInstance;
+	}
+	
+	private IBPageHelper ibPageHelper;
+	/**
+	 * Return the singleton instance of IBPageHelper
+	 * @return
+	 */
+	public IBPageHelper getIBPageHelper(){
+		if(ibPageHelper==null){
+			setIBPageHelper(new IBPageHelper());
+		}
+		return ibPageHelper;
+	}
+	public void setIBPageHelper(IBPageHelper ibPageHelper){
+		this.ibPageHelper=ibPageHelper;
 	}
 	
 	public void unload(){
-		PageCacher.getInstance().unload();
+		pageCacher=null;
+		ibPageHelper=null;
 		_instance=null;
 	}
 }

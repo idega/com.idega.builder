@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.54 2004/07/14 09:21:03 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.55 2004/12/06 15:33:53 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -237,11 +237,11 @@ public class IBXMLPage implements IBXMLAble {
 			Iterator i = l.iterator();
 			while (i.hasNext()) {
 				String invalid = (String) i.next();
-				IBXMLPage child = PageCacher.getXMLIfInCache(invalid);
+				IBXMLPage child = getBuilderLogic().getPageCacher().getXMLIfInCache(invalid);
 				if (child != null) {
 					if (child.getType().equals(TYPE_TEMPLATE))
 						child.invalidateUsingTemplate();
-					PageCacher.flagPageInvalid(invalid);
+					getBuilderLogic().getPageCacher().flagPageInvalid(invalid);
 				}
 			}
 		}
@@ -619,4 +619,9 @@ public class IBXMLPage implements IBXMLAble {
 		}
 		return parser;
 	}
+	
+	protected BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
+	}
+	
 }

@@ -39,7 +39,7 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
     String pageKey = null;
     try{
       pageKey = prefix+File.separator+fileName;
-      page = PageCacher.getPage(pageKey);
+      page = getBuilderLogic().getPageCacher().getPage(pageKey);
     }
     catch(RuntimeException e){
       e.printStackTrace();
@@ -54,6 +54,9 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
   }
 
 
+  protected BuilderLogic getBuilderLogic(){
+  	return BuilderLogic.getInstance();
+  }
 
 
 }

@@ -10,9 +10,7 @@ package com.idega.builder.business;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
-
 import javax.ejb.FinderException;
-
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOLookupException;
@@ -20,27 +18,20 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 public class PageCacher
 {
-	//Static variables:
-	private static PageCacher instance;
-	
 	//Instance variables:
 	private Map pageCache = new WeakHashMap();
 	private Map pagesValid = new HashMap();
-	private PageCacher()
+	PageCacher()
 	{}
 	protected static PageCacher getInstance(){
-		if(instance==null){
-			instance=new PageCacher();
-		}
-		return instance;
+		return getBuilderLogic().getPageCacher();
 	}
 	
-	public void unload(){
-		instance=null;
+	protected static BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
 	}
 	
-	
-	protected static boolean isPageValid(String key)
+	protected boolean isPageValid(String key)
 	{
 		boolean theReturn = false;
 		Boolean fetched = (Boolean) getInstance().pagesValid.get(key);
@@ -53,15 +44,15 @@ public class PageCacher
 		}
 		return theReturn;
 	}
-	protected static boolean isPageInvalid(String key)
+	protected boolean isPageInvalid(String key)
 	{
 		return !isPageValid(key);
 	}
-	public static void flagPageInvalid(String key)
+	public void flagPageInvalid(String key)
 	{
 		flagPageValid(key, false);
 	}
-	public static void flagPageValid(String key, boolean trueOrFalse)
+	public void flagPageValid(String key, boolean trueOrFalse)
 	{
 		if (trueOrFalse)
 		{
@@ -72,7 +63,7 @@ public class PageCacher
 			getInstance().pagesValid.put(key, Boolean.FALSE);
 		}
 	}
-	public static Page getPage(String key, IWContext iwc)
+	public Page getPage(String key, IWContext iwc)
 	{
 		IBXMLPage xml = null;
 		xml = getXML(key);
@@ -83,7 +74,7 @@ public class PageCacher
 		}
 		return null;
 	}
-	public static Page getPage(String key)
+	public Page getPage(String key)
 	{
 		IBXMLPage xml = null;
 		xml = getXML(key);
@@ -104,7 +95,7 @@ public class PageCacher
 	  return null;
 	}*/
 	
-	public static void storePage(String key,String format,String stringRepresentation)throws Exception{
+	public void storePage(String key,String format,String stringRepresentation)throws Exception{
 		IBXMLPage bPage = getXML(key);
 		//flagPageInvalid(key);
 		bPage.setPageFormat(format);
@@ -114,7 +105,7 @@ public class PageCacher
 	}
 	
 	
-	public static IBXMLPage getXML(String key)
+	public IBXMLPage getXML(String key)
 	{
 		IBXMLPage bPage = null;
 		if (isPageInvalid(key))
@@ -196,16 +187,16 @@ public class PageCacher
 	    return getXML(key);
 	  }
 	}*/
-	private static Object setPage(String key, IBXMLPage page)
+	private Object setPage(String key, IBXMLPage page)
 	{
 		flagPageValid(key, true);
 		return getPageCacheMap().put(key, page);
 	}
-	private static Map getPageCacheMap()
+	private Map getPageCacheMap()
 	{
 		return getInstance().pageCache;
 	}
-	public static IBXMLPage getXMLPageCached(String key)
+	public IBXMLPage getXMLPageCached(String key)
 	{
 		return (IBXMLPage) getPageCacheMap().get(key);
 	}
@@ -216,7 +207,7 @@ public class PageCacher
 	 *
 	 * @return The IBXMLPage with id = key if it exists in cache, null otherwise.
 	 */
-	public static IBXMLPage getXMLIfInCache(String key)
+	public IBXMLPage getXMLIfInCache(String key)
 	{
 		if (isPageInvalid(key))
 		{
@@ -231,7 +222,7 @@ public class PageCacher
 	/**
 	 * Method flagAllPagesInvalid.
 	 */
-	public synchronized static void flagAllPagesInvalid()
+	public synchronized void flagAllPagesInvalid()
 	{
 		getInstance().pagesValid.clear();
 		getInstance().pageCache.clear();

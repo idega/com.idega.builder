@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.20 2004/10/29 09:28:32 laddi Exp $
+ * $Id: IBPageBMPBean.java,v 1.21 2004/12/06 15:33:53 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,12 +15,10 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Locale;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLPage;
-import com.idega.builder.business.PageCacher;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -622,7 +620,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		ICFile file = getFile();
 		if (file.isEmpty()) {
 			// file value is empty get a xml description of the page
-			IBXMLPage xmlPage = PageCacher.getXML(this.getPrimaryKey().toString());
+			IBXMLPage xmlPage = getBuilderLogic().getPageCacher().getXML(this.getPrimaryKey().toString());
 			XMLElement rootElement = xmlPage.getRootElement();
 			// remove connection to document
 			rootElement.detach();
@@ -692,5 +690,10 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	    	query.addColumn(new WildCardColumn());
 	    	query.addCriteria(new MatchCriteria(table,getColumnTemplateID(),MatchCriteria.EQUALS,templateID));
 	    	return idoFindPKsByQuery(query);
+	}
+	
+	
+	protected BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
 	}
 }

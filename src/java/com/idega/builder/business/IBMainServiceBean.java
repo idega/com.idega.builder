@@ -28,7 +28,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	 * @see com.idega.core.builder.business.BuilderService#getPage(java.lang.String)
 	 */
 	public Page getPage(String pageID) throws RemoteException {
-		return PageCacher.getPage(pageID);
+		return getBuilderLogic().getPageCacher().getPage(pageID);
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getCurrentDomain()

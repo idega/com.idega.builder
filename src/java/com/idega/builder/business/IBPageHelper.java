@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.43 2004/09/06 19:45:27 sigtryggur Exp $
+ * $Id: IBPageHelper.java,v 1.44 2004/12/06 15:33:53 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,10 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
@@ -58,14 +56,16 @@ public class IBPageHelper {
 	private final String LINK_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
 	private final int PAGEVIEWER = 0;
 	private final int TEMPLATEVIEWER = 1;
-	private static IBPageHelper _instance = null;
-	private IBPageHelper() {
+	//private static IBPageHelper _instance = null;
+	IBPageHelper() {
 	}
 	
 	public static IBPageHelper getInstance() {
-		if (_instance == null)
-			_instance = new IBPageHelper();
-		return _instance;
+		return getBuilderLogic().getIBPageHelper();
+	}
+	
+	protected static BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
 	}
 	
 	/**

@@ -16,8 +16,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.business.PageCacher;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
 import com.idega.builder.data.IBExportImportData;
@@ -303,7 +303,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		pageData.store();
 		// update page
 		//TODO: thi: figure out why updatePage doesn't work 
-		PageCacher.flagAllPagesInvalid();
+		getBuilderLogic().getPageCacher().flagAllPagesInvalid();
 		//builderLogic.updatePage(currentPageId);
 	}	
 	
@@ -615,5 +615,9 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		throw new IOException("[IBExportImportDataReader] Unknown page type "+ xmlTypeString);
 	}
 
+	
+	protected BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
+	}
   	
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.55 2004/06/22 17:53:56 thomas Exp $
+ * $Id: XMLReader.java,v 1.56 2004/12/06 15:33:53 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -75,7 +75,7 @@ public class XMLReader {
 			XMLAttribute at = (XMLAttribute) attr.next();
 			if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
 				hasTemplate = true;
-				parentContainer = PageCacher.getPage(at.getValue());
+				parentContainer = getBuilderLogic().getPageCacher().getPage(at.getValue());
 				parentContainer.setIsExtendingTemplate();
 				parentContainer.setTemplateId(at.getValue());
 				setAllBuilderControls(parentContainer, false);
@@ -594,6 +594,10 @@ public class XMLReader {
 	  if(instanceKey != null){
 		ObjectInstanceCacher.getObjectInstancesCachedForPage(ibxml.getPageKey()).put(instanceKey,objectInstance);
 	  }
+	}
+	
+	protected static BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
 	}
 	
 }
