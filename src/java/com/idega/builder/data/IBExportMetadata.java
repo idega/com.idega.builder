@@ -5,10 +5,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
+import com.idega.builder.business.IBPageHelper;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOLookupException;
 import com.idega.io.ObjectWriter;
 import com.idega.io.Storable;
+import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
@@ -23,9 +29,12 @@ import com.idega.xml.XMLElement;
  */
 public class IBExportMetadata implements Storable {
 	
-	public static final String EXPORT_METADATA = "metadata";
+	public static final String EXPORT_METADATA_NAME = "metadata";
+	public static final String EXPORT_METADATA_FILE_NAME = EXPORT_METADATA_NAME + ".xml";
 	
 	private List fileElements = new ArrayList();
+	private XMLElement pagesElement = null; 
+	private XMLElement templatesElement = null;
 
 	public IBExportMetadata() {
 		initialize();
@@ -48,8 +57,35 @@ public class IBExportMetadata implements Storable {
 		modifyElementSetNameSetOriginalName(index, name, originalName);
 	}
 		
-
+	public void addPageTree(IWContext iwc) throws IDOLookupException, FinderException {
+		List pageTreeNodes = IBPageHelper.getInstance().getFirstLevelPageTreeNodesDomainFirst(iwc);
+		pagesElement = new XMLElement(XMLConstants.PAGE_TREE_PAGES);
+		addPages(pageTreeNodes.iterator(), pagesElement);
+	}
 	
+	public void addTemplateTree(IWContext iwc) throws IDOLookupException, FinderException {
+		List pageTreeNodes = IBPageHelper.getInstance().getFirstLevelPageTreeNodesTemplateDomainFirst(iwc);
+		templatesElement = new XMLElement(XMLConstants.PAGE_TREE_TEMPLATES);
+		addPages(pageTreeNodes.iterator(), templatesElement);
+	}
+
+
+	private void addPages(Iterator pageTreeNodeIterator, XMLElement element) {
+		if (pageTreeNodeIterator == null) {
+			return;
+		}
+		while (pageTreeNodeIterator.hasNext()) {
+			PageTreeNode node = (PageTreeNode) pageTreeNodeIterator.next();
+			String name = node.getNodeName();
+			String id = Integer.toString(node.getNodeID());
+			XMLElement pageElement = new XMLElement(XMLConstants.PAGE_TREE_PAGE);
+			pageElement.addContent(XMLConstants.PAGE_TREE_NAME, name);
+			pageElement.addContent(XMLConstants.PAGE_TREE_ID, id);
+			Iterator iterator = node.getChildren();
+			addPages(iterator, pageElement);
+			element.addContent(pageElement);
+		}
+	}
 	
 	public void addFileEntry(IBReference.Entry entry, String value) {
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE);
@@ -73,13 +109,15 @@ public class IBExportMetadata implements Storable {
 	}
 
 	private XMLData createXMLData() {
-		XMLData metadata = XMLData.getInstanceWithoutExistingFileSetNameSetRootName(EXPORT_METADATA, EXPORT_METADATA);
+		XMLData metadata = XMLData.getInstanceWithoutExistingFileSetNameSetRootName(EXPORT_METADATA_FILE_NAME, EXPORT_METADATA_NAME);
 		XMLElement metadataElement = metadata.getDocument().getRootElement();
 		Iterator iterator = fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement fileElement = (XMLElement) iterator.next();
 			metadataElement.addContent(fileElement);
 		}
+		metadataElement.addContent(pagesElement);
+		metadataElement.addContent(templatesElement);
 		return metadata;
 	}
 

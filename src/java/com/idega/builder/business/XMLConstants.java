@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.16 2004/03/24 18:43:33 thomas Exp $
+ * $Id: XMLConstants.java,v 1.17 2004/03/25 17:54:13 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -68,4 +68,10 @@ public abstract class XMLConstants {
   public static final String FILE_VALUE = "value";
   public static final String FILE_USED_ID = "identifier";
   public static final String FILE_ORIGINAL_NAME = "original_name";
+  
+  public static final String PAGE_TREE_PAGES = "pages";
+  public static final String PAGE_TREE_TEMPLATES = "templates";
+  public static final String PAGE_TREE_PAGE = "page";
+  public static final String PAGE_TREE_NAME = "name";
+  public static final String PAGE_TREE_ID = "id";
 }

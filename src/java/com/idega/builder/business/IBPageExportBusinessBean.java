@@ -17,6 +17,7 @@ import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -32,35 +33,38 @@ import com.idega.xml.XMLElement;
  */
 public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageExportBusiness {
 	
-
-
-	
 	private ICPageHome pageHome = null;
 	private FileBusiness fileBusiness = null;
 	private IBReferences references = null;
 
 	
-	public String exportPages(List pageIds, List templateIds) throws IOException, FinderException {
+	public String exportPages(List pageIds, List templateIds, IWContext iwc) throws IOException, FinderException {
 		List ids = null;
 		boolean pageIdsExists = (pageIds != null && ! pageIds.isEmpty());
 		boolean templateIdsExists = (templateIds != null && ! templateIds.isEmpty());
 		if (! pageIdsExists && ! templateIdsExists) {
 			return "";
 		}
+		
+		IBExportMetadata metadata = new IBExportMetadata();
 		if (pageIdsExists) {
+			metadata.addPageTree(iwc);
 			ids = new ArrayList(pageIds);
-			if (templateIdsExists) {
+		}
+		
+		if (templateIdsExists) {
+			metadata.addTemplateTree(iwc);
+			if (pageIdsExists) {
 				ids.addAll(templateIds);
 			}
+			else {
+				ids = new ArrayList(templateIds);
+			}
 		}
-		else {
-			ids = new ArrayList(templateIds);
-		}
-		return exportPages(ids);
+		return exportPages(ids, metadata);
 	}
 		
-	private String exportPages(List pageIds) throws IOException, FinderException  {
-  	IBExportMetadata metadata = new IBExportMetadata();
+	private String exportPages(List pageIds,IBExportMetadata metadata) throws IOException, FinderException  {
 		List files = new ArrayList();
 //  	XMLData exportXML = XMLData.getInstanceWithoutExistingFile("export");
 //  	XMLDocument exportDocument = exportXML.getDocument();
