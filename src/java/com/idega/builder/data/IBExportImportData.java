@@ -27,23 +27,29 @@ import com.idega.xml.XMLElement;
  * @version 1.0
  * Created on Mar 24, 2004
  */
-public class IBExportMetadata implements Storable {
+public class IBExportImportData implements Storable {
 	
 	public static final String EXPORT_METADATA_NAME = "metadata";
 	public static final String EXPORT_METADATA_FILE_NAME = EXPORT_METADATA_NAME + ".xml";
 	
+	private List files = new ArrayList();
 	private List fileElements = new ArrayList();
 	private XMLElement pagesElement = null; 
 	private XMLElement templatesElement = null;
 
-	public IBExportMetadata() {
-		initialize();
+	public String getName() {
+		return EXPORT_METADATA_NAME;
 	}
 	
-	private void initialize() {
-		
+	public List getData() {
+		return files;
 	}
-
+	
+	public String getSourceClassNameForElement(int index) {
+		XMLElement fileElement = (XMLElement) fileElements.get(index);
+		return fileElement.getTextTrim(XMLConstants.FILE_SOURCE);
+	}
+	
 	public void modifyElementSetNameSetOriginalName(int index, String name, String originalName) {
 		XMLElement fileElement = (XMLElement) fileElements.get(index);
 		fileElement.addContent(XMLConstants.FILE_USED_ID,name);
@@ -87,7 +93,8 @@ public class IBExportMetadata implements Storable {
 		}
 	}
 	
-	public void addFileEntry(IBReference.Entry entry, String value) {
+	public void addFileEntry(IBReference.Entry entry, Storable storable, String value) {
+		files.add(storable);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE);
 		fileElement.addContent(XMLConstants.FILE_SOURCE, entry.getSourceClass());
 		fileElement.addContent(XMLConstants.FILE_NAME, entry.getValueName());
@@ -96,6 +103,7 @@ public class IBExportMetadata implements Storable {
 	}
 	
 	public void addFileEntry(ICPage page) {
+		files.add(page);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE);
 		fileElement.addContent(XMLConstants.FILE_SOURCE, ICPage.class.getName());
 		fileElement.addContent(XMLConstants.FILE_NAME, page.getIDColumnName());
@@ -104,11 +112,10 @@ public class IBExportMetadata implements Storable {
 	}
 	
 	public Object write(ObjectWriter writer) throws RemoteException {
-		XMLData metadata = createXMLData();
-		return writer.write(metadata);
+		return writer.write(this);
 	}
 
-	private XMLData createXMLData() {
+	public XMLData createMetadataSummary() {
 		XMLData metadata = XMLData.getInstanceWithoutExistingFileSetNameSetRootName(EXPORT_METADATA_FILE_NAME, EXPORT_METADATA_NAME);
 		XMLElement metadataElement = metadata.getDocument().getRootElement();
 		Iterator iterator = fileElements.iterator();
