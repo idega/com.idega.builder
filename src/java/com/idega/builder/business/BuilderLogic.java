@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.80 2001/12/03 16:18:15 palli Exp $
+ * $Id: BuilderLogic.java,v 1.81 2001/12/04 23:40:13 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Window;
+import com.idega.presentation.IFrameContainer;
 
 import java.util.ListIterator;
 import java.util.List;
@@ -63,6 +64,8 @@ public class BuilderLogic {
   public static final String IB_PARENT_PARAMETER = "ib_parent_par";
   public static final String IB_PAGE_PARAMETER ="ib_page";
   public static final String IB_LABEL_PARAMETER = "ib_label";
+  public static final String IB_OBJECT_INSTANCE_COORDINATE = "ib_ob_inst";
+  public static final String IB_OBJECT_INSTANCE_EVENT_SOURCE = "ib_ob_inst_ev_s";
 
   public static final String IB_CONTROL_PARAMETER = "ib_control_par";
   public static final String ACTION_DELETE ="ACTION_DELETE";
@@ -80,6 +83,8 @@ public class BuilderLogic {
   public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
 
   public static final String SESSION_PAGE_KEY = "ib_page_id";
+  public static final String SESSION_OBJECT_STATE = "obj_inst_state";
+  public static final String PRM_HISTORY_ID = "ib_history";
 
   public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
   public static final String IMAGE_IC_OBJECT_INSTANCE_SESSION_ADDRESS = "ic_object_id_image";
@@ -655,8 +660,8 @@ public class BuilderLogic {
       _table.setColor(1,1,"#CCCCCC");
       _table.setLineFrame(true);
       _table.setLineAfterRow(1);
-      _table.setLineWidth("2");
-      _table.setLineHeight("2");
+      _table.setLineWidth("1");
+      _table.setLineHeight("1");
       _table.setLineColor("#000000");
 
       _table.setHeight(1,1,"11");
@@ -1051,6 +1056,10 @@ public class BuilderLogic {
     return IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id;
   }
 
+  public static String getIFrameContentURL(int ICObjectInstanceId, int ibPageId){
+      return IWMainApplication._IFRAME_CONTENT_URL+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId+"&"+IB_PAGE_PARAMETER+"="+ibPageId;
+  }
+
   public void changeName(String name, IWContext iwc) {
     IBXMLPage xml = getCurrentIBXMLPage(iwc);
     if (xml != null) {
@@ -1107,5 +1116,88 @@ public class BuilderLogic {
   public boolean isBuilderApplicationRunning(IWContext iwc){
     return !(iwc.getSessionAttribute(IB_APPLICATION_RUNNING_SESSION)==null);
   }
+
+  public PresentationObject getIFrameContent(int ibPageId, int instanceId, IWContext iwc){
+    Page parentPage = BuilderLogic.getInstance().getIBXMLPage(ibPageId).getPopulatedPage();
+
+    PresentationObject obj = parentPage.getContainedICObjectInstance(instanceId);
+    PresentationObject iframeContent = null;
+
+    if(obj instanceof IFrameContainer && obj != null){
+      iframeContent = ((IFrameContainer)obj).getIFrameContent();
+    }
+    return iframeContent;
+  }
+
+
+  public PresentationObject[] getIWPOListeners(IWContext iwc){
+    String[] coordinates = iwc.getParameterValues(this.IB_OBJECT_INSTANCE_COORDINATE);
+    if(coordinates != null && coordinates.length > 0){
+      List l = new Vector();
+      for (int i = 0; i < coordinates.length; i++) {
+        String crdnts = coordinates[i];
+        int index = crdnts.indexOf('_');
+        String page = crdnts.substring(0,index);
+        String inst = crdnts.substring(index+1,crdnts.length());
+        if(!"".equals(page) && !"".equals(inst)){
+          Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
+          PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
+          if(obj != null){
+            l.add(obj);
+          }
+        }
+      }
+      PresentationObject[] toReturn = (PresentationObject[])l.toArray(new PresentationObject[0]);
+      if(toReturn.length > 0){
+        return toReturn;
+      }else{
+        return null;
+      }
+    } else{
+      return null;
+    }
+  }
+
+
+  public PresentationObject getIWPOEventSource(IWContext iwc){
+    String coordinates = iwc.getParameter(this.IB_OBJECT_INSTANCE_EVENT_SOURCE);
+    if(coordinates != null){
+      String crdnts = coordinates;
+      int index = crdnts.indexOf('_');
+      String page = crdnts.substring(0,index);
+      String inst = crdnts.substring(index+1,crdnts.length());
+      if(!"".equals(page) && !"".equals(inst)){
+        Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
+        PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
+        return obj;
+      }
+    }
+    return null;
+  }
+
+
+
+  public void setICObjectInstanceListeners(Link l, int[] ibPageId, int[] instanceId){
+    String prm = "";
+    for (int i = 0; i < ibPageId.length; i++) {
+      if(i != 0){
+        prm += ",";
+      }
+      prm += ibPageId[i]+"_"+instanceId[i];
+    }
+
+
+    l.addParameter(IB_OBJECT_INSTANCE_COORDINATE,prm);
+  }
+
+  public void setICObjectInstanceListener(Link l, int ibPageId, int instanceId){
+    l.addParameter(IB_OBJECT_INSTANCE_COORDINATE,ibPageId+"_"+instanceId);
+  }
+
+  public void setICObjectInstanceEventSource(Link l, int ibPageId, int instanceId){
+    l.addParameter(IB_OBJECT_INSTANCE_EVENT_SOURCE,ibPageId+"_"+instanceId);
+  }
+
+
 
 }
