@@ -74,7 +74,7 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
   		XMLData xmlData = XMLData.getInstanceForFile(file);
   		XMLDocument pageXML = xmlData.getDocument();
   		XMLElement pageRoot = pageXML.getRootElement().getChild(XMLConstants.PAGE_STRING);
-  		getReferences().checkElementForReferences(pageRoot, metadata);
+  		getReferences().checkElementForReferencesNoteNecessaryModules(pageRoot, metadata);
   		metadata.addFileEntry(page);
   	}
   	FileBusiness fileBusiness = getFileBusiness();
