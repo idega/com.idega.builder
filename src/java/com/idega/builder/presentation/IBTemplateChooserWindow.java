@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.5 2001/11/06 18:18:03 palli Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.6 2001/11/14 17:58:48 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,10 +31,9 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
     /**
      * @todo Setja inn IWResourceBundle hérna í staðinn fyrir þessa texta.
      */
-    setName("Template Chooser");
+    setName("Template chooser");
     setWidth(_width);
     setHeight(_height);
-    add("Select a page");
   }
 
   /**
@@ -42,6 +41,8 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
    * with better implementation ibdomain...
    */
   public void displaySelection(IWContext iwc) {
+    add("Select a template");
+
     try {
       int i_page_id = 2;
 

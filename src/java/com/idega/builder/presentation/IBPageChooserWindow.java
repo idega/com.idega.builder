@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.5 2001/11/06 18:18:03 palli Exp $
+ * $Id: IBPageChooserWindow.java,v 1.6 2001/11/14 17:56:53 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,16 +26,17 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
    *
    */
   public IBPageChooserWindow() {
-    setName("Page Chooser");
+    setTitle("Page chooser");
     setWidth(300);
     setHeight(500);
-    add("Select a page");
   }
 
   /**
    *
    */
   public void displaySelection(IWContext iwc) {
+    add("Select a page");
+
     try{
       /**
        * @todo get a treeviewer with the top page selected by default with better implementation ibdomain...
