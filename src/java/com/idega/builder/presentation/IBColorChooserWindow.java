@@ -25,6 +25,7 @@ import com.idega.presentation.text.Text;
 public class IBColorChooserWindow extends AbstractChooserWindow {
 
 private String _colorString;
+private boolean fromEditor = false;
 
   public IBColorChooserWindow() {
     this.setWidth(340);
@@ -51,7 +52,7 @@ private String _colorString;
     }
   }
 
-  private Form drawForm(IWContext iwc) {
+  private PresentationObject drawForm(IWContext iwc) {
     IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
     IWColor color = new IWColor(0,0,0);
@@ -64,7 +65,6 @@ private String _colorString;
     }
 
     Form form = new Form();
-      form.setMethod("get");
     Table formTable = new Table();
       formTable.setCellpadding(5);
       formTable.setCellspacing(0);
@@ -94,7 +94,7 @@ private String _colorString;
       webPalette.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
     Table table = new Table();
-    if ( iwc.getApplicationAttribute("color_palette_table") == null ) {
+    if ( fromEditor || iwc.getApplicationAttribute("color_palette_table") == null ) {
       table.setRows(12);
       table.setColumns(18);
       table.setCellpadding(0);
@@ -126,7 +126,13 @@ private String _colorString;
 
 	  link = new Link(image);
 	  table.add(link,b,a);
+	  if ( fromEditor ) {
+	    link.setURL("#");
+	    link.setOnClick("save('"+color.getHexColorString()+"')");
+	  }
+	  else {
 	    link.addParameter("color",color.getHexColorString());
+	  }
 	  table.setColor(b,a,color.getHexColorString());
 
 	  G += 51;
@@ -140,126 +146,131 @@ private String _colorString;
     else
       table = (Table) iwc.getApplicationAttribute("color_palette_table");
 
-    Block block = new Block();
-      block.add(table);
-      block.setCacheable("web_color_palette",0);
+    if ( !fromEditor ) {
+      Block block = new Block();
+	block.add(table);
+	block.setCacheable("web_color_palette",0);
 
-    formTable.add(webPalette,column,row);
-    formTable.add(Text.getBreak(),column,row);
-    formTable.add(block,column,row);
-
-    row = 1;
-    column = 2;
-
-    Text hexText = new Text("Hex color:");
-      hexText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-    TextInput hexInput = new TextInput("color");
-      hexInput.setLength(7);
-      hexInput.setMaxlength(7);
-      hexInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-      if ( _colorString != null )
-	hexInput.setContent(_colorString);
-
-    formTable.add(hexText,column,row);
-    formTable.add(Text.getNonBrakingSpace(2),column,row);
-    formTable.add(hexInput,column,row++);
-
-    Text rgbText = new Text("RGB color:");
-      rgbText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-    TextInput redInput = new TextInput("red");
-      redInput.setLength(3);
-      redInput.setMaxlength(3);
-      redInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-      if ( iwColor != null )
-	redInput.setContent(Integer.toString(iwColor.getRed()));
-    TextInput greenInput = new TextInput("green");
-      greenInput.setLength(3);
-      greenInput.setMaxlength(3);
-      greenInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-      if ( iwColor != null )
-	greenInput.setContent(Integer.toString(iwColor.getGreen()));
-    TextInput blueInput = new TextInput("blue");
-      blueInput.setLength(3);
-      blueInput.setMaxlength(3);
-      blueInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-      if ( iwColor != null )
-	blueInput.setContent(Integer.toString(iwColor.getBlue()));
-
-    formTable.add(rgbText,column,row);
-    formTable.add(Text.getBreak(),column,row);
-    formTable.add(redInput,column,row);
-    formTable.add(greenInput,column,row);
-    formTable.add(blueInput,column,row++);
-
-    Table inputTable = new Table(3,1);
-      inputTable.setCellpadding(0);
-      inputTable.setCellspacing(0);
-      inputTable.setWidth(2,"3");
-      inputTable.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
-      inputTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
-      if ( _colorString != null )
-	inputTable.setColor(3,1,_colorString);
-
-    Text previewText = new Text("Preview:");
-      previewText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-
-    Image previewImage = (Image) image.clone();
-      previewImage.setWidth(50);
-      previewImage.setHeight(50);
-      previewImage.setBorder(1);
-
-    inputTable.add(previewText,1,1);
-    inputTable.add(previewImage,3,1);
-
-    formTable.add(inputTable,column,row++);
-
-    Text removeText = new Text("Remove custom color");
-      removeText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
-    CheckBox removeFromPalette = new CheckBox("removeFromPalette");
-
-    Text paletteText = new Text("Add to custom colors");
-      paletteText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
-    CheckBox addToPalette = new CheckBox("addToPalette");
-
-    boolean isInCustom = isInCustomColors(iwc,_colorString);
-    if ( _colorString != null && isInCustom ) {
-      formTable.add(removeFromPalette,column,row);
-      formTable.add(removeText,column,row);
+      formTable.add(webPalette,column,row);
       formTable.add(Text.getBreak(),column,row);
-      formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("remove","Remove"),"add_remove"),column,row++);
+      formTable.add(block,column,row);
+
+      row = 1;
+      column = 2;
+
+      Text hexText = new Text("Hex color:");
+	hexText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+      TextInput hexInput = new TextInput("color");
+	hexInput.setLength(7);
+	hexInput.setMaxlength(7);
+	hexInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+	if ( _colorString != null )
+	  hexInput.setContent(_colorString);
+
+      formTable.add(hexText,column,row);
+      formTable.add(Text.getNonBrakingSpace(2),column,row);
+      formTable.add(hexInput,column,row++);
+
+      Text rgbText = new Text("RGB color:");
+	rgbText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+      TextInput redInput = new TextInput("red");
+	redInput.setLength(3);
+	redInput.setMaxlength(3);
+	redInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+	if ( iwColor != null )
+	  redInput.setContent(Integer.toString(iwColor.getRed()));
+      TextInput greenInput = new TextInput("green");
+	greenInput.setLength(3);
+	greenInput.setMaxlength(3);
+	greenInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+	if ( iwColor != null )
+	  greenInput.setContent(Integer.toString(iwColor.getGreen()));
+      TextInput blueInput = new TextInput("blue");
+	blueInput.setLength(3);
+	blueInput.setMaxlength(3);
+	blueInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+	if ( iwColor != null )
+	  blueInput.setContent(Integer.toString(iwColor.getBlue()));
+
+      formTable.add(rgbText,column,row);
+      formTable.add(Text.getBreak(),column,row);
+      formTable.add(redInput,column,row);
+      formTable.add(greenInput,column,row);
+      formTable.add(blueInput,column,row++);
+
+      Table inputTable = new Table(3,1);
+	inputTable.setCellpadding(0);
+	inputTable.setCellspacing(0);
+	inputTable.setWidth(2,"3");
+	inputTable.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
+	inputTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
+	if ( _colorString != null )
+	  inputTable.setColor(3,1,_colorString);
+
+      Text previewText = new Text("Preview:");
+	previewText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+
+      Image previewImage = (Image) image.clone();
+	previewImage.setWidth(50);
+	previewImage.setHeight(50);
+	previewImage.setBorder(1);
+
+      inputTable.add(previewText,1,1);
+      inputTable.add(previewImage,3,1);
+
+      formTable.add(inputTable,column,row++);
+
+      Text removeText = new Text("Remove custom color");
+	removeText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
+      CheckBox removeFromPalette = new CheckBox("removeFromPalette");
+
+      Text paletteText = new Text("Add to custom colors");
+	paletteText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
+      CheckBox addToPalette = new CheckBox("addToPalette");
+
+      boolean isInCustom = isInCustomColors(iwc,_colorString);
+      if ( _colorString != null && isInCustom ) {
+	formTable.add(removeFromPalette,column,row);
+	formTable.add(removeText,column,row);
+	formTable.add(Text.getBreak(),column,row);
+	formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("remove","Remove"),"add_remove"),column,row++);
+      }
+      else {
+	formTable.add(addToPalette,column,row);
+	formTable.add(paletteText,column,row);
+	formTable.add(Text.getBreak(),column,row);
+	formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("add","Add"),"add_remove"),column,row++);
+      }
+
+      if ( iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER) != null ) {
+	form.add(new HiddenInput(SCRIPT_PREFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER)));
+	form.add(new HiddenInput(SCRIPT_SUFFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_SUFFIX_PARAMETER)));
+	form.add(new HiddenInput(DISPLAYSTRING_PARAMETER_NAME,(String)iwc.getSessionAttribute(DISPLAYSTRING_PARAMETER_NAME)));
+	form.add(new HiddenInput(VALUE_PARAMETER_NAME,(String)iwc.getSessionAttribute(VALUE_PARAMETER_NAME)));
+      }
+
+      if ( _colorString != null )
+	form.add(new HiddenInput("old_color",_colorString));
+
+      formTable.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
+      formTable.setColumnVerticalAlignment(2,Table.VERTICAL_ALIGN_TOP);
+      formTable.setHeight(column,row,"100%");
+      formTable.setVerticalAlignment(column,row,Table.VERTICAL_ALIGN_BOTTOM);
+      formTable.mergeCells(1,1,1,row);
+      formTable.setAlignment(column,row,Table.HORIZONTAL_ALIGN_RIGHT);
+      formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("preview","Preview"),"preview"),column,row);
+      formTable.add(Text.getNonBrakingSpace(),column,row);
+      SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("submit","Submit"),"submit");
+      if ( iwc.isParameterSet("from_editor") )
+	submit.setOnClick("javascript:save()");
+      formTable.add(submit,column,row);
+
+      form.add(formTable);
+      return(form);
     }
     else {
-      formTable.add(addToPalette,column,row);
-      formTable.add(paletteText,column,row);
-      formTable.add(Text.getBreak(),column,row);
-      formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("add","Add"),"add_remove"),column,row++);
+      return table;
     }
-
-    if ( iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER) != null ) {
-      form.add(new HiddenInput(SCRIPT_PREFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER)));
-      form.add(new HiddenInput(SCRIPT_SUFFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_SUFFIX_PARAMETER)));
-      form.add(new HiddenInput(DISPLAYSTRING_PARAMETER_NAME,(String)iwc.getSessionAttribute(DISPLAYSTRING_PARAMETER_NAME)));
-      form.add(new HiddenInput(VALUE_PARAMETER_NAME,(String)iwc.getSessionAttribute(VALUE_PARAMETER_NAME)));
-    }
-
-    if ( _colorString != null )
-      form.add(new HiddenInput("old_color",_colorString));
-
-    formTable.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
-    formTable.setColumnVerticalAlignment(2,Table.VERTICAL_ALIGN_TOP);
-    formTable.setHeight(column,row,"100%");
-    formTable.setVerticalAlignment(column,row,Table.VERTICAL_ALIGN_BOTTOM);
-    formTable.mergeCells(1,1,1,row);
-    formTable.setAlignment(column,row,Table.HORIZONTAL_ALIGN_RIGHT);
-    formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("preview","Preview"),"preview"),column,row);
-    formTable.add(Text.getNonBrakingSpace(),column,row);
-    SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("submit","Submit"),"submit");
-    if ( iwc.isParameterSet("from_editor") )
-      submit.setOnClick("javascript:save()");
-    formTable.add(submit,column,row);
-
-    form.add(formTable);
-    return(form);
   }
 
   private Table getColorPalette(IWContext iwc) {
@@ -350,13 +361,15 @@ private String _colorString;
       iwc.setSessionAttribute(VALUE_PARAMETER_NAME,iwc.getParameter(VALUE_PARAMETER_NAME));
     }
 
-    if ( iwc.isParameterSet("from_editor") )
+    if ( iwc.isParameterSet("from_editor") ) {
       addScript();
+      fromEditor = true;
+    }
   }
 
   private void addScript() {
     Script script = getParentPage().getAssociatedScript();
-    script.addFunction("save","function save() { window.returnValue = "+this._colorString+"; window.close; }");
+    script.addFunction("save","function save(color) { window.returnValue = color; window.close(); }");
     getParentPage().setAssociatedScript(script);
   }
 
