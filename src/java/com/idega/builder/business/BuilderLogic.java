@@ -14,6 +14,9 @@ import com.idega.builder.presentation.IBAdminWindow;
 
 import com.idega.core.data.ICObject;
 
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.ModuleObject;
@@ -169,8 +172,10 @@ public class BuilderLogic{
   }
 
   public  ModuleObject getAddIcon(String parentKey,ModuleInfo modinfo){
+    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image addImage = bundle.getImage("add.gif");
     Window window = new IBAdminWindow();
-    Link link = new Link(new Image("/common/pics/arachnea/add.gif"),window);
+    Link link = new Link(addImage,window);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_ADD);
     link.addParameter(ib_parent_parameter,parentKey);
@@ -179,8 +184,10 @@ public class BuilderLogic{
   }
 
   public  ModuleObject getDeleteIcon(int key,String parentKey,ModuleInfo modinfo){
+    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image deleteImage = bundle.getImage("delete.gif");
     Window window = new IBAdminWindow();
-    Link link = new Link(new Image("/common/pics/arachnea/delete.gif"),window);
+    Link link = new Link(deleteImage,window);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_DELETE);
     link.addParameter(ib_parent_parameter,parentKey);
@@ -189,16 +196,14 @@ public class BuilderLogic{
   }
 
   public  ModuleObject getEditIcon(int key,ModuleInfo modinfo){
+    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image editImage = bundle.getImage("edit.gif");
+
     Window window = new IBAdminWindow();
-    Link link = new Link(new Image("/common/pics/arachnea/edit.gif"),window);
+    Link link = new Link(editImage,window);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_EDIT);
     link.addParameter(ic_object_id_parameter,key);
-    return link;
-  }
-
-  public  ModuleObject getChangeIcon(int key,ModuleInfo modinfo){
-    Link link = new Link(new Image("/common/pics/arachnea/change.gif"));
     return link;
   }
 
@@ -229,13 +234,11 @@ public class BuilderLogic{
 
       if(theObject!=null){
         table.add(getDeleteIcon(theObject.getICObjectInstanceID(),parentKey,modinfo));
-        table.add(getChangeIcon(theObject.getICObjectInstanceID(),modinfo));
         table.add(getEditIcon(theObject.getICObjectInstanceID(),modinfo));
       }
       else{
           System.out.println("theObject==null");
           table.add(getDeleteIcon(0,parentKey,modinfo));
-          table.add(getChangeIcon(0,modinfo));
           table.add(getEditIcon(0,modinfo));
       }
     }
