@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.14 2002/01/09 15:41:14 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.15 2002/03/09 01:31:54 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,14 +9,15 @@
  */
 package com.idega.builder.presentation;
 
-import java.util.List;
-import java.util.Iterator;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import java.util.*;
 import com.idega.builder.business.ModuleComparator;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.Image;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Form;
@@ -43,6 +44,11 @@ public class IBAddModuleWindow extends IBAdminWindow {
   private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
   private static final String INTERNAL_CONTROL_PARAMETER = "ib_adminwindow_par";
 
+  public static final String ELEMENT_LIST = "element_list";
+  public static final String BLOCK_LIST = "block_list";
+  final static String STYLE_NAME = "add_module";
+  Image button;
+
 
   public IBAddModuleWindow(){
     super.setResizable(true);
@@ -54,6 +60,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
   public void main(IWContext iwc) throws Exception {
     IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
     super.addTitle(iwrb.getLocalizedString("ib_addmodule_window","Add a new Module"));
+    setStyles();
+    button = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
 
     String action = iwc.getParameter(IB_CONTROL_PARAMETER);
     if (action.equals(ACTION_ADD)) {
@@ -136,42 +144,50 @@ public class IBAddModuleWindow extends IBAdminWindow {
     theReturn.setHeight("100%");
     theReturn.setCellpadding(0);
     theReturn.setCellspacing(1);
-    theReturn.setWidth(1,"33%");
-    theReturn.setWidth(2,"33%");
-    theReturn.setWidth(3,"33%");
+    theReturn.setWidth(1,"50%");
+    theReturn.setWidth(2,"50%");
     theReturn.setColor(1,1,"#ECECEC");
     theReturn.setColor(2,1,"#ECECEC");
-    theReturn.setColor(3,1,"#ECECEC");
-    theReturn.setCellspacing(1);
     String listColor = com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR;
 
     ICObject staticICO = (ICObject)ICObject.getStaticInstance(ICObject.class);
+    System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
     try {
-      List elements = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_ELEMENT);
-      List blocks = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_BLOCK);
-      //List applications = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_APPLICATION);
+      List elements = null;
+      List blocks = null;
 
-      if ( elements != null ) {
-        java.util.Collections.sort(elements,new ModuleComparator());
+      try {
+	elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST+"_"+iwc.getCurrentLocaleId());
+	blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST+"_"+iwc.getCurrentLocaleId());
       }
-      if ( blocks != null ) {
-        java.util.Collections.sort(blocks,new ModuleComparator());
+      catch (Exception e) {
+	elements = null;
+	blocks = null;
       }
-      //if ( applications != null ) {
-      //  java.util.Collections.sort(applications,new ModuleComparator());
-      //}
+
+      if ( elements == null && blocks == null ) {
+	elements = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_ELEMENT);
+	blocks = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_BLOCK);
+
+	if ( elements != null ) {
+	  java.util.Collections.sort(elements,new ModuleComparator(iwc));
+	}
+	if ( blocks != null ) {
+	  java.util.Collections.sort(blocks,new ModuleComparator(iwc));
+	}
+	iwc.setApplicationAttribute(ELEMENT_LIST+"_"+iwc.getCurrentLocaleId(),elements);
+	iwc.setApplicationAttribute(BLOCK_LIST+"_"+iwc.getCurrentLocaleId(),blocks);
+      }
 
       String sElements = iwrb.getLocalizedString("elements_header","Elements");
       String sBlocks = iwrb.getLocalizedString("blocks_header","Blocks");
-      //String sApplications = iwrb.getLocalizedString("applicaitions_header","Applications");
 
       addSubComponentList(sElements,elements,theReturn,1,1,iwc);
       addSubComponentList(sBlocks,blocks,theReturn,1,2,iwc);
-      //addSubComponentList(sApplications,applications,theReturn,1,3,iwc);
 
+    System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
       theReturn.setColumnVerticalAlignment(1,"top");
       theReturn.setColumnVerticalAlignment(2,"top");
-      //theReturn.setColumnVerticalAlignment(3,"top");
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -185,36 +201,60 @@ public class IBAddModuleWindow extends IBAdminWindow {
   private void addSubComponentList(String name, List list, Table table, int ypos, int xpos, IWContext iwc) {
     Table subComponentTable = new Table();
     subComponentTable.setWidth("100%");
+    subComponentTable.setWidth(1,"11");
+    subComponentTable.setWidth(2,"100%");
     table.add(subComponentTable,xpos,ypos);
 
     Text header = new Text(name,true,false,false);
     header.setFontSize(Text.FONT_SIZE_12_HTML_3);
     subComponentTable.add(header,1,ypos);
+    subComponentTable.mergeCells(1,ypos,2,ypos);
     if (list != null) {
       Iterator iter = list.iterator();
-      String space = " ";
       ypos++;
       while (iter.hasNext()) {
-        ICObject item = (ICObject)iter.next();
-        Link link = new Link(space+item.getName());
-        link.addParameter(IB_CONTROL_PARAMETER,ACTION_ADD);
-        link.addParameter(INTERNAL_CONTROL_PARAMETER," ");
-        link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,item.getID());
-        link.maintainParameter(IB_PAGE_PARAMETER,iwc);
-        link.maintainParameter(IB_PARENT_PARAMETER,iwc);
-        link.maintainParameter(IB_LABEL_PARAMETER,iwc);
-        subComponentTable.add(link,1,ypos);
-        ypos++;
+	ICObject item = (ICObject)iter.next();
+	Link link = new Link(item.getBundle(iwc.getApplication()).getComponentName(item.getClassName(),iwc.getCurrentLocale()));
+	link.setStyle(STYLE_NAME);
+	link.addParameter(IB_CONTROL_PARAMETER,ACTION_ADD);
+	link.addParameter(INTERNAL_CONTROL_PARAMETER," ");
+	link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,item.getID());
+	link.maintainParameter(IB_PAGE_PARAMETER,iwc);
+	link.maintainParameter(IB_PARENT_PARAMETER,iwc);
+	link.maintainParameter(IB_LABEL_PARAMETER,iwc);
+	subComponentTable.add(button,1,ypos);
+	subComponentTable.add(link,2,ypos);
+	ypos++;
       }
     }
-    subComponentTable.setColumnAlignment(1,"center");
+    //subComponentTable.setColumnAlignment(1,"center");
   }
 
+  private void setStyles() {
+    String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
+    String _linkHoverStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#FF8008;text-decoration:none;";
+    if ( getParentPage() != null ) {
+      getParentPage().setStyleDefinition("A."+STYLE_NAME,_linkStyle);
+      //getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
+      //getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
+      getParentPage().setStyleDefinition("A."+STYLE_NAME+":hover",_linkHoverStyle);
+    }
+  }
   /**
    *
    */
   public String getBundleIdentifier() {
     return(IW_BUNDLE_IDENTIFIER);
+  }
+
+  public static void removeAttributes(IWContext iwc) {
+    Iterator iter = iwc.getApplication().getAvailableLocales().iterator();
+    while (iter.hasNext()) {
+      Locale locale = (Locale) iter.next();
+      int localeID = ICLocaleBusiness.getLocaleId(locale);
+      iwc.removeApplicationAttribute(ELEMENT_LIST+"_"+Integer.toString(localeID));
+      iwc.removeApplicationAttribute(BLOCK_LIST+"_"+Integer.toString(localeID));
+    }
   }
 }
 
