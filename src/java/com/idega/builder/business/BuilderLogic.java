@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.65 2001/10/31 17:14:08 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.66 2001/10/31 17:16:41 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -531,7 +531,7 @@ public class BuilderLogic {
 
   public  PresentationObject getEditIcon(int key,IWContext iwc){
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image editImage = bundle.getImage("edit.gif","Edit component");
+    Image editImage = bundle.getImage("edit.gif","Properties");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPropertiesWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
@@ -624,7 +624,6 @@ public class BuilderLogic {
         addToTable(new Text("Permission"),2,3,layer.getID());
         addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,2,layer.getID());
         addToTable(new Text("Properties"),2,4,layer.getID());
-
 
         layer.add(table);
       }
