@@ -3,7 +3,6 @@
  */
 package com.idega.builder.dynamicpagetrigger.util;
 
-import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 
 
@@ -16,7 +15,8 @@ import com.idega.presentation.IWContext;
  * @version 1.0
  */
 public interface DPTCrawlable {
+	public int getICObjectInstanceID();
 	public int getLinkedDPTTemplateID();
 	public String getLinkedDPTPageName(IWContext iwc);
-	public void setLinkedDPTPage(ICPage page);
+	public void setLinkedDPTPageID(int pageId);
 }

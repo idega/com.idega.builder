@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.51 2004/05/07 14:55:44 gummi Exp $
+ * $Id: XMLReader.java,v 1.52 2004/05/11 14:35:04 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,13 +13,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.event.ObjectInstanceCacher;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -168,7 +168,7 @@ public class XMLReader {
 					parseRegion(child, parentContainer, ibxml);
 				}
 				else if (child.getName().equalsIgnoreCase(XMLConstants.CHANGE_PAGE_LINK)) {
-					changeLinkProperty(child, parentContainer);
+					changeDPTCrawlableLinkedPageProperty(child, parentContainer);
 				}
 				else if (child.getName().equals(XMLConstants.CHANGE_IC_INSTANCE_ID)) {
 					changeInstanceId(child, parentContainer);
@@ -498,7 +498,7 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void changeLinkProperty(XMLElement change, PresentationObjectContainer parent) {
+	static void changeDPTCrawlableLinkedPageProperty(XMLElement change, PresentationObjectContainer parent) {
 		List regionAttrList = change.getAttributes();
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
 			System.err.println("Table region has no attributes");
@@ -522,10 +522,10 @@ public class XMLReader {
 			Iterator it = li.iterator();
 			while (it.hasNext()) {
 				PresentationObject obj = (PresentationObject) it.next();
-				if (obj instanceof Link) {
-					Link l = (Link) obj;
+				if (obj instanceof DPTCrawlable) {
+					DPTCrawlable l = (DPTCrawlable) obj;
 					if (intId == l.getICObjectInstanceID()) {
-						l.setPage(intNewPage);
+						l.setLinkedDPTPageID(intNewPage);
 					}
 				}
 			}
