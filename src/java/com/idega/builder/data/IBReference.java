@@ -11,8 +11,6 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.builder.business.XMLConstants;
-import com.idega.core.builder.data.ICPage;
-import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
