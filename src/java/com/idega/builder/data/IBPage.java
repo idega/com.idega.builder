@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.26 2001/10/31 11:25:01 tryggvil Exp $
+ * $Id: IBPage.java,v 1.27 2001/11/01 23:09:10 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -342,7 +342,7 @@ public class IBPage extends TreeableEntity {
   /**
    *
    */
-  public void update() throws SQLException {
+  public synchronized void update() throws SQLException {
     ICFile file = getFile();
     if (file != null) {
       try {
