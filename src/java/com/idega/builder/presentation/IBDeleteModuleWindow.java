@@ -15,7 +15,7 @@ import com.idega.presentation.IWContext;
 
 public class IBDeleteModuleWindow extends IBAdminWindow{
 
-  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
   private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.38 2001/10/08 21:04:18 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.39 2001/10/09 18:36:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,7 +57,7 @@ public class BuilderLogic {
   /**
    * @deprecated replaced with IC_OBJECT_INSTANCE_ID_PARAMETER
    */
-  public static final String IC_OBJECT_ID_PARAMETER = IC_OBJECT_INSTANCE_ID_PARAMETER;
+  //public static final String IC_OBJECT_ID_PARAMETER = IC_OBJECT_INSTANCE_ID_PARAMETER;
 
 
   public static final String IB_PARENT_PARAMETER = "ib_parent_par";

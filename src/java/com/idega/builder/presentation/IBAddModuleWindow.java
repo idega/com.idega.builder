@@ -37,7 +37,7 @@ import com.idega.data.EntityFinder;
 public class IBAddModuleWindow extends IBAdminWindow{
 
 
-  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+  private static final String ic_object_instance_id_parameter = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
   private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
 
@@ -108,7 +108,7 @@ public class IBAddModuleWindow extends IBAdminWindow{
 
         if(hasSubmitted(iwc)){
           window.setParentToReload();
-          String ic_object_id = iwc.getParameter(ic_object_id_parameter);
+          String ic_object_id = iwc.getParameter(ic_object_instance_id_parameter);
           BuilderLogic.getInstance().addNewModule(ib_page_id,ib_parent_id,Integer.parseInt(ic_object_id));
           window.close();
         }
@@ -215,7 +215,7 @@ public class IBAddModuleWindow extends IBAdminWindow{
           Link link = new Link(space+item.getName());
           link.addParameter(ib_control_parameter,ACTION_ADD);
           link.addParameter(internal_control_parameter," ");
-          link.addParameter(ic_object_id_parameter,item.getID());
+          link.addParameter(ic_object_instance_id_parameter,item.getID());
           //link.maintainParameter(internal_control_parameter,iwc);
           link.maintainParameter(ib_page_parameter,iwc);
           link.maintainParameter(ib_parent_parameter,iwc);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.17 2001/10/05 08:04:02 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.18 2001/10/09 18:38:49 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -359,7 +359,7 @@ public class IBApplication extends IWApplication {
       link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER,BuilderLogic.ACTION_EDIT);
       //Hardcoded -1 for the top page
       String pageICObjectInstanceID = "-1";
-      link.addParameter(BuilderLogic.IC_OBJECT_ID_PARAMETER,pageICObjectInstanceID);
+      link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER,pageICObjectInstanceID);
       return(link);
     }
 
