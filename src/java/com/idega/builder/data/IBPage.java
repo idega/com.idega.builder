@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.24 2001/10/26 14:29:58 tryggvil Exp $
+ * $Id: IBPage.java,v 1.25 2001/10/30 14:57:02 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,8 +42,8 @@ public class IBPage extends TreeableEntity {
   public final static String TEMPLATE = "T";
   public final static String DRAFT = "D";
 
-  private final static String DELETED = "Y";
-  private final static String NOT_DELETED = "N";
+  public final static String DELETED = "Y";
+  public final static String NOT_DELETED = "N";
 
   /**
    *
