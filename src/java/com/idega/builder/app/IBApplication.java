@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.65 2002/06/10 15:42:28 gummi Exp $
+ *  $Id: IBApplication.java,v 1.66 2002/06/14 10:41:14 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -301,33 +301,33 @@ public class IBApplication extends IWApplication {
       setStyles();
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress && iwc.getParameter("reload") != null) {
-        if (noCurtain) {
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
-        else {
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
+	if (noCurtain) {
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
+	else {
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
       }
       getParentPage().setAllMargins(2);
       int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
 
       try {
-      	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
-        add(viewer);
-        viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_pages");
-        viewer.getLocation().setApplicationClass(IBApplication.class);
-        viewer.getLocation().isInFrameSet(true);
+	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
+	add(viewer);
+	viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_pages");
+	viewer.getLocation().setApplicationClass(IBApplication.class);
+	viewer.getLocation().isInFrameSet(true);
 
-        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
+	System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
 
-        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-        if (page_id != null) {
-          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
-        }
+	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+	if (page_id != null) {
+	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+	}
       }
       catch (Exception e) {
 	e.printStackTrace(System.err);
@@ -366,45 +366,45 @@ public class IBApplication extends IWApplication {
       setStyles();
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress && iwc.getParameter("reload") != null) {
-        if (noCurtain) {
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
-        else {
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
+	if (noCurtain) {
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
+	else {
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
       }
       getParentPage().setAllMargins(2);
 
       try {
-        TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
-        add(viewer);
-        viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_templates");
-        viewer.getLocation().setApplicationClass(IBApplication.class);
-        viewer.getLocation().isInFrameSet(true);
+	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
+	add(viewer);
+	viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_templates");
+	viewer.getLocation().setApplicationClass(IBApplication.class);
+	viewer.getLocation().isInFrameSet(true);
 
-        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
+	System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
 
-        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-        if (page_id != null) {
-          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
-        }
+	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+	if (page_id != null) {
+	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+	}
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
       endStartup(iwc, TemplateTree.class);
     }
 
     private void setStyles() {
       if ( getParentPage() != null ) {
-        getParentPage().setStyleDefinition("A",_linkStyle);
-        //getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
-        //getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
-        getParentPage().setStyleDefinition("A:hover",_linkHoverStyle);
+	getParentPage().setStyleDefinition("A",_linkStyle);
+	//getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
+	//getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
+	getParentPage().setStyleDefinition("A:hover",_linkHoverStyle);
       }
     }
   }
@@ -501,8 +501,8 @@ public class IBApplication extends IWApplication {
       boolean startupInProgress = startupInProgress(iwc);
 /*      if (!startupInProgress) {
 	//super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-        //the tree reloading in done in the appropriate windows such as in the create new page window
-        super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+	//the tree reloading in done in the appropriate windows such as in the create new page window
+	super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       }*/
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
@@ -745,23 +745,22 @@ public class IBApplication extends IWApplication {
       setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
       setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
       setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
-      Image tilerCell = Table.getTransparentCell(iwc);
-      tilerCell.setHeight("100%");
+      /*Image tilerCell = Table.getTransparentCell(iwc);
+      tilerCell.setHeight("100%");*/
 
       //setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
       //Image background = iwb.getImage("status_tiler.gif");
       //setBackgroundImage(background);
       setAllMargins(0);
 
-      Table toolbarTable = new Table(2, 1);
+      Table toolbarTable = new Table(3, 1);
       toolbarTable.setWidth("100%");
       toolbarTable.setHeight("100%");
       toolbarTable.setCellpadding(0);
       toolbarTable.setCellspacing(0);
-      toolbarTable.setWidth(1, 1, "100%");
-      toolbarTable.setAlignment(2, 1, "right");
-      toolbarTable.setVerticalAlignment(2, 1, "top");
-      toolbarTable.setVerticalAlignment(1, 1, "middle");
+      toolbarTable.setWidth(1, 1, "6");
+      toolbarTable.setAlignment(3, 1, "right");
+      toolbarTable.setVerticalAlignment(3, 1, "top");
       add(toolbarTable);
 
       String action = iwc.getParameter(controlParameter);
@@ -847,9 +846,9 @@ public class IBApplication extends IWApplication {
 //        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
 	Text pageName = new Text(name);
 	pageName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-	toolbarTable.add(tilerCell, 1, 1);
-	toolbarTable.add(pageName, 1, 1);
-	toolbarTable.add(toolTable, 2, 1);
+	//toolbarTable.add(tilerCell, 1, 1);
+	toolbarTable.add(pageName, 2, 1);
+	toolbarTable.add(toolTable, 3, 1);
       }
       else if (action.equals(ACTION_TEMPLATES)) {
       }
