@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.11 2002/01/09 16:18:32 palli Exp $
+ * $Id: XMLConstants.java,v 1.12 2002/01/11 12:33:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,9 +34,9 @@ public abstract class XMLConstants {
   static final String PAGE_TYPE = "type";
   static final String REGION_LOCKED = "locked";
   static final String LABEL_STRING = "label";
-  static final String CHANGE_IC_OBJECT_ID = "changeid";
-  static final String IC_OBJECT_ID_FROM = "from";
-  static final String IC_OBJECT_ID_to = "to";
+  static final String CHANGE_IC_INSTANCE_ID = "changeid";
+  static final String IC_INSTANCE_ID_FROM = "from";
+  static final String IC_INSTANCE_ID_TO = "to";
   static final String CHANGE_PAGE_LINK = "changelink";
   static final String LINK_ID_STRING = "id";
   static final String LINK_TO = "to";

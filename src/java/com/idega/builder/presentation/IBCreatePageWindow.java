@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.19 2001/11/06 18:18:03 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.20 2002/01/11 12:33:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,9 +13,10 @@ import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.PageTreeNode;
+import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBDomain;
-import com.idega.core.data.ICFile;
+//import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -99,62 +100,36 @@ public class IBCreatePageWindow extends IWAdminWindow {
       String name = iwc.getParameter(PAGE_NAME_PARAMETER);
       type = iwc.getParameter(PAGE_TYPE);
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
-
       if (type.equals("2"))
         pageId = templateId;
 
       if (pageId != null) {
-        IBPage ibPage = new IBPage();
-        if (name == null)
-          name = "Untitled";
-        ibPage.setName(name);
-        ICFile file = new ICFile();
-        ibPage.setFile(file);
+        int id = IBPageHelper.createNewPage(pageId,name,type,templateId);
+        if (id != -1) {
+          PageTreeNode parent = new PageTreeNode(Integer.parseInt(pageId),iwc);
+          Map tree = PageTreeNode.getTree(iwc);
 
-        if (type.equals("1")) {
-          ibPage.setType(IBPage.PAGE);
-        }
-        else if (type.equals("2")) {
-          ibPage.setType(IBPage.TEMPLATE);
-        }
-        else {
-          ibPage.setType(IBPage.PAGE);
-        }
-
-        int tid = -1;
-        try {
-          tid = Integer.parseInt(templateId);
-          ibPage.setTemplateId(tid);
-        }
-        catch(java.lang.NumberFormatException e) {
-        }
-
-        ibPage.insert();
-        IBPage ibPageParent = new IBPage(Integer.parseInt(pageId));
-        ibPageParent.addChild(ibPage);
-
-        PageTreeNode parent = new PageTreeNode(Integer.parseInt(pageId),iwc);
-        Map tree = PageTreeNode.getTree(iwc);
-
-        if (parent != null) {
-          if (tree != null) {
-            PageTreeNode child = new PageTreeNode(ibPage.getID(),iwc);
-            child.setNodeName(ibPage.getName());
-            parent.addChild(child);
-            tree.put(new Integer(child.getNodeID()),child);
+          if (parent != null) {
+            if (tree != null) {
+              PageTreeNode child = new PageTreeNode(id,iwc);
+              child.setNodeName(name);
+              parent.addChild(child);
+              tree.put(new Integer(child.getNodeID()),child);
+            }
           }
-        }
 
-        if ((templateId != null) && (!templateId.equals(""))) {
-          IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
-          xml.addUsingTemplate(Integer.toString(ibPage.getID()));
-          Page templateParent = xml.getPopulatedPage();
-          if (!templateParent.isLocked()) {
-            BuilderLogic.getInstance().unlockRegion(Integer.toString(ibPage.getID()),"-1",null);
+          if ((templateId != null) && (!templateId.equals(""))) {
+            IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
+            xml.addUsingTemplate(Integer.toString(id));
+            Page templateParent = xml.getPopulatedPage();
+            if (!templateParent.isLocked()) {
+              BuilderLogic.getInstance().unlockRegion(Integer.toString(id),"-1",null);
+            }
           }
+
+          iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
         }
 
-        iwc.setSessionAttribute("ib_page_id",Integer.toString(ibPage.getID()));
         setParentToReload();
         close();
       }

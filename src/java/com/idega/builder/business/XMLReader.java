@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.29 2002/01/09 16:18:32 palli Exp $
+ * $Id: XMLReader.java,v 1.30 2002/01/11 12:33:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -143,6 +143,18 @@ public class XMLReader {
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.CHANGE_PAGE_LINK)) {
           changeLinkProperty(child,parentContainer);
+        }
+        else if (child.getName().equals(XMLConstants.CHANGE_IC_INSTANCE_ID)) {
+          changeInstanceId(child,parentContainer);
+      List c = parentContainer.getAllContainedObjectsRecursive();
+      if (c != null) {
+        Iterator it2 = c.iterator();
+        while(it2.hasNext()) {
+          PresentationObject obj = (PresentationObject)it2.next();
+          System.out.println("Obj instance id = " + obj.getICObjectInstanceID());
+        }
+      }
+
         }
         else {
           System.err.println("Unknown tag in xml description file : " + child.getName());
@@ -496,7 +508,33 @@ public class XMLReader {
         }
       }
     }
+  }
 
-//    if (regionParent instanceof com.idega.presentation.Page) {
+  /**
+   *
+   */
+  static void changeInstanceId(XMLElement change, PresentationObjectContainer page) {
+    int from = -1, to = -1;
+    try {
+      from = change.getAttribute(XMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
+      to = change.getAttribute(XMLConstants.IC_INSTANCE_ID_TO).getIntValue();
+    }
+    catch(XMLException e) {
+      return;
+    }
+
+    if (from != -1 && to != -1) {
+      List children = page.getAllContainedObjectsRecursive();
+      if (children != null) {
+        Iterator it = children.iterator();
+        while(it.hasNext()) {
+          PresentationObject obj = (PresentationObject)it.next();
+          if (obj.getICObjectInstanceID() == from) {
+            obj.setICObjectInstanceID(to);
+            return;
+          }
+        }
+      }
+    }
   }
 }
