@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.6 2001/09/18 22:53:03 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.7 2001/09/24 23:29:46 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 
+import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICFile;
 import com.idega.jmodule.object.ModuleInfo;
@@ -33,8 +34,8 @@ import java.util.Iterator;
 //public class IBCreatePageWindow extends IBAdminWindow{
 public class IBCreatePageWindow extends IWAdminWindow {
   private static final String PAGE_NAME_PARAMETER   = "ib_page_name";
-  private static final String PAGE_CHOOSER_NAME     = "ib_page_chooser";
-  private static final String TEMPLATE_CHOOSER_NAME = "ib_template_chooser";
+  private static final String PAGE_CHOOSER_NAME     = IBPropertyHandler.PAGE_CHOOSER_NAME;
+  private static final String TEMPLATE_CHOOSER_NAME = IBPropertyHandler.TEMPLATE_CHOOSER_NAME;
   private static final String PAGE_TYPE             = "ib_page_type";
   private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
 

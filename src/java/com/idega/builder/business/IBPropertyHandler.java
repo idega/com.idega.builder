@@ -27,6 +27,10 @@ public class IBPropertyHandler{
     public final static String METHOD_PROPERTY_DESCRIPTION = "iw_method_description";
     public static final String METHOD_PROPERTY_ALLOW_MULTIVALUED = "iw_method_option_multiv";
 
+    public static final String PAGE_CHOOSER_NAME     = "ib_page_chooser";
+    public static final String TEMPLATE_CHOOSER_NAME = "ib_template_chooser";
+    public static final String FILE_CHOOSER_NAME     = "ic_file_chooser";
+
     private static final String METHODS_KEY = "iw_component_methods";
     private static IBPropertyHandler instance;
 
@@ -148,7 +152,16 @@ public class IBPropertyHandler{
           }
       }
       else if(parameterClass.equals(com.idega.jmodule.object.Image.class)){
-          obj = new Link("Veldu mynd");
+          obj = new com.idega.block.media.presentation.ImageInserter();
+      }
+      else if(parameterClass.equals(com.idega.core.data.ICFile.class)){
+          obj = new com.idega.builder.presentation.IBFileChooser(FILE_CHOOSER_NAME);
+      }
+      else if(parameterClass.equals(com.idega.builder.data.IBPage.class)){
+          obj = new com.idega.builder.presentation.IBPageChooser(PAGE_CHOOSER_NAME);
+      }
+      else if(parameterClass.equals(com.idega.builder.data.IBTemplatePage.class)){
+          obj = new com.idega.builder.presentation.IBTemplateChooser(TEMPLATE_CHOOSER_NAME);
       }
       else{
         obj = new TextInput(name);
