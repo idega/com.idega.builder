@@ -5,6 +5,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.BackButton;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
@@ -48,19 +49,31 @@ public class FormEmailer extends Block {
       subject = iwrb.getLocalizedString("formemailer.defaultsubject","From idegaWeb Builder");
     }
     if(doDisplayConfirmation(iwc)){
-      String sentText=this.getSentText(iwc);
-      String confirmationText = iwrb.getLocalizedString("formemailer.confirmationtext","Confirm send of supplied information:");
-      String sendText = iwrb.getLocalizedString("formemailer.send","Send");
 
-      Table t = new Table();
-      add(t);
-      t.add(confirmationText,1,1);
-      t.add("<pre>"+sentText+"</pre>",1,2);
-      Form f = new Form();
-      t.add(f,1,3);
-      SubmitButton button = new SubmitButton(this.CONFIRM_PARAMETER,sendText);
-      f.add(button);
-      t.setAlignment(1,3,com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);;
+      try{
+        String sentText=this.getSentText(iwc);
+        String confirmationText = iwrb.getLocalizedString("formemailer.confirmationtext","Confirm send of supplied information:");
+        String sendText = iwrb.getLocalizedString("formemailer.send","Send");
+
+        Table t = new Table();
+        add(t);
+        t.add(confirmationText,1,1);
+        t.add("<pre>"+sentText+"</pre>",1,2);
+        Form f = new Form();
+        t.add(f,1,3);
+        SubmitButton button = new SubmitButton(this.CONFIRM_PARAMETER,sendText);
+        f.add(button);
+        t.setAlignment(1,3,com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
+      }
+      catch(Exception e){
+        Table t = new Table();
+        add(t);
+        String errorText = iwrb.getLocalizedString("formemailer.error4","There was an error processing the form, one or more fields may be empty");
+        t.add(errorText,1,1);
+        String buttonText = iwrb.getLocalizedString("formemailer.back","Back");
+        BackButton back = new BackButton(buttonText);
+        t.add(back,1,2);
+      }
     }
     else{
       try{
@@ -128,15 +141,13 @@ public class FormEmailer extends Block {
       String error3 = iwrb.getLocalizedString("formemailer.error3","No email to send to");
       throw new Exception(error3);
     }
-    com.idega.util.SendMail.send("webmaster@nobody.com",emailToSendTo,"","",emailServer,subject,bodyText);
+    com.idega.util.SendMail.send("idegaweb@idega.com",emailToSendTo,"","",emailServer,subject,bodyText);
     cleanUpFromSession(iwc);
   }
 
   public void setToAddRecievedParameter(String paramName,String description,String type){
     handler.addProcessedParameter(paramName,description,type);
   }
-
-
 
 
   public void setTextInBeginningOfMail(String beginningText){
