@@ -87,6 +87,8 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		fontFamily.addMenuElement(StyleConstants.FONT_FAMILY_GEORGIA, StyleConstants.FONT_FAMILY_GEORGIA);
 		fontFamily.addMenuElement(StyleConstants.FONT_FAMILY_TIMES, StyleConstants.FONT_FAMILY_TIMES);
 		fontFamily.addMenuElement(StyleConstants.FONT_FAMILY_VERDANA, StyleConstants.FONT_FAMILY_VERDANA);
+		fontFamily.addMenuElement(StyleConstants.FONT_FAMILY_TREBUCHET, StyleConstants.FONT_FAMILY_TREBUCHET);
+		fontFamily.addMenuElement(StyleConstants.FONT_FAMILY_TAHOMA, StyleConstants.FONT_FAMILY_TAHOMA);
 		fontFamily.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY));
 		fontFamily.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE + "width:100%;");
 		Text fontFamilyText = new Text("Font family:");
