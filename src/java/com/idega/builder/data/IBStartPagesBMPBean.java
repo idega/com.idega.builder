@@ -1,5 +1,5 @@
 /*
- * $Id: IBStartPagesBMPBean.java,v 1.2 2002/05/10 16:09:49 palli Exp $
+ * $Id: IBStartPagesBMPBean.java,v 1.3 2002/06/25 16:08:00 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -88,6 +88,7 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
    *
    */
   public void insertStartData() throws Exception {
+  try {
     IBDomainHome dhome = (IBDomainHome)IDOLookup.getHome(IBDomain.class);
 
     Collection domains = dhome.findAllDomains();
@@ -95,10 +96,11 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
       Iterator it = domains.iterator();
       while (it.hasNext()) {
         IBDomain domain = (IBDomain)it.next();
-        IBStartPages start = ((IBStartPagesHome)getEJBHome()).create();
-        start.setDomainId(domain.getID());
+        IBStartPages start = null;
         int id = domain.getStartPageID();
         if (id > 0) {
+          start = ((IBStartPagesHome)IDOLookup.getHome(this.getClass())).create();
+          start.setDomainId(domain.getID());
           start.setPageId(id);
           start.setPageTypePage();
           start.store();
@@ -106,13 +108,19 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
 
         id = domain.getStartTemplateID();
         if (id > 0) {
-          start = new IBStartPagesBMPBean();
+          start = ((IBStartPagesHome)IDOLookup.getHome(this.getClass())).create();
           start.setDomainId(domain.getID());
           start.setPageId(id);
           start.setPageTypeTemplate();
           start.store();
         }
       }
+    }
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+
+      throw e;
     }
   }
 
