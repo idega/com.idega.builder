@@ -1,6 +1,8 @@
 package com.idega.builder;
 
+import com.idega.builder.business.ComponentPropertyHandler;
 import com.idega.builder.business.IBMainServiceBean;
+import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.data.IBDomainBMPBean;
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
@@ -19,6 +21,7 @@ import com.idega.presentation.Applet;
 import com.idega.presentation.GenericPlugin;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.repository.data.ImplementorRepository;
+import com.idega.repository.data.SingletonRepository;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -59,6 +62,8 @@ public class IWBundleStarter implements IWBundleStartable {
 	}
 
 	public void stop(IWBundle starterBundle) {
-		// nothing to do
+		SingletonRepository repository = SingletonRepository.getRepository();
+		repository.unloadInstance(ComponentPropertyHandler.class);
+		repository.unloadInstance(IBPropertyHandler.class);
 	}
 }
