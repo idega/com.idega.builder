@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.155 2004/06/28 11:15:09 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.156 2004/06/30 03:44:02 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -182,7 +182,7 @@ public class BuilderLogic {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					hPage.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, regionKey),regionKey);
+					hPage.add(IBAddModuleWindow.getAddIcon(regionKey, iwc, regionKey),regionKey);
 				}
 			}
 		}
