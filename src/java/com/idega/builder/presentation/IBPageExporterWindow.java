@@ -15,7 +15,6 @@ import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -34,16 +33,16 @@ import com.idega.presentation.ui.SubmitButton;
  * @version 1.0
  * Created on Mar 4, 2004
  */
-public class IBPageExporterWindow extends StyledIWAdminWindow {
+public class IBPageExporterWindow extends IBPageWindow {
 
   public static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
   
   public static final String SUBMIT_EXPORT_KEY = "ib_page_export_submit_key";
-  public static final String SUBMIT_CLOSE_KEY = "ib_page_close_submit_key";
+  public static final String SUBMIT_CLOSE_KEY = "ib_page_export_close_submit_key";
   public static final String PAGE_KEY = "ib_page_export_key";
   public static final String TEMPLATE_KEY = "ib_page_export_template_key";
   
-  public static final String CLOSE_ACTION = "ib_page_close_action";
+  public static final String CLOSE_ACTION = "ib_page_export_close_action";
   public static final String EXPORT_ACTION = "ib_page_export_action";
   
   public static final String NODE_DELIMITER = " > ";
