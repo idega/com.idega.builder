@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.22 2001/10/22 10:07:37 palli Exp $
+ * $Id: XMLReader.java,v 1.23 2001/11/06 18:18:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,6 +65,7 @@ public class XMLReader {
         hasTemplate = true;
         parentContainer = PageCacher.getPage(at.getValue());
         parentContainer.setIsExtendingTemplate();
+        parentContainer.setTemplateId(at.getValue());
         setAllBuilderControls(parentContainer,false);
       }
       else if (at.getName().equalsIgnoreCase(XMLConstants.PAGE_TYPE)) {

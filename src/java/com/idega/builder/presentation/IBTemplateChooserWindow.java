@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.4 2001/11/02 10:30:22 palli Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.5 2001/11/06 18:18:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,13 +46,14 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
       int i_page_id = 2;
 
 //      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
+      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc),iwc);
 
       add(viewer);
       viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
       viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
       viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
       viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
+//      viewer.setToMaintainParameter("chooser_value",iwc);
 
       Link prototype = new Link();
       viewer.setToUseOnClick();

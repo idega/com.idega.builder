@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.4 2001/11/01 17:22:59 palli Exp $
+ * $Id: PageTreeNode.java,v 1.5 2001/11/06 18:18:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,8 +24,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class PageTreeNode implements ICTreeNode {
-  public static final String PAGE_TREE = "ib_page_node_tree";
-  public static final String TEMPLATE_TREE = "ib_template_node_tree";
+  private static final String PAGE_TREE = "ib_page_node_tree";
 
   protected int _id = -1;
   protected String _name = null;
@@ -47,8 +46,8 @@ public class PageTreeNode implements ICTreeNode {
   /**
    *
    */
-  public PageTreeNode(int id, IWContext iwc, String treeType) {
-    Map tree = getTree(iwc,treeType);
+  public PageTreeNode(int id, IWContext iwc) {
+    Map tree = PageTreeNode.getTree(iwc);
     PageTreeNode node = (PageTreeNode)tree.get(new Integer(id));
     if (node != null) {
       _id = node._id;
@@ -80,18 +79,16 @@ public class PageTreeNode implements ICTreeNode {
   /**
    *
    */
-  protected Map getTreeFromDatabase(String treeType) {
+  protected static Map getTreeFromDatabase() {
     List page = null;
+    List template = null;
     List rel = null;
+    List rel2 = null;
     try {
-      if (treeType.equals(PAGE_TREE)) {
-        page = TreeNodeFinder.listOfAllPages();
-        rel = TreeNodeFinder.listOfAllPageRelationships();
-      }
-      else if (treeType.equals(TEMPLATE_TREE)) {
-        page = TreeNodeFinder.listOfAllTemplates();
-        rel = TreeNodeFinder.listOfAllTemplateRelationships();
-      }
+      page = TreeNodeFinder.listOfAllPages();
+      rel = TreeNodeFinder.listOfAllPageRelationships();
+      template = TreeNodeFinder.listOfAllTemplates();
+      rel2 = TreeNodeFinder.listOfAllTemplateRelationships();
     }
     catch(SQLException e) {
       e.printStackTrace();
@@ -109,8 +106,33 @@ public class PageTreeNode implements ICTreeNode {
       }
     }
 
+    if (template != null) {
+      it = template.iterator();
+      while (it.hasNext()) {
+        IBPage pages = (IBPage)it.next();
+        PageTreeNode node = new PageTreeNode(pages.getID(),pages.getName());
+        tree.put(new Integer(node.getNodeID()),node);
+      }
+    }
+
     if (rel != null) {
       it = rel.iterator();
+      while (it.hasNext()) {
+        Integer parentId = (Integer)it.next();
+        Integer childId = (Integer)it.next();
+        PageTreeNode parent = (PageTreeNode)tree.get(parentId);
+        PageTreeNode child = (PageTreeNode)tree.get(childId);
+        if (parent != null) {
+          parent._children.add(child);
+        }
+
+        if (child != null)
+          child._parent = parent;
+      }
+    }
+
+    if (rel2 != null) {
+      it = rel2.iterator();
       while (it.hasNext()) {
         Integer parentId = (Integer)it.next();
         Integer childId = (Integer)it.next();
@@ -253,12 +275,12 @@ public class PageTreeNode implements ICTreeNode {
   /**
    *
    */
-  protected Map getTree(IWContext iwc, String treeType) {
-    Map tree = (Map)iwc.getApplicationAttribute(treeType);
+  public static Map getTree(IWContext iwc) {
+    Map tree = (Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
 
     if (tree == null) {
-      tree = getTreeFromDatabase(treeType);
-      iwc.setApplicationAttribute(treeType,tree);
+      tree = getTreeFromDatabase();
+      iwc.setApplicationAttribute(PageTreeNode.PAGE_TREE,tree);
     }
 
     return(tree);

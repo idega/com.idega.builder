@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.6 2001/10/30 17:41:40 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.7 2001/11/06 18:18:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -59,13 +59,7 @@ public class IBDeletePageWindow extends IWAdminWindow {
       ibpage.setDeleted(true,iwc);
       ibpage.update();
 
-      Map tree = null;
-      if (ibpage.getType().equals(IBPage.PAGE)) {
-        tree = (Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
-      }
-      else if (ibpage.getType().equals(IBPage.TEMPLATE)) {
-        tree = (Map)iwc.getApplicationAttribute(PageTreeNode.TEMPLATE_TREE);
-      }
+      Map tree = PageTreeNode.getTree(iwc);
 
       if ((deleteAll != null) && (deleteAll.equals("true"))) {
         deleteAllChildren(ibpage,iwc);
@@ -168,11 +162,7 @@ public class IBDeletePageWindow extends IWAdminWindow {
         child.setDeleted(true,iwc);
         child.update();
         page.removeChild(child);
-        Map tree = null;
-        if (child.getType().equals(IBPage.PAGE))
-          tree = (Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
-        else if (child.getType().equals(IBPage.TEMPLATE))
-          tree = (Map)iwc.getApplicationAttribute(PageTreeNode.TEMPLATE_TREE);
+        Map tree = PageTreeNode.getTree(iwc);
 
         if (tree != null)
           tree.remove(child.getIDInteger());

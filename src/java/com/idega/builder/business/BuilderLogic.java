@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.75 2001/11/03 13:05:50 palli Exp $
+ * $Id: BuilderLogic.java,v 1.76 2001/11/06 18:18:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1008,13 +1008,7 @@ public class BuilderLogic {
     if (xml != null) {
       if (!xml.getName().equals(name)) {
         xml.setName(name);
-        java.util.Map tree = null;
-        if (xml.getType().equals(IBXMLPage.TYPE_PAGE)) {
-          tree = (java.util.Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
-        }
-        else if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
-          tree = (java.util.Map)iwc.getApplicationAttribute(PageTreeNode.TEMPLATE_TREE);
-        }
+        java.util.Map tree = PageTreeNode.getTree(iwc);
 
         if (tree != null) {
           String currentId = getCurrentIBPage(iwc);

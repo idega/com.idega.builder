@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.38 2001/11/02 14:41:27 palli Exp $
+ * $Id: IBApplication.java,v 1.39 2001/11/06 18:18:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -245,7 +245,7 @@ public class IBApplication extends IWApplication {
       int i_page_id = 1;
       try {
 //        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.PAGE_TREE),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
@@ -291,7 +291,7 @@ public class IBApplication extends IWApplication {
       int i_template_id = 2;
       try {
 //        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
@@ -639,7 +639,7 @@ public class IBApplication extends IWApplication {
           id = "1";
         String name = null;
         if (id != null && !id.equals("")) {
-          java.util.Map tree = (java.util.Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
+          java.util.Map tree = PageTreeNode.getTree(iwc);
 
           Integer pageId = new Integer(id);
 
@@ -650,7 +650,7 @@ public class IBApplication extends IWApplication {
           }
 
           if (name == null) {
-            tree = (java.util.Map)iwc.getApplicationAttribute(PageTreeNode.TEMPLATE_TREE);
+            tree = PageTreeNode.getTree(iwc);
             if (tree != null) {
               PageTreeNode node = (PageTreeNode)tree.get(pageId);
               if (node != null)

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.18 2001/11/03 15:06:57 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.19 2001/11/06 18:18:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -111,18 +111,14 @@ public class IBCreatePageWindow extends IWAdminWindow {
         ICFile file = new ICFile();
         ibPage.setFile(file);
 
-        String treeType = null;
         if (type.equals("1")) {
           ibPage.setType(IBPage.PAGE);
-          treeType =PageTreeNode.PAGE_TREE;
         }
         else if (type.equals("2")) {
           ibPage.setType(IBPage.TEMPLATE);
-          treeType = PageTreeNode.TEMPLATE_TREE;
         }
         else {
           ibPage.setType(IBPage.PAGE);
-          treeType = PageTreeNode.PAGE_TREE;
         }
 
         int tid = -1;
@@ -137,12 +133,12 @@ public class IBCreatePageWindow extends IWAdminWindow {
         IBPage ibPageParent = new IBPage(Integer.parseInt(pageId));
         ibPageParent.addChild(ibPage);
 
-        PageTreeNode parent = new PageTreeNode(Integer.parseInt(pageId),iwc,treeType);
-        Map tree = (Map)iwc.getApplicationAttribute(treeType);
+        PageTreeNode parent = new PageTreeNode(Integer.parseInt(pageId),iwc);
+        Map tree = PageTreeNode.getTree(iwc);
 
         if (parent != null) {
           if (tree != null) {
-            PageTreeNode child = new PageTreeNode(ibPage.getID(),iwc,treeType);
+            PageTreeNode child = new PageTreeNode(ibPage.getID(),iwc);
             child.setNodeName(ibPage.getName());
             parent.addChild(child);
             tree.put(new Integer(child.getNodeID()),child);
