@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.26 2001/10/31 15:31:45 palli Exp $
+ * $Id: IBApplication.java,v 1.27 2001/10/31 20:27:26 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,6 +42,7 @@ public class IBApplication extends IWApplication {
   private final static String IB_FRAMESET2_FRAME = "ib_frameset2";
   private final static String IB_TOOLBAR_FRAME = "ib_toolbar";
   private final static String IB_CONTENT_FRAME = "ib_content";
+  private final static String IB_STATUS_FRAME = "ib_status";
   private final static String IB_LEFT_MENU_FRAME = "ib_left_menu";
 
   private final static String ACTION_BUILDER = "builder";
@@ -130,9 +131,10 @@ public class IBApplication extends IWApplication {
     public FrameSet2(){
       add(IBToolBar.class);
       add(CONTENT_EDIT_URL);
+      add(IBStatusBar.class);
       super.setFrameName(1,IB_TOOLBAR_FRAME);
       super.setFrameName(2,IB_CONTENT_FRAME);
-      add(IBStatusBar.class);
+      super.setFrameName(3,IB_STATUS_FRAME);
       setNoresize(1,true);
       setNoresize(3,true);
       setSpanPixels(1,24);
@@ -184,9 +186,11 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc){
       if ( noCurtain ) {
         getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
       }
       else {
         getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
       }
       getParentPage().setAllMargins(2);
       int i_page_id = 1;
@@ -197,7 +201,6 @@ public class IBApplication extends IWApplication {
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
         l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
-        l.setOnClick("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
         viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
@@ -222,9 +225,11 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc){
       if ( noCurtain ) {
         getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
       }
       else {
         getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
       }
       getParentPage().setAllMargins(2);
 
@@ -516,7 +521,7 @@ public class IBApplication extends IWApplication {
       toolbarTable.setCellspacing(0);
       toolbarTable.setWidth(1,1,"100%");
       toolbarTable.setAlignment(2,1,"top");
-      toolbarTable.setVerticalAlignment(1,1,"left");
+      toolbarTable.setVerticalAlignment(1,1,"middle");
       add(toolbarTable);
 
       String action = iwc.getParameter(controlParameter);
@@ -545,15 +550,13 @@ public class IBApplication extends IWApplication {
         toolTable.add(previewLink,2,1);
 
         Link sourceLink = new Link(_iwrb.getImage("editorwindow/source.gif"));
-        //Link sourceLink = new Link("Source");
         sourceLink.setWindowToOpen(IBSourceView.class);
         toolTable.add(sourceLink,3,1);
 
 
-        String name = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
-        toolbarTable.add(new Text(name),1,1);
+        String name = Text.NON_BREAKING_SPACE+"Page name"; //BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
+        toolbarTable.add(new Text(name,true,false,false),1,1);
         toolbarTable.add(toolTable,2,1);
-//        toolbarTable.add(text1,2,1);
       }
       else if (action.equals(ACTION_TEMPLATES)) {
       }

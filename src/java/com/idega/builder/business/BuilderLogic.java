@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.69 2001/10/31 17:35:00 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.70 2001/10/31 20:27:31 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.Table;
+import com.idega.presentation.RaisedTable;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
@@ -616,14 +617,18 @@ public class BuilderLogic {
         //table.add(theObject.getClassName());
         _table.add(image);
 
+        RaisedTable rTable = new RaisedTable();
+          rTable.setWidth(100);
+
         table = new Table();
-        table.setCellpadding(3);
-        table.setCellspacing(3);
-        table.setWidth(100);
-        table.setHeight(90);
+        table.setCellpadding(2);
+        table.setCellspacing(0);
+        table.setWidth("100%");
+        table.setHeight("100%");
         table.setColor("#CCCCCC");
         table.setAttribute("onMouseOver","showHideLayers('"+layer.getID()+"','','show')");
         table.setAttribute("onClick","showHideLayers('"+layer.getID()+"','','hide')");
+        rTable.add(table);
 
         addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1,layer.getID());
         addToTable(new Text("Copy"),2,1,layer.getID());
@@ -634,7 +639,7 @@ public class BuilderLogic {
         addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,4,layer.getID());
         addToTable(new Text("Properties"),2,4,layer.getID());
 
-        layer.add(table);
+        layer.add(rTable);
       }
       else{
           _table.add(getDeleteIcon(0,_parentKey,iwc));
