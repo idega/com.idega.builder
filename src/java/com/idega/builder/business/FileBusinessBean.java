@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -69,20 +70,32 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
  	}
 	
 	private void writeData(Collection data, IBExportMetadata metadata, ZipOutputStream destination) throws IOException {
+		List alreadyStoredElements = new ArrayList(data.size());
+		// counter for the entries in metadata
 		int entryNumber = 0;
+		// counter for the prefix of the stored files
+		int identifierNumber = 0;
  		Iterator iterator = data.iterator();
  		while (iterator.hasNext()) {
  			Storable element = (Storable) iterator.next();
- 			ICFileWriter currentWriter = (ICFileWriter) element.write(this);
- 			String originalName = currentWriter.getName();
- 			String zipElementName = createZipElementName(originalName, entryNumber);
- 			ZipEntry zipEntry = new ZipEntry(zipElementName);
- 			metadata.modifyElementSetNameSetOriginalName(entryNumber++, zipElementName, originalName);
- 			destination.putNextEntry(zipEntry);
- 			currentWriter.writeData(destination);
- 			destination.closeEntry();
+ 			// do not store the same elements twice into the zip file
+ 			int indexOfAlreadyStoredElement;
+ 			if ((indexOfAlreadyStoredElement = alreadyStoredElements.indexOf(element)) > - 1) {
+ 				metadata.modifyElementSetNameSetOriginalNameLikeElementAt(entryNumber++, indexOfAlreadyStoredElement);
+ 			}
+ 			else {
+	 			alreadyStoredElements.add(element);
+	 			ICFileWriter currentWriter = (ICFileWriter) element.write(this);
+	 			String originalName = currentWriter.getName();
+	 			String zipElementName = createZipElementName(originalName, identifierNumber++);
+	 			ZipEntry zipEntry = new ZipEntry(zipElementName);
+	 			metadata.modifyElementSetNameSetOriginalName(entryNumber++, zipElementName, originalName);
+	 			destination.putNextEntry(zipEntry);
+	 			currentWriter.writeData(destination);
+	 			destination.closeEntry();
+ 			}
  		}
- 		// add metadata
+ 		// add metadata itself to the zip file
  		ICFileWriter currentWriter = (ICFileWriter) metadata.write(this);
 		String originalName = currentWriter.getName();
 		ZipEntry zipEntry = new ZipEntry(originalName);
