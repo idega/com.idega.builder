@@ -38,18 +38,19 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class DPTTriggerBusinessBean extends IBOServiceBean {
+public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTriggerBusiness{
 
 
   public static DPTTriggerBusiness getInstance(IWApplicationContext iwac) throws IBOLookupException{
     return (DPTTriggerBusiness)IBOLookup.getServiceInstance(iwac,DPTTriggerBusiness.class);
   }
 
-  public int createTriggerRule(ICObject source, int defaultTemplateId,int[] objectInstanceIds, ICPage[] templatesAllowed) throws SQLException{
+  public int createTriggerRule(ICObject source, int defaultTemplateId,int rootPageId, int[] objectInstanceIds, ICPage[] templatesAllowed) throws SQLException{
     PageTriggerInfo pti = ((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PageTriggerInfo.class)).createLegacy();
 
     pti.setICObject(source);
     pti.setDefaultTemplateId(defaultTemplateId);
+    pti.setRootPageId(rootPageId);
     pti.insert();
 
     if(objectInstanceIds != null){

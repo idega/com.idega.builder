@@ -1,6 +1,9 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
@@ -20,6 +23,7 @@ import com.idega.core.data.GenericGroup;
 public class PageTriggerInfoBMPBean extends com.idega.data.GenericEntity implements com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo {
 
 
+  public static final String _COLUMNNAME_NAME = "NAME";
   public static final String _COLUMNNAME_REFERENCED_IC_OBJECT_ID = "referenced_ic_object_id";
   public static final String _COLUMNNAME_DEFAULT_TEMPLATE_ID = "default_template_id";
   public static final String _COLUMNNAME_ROOT_PAGE_ID = "root_page_id";
@@ -40,6 +44,7 @@ public class PageTriggerInfoBMPBean extends com.idega.data.GenericEntity impleme
 
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
+    this.addAttribute(_COLUMNNAME_NAME,"Name",true,true,String.class);
     this.addAttribute(_COLUMNNAME_REFERENCED_IC_OBJECT_ID,"ICObject sem tengst er við",true,true,Integer.class,ONE_TO_MANY,ICObject.class);
     this.addAttribute(_COLUMNNAME_DEFAULT_TEMPLATE_ID,"default tempalte",true,true,Integer.class,ONE_TO_MANY,ICPage.class);
     this.addAttribute(_COLUMNNAME_ROOT_PAGE_ID,"root page",true,true,Integer.class,ONE_TO_MANY,ICPage.class);
@@ -66,6 +71,14 @@ public class PageTriggerInfoBMPBean extends com.idega.data.GenericEntity impleme
     }
   }
 
+  
+  public void setName(String name) {
+  	setColumn(_COLUMNNAME_NAME, name);
+  }
+  
+  public String getName() {
+  	return getStringColumnValue(_COLUMNNAME_NAME);
+  }
 
 
   public void setICObject(int icObjId){
@@ -92,6 +105,11 @@ public class PageTriggerInfoBMPBean extends com.idega.data.GenericEntity impleme
 
   public int getRootPageId(){
     return this.getIntColumnValue(com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoBMPBean._COLUMNNAME_ROOT_PAGE_ID);
+  }
+  
+  
+  public Collection ejbFindAllByICObjectID(ICObject obj) throws FinderException {
+  	return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(_COLUMNNAME_REFERENCED_IC_OBJECT_ID,obj));
   }
 
 }

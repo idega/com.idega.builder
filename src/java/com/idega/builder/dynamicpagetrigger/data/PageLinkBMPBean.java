@@ -2,6 +2,9 @@ package com.idega.builder.dynamicpagetrigger.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
@@ -160,7 +163,14 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
   public void setStandardParameters(String value){
     this.setColumn(this._COLUMNNAME_STANDARD_PRM, value);
   }
-
+  
+  public Collection ejbFindAllByPageTriggerInfo(PageTriggerInfo info) throws FinderException {
+  	return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(_COLUMNNAME_PAGE_TRIGGER_INFO_ID,info));
+  }
+  
+  public Collection ejbFindAllByPageTriggerInfo(Collection info) throws FinderException {
+  	return idoFindPKsByQuery(idoQueryGetSelect().appendWhere(_COLUMNNAME_PAGE_TRIGGER_INFO_ID).appendInCollection(info));
+  }
 
 
 
