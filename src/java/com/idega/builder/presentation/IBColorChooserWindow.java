@@ -47,11 +47,11 @@ private String _colorString;
       getParentPage().setOnLoad(SELECT_FUNCTION_NAME+"('"+_colorString+"','"+_colorString+"')");
     }
     else {
-      drawForm(iwc);
+      add(drawForm(iwc));
     }
   }
 
-  private void drawForm(IWContext iwc) {
+  private Form drawForm(IWContext iwc) {
     IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
     IWColor color = new IWColor(0,0,0);
@@ -135,9 +135,14 @@ private String _colorString;
     }
     else
       table = (Table) iwc.getApplicationAttribute("color_palette_table");
+
+    Block block = new Block();
+      block.add(table);
+      block.setCacheable("web_color_palette",0);
+
     formTable.add(webPalette,column,row);
     formTable.add(Text.getBreak(),column,row);
-    formTable.add(table,column,row);
+    formTable.add(block,column,row);
 
     row = 1;
     column = 2;
@@ -245,7 +250,7 @@ private String _colorString;
     formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("submit","Submit"),"submit"),column,row);
 
     form.add(formTable);
-    add(form);
+    return(form);
   }
 
   private Table getColorPalette(IWContext iwc) {
