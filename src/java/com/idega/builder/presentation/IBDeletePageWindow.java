@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.4 2001/10/10 12:08:16 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.5 2001/10/10 12:41:20 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ public class IBDeletePageWindow extends IWAdminWindow {
 
   public void main(IWContext iwc) throws Exception {
     boolean okToDelete = false;
+    boolean okToDeleteChildren = true;
     IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
     Form form = new Form();
 
@@ -77,13 +78,13 @@ public class IBDeletePageWindow extends IWAdminWindow {
     if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
       List map = xml.getUsingTemplate();
 
-      if ((map == null) || (map.isEmpty()))
+      if ((map == null) || (map.isEmpty())) {
+        IBPage ibpage = new IBPage(Integer.parseInt(pageId));
         okToDelete = true;
+        okToDeleteChildren = checkDeleteOfChildren(ibpage);
+      }
       else
         okToDelete = false;
-
-      //Temporary
-      okToDelete = false;
     }
     else {
       okToDelete = true;
@@ -106,6 +107,15 @@ public class IBDeletePageWindow extends IWAdminWindow {
       table.add(sureText,1,1);
       table.add(ok,1,2);
       table.add(cancel,2,2);
+      if (!okToDeleteChildren) {
+        deleteChildren.setValue("false");
+        deleteChildren.setDisabled(true);
+      }
+      else {
+        deleteChildren.setValue("true");
+        deleteChildren.setDisabled(false);
+      }
+
       table.add(deleteChildren,1,3);
       table.add(deleteChildrenText,1,3);
 
@@ -120,13 +130,11 @@ public class IBDeletePageWindow extends IWAdminWindow {
   }
 
   private void deleteAllChildren(IBPage page, IWContext iwc) throws java.sql.SQLException {
-System.out.println("deleting children of page " + page.getID());
     Iterator it = page.getChildren();
 
     if (it != null) {
       while (it.hasNext()) {
         IBPage child = (IBPage)it.next();
-System.out.println("child id " + child.getID());
 
         if (child.getChildCount() != 0)
           deleteAllChildren(child,iwc);
@@ -136,6 +144,31 @@ System.out.println("child id " + child.getID());
         page.removeChild(child);
       }
     }
+  }
+
+  private boolean checkDeleteOfChildren(IBPage page) throws java.sql.SQLException {
+    Iterator it = page.getChildren();
+
+    if (it != null) {
+      while (it.hasNext()) {
+        IBPage child = (IBPage)it.next();
+
+        IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getID());
+        List map = xml.getUsingTemplate();
+
+        if ((map != null) || (!map.isEmpty())) {
+          return(false);
+        }
+
+        boolean check = true;
+        if (child.getChildCount() != 0)
+          check = checkDeleteOfChildren(child);
+
+        if (!check)
+          return(false);
+      }
+    }
+    return(true);
   }
 }
 
