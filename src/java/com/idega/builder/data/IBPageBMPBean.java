@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.12 2004/04/05 17:07:27 thomas Exp $
+ * $Id: IBPageBMPBean.java,v 1.13 2004/04/27 14:56:48 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,9 +23,10 @@ import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
-import com.idega.io.ObjectReader;
-import com.idega.io.ObjectWriter;
-import com.idega.io.Storable;
+import com.idega.io.export.ObjectReader;
+import com.idega.io.export.ObjectWriter;
+import com.idega.io.export.Storable;
+import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -581,12 +582,12 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		return getIntColumnValue(TREE_ORDER);
 	}
 	
-	public Object write(ObjectWriter writer) throws RemoteException {
-		return writer.write(this.getFile());
+	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
+		return writer.write(this.getFile(), iwc);
 	}
 	
-	public Object read(ObjectReader reader) throws RemoteException {
-		return reader.read(this);
+	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
+		return reader.read(this, iwc);
 	}
 		
 }
