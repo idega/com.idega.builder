@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.149 2004/06/10 19:55:02 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.150 2004/06/15 15:21:59 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -44,6 +44,7 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.util.FileUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -319,9 +320,15 @@ public class BuilderLogic {
 				iwc.removeSessionAttribute(sessionID);
 				imageObj.setImageID(image_id);
 			}
-			BuilderImageInserter inserter = BuilderClassesFactory.newInstance().createImageInserterImpl();
+			BuilderImageInserter inserter = null;
+			try {
+				BuilderClassesFactory builderClassesFactory = (BuilderClassesFactory) ImplementorRepository.getInstance().getImplementor(BuilderClassesFactory.class, this.getClass());
+				inserter = builderClassesFactory.createImageInserterImpl();
+			}
+			catch (ClassNotFoundException ex) {
+				// do nothings
+			}
 			inserter.setHasUseBox(false);
-
 			String width = imageObj.getWidth();
 			String height = imageObj.getHeight();
 			inserter.limitImageWidth(false);
