@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.16 2004/06/09 16:12:58 tryggvil Exp $
+ * $Id: IBPageBMPBean.java,v 1.17 2004/09/20 17:41:32 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,8 @@ import com.idega.core.builder.data.*;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectReader;
@@ -644,4 +646,19 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		return false;
 	}
 	
+	
+	
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getEntityState()
+	 */
+	public int getEntityState() {
+		//we need to override this method and also check if the embedded ICFile has been changed, if it has changed we need generic entity to
+		//update the bean
+		ICFile file = getFile();
+		if ( file!=null && (((GenericEntity)file).getEntityState() == STATE_NOT_IN_SYNCH_WITH_DATASTORE) ){
+			this.setEntityState(STATE_NOT_IN_SYNCH_WITH_DATASTORE);
+		}	
+		
+		return super.getEntityState();
+	}
 }
