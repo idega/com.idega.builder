@@ -86,7 +86,7 @@ public class IBPermissionWindow extends IBAdminWindow{
           keys = iwc.getAccessController().getICObjectPermissionKeys(ICObjectBusiness.getICObjectClass(Integer.parseInt(identifier)));
           break;
         case AccessControl._CATEGORY_BUNDLE :
-          keys = iwc.getAccessController().getBundlePermissionKeys(Class.forName(identifier));
+          keys = iwc.getAccessController().getBundlePermissionKeys(identifier);
           break;
         case AccessControl._CATEGORY_PAGE_INSTANCE :
           keys = iwc.getAccessController().getPagePermissionKeys();
@@ -112,7 +112,7 @@ public class IBPermissionWindow extends IBAdminWindow{
 
 
       //PermissionGroups
-      SelectionDoubleBox permissionBox = new SelectionDoubleBox(permissionGroupParameterString,"Detached","Allowed");
+      SelectionDoubleBox permissionBox = new SelectionDoubleBox(permissionGroupParameterString,"Unspecified","Allowed");
 
       SelectionBox left = permissionBox.getLeftBox();
         left.setHeight(8);
