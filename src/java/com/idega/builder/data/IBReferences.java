@@ -37,7 +37,7 @@ public class IBReferences {
 	
 	private void initialize(IWContext iwc) throws IOException {
 		moduleReference = new HashMap();
-		IWBundle bundle = IWBundle.getBundle(IBApplication.IB_BUNDLE_IDENTIFIER, iwc.getIWMainApplication());
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(IBApplication.IB_BUNDLE_IDENTIFIER);
 		String exportDefinitionPath = bundle.getRealPathWithFileNameString(EXPORT_DEFINITION);
 		XMLData exportDefinition = XMLData.getInstanceForFile(exportDefinitionPath);
 		XMLElement root = exportDefinition.getDocument().getRootElement();
