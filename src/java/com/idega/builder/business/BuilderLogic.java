@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.118 2002/03/26 13:30:19 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.119 2002/03/26 16:29:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -477,7 +477,7 @@ public class BuilderLogic {
   public String getCurrentIBPage(IWContext iwc) {
     String theReturn = null;
     String requestURI = iwc.getRequestURI();
-    if(requestURI.startsWith(iwc.getApplication().getBuilderServletURL())){
+    if(requestURI.startsWith(iwc.getApplication().getBuilderServletURI())){
       int indexOfPage = requestURI.indexOf("/page/");
       if( indexOfPage != -1 ){
 	boolean pageISNumber= true;
@@ -1265,7 +1265,7 @@ public class BuilderLogic {
   public String getIBPageURL(IWApplicationContext iwc, int ib_page_id){
 //    return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
     StringBuffer url = new StringBuffer();
-    url.append(iwc.getApplication().getBuilderServletURL());
+    url.append(iwc.getApplication().getBuilderServletURI());
     url.append("?");
     url.append(IB_PAGE_PARAMETER);
     url.append("=");
@@ -1277,7 +1277,9 @@ public class BuilderLogic {
    *
    */
   public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId){
-    String src = IWMainApplication._IFRAME_CONTENT_URL+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId;
+    String src = iwc.getApplication().getIFrameContentURI()+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId;
+
+    //String src = IWMainApplication._IFRAME_CONTENT_URL+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId;
     String query = iwc.getQueryString();
     if(query != null && !query.equals("")){
       src += ("&"+query);
@@ -1564,7 +1566,7 @@ public class BuilderLogic {
 
     StringBuffer url = new StringBuffer(domain.getURL());
 //    url.append(IWMainApplication.BUILDER_SERVLET_URL);
-//    url.append(iwc.getApplication().getBuilderServletURL());
+//    url.append(iwc.getApplication().getBuilderServletURI());
 //    url.append("?");
 //    url.append(IB_PAGE_PARAMETER);
 //    url.append("=");
