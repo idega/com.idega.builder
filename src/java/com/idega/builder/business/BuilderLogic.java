@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.96 2002/01/14 09:31:42 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.97 2002/01/15 16:08:30 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1162,7 +1162,7 @@ public class BuilderLogic {
   public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId){
     String src = IWMainApplication._IFRAME_CONTENT_URL+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId;
     String query = iwc.getQueryString();
-    if(query != null & !query.equals("")){
+    if(query != null && !query.equals("")){
       src += ("&"+query);
     }
     return src;

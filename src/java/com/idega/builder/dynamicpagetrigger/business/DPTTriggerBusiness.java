@@ -12,6 +12,13 @@ import com.idega.presentation.Page;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.IWContext;
 import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.presentation.PresentationObject;
+import com.idega.builder.business.XMLConstants;
+import com.idega.builder.business.XMLWriter;
+import com.idega.block.IWBlock;
+
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLAttribute;
 
 import com.idega.business.GenericEntityComparator;
 import java.util.Collections;
@@ -168,26 +175,46 @@ public class DPTTriggerBusiness {
     BuilderLogic instance = BuilderLogic.getInstance();
 
     IBPage page = new IBPage();
+    if (name == null){
+      name = "Untitled";
+    }
     page.setName(name);
     page.setType(IBPage.PAGE);
-    page.insert();
-
-    //instance.unlockRegion(Integer.toString(page.getID()),"-1",null);
-
     page.setTemplateId(dptTemplateId);
-    page.update();
 
+//    try {
+      page.insert();
+//      IBPage ibPageParent = new IBPage(Integer.parseInt(parentPageId));
+//      ibPageParent.addChild(page);
+/*    }
+    catch(SQLException e) {
+      return(-1);
+    }
+*/
     createdPages.put(Integer.toString(dptTemplateId),Integer.toString(page.getID()));
 
     instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
     IBXMLPage ibxmlPage =  instance.getIBXMLPage(dptTemplateId);
     ibxmlPage.addUsingTemplate(Integer.toString(page.getID()));
 
-    Page popPage = ibxmlPage.getPopulatedPage();
 
-    List l = popPage.getAllContainedObjectsRecursive();
-    if(l != null){
-      Iterator iter = l.iterator();
+    IBXMLPage currentXMLPage = instance.getIBXMLPage(page.getID());
+    Page current = currentXMLPage.getPopulatedPage();
+    List children = current.getAllContainedObjectsRecursive();
+
+    if (children != null) {
+      Iterator it = children.iterator();
+      while (it.hasNext()) {
+        PresentationObject obj = (PresentationObject)it.next();
+        boolean ok = changeInstanceId(obj,currentXMLPage);
+        if(!ok){
+          return(-1);
+        }
+      }
+    }
+
+    if(children != null){
+      Iterator iter = children.iterator();
       while (iter.hasNext()) {
         Object item = iter.next();
         if(!(item instanceof Link)){
@@ -200,7 +227,7 @@ public class DPTTriggerBusiness {
         }
       }
       String pageIDString = Integer.toString(page.getID());
-      iter = l.iterator();
+      iter = children.iterator();
       while(iter.hasNext()){
         Link item = (Link)iter.next();
 
@@ -240,6 +267,41 @@ public class DPTTriggerBusiness {
   }
 
 
+  /**
+   *
+   */
+  private static boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage) {
+    if (obj.getChangeInstanceIDOnInheritance()) {
+      int object_id = obj.getICObjectID();
+      int ic_instance_id = obj.getICObjectInstanceID();
+      ICObjectInstance instance = null;
 
+      try {
+        instance = new ICObjectInstance();
+        instance.setICObjectID(object_id);
+        instance.insert();
+      }
+      catch(SQLException e) {
+        return(false);
+      }
+
+      if(obj instanceof IWBlock){
+        boolean ok = ((IWBlock)obj).copyBlock(instance.getID());
+        if (!ok){
+          return(false);
+        }
+      }
+
+      XMLElement element = new XMLElement(XMLConstants.CHANGE_IC_INSTANCE_ID);
+      XMLAttribute from = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_FROM,Integer.toString(ic_instance_id));
+      XMLAttribute to = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_TO,Integer.toString(instance.getID()));
+      element.setAttribute(from);
+      element.setAttribute(to);
+
+      XMLWriter.addNewElement(xmlpage,-1,element);
+    }
+
+    return(true);
+  }
 
 }

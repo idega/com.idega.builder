@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.25 2002/01/15 14:10:39 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.26 2002/01/15 16:08:30 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -164,7 +164,7 @@ public class XMLWriter {
   /**
    * Returns true if a propertyElement has the specified values, else false
    */
-  static boolean hasPropertyElementSpecifiedValues(IWMainApplication iwma,int ICObjectInstanceID,XMLElement propertyElement,String[] values,boolean withPrimaryKeyCheck){
+  public static boolean hasPropertyElementSpecifiedValues(IWMainApplication iwma,int ICObjectInstanceID,XMLElement propertyElement,String[] values,boolean withPrimaryKeyCheck){
     boolean check = true;
     int counter = 0;
     List valueList = propertyElement.getChildren(XMLConstants.VALUE_STRING);
@@ -192,7 +192,7 @@ public class XMLWriter {
   }
 
 
-  static String getPropertyNameForElement(XMLElement propertyElement){
+  public static String getPropertyNameForElement(XMLElement propertyElement){
     if(propertyElement!=null){
       return propertyElement.getChild(XMLConstants.NAME_STRING).getText();
     }
@@ -264,7 +264,7 @@ public class XMLWriter {
   /**
    * Returns a List of String[]
    */
-  static List getPropertyValues(IBXMLAble xml,int ObjectInstanceId,String propertyName){
+  public static List getPropertyValues(IBXMLAble xml,int ObjectInstanceId,String propertyName){
     XMLElement module = findModule(xml,ObjectInstanceId);
     List theReturn = com.idega.util.ListUtil.getEmptyList();
     List propertyList = findProperties(module,propertyName);
@@ -294,7 +294,7 @@ public class XMLWriter {
   /**
    * Returns the first property if there is an array of properties set
    */
-  static String getProperty(IBXMLAble xml,int ObjectInstanceId,String propertyName){
+  public static String getProperty(IBXMLAble xml,int ObjectInstanceId,String propertyName){
     XMLElement module = findModule(xml,ObjectInstanceId);
     XMLElement property = findProperty(module,propertyName);
     if(property!=null){
@@ -307,7 +307,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean removeProperty(IWMainApplication iwma,IBXMLAble xml,int ICObjectInstanceId,String propertyName,String[] values){
+  public static boolean removeProperty(IWMainApplication iwma,IBXMLAble xml,int ICObjectInstanceId,String propertyName,String[] values){
       XMLElement module = findModule(xml,ICObjectInstanceId);
       if(module!=null){
         XMLElement property = findProperty(iwma,ICObjectInstanceId,module,propertyName,values);
@@ -326,7 +326,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean setProperty(IWMainApplication iwma,IBXMLAble xml,int ObjectInstanceId,String propertyName,String propertyValue){
+  public static boolean setProperty(IWMainApplication iwma,IBXMLAble xml,int ObjectInstanceId,String propertyName,String propertyValue){
       String[] values = {propertyValue};
       return setProperty(iwma,xml,ObjectInstanceId,propertyName,values,false);
   }
@@ -472,14 +472,14 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean addLabel(IBXMLAble xml, int parentObjectInstanceId, int xpos, int ypos, String label) {
+  public static boolean addLabel(IBXMLAble xml, int parentObjectInstanceId, int xpos, int ypos, String label) {
     return(true);
   }
 
   /**
    *
    */
-  static boolean addNewModule(IBXMLAble xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos, String label) {
+  public static boolean addNewModule(IBXMLAble xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos, String label) {
     String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
     XMLElement region = findRegion(xml,regionId);
 
@@ -511,14 +511,14 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean addNewModule(IBXMLAble xml,int parentObjectInstanceID,int newICObjectID, String label){
+  public static boolean addNewModule(IBXMLAble xml,int parentObjectInstanceID,int newICObjectID, String label){
     return addNewModule(findModule(xml,parentObjectInstanceID),newICObjectID);
   }
 
   /**
    *
    */
-  static boolean addNewModule(IBXMLAble xml,String parentObjectInstanceID,int newICObjectID,String label){
+  public static boolean addNewModule(IBXMLAble xml,String parentObjectInstanceID,int newICObjectID,String label){
     try{
       return addNewModule(findModule(xml,Integer.parseInt(parentObjectInstanceID)),newICObjectID);
     }
@@ -537,14 +537,14 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean addNewModule(IBXMLAble xml,String parentObjectInstanceID,ICObject newObjectType, String label){
+  public static boolean addNewModule(IBXMLAble xml,String parentObjectInstanceID,ICObject newObjectType, String label){
     return addNewModule(xml,parentObjectInstanceID,newObjectType.getID(),label);
   }
 
   /**
    *
    */
-  static boolean deleteModule(IBXMLAble xml,String parentObjectInstanceID,int ICObjectInstanceID){
+  public static boolean deleteModule(IBXMLAble xml,String parentObjectInstanceID,int ICObjectInstanceID){
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if(parent!=null){
       try{
@@ -562,7 +562,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean lockRegion(IBXMLAble xml, String parentObjectInstanceID) {
+  public static boolean lockRegion(IBXMLAble xml, String parentObjectInstanceID) {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED,"true");
@@ -599,7 +599,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean setAttribute(IBXMLAble xml, String parentObjectInstanceID, String attributeName, String attributeValue) {
+  public static boolean setAttribute(IBXMLAble xml, String parentObjectInstanceID, String attributeName, String attributeValue) {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       XMLAttribute attribute = new XMLAttribute(attributeName,attributeValue);
@@ -616,7 +616,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean unlockRegion(IBXMLAble xml, String parentObjectInstanceID) {
+  public static boolean unlockRegion(IBXMLAble xml, String parentObjectInstanceID) {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED,"false");
@@ -705,7 +705,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean labelRegion(IBXMLAble xml, String parentObjectInstanceID, String label) {
+  public static boolean labelRegion(IBXMLAble xml, String parentObjectInstanceID, String label) {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       if (label != null && !label.equals("")) {
@@ -751,7 +751,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean copyModule(IBXMLAble xml, String parentObjectInstanceID, int ICObjectInstanceID) {
+  public static boolean copyModule(IBXMLAble xml, String parentObjectInstanceID, int ICObjectInstanceID) {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       try {
@@ -796,7 +796,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean addNewElement(IBXMLAble xml, int parentObjectInstanceID, XMLElement element) {
+  public static boolean addNewElement(IBXMLAble xml, int parentObjectInstanceID, XMLElement element) {
     XMLElement parent = findModule(xml,parentObjectInstanceID);
     if (parent != null)
       parent.addContent(element);
@@ -807,7 +807,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean pasteElement(IBXMLAble xml, String parentObjectInstanceID, XMLElement element) {
+  public static boolean pasteElement(IBXMLAble xml, String parentObjectInstanceID, XMLElement element) {
     changeModuleIds(element);
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
@@ -841,7 +841,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean pasteElementAbove(IBXMLAble xml, String parentObjectInstanceID, String objectId, XMLElement element) {
+  public static boolean pasteElementAbove(IBXMLAble xml, String parentObjectInstanceID, String objectId, XMLElement element) {
     changeModuleIds(element);
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
@@ -956,7 +956,7 @@ public class XMLWriter {
   /**
    *
    */
-  static XMLElement copyModule(IBXMLAble xml, int id) {
+  public static XMLElement copyModule(IBXMLAble xml, int id) {
     return(findXMLElement(xml,Integer.toString(id),XMLConstants.MODULE_STRING));
   }
 
