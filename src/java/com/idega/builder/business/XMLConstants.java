@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.20 2004/04/19 17:54:38 thomas Exp $
+ * $Id: XMLConstants.java,v 1.21 2004/04/27 14:57:40 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -60,7 +60,6 @@ public abstract class XMLConstants {
   public static final String EXPORT_PROVIDER = "provider";
   public static final String EXPORT_PROVIDER_EJB = "ejb";
   public static final String EXPORT_PROVIDER_CLASS = "class";
-  public static final String EXPORT_PROVIDER_METHOD = "method";
   
   // for metadata in zip file
   public static final String FILE_FILES = "files";
