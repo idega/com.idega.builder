@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.81 2004/09/03 15:05:23 eiki Exp $
+ *  $Id: IBApplication.java,v 1.82 2004/09/03 16:17:50 eiki Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.PageTreeNode;
