@@ -26,6 +26,8 @@ import com.idega.presentation.ui.BooleanInput;
 import com.idega.core.data.ICFile;
 import com.idega.builder.data.IBPage;
 import com.idega.presentation.Image;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 
 public class ComponentPropertyHandler {
 
@@ -151,6 +153,15 @@ public class ComponentPropertyHandler {
           //catch (Exception ex) {
           //  ex.printStackTrace(System.err);
           //}
+        }
+        //REMOVE AND MAKE GENERIC! ask tryggvi and eiki
+        else if(parameterType.equals(Group.class)){
+          try {
+            argument = (Group) ((GroupHome)com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(stringValue));
+          }
+          catch (Exception ex) {
+            ex.printStackTrace(System.err);
+          }
         }
         return argument;
     }
