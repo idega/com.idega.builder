@@ -40,6 +40,7 @@ private String[] _styles = StyleConstants.ALL_STYLES;
     setScrollbar(true);
     setWidth(370);
     setHeight(350);
+    this.setStatus(true);
   }
 
   public void displaySelection(IWContext iwc) {
@@ -204,6 +205,8 @@ private String[] _styles = StyleConstants.ALL_STYLES;
       color.setMaxlength(7);
       color.setContent(getStyleValue(StyleConstants.ATTRIBUTE_COLOR));
       color.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+    /*IBColorChooser color = new IBColorChooser(StyleConstants.ATTRIBUTE_COLOR);
+      color.setSelected(getStyleValue(StyleConstants.ATTRIBUTE_COLOR));*/
     Text colorText = new Text("Color:");
       colorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
     leftTable.add(colorText,4,row);
