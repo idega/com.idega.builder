@@ -1,7 +1,7 @@
 package com.idega.builder.data;
 
-import com.idega.core.builder.data.*;
-import com.idega.core.builder.data.*;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 
 
 public class IBPageHomeImpl extends com.idega.data.IDOFactory implements ICPageHome

@@ -1,7 +1,7 @@
 package com.idega.builder.data;
 
-import com.idega.core.builder.data.*;
-import com.idega.core.builder.data.*;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICDomainHome;
 
 
 public class IBDomainHomeImpl extends com.idega.data.IDOFactory implements ICDomainHome
