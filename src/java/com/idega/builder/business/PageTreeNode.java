@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.18 2004/09/07 00:32:35 sigtryggur Exp $
+ * $Id: PageTreeNode.java,v 1.19 2004/10/29 09:26:59 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ public class PageTreeNode implements ICTreeNode {
 	protected int _order = -1;
 	protected IWApplicationContext _iwac;
 	protected boolean _isCategory = false;
+	protected ICPage _page;
 
 	protected PageTreeNode(int id, String name) {
 		this(id, name, -1, false);
@@ -161,6 +162,7 @@ public class PageTreeNode implements ICTreeNode {
 					node = new PageTreeNode(pages.getID(), pages.getName(), pages.isCategory());
 				else
 					node = new PageTreeNode(pages.getID(), pages.getName(), order, pages.isCategory());
+				node.setPage(pages);
 				tree.put(new Integer(node.getNodeID()), node);
 			}
 		}
@@ -175,6 +177,7 @@ public class PageTreeNode implements ICTreeNode {
 					node = new PageTreeNode(pages.getID(), pages.getName());
 				else
 					node = new PageTreeNode(pages.getID(), pages.getName(), order);
+				node.setPage(pages);
 				tree.put(new Integer(node.getNodeID()), node);
 			}
 		}
@@ -265,6 +268,14 @@ public class PageTreeNode implements ICTreeNode {
 	 */
 	public ICTreeNode getParentNode() {
 		return _parent;
+	}
+	
+	public ICPage getPage() {
+		return _page;
+	}
+	
+	public void setPage(ICPage page) {
+		_page = page;
 	}
 
 	/**
