@@ -1,5 +1,5 @@
 /*
- * $Id: LibraryTreeNode.java,v 1.6 2004/09/06 19:45:27 sigtryggur Exp $
+ * $Id: LibraryTreeNode.java,v 1.7 2004/09/07 00:32:34 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.builder.business;
 import com.idega.core.data.ICTreeNode;
 import com.idega.idegaweb.IWApplicationContext;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -27,11 +28,19 @@ public class LibraryTreeNode implements ICTreeNode {
   }
 
   /**
+  *
+  */
+ public Collection getChildren() {
+   /**@todo: Implement this com.idega.core.ICTreeNode method*/
+   throw new java.lang.UnsupportedOperationException("Method getChildren() not yet implemented.");
+ }
+  
+  /**
    *
    */
   public Iterator getChildrenIterator() {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
-    throw new java.lang.UnsupportedOperationException("Method getChildren() not yet implemented.");
+    throw new java.lang.UnsupportedOperationException("Method getChildrenIterator() not yet implemented.");
   }
 
   /**
