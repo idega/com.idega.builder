@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.43 2001/12/19 11:50:08 palli Exp $
+ * $Id: IBApplication.java,v 1.44 2001/12/19 17:37:07 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -259,7 +259,7 @@ public class IBApplication extends IWApplication {
         viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
-        viewer.setLinkProtototype(l);
+        viewer.setLinkPrototype(l);
         add(viewer);
 
         String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
@@ -307,7 +307,7 @@ public class IBApplication extends IWApplication {
         viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
-        viewer.setLinkProtototype(l);
+        viewer.setLinkPrototype(l);
         add(viewer);
 
         String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
