@@ -105,10 +105,12 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
   			additionalPageIds.add(additionalPageId);
   		}
   		ICFile file = page.getFile();
-  		XMLData xmlData = XMLData.getInstanceForFile(file);
-  		XMLDocument pageXML = xmlData.getDocument();
-  		XMLElement pageRoot = pageXML.getRootElement().getChild(XMLConstants.PAGE_STRING);
-  		getReferences(iwc).checkElementForReferencesNoteNecessaryModules(pageRoot, metadata);
+  		if (! file.isEmpty()) {
+  			XMLData xmlData = XMLData.getInstanceForFile(file);
+  			XMLDocument pageXML = xmlData.getDocument();
+  			XMLElement pageRoot = pageXML.getRootElement().getChild(XMLConstants.PAGE_STRING);
+  			getReferences(iwc).checkElementForReferencesNoteNecessaryModules(pageRoot, metadata);
+  		}
   		metadata.addFileEntry(page);
   	}
   	// check pages that are used
