@@ -1,11 +1,11 @@
 package com.idega.builder.handler;
-import com.idega.presentation.IWContext;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.idega.presentation.IWContext;
 /**
  * Title:        idegaWeb Generic Form Handler
  * Description:  A class to parse forms and get output in a structured format
