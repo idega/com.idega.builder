@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.86 2002/01/02 12:14:37 palli Exp $
+ * $Id: BuilderLogic.java,v 1.87 2002/01/02 13:12:06 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1237,5 +1237,6 @@ public class BuilderLogic {
     XMLWriter.addNewElement(page,-1,element);
 
     page.update();
+    PageCacher.flagPageInvalid(linkParentPageId);
   }
 }
