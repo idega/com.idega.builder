@@ -62,7 +62,7 @@ public class PageCacher
 		xml = getXML(key);
 		if (xml != null)
 		{
-			return (Page) xml.getPopulatedPage().clone(iwc);
+			return (Page) xml.getPopulatedPage().clonePermissionChecked(iwc);
 			//return (Page)xml.getPopulatedPage().clone();
 		}
 		return null;
