@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.21 2004/04/27 14:57:40 thomas Exp $
+ * $Id: XMLConstants.java,v 1.22 2004/05/04 10:05:56 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -56,6 +56,8 @@ public abstract class XMLConstants {
   public static final String EXPORT_MODULE_CLASS = "class";
   public static final String EXPORT_PROPERTY = "property";
   public static final String EXPORT_PROPERTY_NAME = "name";
+  public static final String EXPORT_PROPERTY_PARAMETER = "parameter";
+  public static final String EXPORT_PROPERTY_PARAMETER_ID = "id";
   public static final String EXPORT_SOURCE = "source";
   public static final String EXPORT_PROVIDER = "provider";
   public static final String EXPORT_PROVIDER_EJB = "ejb";
@@ -67,6 +69,7 @@ public abstract class XMLConstants {
   public static final String FILE_MODULE = "module";
   public static final String FILE_SOURCE = "source";
   public static final String FILE_NAME = "name";
+  public static final String FILE_PARAMETER_ID = "parameter_id";
   public static final String FILE_VALUE = "value";
   public static final String FILE_USED_ID = "identifier";
   public static final String FILE_ORIGINAL_NAME = "original_name";
