@@ -67,19 +67,15 @@ public class IBDomain extends GenericEntity {
     page.setType(IBPage.PAGE);
     page.insert();
 
+    com.idega.builder.business.BuilderLogic.getInstance().unlockRegion(Integer.toString(page.getID()),"-1");
+
     domain.setIBPage(page);
     domain.insert();
-
-    domain = new IBDomain();
-    domain.setName("Default Template");
 
     page = new IBPage();
     page.setName("Default Template");
     page.setType(IBPage.TEMPLATE);
     page.insert();
-
-    domain.setIBPage(page);
-    domain.insert();
   }
 
   public String getEntityName(){

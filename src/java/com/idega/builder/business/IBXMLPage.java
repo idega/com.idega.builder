@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.7 2001/09/19 23:31:26 palli Exp $
+ * $Id: IBXMLPage.java,v 1.8 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -238,7 +238,6 @@ public class IBXMLPage {
     finally{
       if(streamopen){
         try{
-          System.out.println("Closing page inputstream");
           if(stream!=null){
             stream.close();
           }
@@ -251,7 +250,6 @@ public class IBXMLPage {
   }
 
   public void setPageAsEmptyPage(String type, String template) {
-    System.out.println("setPageAsEmptyPage");
     _rootElement = new Element(XMLConstants.ROOT_STRING);
     Element pageElement = new Element(XMLConstants.PAGE_STRING);
 

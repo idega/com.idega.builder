@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.2 2001/09/18 17:19:45 palli Exp $
+ * $Id: XMLConstants.java,v 1.3 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ public abstract class XMLConstants {
   static final String Y_REGION_STRING = "y";
   static final String CLASS_STRING = "class";
   static final String PAGE_TYPE = "type";
+  static final String REGION_LOCKED = "locked";
 
   static final String PAGE_TYPE_PAGE = "page";
   static final String PAGE_TYPE_DRAFT = "draft";

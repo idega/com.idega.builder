@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.21 2001/09/24 14:22:47 palli Exp $
+ * $Id: IBPage.java,v 1.22 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,18 +22,19 @@ import com.idega.data.TreeableEntity;
  * @version 1.3
  */
 public class IBPage extends TreeableEntity {
-  private static String _templateIdColumn = "template_id";
-  private static String _fileColumn = "file_id";
-  private static String _nameColumn = "name";
-  private static String _entityName = "ib_page";
-  private static String _type = "page_type";
-  private static String _locked = "locked_by";
+  private final static String ENTITY_NAME = "ib_page";
+  private final static String FILE_COLUMN = "file_id";
+  private final static String NAME_COLUMN = "name";
+  private final static String TEMPLATE_ID_COLUMN = "template_id";
+  private final static String TYPE_COLUMN = "page_type";
+  private final static String LOCKED_COLUMN = "locked_by";
+//  private static String DOMAIN_COLUMN = "ib_domain_id";
   private ICFile _file;
   private BlobWrapper _wrapper;
 
-  public static String PAGE = "P";
-  public static String TEMPLATE = "T";
-  public static String DRAFT = "D";
+  public final static String PAGE = "P";
+  public final static String TEMPLATE = "T";
+  public final static String DRAFT = "D";
 
 
   /**
@@ -61,6 +62,7 @@ public class IBPage extends TreeableEntity {
     addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
     addAttribute(getColumnType(),"Type",true,true,String.class,1);
     addAttribute(getColumnLockedBy(),"Locked by",true,true,Integer.class,"many-to-one",User.class);
+//    addAttribute(getColumnDomain(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
 	}
 
   /**
@@ -73,7 +75,7 @@ public class IBPage extends TreeableEntity {
    *
    */
 	public String getEntityName() {
-		return(_entityName);
+		return(ENTITY_NAME);
 	}
 
   /**
@@ -213,35 +215,35 @@ public class IBPage extends TreeableEntity {
    *
    */
   public static String getColumnName() {
-    return(_nameColumn);
+    return(NAME_COLUMN);
   }
 
   /**
    *
    */
   public static String getColumnTemplateID() {
-    return(_templateIdColumn);
+    return(TEMPLATE_ID_COLUMN);
   }
 
   /**
    *
    */
   public static String getColumnFile() {
-    return(_fileColumn);
+    return(FILE_COLUMN);
   }
 
   /**
    *
    */
   public static String getColumnType() {
-    return(_type);
+    return(TYPE_COLUMN);
   }
 
   /**
    *
    */
   public static String getColumnLockedBy() {
-    return(_locked);
+    return(LOCKED_COLUMN);
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.12 2001/09/25 17:31:13 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.13 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,6 +35,7 @@ public class XMLReader {
       while (it.hasNext()) {
         ModuleObject obj = (ModuleObject)it.next();
         obj.setUseBuilderObjectControl(setTo);
+        obj.setBelongsToParent(true);
         if (obj instanceof ModuleObjectContainer) {
           setAllBuilderControls((ModuleObjectContainer)obj,setTo);
         }
@@ -55,17 +56,18 @@ public class XMLReader {
 
     boolean hasTemplate = false;
     boolean isTemplate = false;
+    boolean isLocked = true;
 
     // Parse the page attributes
     while(attr.hasNext()) {
       Attribute at = (Attribute)attr.next();
-      if (at.getName().equals(XMLConstants.TEMPLATE_STRING)) {
+      if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
         hasTemplate = true;
         parentContainer = PageCacher.getPage(at.getValue());
         parentContainer.setIsExtendingTemplate();
         setAllBuilderControls(parentContainer,false);
       }
-      else if (at.getName().equals(XMLConstants.PAGE_TYPE)) {
+      else if (at.getName().equalsIgnoreCase(XMLConstants.PAGE_TYPE)) {
         if (at.getValue().equals(XMLConstants.PAGE_TYPE_TEMPLATE)) {
           isTemplate = true;
         }
@@ -73,12 +75,23 @@ public class XMLReader {
       else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
         pageKey = (String)at.getValue();
       }
+      else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
+        if (at.getValue().equals("false"))
+          isLocked = false;
+        else
+          isLocked = true;
+      }
     }
 
     //If the page does not extend a template it has no parent container
     if (!hasTemplate) {
       parentContainer = new Page();
     }
+
+    if (isLocked)
+      parentContainer.lock();
+    else
+      parentContainer.unlock();
 
     //Set the type of the page
     if (isTemplate) {
@@ -107,10 +120,10 @@ public class XMLReader {
                     System.err.println("pc ==null");
                 }
 
-            parseElement(child,parentContainer);
+          parseElement(child,parentContainer);
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-            parseRegion(child,parentContainer);
+          parseRegion(child,parentContainer);
         }
         else {
             System.err.println("Unknown tag in xml description file : " + child.getName());
@@ -134,6 +147,15 @@ public class XMLReader {
 
     int x = 1;
     int y = 1;
+    boolean isLocked = true;
+
+    Attribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
+    if (locked != null) {
+      if (locked.getValue().equalsIgnoreCase("true"))
+        isLocked = true;
+      else
+        isLocked = false;
+    }
 
     Attribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
     String regionID = null;
@@ -181,6 +203,10 @@ public class XMLReader {
       }
     }
     else if (regionParent instanceof com.idega.jmodule.object.Table) {
+      if (isLocked)
+        ((Table)regionParent).lock(x,y);
+      else
+        ((Table)regionParent).unlock(x,y);
       newRegionParent = ((Table)regionParent).containerAt(x,y);
     }
 
@@ -220,8 +246,10 @@ public class XMLReader {
       else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
         values.addElement(e.getTextTrim());
       }
-      else
+/*      else {
         System.err.println("Error in setProperties!!!!");
+        System.err.println("Name = " + e.getName());
+      }*/
     }
 
     if (key != null) {
@@ -251,6 +279,7 @@ public class XMLReader {
   static void parseElement(Element el, ModuleObjectContainer parent) {
     ModuleObject inst = null;
     List at = el.getAttributes();
+    boolean isLocked = true;
 
     if ((at == null) || (at.isEmpty())) {
       System.err.println("No attributes specified");
@@ -267,6 +296,12 @@ public class XMLReader {
       else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
         id = attr.getValue();
       }
+      else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
+        if (attr.getValue().equals("false"))
+          isLocked = false;
+        else
+          isLocked = true;
+      }
     }
 
     try {
@@ -277,6 +312,13 @@ public class XMLReader {
         ICObjectInstance ico = new ICObjectInstance(Integer.parseInt(id));
         inst = ico.getNewInstance();
         inst.setICObjectInstance(ico);
+      }
+
+      if (inst instanceof ModuleObjectContainer) {
+        if (isLocked)
+          ((ModuleObjectContainer)inst).lock();
+        else
+          ((ModuleObjectContainer)inst).unlock();
       }
 
       if (inst instanceof com.idega.jmodule.object.Table) {

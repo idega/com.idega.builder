@@ -1,5 +1,5 @@
 /*
- * $Id: IBLockRegionWindow.java,v 1.2 2001/09/25 13:33:16 palli Exp $
+ * $Id: IBLockRegionWindow.java,v 1.3 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,43 +33,55 @@ import com.idega.data.EntityFinder;
  */
 
 public class IBLockRegionWindow extends IBAdminWindow {
-  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
-  private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
-  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
-
-  private static final String ib_control_parameter = BuilderLogic.IB_CONTROL_PARAMETER;
+  private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
+  private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+  private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String ACTION_LOCK = BuilderLogic.ACTION_LOCK_REGION;
   private static final String ACTION_UNLOCK = BuilderLogic.ACTION_UNLOCK_REGION;
-
   private static final String IW_BUNDLE_IDENTIFIER=BuilderLogic.IW_BUNDLE_IDENTIFIER;
 
+  /**
+   *
+   */
   public IBLockRegionWindow() {
   }
 
+  /**
+   *
+   */
   public void main(ModuleInfo modinfo) throws Exception {
     super.addTitle("IBLockRegionWindow");
-    String ib_parent_id = modinfo.getParameter(ib_parent_parameter);
-    String ib_page_id = modinfo.getParameter(ib_page_parameter);
-    String action = modinfo.getParameter(ib_control_parameter);
+    String ib_parent_id = modinfo.getParameter(IB_PARENT_PARAMETER);
+    String ib_page_id = modinfo.getParameter(IB_PAGE_PARAMETER);
+    String action = modinfo.getParameter(IB_CONTROL_PARAMETER);
     setParentToReload();
-    String ic_object_id = modinfo.getParameter(ic_object_id_parameter);
-    if (action.equalsIgnoreCase(ACTION_LOCK))
-      lockRegion(ib_page_id,ib_parent_id,ic_object_id);
-    else if (action.equalsIgnoreCase(ACTION_UNLOCK))
-      unlockRegion(ib_page_id,ib_parent_id,ic_object_id);
+    if (action.equalsIgnoreCase(ACTION_LOCK)) {
+      lockRegion(ib_page_id,ib_parent_id);
+    }
+    else if (action.equalsIgnoreCase(ACTION_UNLOCK)) {
+      unlockRegion(ib_page_id,ib_parent_id);
+    }
     close();
   }
 
-  private void lockRegion(String pageKey, String parentID, String objectID) throws Exception {
-     BuilderLogic.getInstance().lockRegion(pageKey,parentID,Integer.parseInt(objectID));
+  /*
+   *
+   */
+  private void lockRegion(String pageKey, String parentID) throws Exception {
+     BuilderLogic.getInstance().lockRegion(pageKey,parentID);
   }
 
-  private void unlockRegion(String pageKey, String parentID, String objectID) throws Exception {
-     BuilderLogic.getInstance().unlockRegion(pageKey,parentID,Integer.parseInt(objectID));
+  /*
+   *
+   */
+  private void unlockRegion(String pageKey, String parentID) throws Exception {
+     BuilderLogic.getInstance().unlockRegion(pageKey,parentID);
   }
 
+  /**
+   *
+   */
   public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
+    return(IW_BUNDLE_IDENTIFIER);
   }
 }
-

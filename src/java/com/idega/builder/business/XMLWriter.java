@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.7 2001/09/19 23:31:26 palli Exp $
+ * $Id: XMLWriter.java,v 1.8 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -222,10 +222,8 @@ public class XMLWriter {
     if(property==null){
       property = getNewProperty(propertyName,propertyValues);
       module.addContent(property);
-      System.out.println("property==null");
     }
     else{
-      System.out.println("property!=null");
       List values = property.getChildren(XMLConstants.VALUE_STRING);
       if(values!=null){
         Iterator iter = values.iterator();
@@ -279,7 +277,6 @@ public class XMLWriter {
         ICObjectInstance instance = new ICObjectInstance();
         instance.setICObjectID(newICObjectTypeID);
         instance.insert();
-        System.out.println("instanceid="+instance.getID());
 
         Element newElement = new Element(XMLConstants.MODULE_STRING);
         Attribute id = new Attribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
@@ -298,8 +295,7 @@ public class XMLWriter {
     return false;
   }
 
-  static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos){
-
+  static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos) {
     String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
     Element region = findRegion(xml,regionId);
 
@@ -308,9 +304,6 @@ public class XMLWriter {
       Attribute id = new Attribute(XMLConstants.ID_STRING,regionId);
       region.addAttribute(id);
       addNewModule(region,newICObjectID);
-      System.out.println("instance="+parentObjectInstanceID);
-      System.out.println("x="+xpos);
-      System.out.println("y="+ypos);
       Element parent = findModule(xml,parentObjectInstanceID);
       if (parent != null)
         parent.addContent(region);
@@ -364,6 +357,32 @@ public class XMLWriter {
       }
     }
     return false;
+  }
+
+  static boolean lockRegion(IBXMLPage xml, String parentObjectInstanceID) {
+    Element parent = findXMLElement(xml,parentObjectInstanceID,null);
+    if (parent != null) {
+      Attribute lock = new Attribute(XMLConstants.REGION_LOCKED,"true");
+      if (parent.getAttribute(XMLConstants.REGION_LOCKED) != null)
+        parent.removeAttribute(XMLConstants.REGION_LOCKED);
+      parent.addAttribute(lock);
+      return(true);
+    }
+
+    return(false);
+  }
+
+  static boolean unlockRegion(IBXMLPage xml, String parentObjectInstanceID) {
+    Element parent = findXMLElement(xml,parentObjectInstanceID,null);
+    if (parent != null) {
+      Attribute lock = new Attribute(XMLConstants.REGION_LOCKED,"false");
+      if (parent.getAttribute(XMLConstants.REGION_LOCKED) != null)
+        parent.removeAttribute(XMLConstants.REGION_LOCKED);
+      parent.addAttribute(lock);
+      return(true);
+    }
+
+    return(false);
   }
 
   private static boolean deleteModule(Element parent,Element child)throws Exception{

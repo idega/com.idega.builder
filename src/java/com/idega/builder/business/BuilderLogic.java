@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.29 2001/09/25 15:42:50 palli Exp $
+ * $Id: BuilderLogic.java,v 1.30 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -134,35 +134,34 @@ public class BuilderLogic {
         }
       }
       //"-1" is identified as the top page object (parent)
-      if (!page.isLocked())
+/*      if (page.getIsTemplate()) {
         page.add(getAddIcon(Integer.toString(-1),modinfo));
-//      if (page.getIsTemplate())
-//        page.add(getUnlockIcon(Integer.toString(-1),modinfo));
-      return page;
-  }
-
-  /**
-   *
-   */
-  public ModuleObjectContainer getModuleTransformed(String pageKey, ModuleObjectContainer module, ModuleInfo modinfo){
-      List list = module.getAllContainingObjects();
-      if (list != null) {
-        ListIterator iter = list.listIterator();
-        ModuleObjectContainer parent = module;
-        while (iter.hasNext()) {
-          int index = iter.nextIndex();
-          ModuleObject item = (ModuleObject)iter.next();
-          transformObject(pageKey,item,index,parent,"-1",modinfo);
+        if (page.getShowLock()) {
+          if (page.isLocked())
+            page.add(getLockIcon(Integer.toString(-1),modinfo));
+          else
+            page.add(getUnlockIcon(Integer.toString(-1),modinfo));
         }
       }
-      //"-1" is identified as the top page object (parent)
-//      if (!module.isLocked())
-//        module.add(getAddIcon(Integer.toString(-1),modinfo));
-//      if (module.getIsTemplate())
-//        module.add(getUnlockIcon(Integer.toString(-1),modinfo));
-      return(module);
-  }
+      else if (!page.isLocked()) {
+        page.add(getAddIcon(Integer.toString(-1),modinfo));
+      }*/
 
+      if (page.getIsExtendingTemplate()) {
+        if (!page.isLocked()) {
+          page.add(getAddIcon(Integer.toString(-1),modinfo));
+          if (page.getIsTemplate())
+            page.add(getUnlockIcon(Integer.toString(-1),modinfo));
+        }
+      }
+      else {
+        page.add(getAddIcon(Integer.toString(-1),modinfo));
+        if (page.getIsTemplate())
+          page.add(getUnlockIcon(Integer.toString(-1),modinfo));
+      }
+
+      return page;
+  }
 
   private void processImageSet(String pageKey,int ICObjectInstanceID,int imageID,IWMainApplication iwma){
     setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID),iwma);
@@ -214,15 +213,48 @@ public class BuilderLogic {
         int rows = tab.getRows();
         for (int x=1;x<=cols ;x++ ) {
           for (int y=1;y<=rows ;y++ ) {
-              ModuleObjectContainer moc = tab.containerAt(x,y);
-              String newParentKey = obj.getICObjectInstanceID()+"."+x+"."+y;
-              if(moc!=null){
-                transformObject(pageKey,moc,-1,tab,newParentKey,modinfo);
-              }
-              if (!tab.isLocked(x,y))
+            ModuleObjectContainer moc = tab.containerAt(x,y);
+            String newParentKey = obj.getICObjectInstanceID()+"."+x+"."+y;
+            if(moc!=null){
+              transformObject(pageKey,moc,-1,tab,newParentKey,modinfo);
+            }
+
+            Page curr = PageCacher.getPage(this.getCurrentIBPage(modinfo),modinfo);
+/*              if (curr.getIsTemplate()) {
                 tab.add(getAddIcon(newParentKey,modinfo),x,y);
-//            if (tab.getParentPage().getIsTemplate())
-//              tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
+
+                  if (tab.isLocked(x,y))
+                    tab.add(getLockIcon(newParentKey,modinfo),x,y);
+                  else
+                    tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
+              }
+              else if (!tab.isLocked(x,y)) {
+                tab.add(getAddIcon(newParentKey,modinfo),x,y);
+              }*/
+            if (curr.getIsExtendingTemplate()) {
+              if (tab.getBelongsToParent()) {
+                if (!tab.isLocked(x,y))
+                  tab.add(getAddIcon(newParentKey,modinfo),x,y);
+              }
+              else {
+                tab.add(getAddIcon(newParentKey,modinfo),x,y);
+                if (curr.getIsTemplate()) {
+                  if (tab.isLocked(x,y))
+                    tab.add(getLockIcon(newParentKey,modinfo),x,y);
+                  else
+                    tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
+                }
+              }
+            }
+            else {
+              tab.add(getAddIcon(newParentKey,modinfo),x,y);
+              if (curr.getIsTemplate()) {
+                if (tab.isLocked(x,y))
+                  tab.add(getLockIcon(newParentKey,modinfo),x,y);
+                else
+                  tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
+              }
+            }
           }
         }
       }
@@ -247,10 +279,44 @@ public class BuilderLogic {
         }
 
         if (index != -1) {
-          if (!((ModuleObjectContainer)obj).isLocked())
+          Page curr = PageCacher.getPage(this.getCurrentIBPage(modinfo),modinfo);
+/*          if (curr.getIsTemplate()) {
             ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
-//        if (obj.getParentPage().getIsTemplate())
-//          ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+
+//            if (obj.getShowLock()) {
+              if (((ModuleObjectContainer)obj).isLocked())
+                ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+              else
+                ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+            }
+//          }
+          else if (!((ModuleObjectContainer)obj).isLocked()) {
+            ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+          }*/
+          if (curr.getIsExtendingTemplate()) {
+            if (obj.getBelongsToParent()) {
+              if (!((ModuleObjectContainer)obj).isLocked())
+                ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+            }
+            else {
+              ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+              if (curr.getIsTemplate()) {
+                if (!((ModuleObjectContainer)obj).isLocked())
+                  ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                else
+                  ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+              }
+            }
+          }
+          else {
+            ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+            if (curr.getIsTemplate()) {
+              if (!((ModuleObjectContainer)obj).isLocked())
+                ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+              else
+                ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+            }
+          }
         }
       }
     }
@@ -288,11 +354,11 @@ public class BuilderLogic {
 
   public ModuleObject getLockIcon(String parentKey, ModuleInfo modinfo) {
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image lockImage = bundle.getImage("las_open.gif","Lock region");
+    Image lockImage = bundle.getImage("las_close.gif","Unlock region");
     Link link = new Link(lockImage);
     link.setWindowToOpen(IBLockRegionWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
-    link.addParameter(IB_CONTROL_PARAMETER,ACTION_LOCK_REGION);
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_UNLOCK_REGION);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return(link);
@@ -300,11 +366,11 @@ public class BuilderLogic {
 
   public ModuleObject getUnlockIcon(String parentKey, ModuleInfo modinfo) {
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image lockImage = bundle.getImage("las_close.gif","Unlock region");
+    Image lockImage = bundle.getImage("las_open.gif","Lock region");
     Link link = new Link(lockImage);
     link.setWindowToOpen(IBLockRegionWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
-    link.addParameter(IB_CONTROL_PARAMETER,ACTION_UNLOCK_REGION);
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_LOCK_REGION);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return(link);
@@ -390,7 +456,6 @@ public class BuilderLogic {
         _table.add(getPermissionIcon(_theObject.getICObjectInstanceID(),modinfo));
       }
       else{
-          System.out.println("theObject==null");
           _table.add(getDeleteIcon(0,_parentKey,modinfo));
           _table.add(getEditIcon(0,modinfo));
       }
@@ -452,7 +517,6 @@ public class BuilderLogic {
           return true;
         }
         else{
-          System.out.println("SetProperty failed for ic_object_instance_id = "+ObjectInstanceId);
           return false;
         }
       }
@@ -492,22 +556,9 @@ public class BuilderLogic {
     }
   }
 
-  /* old version
-  public boolean deleteModule(String pageKey,String parentObjectInstanceID,int ICObjectInstanceID){
+  public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
     IBXMLPage xml = getIBXMLPage(pageKey);
-    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)){
-      xml.update();
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
-  */
-
-  public boolean lockRegion(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
-    IBXMLPage xml = getIBXMLPage(pageKey);
-    if (XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)) {
+    if (XMLWriter.lockRegion(xml,parentObjectInstanceID)) {
       xml.update();
       return true;
     }
@@ -515,15 +566,13 @@ public class BuilderLogic {
     return(false);
   }
 
-  public boolean unlockRegion(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
-/*    IBXMLPage xml = getIBXMLPage(pageKey);
-    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)){
+  public boolean unlockRegion(String pageKey, String parentObjectInstanceID) {
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    if (XMLWriter.unlockRegion(xml,parentObjectInstanceID)) {
       xml.update();
       return true;
     }
-    else {
-      return false;
-    }*/
+
     return(false);
   }
 
