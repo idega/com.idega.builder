@@ -52,7 +52,8 @@ public class IBAddModuleWindow extends IBAdminWindow{
   private static final String internal_control_parameter ="ib_adminwindow_par";
 
   public void main(ModuleInfo modinfo)throws Exception{
-    empty();
+    //empty();
+      super.setTitle("IBAddModuleWindow");
 
     String action = modinfo.getParameter(ib_control_parameter);
     if(action.equals(ACTION_ADD)){
@@ -74,12 +75,12 @@ public class IBAddModuleWindow extends IBAdminWindow{
         add(form);
         Table table = new Table(1,2);
         table.setBorder(0);
-        form.add(table);
+        //form.add(table);
         //DropdownMenu menu = new DropdownMenu(ICObject.getStaticInstance(ICObject.class).findAll(),ic_object_id_parameter);
         //menu.setToSubmit();
         //table.add(menu,1,1);
         //table.add(new SubmitButton("Choose"),1,2);
-        table.add(getComponentList(modinfo));
+        form.add(getComponentList(modinfo));
         String ib_parent_id = modinfo.getParameter(ib_parent_parameter);
         if(ib_parent_id==null){
           System.out.println("ib_parent_id==null");
@@ -158,9 +159,19 @@ public class IBAddModuleWindow extends IBAdminWindow{
   private Table getComponentList(ModuleInfo modinfo){
     IWResourceBundle iwrb = getBundle(modinfo).getResourceBundle(modinfo);
     Table theReturn = new Table();
+      theReturn.setWidth("100%");
+      theReturn.setHeight("100%");
+      theReturn.setCellpadding(0);
+      theReturn.setCellspacing(1);
+      theReturn.setWidth(1,"33%");
+      theReturn.setWidth(2,"33%");
+      theReturn.setWidth(3,"33%");
+      theReturn.setColor(1,1,"#ECECEC");
+      theReturn.setColor(2,1,"#ECECEC");
+      theReturn.setColor(3,1,"#ECECEC");
     theReturn.setCellspacing(1);
     String listColor = com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR;
-    theReturn.setColor(listColor);
+    //theReturn.setColor(listColor);
 
     ICObject staticICO = (ICObject)ICObject.getStaticInstance(ICObject.class);
     try{
@@ -168,17 +179,17 @@ public class IBAddModuleWindow extends IBAdminWindow{
       List blocks = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_BLOCK);
       List applications = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_APPLICATION);
 
-
       String sElements = iwrb.getLocalizedString("elements_header","Elements");
       String sBlocks = iwrb.getLocalizedString("blocks_header","Blocks");
       String sApplications = iwrb.getLocalizedString("applicaitions_header","Applications");
 
-      int y = 1;
+      addSubComponentList(sElements,elements,theReturn,1,1,modinfo);
+      addSubComponentList(sBlocks,blocks,theReturn,1,2,modinfo);
+      addSubComponentList(sApplications,applications,theReturn,1,3,modinfo);
 
-      y=addSubComponentList(sElements,elements,theReturn,y,modinfo);
-      y=addSubComponentList(sBlocks,blocks,theReturn,y,modinfo);
-      y=addSubComponentList(sApplications,applications,theReturn,y,modinfo);
-
+      theReturn.setColumnVerticalAlignment(1,"top");
+      theReturn.setColumnVerticalAlignment(2,"top");
+      theReturn.setColumnVerticalAlignment(3,"top");
     }
     catch(Exception e){
       e.printStackTrace();
@@ -187,11 +198,15 @@ public class IBAddModuleWindow extends IBAdminWindow{
 
   }
 
-  private int addSubComponentList(String name,List list,Table table,int ypos,ModuleInfo modinfo){
+  private void addSubComponentList(String name,List list,Table table,int ypos,int xpos,ModuleInfo modinfo){
+      Table subComponentTable = new Table();
+        subComponentTable.setWidth("100%");
+      table.add(subComponentTable,xpos,ypos);
+
+      Text header = new Text(name,true,false,false);
+        header.setFontSize(Text.FONT_SIZE_12_HTML_3);
+      subComponentTable.add(header,1,ypos);
       if(list!=null){
-        Text header = new Text(name);
-        header.setBold();
-        table.add(header,1,ypos);
         Iterator iter = list.iterator();
         String space = " ";
         ypos++;
@@ -204,11 +219,11 @@ public class IBAddModuleWindow extends IBAdminWindow{
           //link.maintainParameter(internal_control_parameter,modinfo);
           link.maintainParameter(ib_page_parameter,modinfo);
           link.maintainParameter(ib_parent_parameter,modinfo);
-          table.add(link,1,ypos);
+          subComponentTable.add(link,1,ypos);
           ypos++;
         }
       }
-      return ypos;
+      subComponentTable.setColumnAlignment(1,"center");
   }
 
   private Class[] getClasses(ModuleInfo modinfo,String parameterName){

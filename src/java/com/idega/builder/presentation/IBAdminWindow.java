@@ -29,14 +29,9 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 *@version 1.0 alpha
 */
 
-public class IBAdminWindow extends Window{
+public class IBAdminWindow extends IWAdminWindow{
 
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
-
-  public void _main(ModuleInfo modinfo)throws Exception{
-    super.main(modinfo);
-    super._main(modinfo);
-  }
 
   public void main(ModuleInfo modinfo)throws Exception{
 

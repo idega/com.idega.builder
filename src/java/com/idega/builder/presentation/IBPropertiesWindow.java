@@ -31,12 +31,9 @@ public class IBPropertiesWindow extends IBAdminWindow{
   private final static String VALUE_SAVE_PARAMETER = "ib_method_save";
   private final static String VALUE_PARAMETER = "ib_method_value";
 
-  public IBPropertiesWindow(){
-
-  }
-
   public void main(ModuleInfo modinfo)throws Exception{
-      this.setParentToReload();
+      super.setTitle("IBPropertiesWindow");
+      setParentToReload();
       String ib_page_id = modinfo.getParameter(ib_page_parameter);
       String ic_objectinstance_id = modinfo.getParameter(ic_object_id_parameter);
       if(ic_objectinstance_id!=null){
@@ -51,7 +48,7 @@ public class IBPropertiesWindow extends IBAdminWindow{
             if(value!=null){
               if(!value.equals("")){
                 setProperty(methodIdentifier,value,ic_objectinstance_id,ib_page_id);
-                this.close();
+                close();
               }
             }
           }
@@ -62,6 +59,9 @@ public class IBPropertiesWindow extends IBAdminWindow{
             form.add(getPropertySetterBox(methodIdentifier,modinfo,ib_page_id,ic_objectinstance_id));
           }
         }
+      }
+      else {
+        add("All is null");
       }
   }
 
