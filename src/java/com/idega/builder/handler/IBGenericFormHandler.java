@@ -95,6 +95,14 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 		return buffer.toString();
 	}
 	
+	public String getParameterValue(IWContext iwc, String parameterName) {
+		String[] paramValues = iwc.getParameterValues(parameterName);
+		if (paramValues.length >= 1) {
+			return getProcessedValueForDisplay(iwc, parameterName, paramValues[0]);
+		}
+		return null;
+	}
+	
 	private String getDescriptionForParameter(String parameterName) {
 		return (String) getDescMap().get(parameterName);
 	}
