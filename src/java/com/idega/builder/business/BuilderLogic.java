@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.151 2004/06/15 18:26:25 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.152 2004/06/16 15:42:20 palli Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.Vector;
+
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
@@ -42,7 +43,6 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.repository.data.ImplementorRepository;
 import com.idega.util.FileUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;

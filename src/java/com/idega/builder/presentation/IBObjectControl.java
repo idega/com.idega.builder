@@ -22,7 +22,6 @@ import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.text.TextStyler;
 import com.idega.xml.XMLElement;
 
