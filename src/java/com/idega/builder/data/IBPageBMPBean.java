@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.22 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBPageBMPBean.java,v 1.23 2005/03/01 23:25:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,11 +14,13 @@ import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Locale;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLPage;
+import com.idega.builder.business.PageUrl;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -57,6 +59,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	private final static String TREE_ORDER = "TREE_ORDER";
 	private final static String IS_CATEGORY = "IS_CATEGORY";
 	private final static String PAGE_FORMAT="PAGE_FORMAT";
+	private final static String PAGE_URI="PAGE_URI";
 	private ICFile _file;
 
 	public final static String PAGE = "P";
@@ -105,6 +108,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		addAttribute(IS_CATEGORY, "Is used as a page category", true, true, Boolean.class);
 		addManyToManyRelationShip(ICProtocol.class, "ib_page_ic_protocol");
 		addAttribute(PAGE_FORMAT, "Format", true, true, String.class, 30);
+		addAttribute(PAGE_URI, "URI", String.class);
 	}
 
 	/**
@@ -698,6 +702,15 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	    	return idoFindPKsByQuery(query);
 	}
 	
+	public Integer ejbFindByPageUri(String pageUri,int domainId)throws javax.ejb.FinderException{
+	    Table table = new Table(this);
+	    	SelectQuery query = new SelectQuery(table);
+	    	query.addColumn(new WildCardColumn());
+	    	query.addCriteria(new MatchCriteria(table,PAGE_URI,MatchCriteria.EQUALS,pageUri));
+	    	//query.addCriteria(new MatchCriteria(table,DOMAIN_ID,MatchCriteria.EQUALS,domainId));
+	    	return (Integer)idoFindOnePKByQuery(query);
+	}
+	
 	
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
@@ -731,4 +744,26 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public String getPageKey(){
 		return getPrimaryKey().toString();
 	}
+	
+	
+	public String getDefaultPageURI(){
+		String uri = getStringColumnValue(PAGE_URI);
+		return uri;
+	}
+	
+	public void setDefaultPageURI(String pageUri){
+		setColumn(PAGE_URI,pageUri);
+	}
+
+	/**
+	 * @return
+	 */
+	public Collection ejbFindAllPagesWithoutUri() throws FinderException{
+	    Table table = new Table(this);
+	    	SelectQuery query = new SelectQuery(table);
+	    	query.addColumn(new WildCardColumn());
+	    	query.addCriteria(new MatchCriteria(table,PAGE_URI,MatchCriteria.IS,(String)null));
+	    	return idoFindPKsByQuery(query);
+	}
+	
 }

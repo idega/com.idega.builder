@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.46 2005/02/01 17:33:39 thomas Exp $
+ * $Id: IBPageHelper.java,v 1.47 2005/03/01 23:25:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -156,7 +156,7 @@ public class IBPageHelper implements Singleton  {
 	 * @return The id of the new IBPage
 	 */
 	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType) {
-		return createNewPage(parentId, name, type, templateId, tree, creatorContext, subType, -1);
+		return createNewPage(parentId, name, type, templateId, null, tree, creatorContext, subType, -1);
 	}
 	/**
 	 * Creates a new IBPage. Sets its name and type and stores it to the database.
@@ -171,10 +171,34 @@ public class IBPageHelper implements Singleton  {
 	 * @param creatorContext the context of the User that created the page
 	 * @param subType Subtype of the current page
 	 * @param domainId The id of the domain if you are creating a top level page
+	 * @param pageUri pageUri to the page
 	 *
 	 * @return The id of the new IBPage
 	 */
 	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, int domainId){
+		return createNewPage(parentId,name,type,templateId,tree,creatorContext,subType,domainId);
+	}
+	
+	
+	/**
+	 * Creates a new IBPage. Sets its name and type and stores it to the database.
+	 * If the parentId and the tree parameter are valid it also stores the page in
+	 * the cached IWContext tree.
+	 *
+	 * @param parentId The id of the parent of this page, if null the page will be a top-level page on the domain
+	 * @param name The name this page is to be given
+	 * @param type The type of the page, ie. PAGE, TEMPLATE, DRAFT, ...
+	 * @param templateId The id of the page this page is extending, if any
+	 * @param pageUri the URI (e.g. '/about/profile') that is a URI on the server to the page, if set null it will be generated
+	 * @param tree A map of PageTreeNode objects representing the whole page tree
+	 * @param creatorContext the context of the User that created the page
+	 * @param subType Subtype of the current page
+	 * @param domainId The id of the domain if you are creating a top level page
+	 * @param pageUri pageUri to the page
+	 *
+	 * @return The id of the new IBPage
+	 */
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId){
 		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 		if (name == null)
 			name = "Untitled";
@@ -191,6 +215,28 @@ public class IBPageHelper implements Singleton  {
 		}
 		file.setMimeType(com.idega.core.file.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
 		ibPage.setFile(file);
+		
+		//Set the pageUri to a generated value if not set
+		if(pageUri==null){
+			ICPage parentpage = null;
+			try {
+				if(parentId!=null){
+					parentpage = this.getIBPageHome().findByPrimaryKey(parentId);
+					//Create a pageUrl object to create the name with a generated name by default if not set
+					PageUrl pUrl = new PageUrl(parentpage,name,domainId);
+					pageUri = pUrl.getGeneratedUrlFromName();
+				}
+				else{
+					PageUrl pUrl = new PageUrl(name);
+					pageUri = pUrl.getGeneratedUrlFromName();
+				}
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		ibPage.setDefaultPageURI(pageUri);
+		
 		if (type.equals(PAGE)) {
 			ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
 		}
@@ -304,11 +350,17 @@ public class IBPageHelper implements Singleton  {
 			tree.put(new Integer(node.getNodeID()), node);
 		}
 		if ((templateId != null) && (!templateId.equals(""))) {
-			IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
-			xml.addPageUsingThisTemplate(Integer.toString(id));
-			Page templateParent = xml.getPopulatedPage();
-			if (!templateParent.isLocked()) {
-				BuilderLogic.getInstance().unlockRegion(Integer.toString(id), "-1", null);
+			try{
+				IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
+				xml.addPageUsingThisTemplate(Integer.toString(id));
+				Page templateParent = xml.getPopulatedPage();
+				if (!templateParent.isLocked()) {
+					BuilderLogic.getInstance().unlockRegion(Integer.toString(id), "-1", null);
+				}
+			}
+			catch(ClassCastException ce){
+				//this exception is caught because PageCacher.getIBXML() throws a ClassCastException if the page is
+				// of other formats than IBXML
 			}
 		}
 		return (id);

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.170 2005/02/24 11:30:23 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.171 2005/03/01 23:25:03 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.Vector;
+import javax.ejb.FinderException;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
@@ -25,12 +26,15 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.event.EventLogic;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -54,6 +58,7 @@ import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.util.FileUtil;
+import com.idega.util.StringHandler;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 
@@ -540,20 +545,44 @@ public class BuilderLogic implements Singleton {
 		//String requestURI = iwc.getRequestURI();
 		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
 			int indexOfPage = requestURI.indexOf("/pages/");
-			if (indexOfPage != -1) {
+			//if (indexOfPage != -1) {
 				//boolean pageISNumber = true;
-				String pageID = null;
+				String iPageId = null;
 				//try {
-					String subString = requestURI.substring(indexOfPage + 7);
-					int lastSlash = subString.indexOf("/");
+					String uriWithoutPages = requestURI;
+					//this string will be tried to convert to a number
+					String uriForNumberParse = requestURI;
+					if(indexOfPage!=-1){
+						uriWithoutPages = requestURI.substring(indexOfPage + 6);
+						uriForNumberParse = requestURI.substring(indexOfPage + 7);
+					}
+					
+					int lastSlash = uriForNumberParse.lastIndexOf(StringHandler.SLASH);
 					if (lastSlash == -1) {
-						pageID = subString;
+						iPageId = uriForNumberParse;
 					}
 					else {
-						pageID = subString.substring(0, lastSlash);
+						iPageId = uriForNumberParse.substring(0, lastSlash);
 					}
-					Integer.parseInt(pageID);
-					return pageID;
+					try{
+						Integer.parseInt(iPageId);
+						return iPageId;
+					}
+					catch(NumberFormatException nfe){
+						//the string is not a number:
+						try {
+							ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
+							//TODO: change - here domainId is hardcoded to -1
+							int domainId=-1;
+							ICPage page = pageHome.findByUri(uriWithoutPages,domainId);
+							return page.getPageKey();
+						}
+						catch (IDOLookupException e) {
+						}
+						catch(FinderException fe){
+						}	
+					}
+				//return pageID;
 				//}
 				//catch (NumberFormatException e) {
 				//	pageISNumber = false;
@@ -561,9 +590,9 @@ public class BuilderLogic implements Singleton {
 				//if (pageISNumber) {
 				//	return pageID;
 				//}
-			}
+			//}
 		//}
-		throw new RuntimeException("Page Key Can not be found from URI");
+		throw new RuntimeException("Page Key Can not be found from URI '"+requestURI+"'");
 	}
 	
 	
@@ -1035,7 +1064,17 @@ public class BuilderLogic implements Singleton {
 	 */
 	public String getIBPageURL(IWApplicationContext iwc, int ib_page_id) {
 		if(IWMainApplication.useNewURLScheme){
-			return iwc.getIWMainApplication().getBuilderPagePrefixURI()+ib_page_id+"/";
+			String pageKey = Integer.toString(ib_page_id);
+			String pageUri = getPageCacher().getCachedBuilderPage(pageKey).getPageUri();
+			if(pageUri!=null){
+				String returnUrl = iwc.getIWMainApplication().getBuilderPagePrefixURI()+pageUri;
+				//clean out the potential double slash:
+				return StringHandler.removeMultipleSlashes(returnUrl);
+			}
+			else{
+				return iwc.getIWMainApplication().getBuilderPagePrefixURI()+ib_page_id+"/";
+			}
+			
 		}
 		else{
 			StringBuffer url = new StringBuffer();

@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.1 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: CachedBuilderPage.java,v 1.2 2005/03/01 23:25:03 tryggvil Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	private String pageFormat;
 	private String sourceAsString;
 	private List pageKeysUsingThisTemplate;
+	private String pageUri;
 	
 	/**
 	public IBXMLPage(){
@@ -339,5 +340,13 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 	}
 	
+	
+	public String getPageUri(){
+		return pageUri;
+	}
+	
+	public void setPageUri(String pageUri){
+		this.pageUri=pageUri;
+	}
 	
 }

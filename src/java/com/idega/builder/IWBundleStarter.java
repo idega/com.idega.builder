@@ -1,8 +1,13 @@
 package com.idega.builder;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.logging.Logger;
+import javax.ejb.FinderException;
 import com.idega.builder.business.ComponentPropertyHandler;
 import com.idega.builder.business.IBMainServiceBean;
 import com.idega.builder.business.IBPropertyHandler;
+import com.idega.builder.business.PageUrl;
 import com.idega.builder.data.IBDomainBMPBean;
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
@@ -13,7 +18,10 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.view.ViewManager;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
@@ -34,6 +42,8 @@ import com.idega.repository.data.SingletonRepository;
  */
 public class IWBundleStarter implements IWBundleStartable {
 
+	static Logger log = Logger.getLogger(IWBundleStarter.class.getName());
+	
 	public void start(IWBundle starterBundle) {
 		
 		// implementors
@@ -57,6 +67,41 @@ public class IWBundleStarter implements IWBundleStartable {
 			//IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			ViewManager viewManager = ViewManager.getInstance(iwma);
 			/*DefaultViewNode pagesViewNode = */new BuilderRootViewNode("pages",viewManager.getApplicationRoot());
+		}
+		
+		updateBuilderPageUris();
+		
+	}
+
+	/**
+	 * This method updates the ib_page table with creating a generated URI for all pages that had it set null.
+	 */
+	private void updateBuilderPageUris() {
+		
+		try {
+			ICPageHome pHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
+			Collection pages = pHome.findAllPagesWithoutUri();
+			int domainId=-1;
+			for (Iterator iter = pages.iterator(); iter.hasNext();) {
+				ICPage page = (ICPage) iter.next();
+				//TODO: implemennt support for domainId:
+				try{
+					PageUrl newUrl = new PageUrl(page,domainId);
+					String newGeneratedUri = newUrl.getGeneratedUrlFromName();
+					page.setDefaultPageURI(newGeneratedUri);
+					log.info("Updating Builder Page with uri="+newGeneratedUri);
+					page.store();
+				}
+				catch(Exception e){
+					log.throwing("IWBundleStarter","updateBuilderPageUris",e);
+				}
+			}
+			
+		}
+		catch (IDOLookupException e) {
+		}
+		catch (FinderException e) {
+			log.throwing("IWBundleStarter","updateBuilderPageUris",e);
 		}
 		
 	}

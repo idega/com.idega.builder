@@ -53,4 +53,27 @@ public class IBPageHomeImpl extends com.idega.data.IDOFactory implements ICPageH
     		this.idoCheckInPooledEntity(entity);
     		return this.getEntityCollectionForPrimaryKeys(ids);
     }
+
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.data.ICPageHome#findByUri(java.lang.String, int)
+	 */
+	public ICPage findByUri(String pageUri, int domainId) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        Integer pk  = ((IBPageBMPBean)entity).ejbFindByPageUri(pageUri,domainId);
+    		this.idoCheckInPooledEntity(entity);
+    		return this.findByPrimaryKey(pk);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.data.ICPageHome#findAllPagesWithoutUri()
+	 */
+	public Collection findAllPagesWithoutUri() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids  = ((IBPageBMPBean)entity).ejbFindAllPagesWithoutUri();
+    		this.idoCheckInPooledEntity(entity);
+    		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	
+	
 }

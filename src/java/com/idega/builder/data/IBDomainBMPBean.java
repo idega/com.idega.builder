@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.16 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBDomainBMPBean.java,v 1.17 2005/03/01 23:25:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -66,6 +66,9 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
 //    this.addManyToManyRelationShip(Group.class);
 //    addAttribute(COLUMNNAME_GROUP_ID,"Group ID",true,true,Integer.class,"one-to-one",Group.class);
 
+    //Add a UUID column to uniquely identify the domain:
+    super.addUniqueIDColumn();
+    
   }
 
   public static ICDomain getDomain(int id)throws SQLException {
@@ -91,12 +94,16 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
     BuilderLogic instance = BuilderLogic.getInstance();
     ICDomainHome dHome = (ICDomainHome)getIDOHome(ICDomain.class);
     ICDomain domain = dHome.create();
-    domain.setName("Default Site");
+    //TODO: Make this possible to set
+    String domainName = "Default Site";
+    domain.setName(domainName);
 
 	ICPageHome pageHome = (ICPageHome)getIDOHome(ICPage.class);
 
     ICPage page = pageHome.create();
-    page.setName("Web root");
+    String rootPageName = domainName;
+    page.setName(rootPageName);
+    page.setDefaultPageURI("/");
     page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
     page.store();
     instance.unlockRegion(page.getPrimaryKey().toString(),"-1",null);
@@ -223,5 +230,12 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   	query.appendWhereEqualsWithSingleQuotes(COLUMNNAME_SERVER_NAME,serverName);
   	System.out.println(query.toString());
   	return idoFindPKsByQuery(query);
+  }
+  
+  /**
+   * Get the UUID for the domain:
+   */
+  public String getUniqueId(){
+  	return super.getUniqueId();
   }
 }

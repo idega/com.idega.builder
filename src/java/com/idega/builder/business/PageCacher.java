@@ -1,5 +1,5 @@
 /*
- * $Id: PageCacher.java,v 1.17 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: PageCacher.java,v 1.18 2005/03/01 23:25:03 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,10 +13,10 @@ package com.idega.builder.business;
  *  The instance of this class holds an manages a cache of Builder pages that are instances
  * of CachedBuilderPage.<br>
  * 
- *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/03/01 23:25:03 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -142,6 +142,10 @@ public class PageCacher
 				bPage.setICPage(icPage);
 				//bPage.setPageKey(key);
 				setPage(key, bPage);
+				String uri = icPage.getDefaultPageURI();
+				if(uri!=null){
+					bPage.setPageUri(uri);
+				}
 				
 			} catch (IDOLookupException e) {
 				e.printStackTrace();
