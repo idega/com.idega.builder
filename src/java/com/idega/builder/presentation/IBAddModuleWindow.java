@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.11 2001/11/02 11:35:44 palli Exp $
+ * $Id: IBAddModuleWindow.java,v 1.12 2001/11/03 15:06:57 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
    */
   public void main(IWContext iwc) throws Exception {
     IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
-    super.addTitle(iwrb.getLocalizedString("ib_addmodule_window","IBAddModuleWindow"));
+    super.addTitle(iwrb.getLocalizedString("ib_addmodule_window","Add a new Module"));
 
     String action = iwc.getParameter(IB_CONTROL_PARAMETER);
     if (action.equals(ACTION_ADD)) {

@@ -2,6 +2,12 @@ package com.idega.builder.presentation;
 
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Image;
+import com.idega.presentation.IWContext;
+
+import com.idega.core.data.ICFile;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.idegaweb.IWBundle;
 
 
 /**
@@ -18,7 +24,7 @@ public class IBFileChooser extends AbstractChooser {
 
   public IBFileChooser(String chooserName) {
     addForm(false);
-    setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
+    //setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
     setChooserParameter(chooserName);
   }
 
@@ -29,6 +35,15 @@ public class IBFileChooser extends AbstractChooser {
 
   public Class getChooserWindowClass() {
     return IBFileChooserWindow.class;
+  }
+
+  public void main(IWContext iwc){
+    IWBundle iwb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+    setChooseButtonImage(iwb.getImage("open.gif","Choose File"));
+  }
+
+  public void setSelectedFile(ICFile file){
+    super.setChooserValue(file.getName(),file.getID());
   }
 
 }

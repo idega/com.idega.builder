@@ -10,6 +10,9 @@ import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWPropertyListIterator;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWURL;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
 
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
@@ -46,7 +49,10 @@ public class IBPropertiesWindow extends FrameSet{
 
   public void main(IWContext iwc) throws Exception{
     super.setStatus(true);
-    super.setTitle("Properties");
+    String title = "Properties";
+
+
+    super.setTitle(title);
     super.setWidth(600);
     super.setHeight(600);
     add(IBPropertiesWindowTop.class);
@@ -114,18 +120,24 @@ public class IBPropertiesWindow extends FrameSet{
     }
   }
 
-  public static class IBPropertiesWindowTop extends Page{
+  public static class IBPropertiesWindowTop extends IWAdminWindow{
     public IBPropertiesWindowTop(){
       setAllMargins(0);
-      setBackgroundColor("gray");
+      //setBackgroundColor("gray");
     }
 
     public void main(IWContext iwc){
-      Text t = new Text("Properties");
-      t.setBold();
-      add(t);
+      //Text t = new Text("Properties");
+      //t.setBold();
+      //add(t);
+      IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
+      super.addTitle(iwrb.getLocalizedString("ib_properties_window_title","Properties"));
+
     }
   }
+
+
+
 
 
 }

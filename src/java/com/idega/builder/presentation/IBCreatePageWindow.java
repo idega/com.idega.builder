@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.17 2001/11/02 11:35:44 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.18 2001/11/03 15:06:57 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
 
   public void main(IWContext iwc) throws Exception {
     IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
+    super.addTitle(iwrb.getLocalizedString("ib_createpage_window","Create a new Page"));
     Form form = new Form();
     String type = iwc.getParameter(PAGE_TYPE);
     if (type == null) {
