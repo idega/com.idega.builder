@@ -44,7 +44,7 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 		boolean pageIdsExists = (pageIds != null && ! pageIds.isEmpty());
 		boolean templateIdsExists = (templateIds != null && ! templateIds.isEmpty());
 		if (! pageIdsExists && ! templateIdsExists) {
-			return "";
+			return null;
 		}
 		
 		IBExportImportData metadata = new IBExportImportData();
@@ -62,14 +62,14 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 				ids = new ArrayList(templateIds);
 			}
 		}
-		return exportPages(ids, metadata);
+		return exportPages(ids, metadata, iwc);
 	}
 		
-	private String exportPages(List pageIds,IBExportImportData metadata) throws IOException, FinderException  {
+	private String exportPages(List pageIds,IBExportImportData metadata, IWContext iwc) throws IOException, FinderException  {
 		List finishedPageIds = new ArrayList();
 		List additionalPageIds = pageIds;
 		while (! additionalPageIds.isEmpty()) {
-			List usedPageIds = prepareMetadataGetUsedPageIds(additionalPageIds, metadata);
+			List usedPageIds = prepareMetadataGetUsedPageIds(additionalPageIds, metadata, iwc);
 			finishedPageIds.addAll(additionalPageIds);
 			additionalPageIds = new ArrayList();
 			Iterator iterator = usedPageIds.iterator();
@@ -81,10 +81,10 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 			}
 		}
   	FileBusiness fileBusiness = getFileBusiness();
-  	return fileBusiness.getURLForOfferingDownload(metadata);
+  	return fileBusiness.getURLForOfferingDownload(metadata, iwc);
   }
 	
-	private List prepareMetadataGetUsedPageIds(List pageIds, IBExportImportData metadata) throws IDOLookupException, FinderException, IOException {
+	private List prepareMetadataGetUsedPageIds(List pageIds, IBExportImportData metadata, IWContext iwc) throws IDOLookupException, FinderException, IOException {
 		List additionalPageIds = new ArrayList();
   	Iterator pageIterator = pageIds.iterator();
   	while (pageIterator.hasNext()) {
@@ -97,11 +97,17 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
   			Integer additionalPageId = new Integer(nodeTree.getNodeID());
   			additionalPageIds.add(additionalPageId);
   		}
+  		// add template 
+  		int templateId  = page.getTemplateId();
+  		if (templateId != -1) {
+  			Integer additionalPageId = new Integer(templateId);
+  			additionalPageIds.add(additionalPageId);
+  		}
   		ICFile file = page.getFile();
   		XMLData xmlData = XMLData.getInstanceForFile(file);
   		XMLDocument pageXML = xmlData.getDocument();
   		XMLElement pageRoot = pageXML.getRootElement().getChild(XMLConstants.PAGE_STRING);
-  		getReferences().checkElementForReferencesNoteNecessaryModules(pageRoot, metadata);
+  		getReferences(iwc).checkElementForReferencesNoteNecessaryModules(pageRoot, metadata);
   		metadata.addFileEntry(page);
   	}
   	// check pages that are used
@@ -115,9 +121,9 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 		return additionalPageIds;
 	}
 
-	private IBReferences getReferences() throws IOException {
+	private IBReferences getReferences(IWContext iwc) throws IOException {
 		if (references == null) {
-			references = new IBReferences(getIWMainApplication());
+			references = new IBReferences(iwc);
 		}
 		return references;
 	}	
