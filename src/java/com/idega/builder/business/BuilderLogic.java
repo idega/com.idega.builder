@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.63 2001/10/31 17:07:13 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.64 2001/10/31 17:11:06 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -600,7 +600,7 @@ public class BuilderLogic {
       _table.setHeight(1,1,"11");
 
       Image image = this.getBundle(iwc).getImage("menuicon.gif");
-      image.setOnClick("onClick","showHideLayers('"+layer.getID()+"','','show')");
+      image.setOnClick("showHideLayers('"+layer.getID()+"','','show')");
 
 
       if(_theObject!=null){
