@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.35 2002/10/06 02:18:01 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.36 2002/10/10 13:37:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -80,6 +80,7 @@ public class IBCreatePageWindow extends IBPageWindow {
     form.add(tab);
     TextInput inputName = new TextInput(PAGE_NAME_PARAMETER);
     inputName.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+    inputName.setAsNotEmpty(iwrb.getLocalizedString("must_supply_name", "Must supply a name"));
     Text inputText = new Text();
     if (type.equals(IBPageHelper.TEMPLATE)) {
       inputText.setText(iwrb.getLocalizedString("template_name","Template name")+":");
