@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.17 2001/10/05 08:04:03 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.18 2001/10/08 16:34:00 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -104,11 +104,12 @@ public class XMLReader {
     }
 
     //sets the id of the page
-    try{
+    try {
       int id = Integer.parseInt(pageKey);
       parentContainer.setPageID(id);
     }
-    catch(NumberFormatException e){}
+    catch(NumberFormatException e) {
+    }
 
     if (pageXML.hasChildren()) {
       List children = pageXML.getChildren();
@@ -121,21 +122,17 @@ public class XMLReader {
           setProperties(child,parentContainer);
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-            if (hasTemplate)
-                System.err.println("Using element or module on top level in a page having a template");
-            else
-                //parseElement(child,parentContainer,null);
-                if (parentContainer == null) {
-                    System.err.println("pc ==null");
-                }
-
-          parseElement(child,parentContainer);
+          if (!parentContainer.getIsExtendingTemplate())
+            parseElement(child,parentContainer);
+          else
+            if (!parentContainer.isLocked())
+              parseElement(child,parentContainer);
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
           parseRegion(child,parentContainer);
         }
         else {
-            System.err.println("Unknown tag in xml description file : " + child.getName());
+          System.err.println("Unknown tag in xml description file : " + child.getName());
         }
       }
     }

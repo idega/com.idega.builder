@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.36 2001/10/05 08:04:03 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.37 2001/10/08 16:34:00 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,8 @@ import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.jmodule.image.presentation.ImageEditorWindow;
 import java.util.ListIterator;
 import java.util.List;
+import java.util.Hashtable;
+import java.util.Enumeration;
 import com.idega.core.data.GenericGroup;
 import java.util.Vector;
 import java.util.Iterator;
@@ -155,8 +157,8 @@ public class BuilderLogic {
       if (page.getIsExtendingTemplate()) {
         if (!page.isLocked()) {
           page.add(getAddIcon(Integer.toString(-1),iwc));
-          if (page.getIsTemplate())
-            page.add(getUnlockedIcon(Integer.toString(-1),iwc));
+//          if (page.getIsTemplate())
+//            page.add(getUnlockedIcon(Integer.toString(-1),iwc));
         }
       }
       else {
@@ -635,6 +637,17 @@ public class BuilderLogic {
     IBXMLPage xml = getIBXMLPage(pageKey);
     if (XMLWriter.lockRegion(xml,parentObjectInstanceID)) {
       xml.update();
+
+      if (parentObjectInstanceID.equals("-1")) {
+        if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
+          Hashtable extend = (Hashtable)xml.getChildren();
+          if (extend != null) {
+            Enumeration en = extend.keys();
+            while (en.hasMoreElements())
+              lockRegion((String)en.nextElement(),parentObjectInstanceID);
+          }
+        }
+      }
       return true;
     }
 
@@ -645,6 +658,18 @@ public class BuilderLogic {
     IBXMLPage xml = getIBXMLPage(pageKey);
     if (XMLWriter.unlockRegion(xml,parentObjectInstanceID)) {
       xml.update();
+
+      if (parentObjectInstanceID.equals("-1")) {
+        if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
+          Hashtable extend = (Hashtable)xml.getChildren();
+          if (extend != null) {
+            Enumeration en = extend.keys();
+            while (en.hasMoreElements())
+              unlockRegion((String)en.nextElement(),parentObjectInstanceID);
+          }
+        }
+      }
+
       return true;
     }
 

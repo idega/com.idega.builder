@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.10 2001/10/05 08:04:03 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.11 2001/10/08 16:34:00 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,8 +36,10 @@ import com.idega.presentation.Page;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>, <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0alpha
  */
-
 public class IBXMLPage {
+  public final static String TYPE_PAGE = XMLConstants.PAGE_TYPE_PAGE;
+  public final static String TYPE_TEMPLATE = XMLConstants.PAGE_TYPE_TEMPLATE;
+  public final static String TYPE_DRAFT = XMLConstants.PAGE_TYPE_DRAFT;
   private final static String EMPTY = "";
   private SAXBuilder _builder = null;
   private Document _xmlDocument = null;
@@ -45,7 +47,7 @@ public class IBXMLPage {
   private Page _populatedPage = null;
   private String _key;
 
-  private String _type = XMLConstants.PAGE_TYPE_PAGE;
+  private String _type = TYPE_PAGE;
 
   /**
    * @todo Verð að gera þetta öðru vísi
@@ -71,13 +73,13 @@ public class IBXMLPage {
       ibpage = new IBPage(Integer.parseInt(key));
       setXMLPageDescriptionFile(ibpage.getPageValue());
       if (ibpage.getType().equals(ibpage.PAGE))
-        setType(XMLConstants.PAGE_TYPE_PAGE);
+        setType(TYPE_PAGE);
       if (ibpage.getType().equals(ibpage.DRAFT))
-        setType(XMLConstants.PAGE_TYPE_DRAFT);
+        setType(TYPE_DRAFT);
       if (ibpage.getType().equals(ibpage.TEMPLATE))
-        setType(XMLConstants.PAGE_TYPE_TEMPLATE);
+        setType(TYPE_TEMPLATE);
       else
-        setType(XMLConstants.PAGE_TYPE_PAGE);
+        setType(TYPE_PAGE);
     }
     catch(PageDoesNotExist pe) {
       int template = ibpage.getTemplateId();
@@ -85,13 +87,13 @@ public class IBXMLPage {
       if (template != -1)
         templateString = Integer.toString(template);
       if (ibpage.getType().equals(ibpage.PAGE))
-        setPageAsEmptyPage(XMLConstants.PAGE_TYPE_PAGE,templateString);
+        setPageAsEmptyPage(TYPE_PAGE,templateString);
       if (ibpage.getType().equals(ibpage.DRAFT))
-        setPageAsEmptyPage(XMLConstants.PAGE_TYPE_DRAFT,templateString);
+        setPageAsEmptyPage(TYPE_DRAFT,templateString);
       if (ibpage.getType().equals(ibpage.TEMPLATE))
-        setPageAsEmptyPage(XMLConstants.PAGE_TYPE_TEMPLATE,templateString);
+        setPageAsEmptyPage(TYPE_TEMPLATE,templateString);
       else
-        setPageAsEmptyPage(XMLConstants.PAGE_TYPE_PAGE,templateString);
+        setPageAsEmptyPage(TYPE_PAGE,templateString);
     }
     catch(NumberFormatException ne) {
       try {
@@ -156,7 +158,7 @@ public class IBXMLPage {
         String invalid = (String)e.nextElement();
         PageCacher.flagPageInvalid(invalid);
         IBXMLPage child = PageCacher.getXML(invalid);
-        if (child.getType() == XMLConstants.PAGE_TYPE_TEMPLATE)
+        if (child.getType() == TYPE_TEMPLATE)
           child.invalidateChildren();
       }
     }
@@ -182,7 +184,7 @@ public class IBXMLPage {
       e.printStackTrace();
     }
     setPopulatedPage(XMLReader.getPopulatedPage(this));
-    if (_type == XMLConstants.PAGE_TYPE_TEMPLATE)
+    if (_type == TYPE_TEMPLATE)
       invalidateChildren();
 
     return true;
@@ -272,14 +274,14 @@ public class IBXMLPage {
     if (type == null)
       type = XMLConstants.PAGE_TYPE_PAGE;
 
-    if ((type.equals(XMLConstants.PAGE_TYPE_DRAFT)) ||
-        (type.equals(XMLConstants.PAGE_TYPE_PAGE)) ||
-        (type.equals(XMLConstants.PAGE_TYPE_TEMPLATE))) {
+    if ((type.equals(TYPE_DRAFT)) ||
+        (type.equals(TYPE_PAGE)) ||
+        (type.equals(TYPE_TEMPLATE))) {
       pageElement.addAttribute(XMLConstants.PAGE_TYPE,type);
       setType(type);
     }
     else {
-      pageElement.addAttribute(XMLConstants.PAGE_TYPE,XMLConstants.PAGE_TYPE_PAGE);
+      pageElement.addAttribute(XMLConstants.PAGE_TYPE,TYPE_PAGE);
       setType(type);
     }
 
@@ -340,12 +342,12 @@ public class IBXMLPage {
    *
    */
   public void setType(String type) {
-    if ((type == XMLConstants.PAGE_TYPE_PAGE) ||
-        (type == XMLConstants.PAGE_TYPE_TEMPLATE) ||
-        (type == XMLConstants.PAGE_TYPE_DRAFT))
+    if ((type == TYPE_PAGE) ||
+        (type == TYPE_TEMPLATE) ||
+        (type == TYPE_DRAFT))
       _type = type;
     else
-      _type = XMLConstants.PAGE_TYPE_PAGE;
+      _type = TYPE_PAGE;
   }
 
   /**
