@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.120 2002/03/26 16:31:14 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.121 2002/04/03 10:40:55 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,17 +9,9 @@
  */
 package com.idega.builder.business;
 
+import com.idega.builder.presentation.*;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBDomain;
-import com.idega.builder.presentation.IBAdminWindow;
-import com.idega.builder.presentation.IBAddModuleWindow;
-import com.idega.builder.presentation.IBDeleteModuleWindow;
-import com.idega.builder.presentation.IBPropertiesWindow;
-import com.idega.builder.presentation.IBPermissionWindow;
-import com.idega.builder.presentation.IBLockRegionWindow;
-import com.idega.builder.presentation.IBAddRegionLabelWindow;
-import com.idega.builder.presentation.IBCopyModuleWindow;
-import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.core.data.ICObject;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICObjectInstance;
@@ -603,6 +595,18 @@ public class BuilderLogic {
     return link;
   }
 
+  public PresentationObject getCutIcon(int key,String parentKey,IWContext iwc){
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image cutImage = bundle.getImage("shared/menu/cut.gif","Cut component");
+    Link link = new Link(cutImage);
+    link.setWindowToOpen(IBCutModuleWindow.class);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_COPY);
+    link.addParameter(IB_PARENT_PARAMETER,parentKey);
+    link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,key);
+    return link;
+  }
+
 
   public  PresentationObject getMoveIcon(int key,String parentKey,IWContext iwc){
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
@@ -778,13 +782,13 @@ public class BuilderLogic {
 	  rTable.setHeight(50);
 	  rTable.setHeight(1,"1");
 	  rTable.setHeight(3,"1");
-          rTable.setWidth(1,"1");
-          rTable.setWidth(3,"1");
+	  rTable.setWidth(1,"1");
+	  rTable.setWidth(3,"1");
 	  rTable.setColumnColor(1,"#000000");
 	  rTable.setColumnColor(3,"#000000");
-          rTable.setRowColor(1,"#000000");
-          rTable.setRowColor(3,"#000000");
-          rTable.setCellpaddingAndCellspacing(0);
+	  rTable.setRowColor(1,"#000000");
+	  rTable.setRowColor(3,"#000000");
+	  rTable.setCellpaddingAndCellspacing(0);
 
 	table = new Table();
 	  table.setCellpadding(3);
@@ -802,21 +806,10 @@ public class BuilderLogic {
 
 	XMLElement pasted = (XMLElement)iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
 	if (pasted == null) {
-	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
-	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
-	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
-	  table.add(separator,2,3);
-	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
-	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
-	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
-	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
-	}
-	else {
-	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
-	  addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
-	  addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Paste above",IBPasteModuleWindow.class,2,2);
+	  addToTable(getCutIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+	  addToTable(getCutIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Cut",IBCutModuleWindow.class,2,1);
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,2);
 	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,3);
 	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,3);
 	  table.add(separator,2,4);
@@ -824,6 +817,21 @@ public class BuilderLogic {
 	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,5);
 	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,6);
 	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,6);
+	}
+	else {
+	  addToTable(getCutIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+	  addToTable(getCutIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Cut",IBCutModuleWindow.class,2,1);
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,2);
+	  addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,3);
+	  addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Paste",IBPasteModuleWindow.class,2,3);
+	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,4);
+	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,4);
+	  table.add(separator,2,5);
+	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,6);
+	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,6);
+	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,7);
+	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,7);
 	}
 
 	table.setColumnColor(1,"#D8D8D1");
@@ -853,28 +861,28 @@ public class BuilderLogic {
 
     public void add(PresentationObject obj){
       if ( obj.isAttributeSet(obj.WIDTH) ) {
-        _layer.setWidth(obj.getWidth());
-        _table.setWidth(obj.getWidth());
+	_layer.setWidth(obj.getWidth());
+	_table.setWidth(obj.getWidth());
       }
       if ( obj.isAttributeSet(obj.HEIGHT) ) {
-        _layer.setHeight(obj.getHeight());
-        _table.setHeight(obj.getHeight());
+	_layer.setHeight(obj.getHeight());
+	_table.setHeight(obj.getHeight());
       }
       if ( obj.isAttributeSet(obj.HORIZONTAL_ALIGNMENT) ) {
-        _layer.setHorizontalAlignment(obj.getHorizontalAlignment());
+	_layer.setHorizontalAlignment(obj.getHorizontalAlignment());
       }
 
       if ( obj instanceof Layer ) {
-        if ( obj.isAttributeSet(Layer.LEFT) )
-          _layer.setLeftPosition(obj.getAttribute(Layer.LEFT));
-        if ( obj.isAttributeSet(Layer.TOP) )
-          _layer.setTopPosition(obj.getAttribute(Layer.TOP));
-        if ( obj.isAttributeSet(Layer.ZINDEX) )
-          _layer.setZIndex(obj.getAttribute(Layer.ZINDEX));
-        obj.removeAttribute(Layer.LEFT);
-        obj.removeAttribute(Layer.TOP);
-        obj.removeAttribute(Layer.POSITION);
-        obj.removeAttribute(Layer.ZINDEX);
+	if ( obj.isAttributeSet(Layer.LEFT) )
+	  _layer.setLeftPosition(obj.getAttribute(Layer.LEFT));
+	if ( obj.isAttributeSet(Layer.TOP) )
+	  _layer.setTopPosition(obj.getAttribute(Layer.TOP));
+	if ( obj.isAttributeSet(Layer.ZINDEX) )
+	  _layer.setZIndex(obj.getAttribute(Layer.ZINDEX));
+	obj.removeAttribute(Layer.LEFT);
+	obj.removeAttribute(Layer.TOP);
+	obj.removeAttribute(Layer.POSITION);
+	obj.removeAttribute(Layer.ZINDEX);
       }
 
       _tableLayer.add(obj);
@@ -1217,7 +1225,7 @@ public class BuilderLogic {
    */
   public PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image pasteImage = bundle.getImage("shared/menu/copy.gif","Paste above component");
+    Image pasteImage = bundle.getImage("shared/menu/paste.gif","Paste above component");
     //copyImage.setAttribute("style","z-index: 0;");
     Link link = new Link(pasteImage);
     link.setWindowToOpen(IBPasteModuleWindow.class);
