@@ -223,7 +223,7 @@ public class IBPropertyHandler{
      * Returns the real properties set for the property if the property is set with the specified keys
      * Returns the selectedValues[] if nothing found
      */
-    public String[] getPropertyValues(IWMainApplication iwma,IBXMLPage xml,int ICObjectInstanceId,String methodIdentifier,String[] selectedValues){
+    public String[] getPropertyValues(IWMainApplication iwma,IBXMLPage xml,int ICObjectInstanceId,String methodIdentifier,String[] selectedValues,boolean returnSelectedValueIfNothingFound){
       //if(selectedValues!=null){
         List availableValues = XMLWriter.getPropertyValues(xml,ICObjectInstanceId,methodIdentifier);
         if(selectedValues!=null){
@@ -254,7 +254,12 @@ public class IBPropertyHandler{
           System.out.println("availableValues.size() == 0");
         }
       //}
-      return selectedValues;
+      if(returnSelectedValueIfNothingFound){
+        return selectedValues;
+      }
+      else{
+        return null;
+      }
     }
 
 

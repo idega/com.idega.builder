@@ -223,17 +223,17 @@ public class IBPropertiesWindowSetter extends Page {
       //System.out.println("method.toString()="+method.toString());
       String[] selectedValues = parseValues(iwc);
       String[] paramDescriptions = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc,icObjectInstanceID,methodIdentifier);
-      String[] realValues = BuilderLogic.getInstance().getPropertyValues(iwc.getApplication(),pageID,Integer.parseInt(icObjectInstanceID),methodIdentifier,selectedValues);
       boolean isChangingProperty = this.isChangingProperty(iwc);
+      String[] realValues = BuilderLogic.getInstance().getPropertyValues(iwc.getApplication(),pageID,Integer.parseInt(icObjectInstanceID),methodIdentifier,selectedValues,isChangingProperty);
+
       for (int i = 0; i < parameters.length; i++) {
         Class parameterClass = parameters[i];
         String sValue="";
 
         try{
-          if(!isChangingProperty){
-            sValue = realValues[i];
-            System.out.println("IBPropertyWindowSetter, Realvalues["+i+"]="+sValue);
-          }
+          sValue = realValues[i];
+          System.out.println("IBPropertyWindowSetter, Realvalues["+i+"]="+sValue);
+
         }
         catch(java.lang.ArrayIndexOutOfBoundsException e){
         }

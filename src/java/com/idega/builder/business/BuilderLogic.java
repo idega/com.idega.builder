@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.55 2001/10/26 14:23:41 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.56 2001/10/26 15:18:53 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -576,9 +576,9 @@ public class BuilderLogic {
    * Returns the real properties set for the property if the property is set with the specified keys
    * Returns the selectedValues[] if nothing found
    */
-  public String[] getPropertyValues(IWMainApplication iwma,String pageKey,int ObjectInstanceId,String propertyName,String[] selectedValues){
+  public String[] getPropertyValues(IWMainApplication iwma,String pageKey,int ObjectInstanceId,String propertyName,String[] selectedValues,boolean returnSelectedValueIfNothingFound){
       IBXMLPage xml = getIBXMLPage(pageKey);
-      return IBPropertyHandler.getInstance().getPropertyValues(iwma,xml,ObjectInstanceId,propertyName,selectedValues);
+      return IBPropertyHandler.getInstance().getPropertyValues(iwma,xml,ObjectInstanceId,propertyName,selectedValues,returnSelectedValueIfNothingFound);
       //return XMLWriter.getPropertyValues(xml,ObjectInstanceId,propertyName);
   }
 
