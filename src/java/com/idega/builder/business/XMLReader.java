@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.19 2001/10/10 12:18:16 gummi Exp $
+ * $Id: XMLReader.java,v 1.20 2001/10/10 13:03:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -331,8 +331,14 @@ public class XMLReader {
     }
 
     try {
-      if ( className != null ) {
-        inst = (PresentationObject)Class.forName(className).newInstance();
+      if ( id == null ) {
+        try{
+          inst = (PresentationObject)Class.forName(className).newInstance();
+        }
+        catch(Exception e){
+          e.printStackTrace(System.err);
+          throw new Exception("Invalid Class tag for module");
+        }
       }
       else {
         ICObjectInstance ico = new ICObjectInstance(Integer.parseInt(id));
