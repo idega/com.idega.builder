@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.5 2001/10/10 12:41:20 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.6 2001/10/30 17:41:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,17 +19,17 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLPage;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.data.IBPage;
 import com.idega.presentation.Page;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
- * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
- * @modified by <a href=teiki@idega.is">Eirikur Hrafnsson</a>
- * @version 1.0 alpha
-*/
-
+ * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * @version 1.0
+ */
 public class IBDeletePageWindow extends IWAdminWindow {
   private static final String PAGE_NAME_PARAMETER   = "ib_page_name";
   private static final String PAGE_TYPE             = "ib_page_type";
@@ -59,11 +59,37 @@ public class IBDeletePageWindow extends IWAdminWindow {
       ibpage.setDeleted(true,iwc);
       ibpage.update();
 
+      Map tree = null;
+      if (ibpage.getType().equals(IBPage.PAGE)) {
+        tree = (Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
+      }
+      else if (ibpage.getType().equals(IBPage.TEMPLATE)) {
+        tree = (Map)iwc.getApplicationAttribute(PageTreeNode.TEMPLATE_TREE);
+      }
+
       if ((deleteAll != null) && (deleteAll.equals("true"))) {
         deleteAllChildren(ibpage,iwc);
+        if (tree != null) {
+          PageTreeNode parentNode = (PageTreeNode)tree.get(parent.getIDInteger());
+          PageTreeNode childNode = (PageTreeNode)tree.get(ibpage.getIDInteger());
+          parentNode.removeChild(childNode);
+          tree.remove(ibpage.getIDInteger());
+        }
       }
       else {
         parent.moveChildrenFrom(ibpage);
+        if (tree != null) {
+          PageTreeNode parentNode = (PageTreeNode)tree.get(parent.getIDInteger());
+          PageTreeNode childNode = (PageTreeNode)tree.get(ibpage.getIDInteger());
+          Iterator it = childNode.getChildren();
+          if (it != null) {
+            while (it.hasNext()) {
+              parentNode.addChild((PageTreeNode)it.next());
+            }
+          }
+          parentNode.removeChild(childNode);
+          tree.remove(ibpage.getIDInteger());
+        }
       }
 
       setParentToReload();
@@ -142,6 +168,14 @@ public class IBDeletePageWindow extends IWAdminWindow {
         child.setDeleted(true,iwc);
         child.update();
         page.removeChild(child);
+        Map tree = null;
+        if (child.getType().equals(IBPage.PAGE))
+          tree = (Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
+        else if (child.getType().equals(IBPage.TEMPLATE))
+          tree = (Map)iwc.getApplicationAttribute(PageTreeNode.TEMPLATE_TREE);
+
+        if (tree != null)
+          tree.remove(child.getIDInteger());
       }
     }
   }

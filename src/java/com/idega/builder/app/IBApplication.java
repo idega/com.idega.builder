@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.24 2001/10/23 16:34:46 laddi Exp $
+ * $Id: IBApplication.java,v 1.25 2001/10/30 17:41:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import com.idega.presentation.ui.TreeViewer;
 import com.idega.presentation.ui.IFrame;
 import com.idega.idegaweb.IWBundle;
 import com.idega.builder.presentation.IBPermissionWindow;
+import com.idega.builder.business.PageTreeNode;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -97,6 +98,7 @@ public class IBApplication extends IWApplication {
     setSpanAdaptive(2);
     setFrameName(2,IB_FRAMESET1_FRAME);
   }
+
   /**
    *
    */
@@ -172,7 +174,6 @@ public class IBApplication extends IWApplication {
       table.setVerticalAlignment(2,1,"bottom");
       table.setCellpadding(0);
       table.setCellpadding(0);
-
     }
   }
 
@@ -190,7 +191,8 @@ public class IBApplication extends IWApplication {
       getParentPage().setAllMargins(2);
       int i_page_id = 1;
       try {
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
+//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.PAGE_TREE),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
@@ -228,7 +230,8 @@ public class IBApplication extends IWApplication {
 
       int i_template_id = 2;
       try {
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
+//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
@@ -511,9 +514,9 @@ public class IBApplication extends IWApplication {
       toolbarTable.setHeight("100%");
       toolbarTable.setCellpadding(0);
       toolbarTable.setCellspacing(0);
-      toolbarTable.setWidth(2,1,"100%");
-      toolbarTable.setAlignment(2,1,"right");
-      toolbarTable.setVerticalAlignment(1,1,"top");
+      toolbarTable.setWidth(1,1,"100%");
+      toolbarTable.setAlignment(2,1,"top");
+      toolbarTable.setVerticalAlignment(1,1,"left");
       add(toolbarTable);
 
       String action = iwc.getParameter(controlParameter);
@@ -522,11 +525,11 @@ public class IBApplication extends IWApplication {
       }
 
       if (action.equals(ACTION_BUILDER)) {
-        Text text1 = new Text("Status normal"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+/*        Text text1 = new Text("Status normal"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
         text1.setFontSize(1);
-        text1.setFontColor("Black");
+        text1.setFontColor("Black");*/
 
-        Table toolTable = new Table(10,1);
+        Table toolTable = new Table(3,1);
         toolTable.setWidth("100%");
         toolTable.setCellpadding(0);
         toolTable.setCellspacing(0);
@@ -547,9 +550,10 @@ public class IBApplication extends IWApplication {
         toolTable.add(sourceLink,3,1);
 
 
-
-        toolbarTable.add(toolTable,1,1);
-        toolbarTable.add(text1,2,1);
+        String name = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
+        toolbarTable.add(new Text(name),1,1);
+        toolbarTable.add(toolTable,2,1);
+//        toolbarTable.add(text1,2,1);
       }
       else if (action.equals(ACTION_TEMPLATES)) {
       }

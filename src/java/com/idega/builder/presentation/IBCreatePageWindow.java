@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.10 2001/10/10 12:08:16 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.11 2001/10/30 17:41:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.builder.presentation;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
@@ -27,6 +28,7 @@ import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.DropdownMenu;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
 import com.idega.presentation.ui.Window;
 
 /**
@@ -97,12 +99,19 @@ public class IBCreatePageWindow extends IWAdminWindow {
         ICFile file = new ICFile();
         ibPage.setFile(file);
 
-        if (type.equals("1"))
+        String treeType = null;
+        if (type.equals("1")) {
           ibPage.setType(IBPage.PAGE);
-        else if (type.equals("2"))
+          treeType =PageTreeNode.PAGE_TREE;
+        }
+        else if (type.equals("2")) {
           ibPage.setType(IBPage.TEMPLATE);
-        else
+          treeType = PageTreeNode.TEMPLATE_TREE;
+        }
+        else {
           ibPage.setType(IBPage.PAGE);
+          treeType =PageTreeNode.PAGE_TREE;
+        }
 
         int tid = -1;
         try {
@@ -115,6 +124,19 @@ public class IBCreatePageWindow extends IWAdminWindow {
         ibPage.insert();
         IBPage ibPageParent = new IBPage(Integer.parseInt(pageId));
         ibPageParent.addChild(ibPage);
+
+        PageTreeNode parent = new PageTreeNode(Integer.parseInt(pageId),iwc,treeType);
+        Map tree = (Map)iwc.getApplicationAttribute(treeType);
+
+        if (parent != null) {
+          if (tree != null) {
+            PageTreeNode child = new PageTreeNode(ibPage.getID(),iwc,treeType);
+            child.setNodeId(ibPage.getID());
+            child.setNodeName(ibPage.getName());
+            parent.addChild(child);
+            tree.put(new Integer(child.getNodeID()),child);
+          }
+        }
 
         if ((templateId != null) && (!templateId.equals(""))) {
           IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);

@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.1 2001/10/30 14:46:50 palli Exp $
+ * $Id: TreeNodeFinder.java,v 1.2 2001/10/30 17:41:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,8 +41,6 @@ public class TreeNodeFinder {
       sql.append(pages.getColumnDeleted());
       sql.append(" is null)");
 
-      System.out.println("Pages sql = " + sql.toString());
-
       return(EntityFinder.findAll(pages,sql.toString()));
     }
     catch(SQLException e) {
@@ -67,8 +65,6 @@ public class TreeNodeFinder {
       sql.append("' or ");
       sql.append(pages.getColumnDeleted());
       sql.append(" is null)");
-
-      System.out.println("Pages sql = " + sql.toString());
 
       return(EntityFinder.findAll(pages,sql.toString()));
     }
@@ -109,8 +105,6 @@ public class TreeNodeFinder {
       sql.append(" = '");
       sql.append(pages.PAGE);
       sql.append("'");
-
-      System.out.println("Statement = " + sql.toString());
 
       ResultSet result = stmt.executeQuery(sql.toString());
 
@@ -165,8 +159,6 @@ public class TreeNodeFinder {
       sql.append(" = '");
       sql.append(pages.TEMPLATE);
       sql.append("'");
-
-      System.out.println("Statement = " + sql.toString());
 
       ResultSet result = stmt.executeQuery(sql.toString());
 
