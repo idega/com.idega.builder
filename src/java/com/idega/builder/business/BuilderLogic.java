@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.147 2004/06/09 16:12:58 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.148 2004/06/10 17:52:58 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -16,7 +16,9 @@ import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.builder.business.BuilderClassesFactory;
 import com.idega.core.builder.business.BuilderConstants;
+import com.idega.core.builder.business.BuilderImageInserter;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.business.ICObjectBusiness;
@@ -304,7 +306,6 @@ public class BuilderLogic {
 		if (obj instanceof Image) {
 			Image imageObj = (Image) obj;
 			boolean useBuilderObjectControl = obj.getUseBuilderObjectControl();
-			com.idega.block.media.presentation.ImageInserter inserter = null;
 			int ICObjectIntanceID = imageObj.getICObjectInstanceID();
 			String sessionID = "ic_" + ICObjectIntanceID;
 			String session_image_id = (String) iwc.getSessionAttribute(sessionID);
@@ -318,7 +319,7 @@ public class BuilderLogic {
 				iwc.removeSessionAttribute(sessionID);
 				imageObj.setImageID(image_id);
 			}
-			inserter = new com.idega.block.media.presentation.ImageInserter();
+			BuilderImageInserter inserter = BuilderClassesFactory.newInstance().createImageInserterImpl();
 			inserter.setHasUseBox(false);
 
 			String width = imageObj.getWidth();
@@ -339,7 +340,7 @@ public class BuilderLogic {
 			inserter.setImSessionImageName(sessionID);
 			inserter.setWindowToReload(true);
 			//inserter.maintainSessionParameter();
-			obj = inserter;
+			obj = (PresentationObject) inserter;
 			obj.setICObjectInstanceID(ICObjectIntanceID);
 			obj.setUseBuilderObjectControl(useBuilderObjectControl);
 		}
