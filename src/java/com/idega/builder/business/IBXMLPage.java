@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.50 2004/07/07 19:06:58 eiki Exp $
+ * $Id: IBXMLPage.java,v 1.51 2004/07/07 19:19:10 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -420,8 +420,7 @@ public class IBXMLPage implements IBXMLAble {
 	 * @throws com.idega.exception.PageDescriptionDoesNotExists The given XML file does not exists.
 	 */
 	public void readXMLDocument(InputStream stream) throws PageDoesNotExist {
-		String encoding = IWMainApplication.getDefaultIWApplicationContext().getApplicationSettings().getCharacterEncoding();
-
+	
 		boolean streamopen = true;
 		try {
 			InputStreamReader reader = new InputStreamReader(stream,"UTF-8");
