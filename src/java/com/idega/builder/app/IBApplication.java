@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.76 2004/03/19 11:49:30 thomas Exp $
+ *  $Id: IBApplication.java,v 1.77 2004/03/24 18:44:06 thomas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ public class IBApplication extends IWApplication {
 	// unused private final static String ACTION_HELP = "help";
 	protected static boolean noCurtain = false;
 	// unused private static String URL = "";
-	private final static String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
+	public static String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
 	//private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
 	//private final static String CONTENT_EDIT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
 	/**
