@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.41 2001/11/14 16:16:23 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.42 2001/12/14 13:08:04 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -232,7 +232,7 @@ public class IBApplication extends IWApplication {
 
       boolean startupInProgress = startupInProgress(iwc);
       //System.out.println("Startup in progress for PageTree:"+startupInProgress);
-      if(!startupInProgress){
+      if(!startupInProgress && iwc.getParameter("reload") != null){
         if ( noCurtain ) {
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
@@ -249,10 +249,11 @@ public class IBApplication extends IWApplication {
       try {
 //        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
         TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc),iwc);
-        viewer.setTarget(IB_LEFT_MENU_FRAME);
+        //viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
         l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        l.addParameter("reload","t");
 //        l.setOnClick("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
         viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
@@ -279,7 +280,7 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc){
       boolean startupInProgress = startupInProgress(iwc);
       //System.out.println("Startup in progress for TemplateTree:"+startupInProgress);
-      if(!startupInProgress){
+      if(!startupInProgress && iwc.getParameter("reload") != null){
         if ( noCurtain ) {
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
@@ -297,10 +298,11 @@ public class IBApplication extends IWApplication {
       try {
 //        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
         TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc),iwc);
-        viewer.setTarget(IB_LEFT_MENU_FRAME);
+        //viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
         l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        l.addParameter("reload","t");
         viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
