@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.34 2003/10/03 01:41:55 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.35 2003/10/05 18:45:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -246,33 +246,38 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			ypos++;
 			while (iter.hasNext()) {
 				item = (ICObject) iter.next();
-
-				//iconLink = new Link(getIconForObject(item, iwc));
-				iconLink = getIconForObject(item, iwc);
-				
-				String objectName = item.getBundle(iwc.getApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale());
-				link = new Link(objectName);
-				link.setStyle(STYLE_NAME);
-				//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
-				link.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
-				link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
-				/*link.maintainParameter(IB_PAGE_PARAMETER, iwc);
-				link.maintainParameter(IB_PARENT_PARAMETER, iwc);
-				link.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
-
-				/*System.out.println("Adding parameters to icon: " + (System.currentTimeMillis() - start) + " ms");
-				iconLink.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
-				iconLink.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
-				iconLink.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
-				System.out.println("Maintaining parameters in icon: " + (System.currentTimeMillis() - start) + " ms");
-				iconLink.maintainParameter(IB_PAGE_PARAMETER, iwc);
-				iconLink.maintainParameter(IB_PARENT_PARAMETER, iwc);
-				iconLink.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
-
-				subComponentTable.add(iconLink, 1, ypos);
-				subComponentTable.add(link, 2, ypos);
-
-				ypos++;
+				try{
+					//iconLink = new Link(getIconForObject(item, iwc));
+					iconLink = getIconForObject(item, iwc);
+					
+					String objectName = item.getBundle(iwc.getApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale());
+					link = new Link(objectName);
+					link.setStyle(STYLE_NAME);
+					//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
+					link.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
+					link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
+					/*link.maintainParameter(IB_PAGE_PARAMETER, iwc);
+					link.maintainParameter(IB_PARENT_PARAMETER, iwc);
+					link.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
+	
+					/*System.out.println("Adding parameters to icon: " + (System.currentTimeMillis() - start) + " ms");
+					iconLink.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
+					iconLink.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
+					iconLink.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
+					System.out.println("Maintaining parameters in icon: " + (System.currentTimeMillis() - start) + " ms");
+					iconLink.maintainParameter(IB_PAGE_PARAMETER, iwc);
+					iconLink.maintainParameter(IB_PARENT_PARAMETER, iwc);
+					iconLink.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
+	
+					subComponentTable.add(iconLink, 1, ypos);
+					subComponentTable.add(link, 2, ypos);
+	
+					ypos++;
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
+			
 			}
 		}
 	}
