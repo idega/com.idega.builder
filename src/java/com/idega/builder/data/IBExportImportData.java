@@ -94,19 +94,19 @@ public class IBExportImportData implements Storable {
 	
 		
 	
-	public void modifyElementSetNameSetOriginalName(int index, String name, String originalName, String mimeType) {
+	public XMLElement modifyElementSetNameSetOriginalName(int index, String name, String originalName, String mimeType) {
 		XMLElement fileElement = (XMLElement) fileElements.get(index);
 		fileElement.addContent(XMLConstants.FILE_USED_ID,name);
 		fileElement.addContent(XMLConstants.FILE_ORIGINAL_NAME, originalName);
 		fileElement.addContent(XMLConstants.FILE_MIME_TYPE, mimeType);
+		return fileElement;
 	}
 	
-	public void modifyElementSetNameSetOriginalNameLikeElementAt(int index, int existingDataIndex) {
-		XMLElement fileElement = (XMLElement) fileElements.get(existingDataIndex);
+	public XMLElement modifyElementSetNameSetOriginalNameLikeElementAt(int index, XMLElement fileElement) {
 		String name = fileElement.getTextTrim(XMLConstants.FILE_USED_ID);
 		String originalName = fileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
 		String mimeType = fileElement.getTextTrim(XMLConstants.FILE_MIME_TYPE);
-		modifyElementSetNameSetOriginalName(index, name, originalName, mimeType);
+		return modifyElementSetNameSetOriginalName(index, name, originalName, mimeType);
 	}
 		
 	public void addPageTree(IWContext iwc) throws IDOLookupException, FinderException {
@@ -150,10 +150,12 @@ public class IBExportImportData implements Storable {
 	}
 	
 	public void addFileEntry(ICPage page) {
+		String sourceClassForPage = IBExportImportData.getSourceClassForPage();
 		files.add(page);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
-		fileElement.addContent(XMLConstants.FILE_SOURCE, IBExportImportData.getSourceClassForPage());
+		fileElement.addContent(XMLConstants.FILE_MODULE, sourceClassForPage);
 		fileElement.addContent(XMLConstants.FILE_NAME, page.getIDColumnName());
+		fileElement.addContent(XMLConstants.FILE_SOURCE, sourceClassForPage);
 		fileElement.addContent(XMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
 		fileElements.add(fileElement);
 	}
@@ -226,7 +228,7 @@ public class IBExportImportData implements Storable {
 		Iterator iterator = fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement fileElement = (XMLElement) iterator.next();
-			if (getPageElements == IBExportImportData.getSourceClassForPage().equals(fileElement.getTextTrim(XMLConstants.FILE_SOURCE)))		{
+			if (getPageElements == IBExportImportData.getSourceClassForPage().equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)))		{
 				elements.add(fileElement);
 			}
 		}
