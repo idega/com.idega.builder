@@ -181,7 +181,9 @@ public class DPTTriggerBusiness {
     BuilderLogic instance = BuilderLogic.getInstance();
 
     Map tree = PageTreeNode.getTree(iwc);
-    int id = IBPageHelper.getInstance().createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree);
+
+    int id = IBPageHelper.getInstance().createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree,iwc);
+
 
     IBPage page = null;
     try {
