@@ -235,10 +235,12 @@ private String _colorString;
       formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("add","Add"),"add_remove"),column,row++);
     }
 
-    form.add(new HiddenInput(SCRIPT_PREFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER)));
-    form.add(new HiddenInput(SCRIPT_SUFFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_SUFFIX_PARAMETER)));
-    form.add(new HiddenInput(DISPLAYSTRING_PARAMETER_NAME,(String)iwc.getSessionAttribute(DISPLAYSTRING_PARAMETER_NAME)));
-    form.add(new HiddenInput(VALUE_PARAMETER_NAME,(String)iwc.getSessionAttribute(VALUE_PARAMETER_NAME)));
+    if ( iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER) != null ) {
+      form.add(new HiddenInput(SCRIPT_PREFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER)));
+      form.add(new HiddenInput(SCRIPT_SUFFIX_PARAMETER,(String)iwc.getSessionAttribute(SCRIPT_SUFFIX_PARAMETER)));
+      form.add(new HiddenInput(DISPLAYSTRING_PARAMETER_NAME,(String)iwc.getSessionAttribute(DISPLAYSTRING_PARAMETER_NAME)));
+      form.add(new HiddenInput(VALUE_PARAMETER_NAME,(String)iwc.getSessionAttribute(VALUE_PARAMETER_NAME)));
+    }
 
     if ( _colorString != null )
       form.add(new HiddenInput("old_color",_colorString));
