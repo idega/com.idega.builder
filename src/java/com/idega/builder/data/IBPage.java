@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.2 2001/04/30 16:40:40 palli Exp $
+ * $Id: IBPage.java,v 1.3 2001/05/18 13:04:07 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,14 @@
  */
 package com.idega.builder.data;
 
-import java.sql.*;
-import com.idega.data.*;
+import java.sql.SQLException;
+import com.idega.data.GenericEntity;
+import com.idega.data.BlobWrapper;
 
 /**
-*@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
-*@version 1.3
-*/
+ * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
+ * @version 1.3
+ */
 public class IBPage extends GenericEntity {
 	public IBPage() {
 		super();
@@ -29,7 +30,7 @@ public class IBPage extends GenericEntity {
 		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
 		addAttribute(getIDColumnName());
 		addAttribute("name","Nafn",true,true,"java.lang.String");
-                //addAttribute("xmlvalue","XML",true,true,"com.idega.data.BlobWrapper");
+    addAttribute("page_value","Page value",true,true,"com.idega.data.BlobWrapper");
 	}
 
 	public String getEntityName() {
@@ -43,4 +44,16 @@ public class IBPage extends GenericEntity {
 	public String getName() {
 		return getStringColumnValue("name");
 	}
+
+  public void setName(String name) {
+    setColumn("name",name);
+  }
+
+  public BlobWrapper getPageValue() {
+      return (BlobWrapper) getColumnValue("page_value");
+  }
+
+  public void setPageValue(BlobWrapper wrapper) {
+    setColumn("page_value",wrapper);
+  }
 }
