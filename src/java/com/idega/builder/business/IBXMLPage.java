@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.46 2004/06/14 13:52:48 palli Exp $
+ * $Id: IBXMLPage.java,v 1.47 2004/06/21 17:01:06 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -287,15 +287,18 @@ public class IBXMLPage implements IBXMLAble {
 				XMLOutput output = new XMLOutput("  ", true);
 				output.setLineSeparator(System.getProperty("line.separator"));
 				output.setTextNormalize(true);
-				//output.setEncoding("UTF-16");
+				output.setEncoding("UTF-8");
 				output.output(getXMLDocument(), stream);
 				stream.close();
 			}
 			else if(this.getPageFormat().equals("HTML")){
-				
-				String theString = this.toString();
+				//convert the string to utf-8
+				String theString = new String(this.toString().getBytes(),"UTF-8");
 				StringReader sr = new StringReader(theString);
+				
 				OutputStreamWriter out = new OutputStreamWriter(stream);
+				
+				
 				int bufferlength=1000;
 				char[] buf = new char[bufferlength];
 				int read = sr.read(buf);
