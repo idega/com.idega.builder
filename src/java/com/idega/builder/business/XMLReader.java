@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.38 2002/04/07 20:19:22 laddi Exp $
+ * $Id: XMLReader.java,v 1.39 2002/12/10 16:05:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,516 +27,522 @@ import com.idega.xml.XMLException;
  * @version 1.0
  */
 public class XMLReader {
-  /**
-   *
-   */
-  private XMLReader() {
-  }
-
-  /**
-   *
-   */
-  private static void setAllBuilderControls(PresentationObjectContainer parent, boolean setTo) {
-    List list = parent.getAllContainingObjects();
-    if (list != null) {
-      Iterator it = list.iterator();
-      while (it.hasNext()) {
-	PresentationObject obj = (PresentationObject)it.next();
-	obj.setUseBuilderObjectControl(setTo);
-	obj.setBelongsToParent(true);
-	if (obj instanceof PresentationObjectContainer) {
-	  setAllBuilderControls((PresentationObjectContainer)obj,setTo);
+	/**
+	 *
+	 */
+	private XMLReader() {
 	}
-      }
-    }
-  }
 
-  /**
-   *
-   */
-  static Page getPopulatedPage(IBXMLPage ibxml) {
-    Page parentContainer = null;
-    String pageKey = null;
-    XMLElement root = ibxml.getRootElement();
-    XMLElement pageXML = root.getChild(XMLConstants.PAGE_STRING);
-    List pageAttr = pageXML.getAttributes();
-    Iterator attr = pageAttr.iterator();
-
-    boolean hasTemplate = false;
-    boolean isTemplate = false;
-    boolean isLocked = true;
-
-    // Parse the page attributes
-    while(attr.hasNext()) {
-      XMLAttribute at = (XMLAttribute)attr.next();
-      if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
-	hasTemplate = true;
-	parentContainer = PageCacher.getPage(at.getValue());
-	parentContainer.setIsExtendingTemplate();
-	parentContainer.setTemplateId(at.getValue());
-	setAllBuilderControls(parentContainer,false);
-      }
-      else if (at.getName().equalsIgnoreCase(XMLConstants.PAGE_TYPE)) {
-	String value = at.getValue();
-	if (value.equals(XMLConstants.PAGE_TYPE_TEMPLATE) || value.equals(XMLConstants.PAGE_TYPE_DPT_TEMPLATE)) {
-	  isTemplate = true;
+	/**
+	 *
+	 */
+	private static void setAllBuilderControls(PresentationObjectContainer parent, boolean setTo) {
+		List list = parent.getAllContainingObjects();
+		if (list != null) {
+			Iterator it = list.iterator();
+			while (it.hasNext()) {
+				PresentationObject obj = (PresentationObject) it.next();
+				obj.setUseBuilderObjectControl(setTo);
+				obj.setBelongsToParent(true);
+				if (obj instanceof PresentationObjectContainer) {
+					setAllBuilderControls((PresentationObjectContainer) obj, setTo);
+				}
+			}
+		}
 	}
-      }
-      else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
-	pageKey = (String)at.getValue();
-      }
-      else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
-	if (at.getValue().equals("false"))
-	  isLocked = false;
-	else
-	  isLocked = true;
-      }
-    }
 
-    //If the page does not extend a template it has no parent container
-    if (!hasTemplate) {
-      parentContainer = new Page();
-    }else{
-      ObjectInstanceCacher.setTemplateObjectsForPage(ibxml);
-    }
+	/**
+	 *
+	 */
+	static Page getPopulatedPage(IBXMLPage ibxml) {
+		Page parentContainer = null;
+		String pageKey = null;
+		XMLElement root = ibxml.getRootElement();
+		XMLElement pageXML = root.getChild(XMLConstants.PAGE_STRING);
+		List pageAttr = pageXML.getAttributes();
+		Iterator attr = pageAttr.iterator();
 
-    if (isLocked)
-      parentContainer.lock();
-    else
-      parentContainer.unlock();
+		boolean hasTemplate = false;
+		boolean isTemplate = false;
+		boolean isLocked = true;
 
-    //Set the type of the page
-    if (isTemplate) {
-      parentContainer.setIsTemplate();
-      ibxml.setType(XMLConstants.PAGE_TYPE_TEMPLATE);
-    }
-    else {
-      parentContainer.setIsPage();
-      ibxml.setType(XMLConstants.PAGE_TYPE_PAGE);
-    }
+		// Parse the page attributes
+		while (attr.hasNext()) {
+			XMLAttribute at = (XMLAttribute) attr.next();
+			if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
+				hasTemplate = true;
+				parentContainer = PageCacher.getPage(at.getValue());
+				parentContainer.setIsExtendingTemplate();
+				parentContainer.setTemplateId(at.getValue());
+				setAllBuilderControls(parentContainer, false);
+			}
+			else if (at.getName().equalsIgnoreCase(XMLConstants.PAGE_TYPE)) {
+				String value = at.getValue();
+				if (value.equals(XMLConstants.PAGE_TYPE_TEMPLATE) || value.equals(XMLConstants.PAGE_TYPE_DPT_TEMPLATE)) {
+					isTemplate = true;
+				}
+			}
+			else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
+				pageKey = (String) at.getValue();
+			}
+			else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
+				if (at.getValue().equals("false"))
+					isLocked = false;
+				else
+					isLocked = true;
+			}
+		}
 
-    //sets the id of the page
-    try {
-      int id = Integer.parseInt(pageKey);
-      parentContainer.setPageID(id);
-    }
-    catch(NumberFormatException e) {
-      try {
-	parentContainer.setPageID(Integer.parseInt(ibxml.getKey()));
-      }
-      catch (NumberFormatException ex) {
-  //      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
-      }
-    }
+		//If the page does not extend a template it has no parent container
+		if (!hasTemplate) {
+			parentContainer = new Page();
+		}
+		else {
+			ObjectInstanceCacher.setTemplateObjectsForPage(ibxml);
+		}
 
-    if (pageXML.hasChildren()) {
-      List children = pageXML.getChildren();
-      Iterator it = children.iterator();
+		if (isLocked)
+			parentContainer.lock();
+		else
+			parentContainer.unlock();
 
-      while (it.hasNext()) {
-	XMLElement child = (XMLElement)it.next();
+		//Set the type of the page
+		if (isTemplate) {
+			parentContainer.setIsTemplate();
+			ibxml.setType(XMLConstants.PAGE_TYPE_TEMPLATE);
+		}
+		else {
+			parentContainer.setIsPage();
+			ibxml.setType(XMLConstants.PAGE_TYPE_PAGE);
+		}
 
-	if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
-	  setProperties(child,parentContainer);
+		//sets the id of the page
+		try {
+			int id = Integer.parseInt(pageKey);
+			parentContainer.setPageID(id);
+		}
+		catch (NumberFormatException e) {
+			try {
+				parentContainer.setPageID(Integer.parseInt(ibxml.getKey()));
+			}
+			catch (NumberFormatException ex) {
+				//      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
+			}
+		}
+
+		if (pageXML.hasChildren()) {
+			List children = pageXML.getChildren();
+			Iterator it = children.iterator();
+
+			while (it.hasNext()) {
+				XMLElement child = (XMLElement) it.next();
+
+				if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
+					setProperties(child, parentContainer);
+				}
+				else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
+					if (!parentContainer.getIsExtendingTemplate())
+						parseElement(child, parentContainer, ibxml);
+					else if (!parentContainer.isLocked())
+						parseElement(child, parentContainer, ibxml);
+				}
+				else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
+					parseRegion(child, parentContainer, ibxml);
+				}
+				else if (child.getName().equalsIgnoreCase(XMLConstants.CHANGE_PAGE_LINK)) {
+					changeLinkProperty(child, parentContainer);
+				}
+				else if (child.getName().equals(XMLConstants.CHANGE_IC_INSTANCE_ID)) {
+					changeInstanceId(child, parentContainer);
+				}
+				else {
+					System.err.println("Unknown tag in xml description file : " + child.getName());
+				}
+			}
+		}
+
+		return (parentContainer);
 	}
-	else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-	  if (!parentContainer.getIsExtendingTemplate())
-	    parseElement(child,parentContainer, ibxml);
-	  else
-	    if (!parentContainer.isLocked())
-	      parseElement(child,parentContainer, ibxml);
+
+	/**
+	 *
+	 */
+	static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, IBXMLPage ibxml) {
+		List regionAttrList = reg.getAttributes();
+		PresentationObjectContainer newRegionParent = regionParent;
+		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
+			System.err.println("Table region has no attributes");
+			return;
+		}
+
+		int x = 1;
+		int y = 1;
+		boolean isLocked = true;
+
+		XMLAttribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
+		if (locked != null) {
+			if (locked.getValue().equalsIgnoreCase("true"))
+				isLocked = true;
+			else
+				isLocked = false;
+		}
+
+		XMLAttribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
+
+		XMLAttribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
+		String regionID = null;
+		if (regionIDattr != null) {
+			regionID = regionIDattr.getValue();
+			try {
+				int region_id_int = Integer.parseInt(regionID);
+				XMLAttribute regionAttrX = reg.getAttribute(XMLConstants.X_REGION_STRING);
+				if (regionAttrX != null) {
+					try {
+						x = regionAttrX.getIntValue();
+					}
+					catch (XMLException e) {
+						System.err.println("Unable to convert x region attribute to integer");
+						x = 1;
+					}
+				}
+				XMLAttribute regionAttrY = reg.getAttribute(XMLConstants.Y_REGION_STRING);
+				if (regionAttrY != null) {
+					try {
+						y = regionAttrY.getIntValue();
+					}
+					catch (XMLException e) {
+						System.err.println("Unable to convert y region attribute to integer");
+						y = 1;
+					}
+				}
+			}
+			catch (NumberFormatException e) {
+				int parentID = Integer.parseInt(regionID.substring(0, regionID.indexOf(".")));
+				String theRest = regionID.substring(regionID.indexOf(".") + 1, regionID.length());
+				x = Integer.parseInt(theRest.substring(0, theRest.indexOf(".")));
+				y = Integer.parseInt(theRest.substring(theRest.indexOf(".") + 1, theRest.length()));
+			}
+		}
+
+		boolean parseChildren = true;
+		boolean emptyParent = false;
+
+		if (regionParent instanceof com.idega.presentation.Page) {
+			if ((regionID == null) || (regionID.equals(""))) {
+				System.err.println("Missing id attribute for region tag");
+				return;
+			}
+			if (((Page) regionParent).getIsExtendingTemplate()) {
+				newRegionParent = (PresentationObjectContainer) regionParent.getContainedObject(regionID);
+
+				if (newRegionParent == null) {
+					if (label != null) {
+						newRegionParent = (PresentationObjectContainer) regionParent.getContainedLabeledObject(label.getValue());
+						if (newRegionParent == null) {
+							parseChildren = false;
+						}
+					}
+					else
+						parseChildren = false;
+				}
+				else {
+					if ((newRegionParent.getBelongsToParent()) && (newRegionParent.isLocked()))
+						parseChildren = false;
+					else
+						emptyParent = true;
+				}
+			}
+		}
+		else if (regionParent instanceof com.idega.presentation.Table) {
+			if (isLocked)
+				 ((Table) regionParent).lock(x, y);
+			else
+				 ((Table) regionParent).unlock(x, y);
+
+			if (label != null) {
+				((Table) regionParent).setLabel(label.getValue(), x, y);
+			}
+
+			newRegionParent = ((Table) regionParent).containerAt(x, y);
+		}
+
+		if (parseChildren) {
+			if (reg.hasChildren()) {
+				if (emptyParent)
+					newRegionParent.empty();
+				List children = reg.getChildren();
+				Iterator childrenIt = children.iterator();
+
+				while (childrenIt.hasNext())
+					parseElement((XMLElement) childrenIt.next(), newRegionParent, ibxml);
+			}
+		}
 	}
-	else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-	  parseRegion(child,parentContainer, ibxml);
+
+	/**
+	 *
+	 */
+	static void setProperties(XMLElement properties, PresentationObject object) {
+		String key = null;
+		Vector values = new Vector(1);
+		String vals[] = null;
+
+		List li = properties.getChildren();
+		Iterator it = li.iterator();
+
+		while (it.hasNext()) {
+			XMLElement e = (XMLElement) it.next();
+
+			if (e.getName().equalsIgnoreCase(XMLConstants.NAME_STRING)) {
+				if (key != null) {
+					vals = new String[values.size()];
+					for (int i = 0; i < values.size(); i++)
+						vals[i] = (String) values.elementAt(i);
+					object.setProperty(key, vals);
+					values.clear();
+				}
+				key = e.getTextTrim();
+			}
+			else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
+				values.addElement(e.getTextTrim());
+			}
+		}
+
+		if (key != null) {
+			//key is MethodIdentifier
+			if (key.startsWith(XMLConstants.METHOD_STRING)) {
+				setReflectionProperty(object, key, values);
+			}
+			else {
+				vals = new String[values.size()];
+				for (int i = 0; i < values.size(); i++)
+					vals[i] = (String) values.elementAt(i);
+				object.setProperty(key, vals);
+			}
+		}
 	}
-	else if (child.getName().equalsIgnoreCase(XMLConstants.CHANGE_PAGE_LINK)) {
-	  changeLinkProperty(child,parentContainer);
+
+	/**
+	 *
+	 */
+	static void setReflectionProperty(PresentationObject instance, String methodIdentifier, Vector stringValues) {
+		ComponentPropertyHandler.getInstance().setReflectionProperty(instance, methodIdentifier, stringValues);
 	}
-	else if (child.getName().equals(XMLConstants.CHANGE_IC_INSTANCE_ID)) {
-	  changeInstanceId(child,parentContainer);
+
+	/**
+	 *
+	 */
+	static void parseElement(XMLElement el, PresentationObjectContainer parent, IBXMLPage ibxml) {
+		PresentationObject inst = null;
+		List at = el.getAttributes();
+		boolean isLocked = true;
+
+		if ((at == null) || (at.isEmpty())) {
+			System.err.println("No attributes specified");
+			return;
+		}
+		String className = null;
+		String id = null;
+		String ic_object_id = null;
+		Iterator it = at.iterator();
+		while (it.hasNext()) {
+			XMLAttribute attr = (XMLAttribute) it.next();
+			if (attr.getName().equalsIgnoreCase(XMLConstants.CLASS_STRING)) {
+				className = attr.getValue();
+			}
+			else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
+				id = attr.getValue();
+			}
+			else if (attr.getName().equalsIgnoreCase(XMLConstants.IC_OBJECT_ID_STRING)) {
+				ic_object_id = attr.getValue();
+			}
+			else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
+				if (attr.getValue().equals("false"))
+					isLocked = false;
+				else
+					isLocked = true;
+			}
+		}
+
+		try {
+			if (id == null) {
+				try {
+					inst = (PresentationObject) Class.forName(className).newInstance();
+				}
+				catch (Exception e) {
+					e.printStackTrace(System.err);
+					throw new Exception("Invalid Class tag for module");
+				}
+			}
+			else {
+				ICObjectInstance ico = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(id));
+				inst = ico.getNewInstance();
+				inst.setICObjectInstance(ico);
+				if (ic_object_id == null) {
+					inst.setICObject(ico.getObject());
+				}
+				else {
+					inst.setICObjectID(Integer.parseInt(ic_object_id));
+				}
+				// added by gummi@idega.is // - cache ObjectInstance
+				if (!"0".equals(id)) {
+					ObjectInstanceCacher.setObjectInstance(ibxml, id, inst);
+				}
+			}
+
+			if (inst instanceof PresentationObjectContainer) {
+				if (isLocked)
+					 ((PresentationObjectContainer) inst).lock();
+				else
+					 ((PresentationObjectContainer) inst).unlock();
+			}
+
+			if (inst instanceof com.idega.presentation.Table) {
+				com.idega.presentation.Table table = (com.idega.presentation.Table) inst;
+				parent.add(table);
+
+				if (el.hasChildren()) {
+					List children = el.getChildren();
+					Iterator itr = children.iterator();
+
+					while (itr.hasNext()) {
+						XMLElement child = (XMLElement) itr.next();
+						if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
+							setProperties(child, table);
+						}
+						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
+							parseElement(child, table, ibxml);
+						}
+						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
+							parseRegion(child, table, ibxml);
+						}
+						else
+							System.err.println("Unknown tag in xml description file : " + child.getName());
+					}
+				}
+			}
+			else {
+				try {
+					parent.add(inst);
+				}
+				catch (Exception e) {
+					e.printStackTrace(System.err);
+					if (parent != null)
+						System.err.println("ParentID: " + parent.getID());
+					if (inst != null)
+						System.err.println("InstanceID: " + inst.getICObjectInstanceID());
+				}
+				if (el.hasChildren()) {
+					List children = el.getChildren();
+					Iterator itr = children.iterator();
+
+					while (itr.hasNext()) {
+						XMLElement child = (XMLElement) itr.next();
+						if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
+							setProperties(child, inst);
+						}
+						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
+							parseElement(child, (PresentationObjectContainer) inst, ibxml);
+						}
+						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
+							parseRegion(child, (PresentationObjectContainer) inst, ibxml);
+						}
+						else {
+							System.err.println("Unknown tag in xml description file : " + child.getName());
+						}
+					}
+				}
+			}
+		}
+		catch (ClassNotFoundException e) {
+			System.err.println("The specified class can not be found: " + className);
+			e.printStackTrace();
+		}
+		catch (java.lang.IllegalAccessException e2) {
+			System.err.println("Illegal access");
+			e2.printStackTrace();
+		}
+		catch (java.lang.InstantiationException e3) {
+			System.err.println("Unable to instanciate class: " + className);
+			e3.printStackTrace();
+		}
+		catch (Exception e4) {
+			System.err.println("Exception");
+			e4.printStackTrace();
+		}
 	}
-	else {
-	  System.err.println("Unknown tag in xml description file : " + child.getName());
+
+	/**
+	 *
+	 */
+	static void changeLinkProperty(XMLElement change, PresentationObjectContainer parent) {
+		List regionAttrList = change.getAttributes();
+		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
+			System.err.println("Table region has no attributes");
+			return;
+		}
+
+		XMLAttribute id = change.getAttribute(XMLConstants.LINK_ID_STRING);
+		XMLAttribute newPageLink = change.getAttribute(XMLConstants.LINK_TO);
+
+		int intId = -1;
+		int intNewPage = -1;
+		try {
+			intId = id.getIntValue();
+			intNewPage = newPageLink.getIntValue();
+		}
+		catch (com.idega.xml.XMLException e) {
+			e.printStackTrace();
+		}
+		List li = parent.getAllContainedObjectsRecursive();
+		if (li != null) {
+			Iterator it = li.iterator();
+			while (it.hasNext()) {
+				PresentationObject obj = (PresentationObject) it.next();
+				if (obj instanceof Link) {
+					Link l = (Link) obj;
+					if (intId == l.getICObjectInstanceID()) {
+						l.setPage(intNewPage);
+					}
+				}
+			}
+		}
 	}
-      }
-    }
 
-    return(parentContainer);
-  }
+	/**
+	 *
+	 */
+	static void changeInstanceId(XMLElement change, Page page) {
+		System.out.println("in XMLReader.changeInstanceId(...)");
+		System.out.println("Page.id = " + page.getID());
+		int from = -1, to = -1;
+		try {
+			from = change.getAttribute(XMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
+			to = change.getAttribute(XMLConstants.IC_INSTANCE_ID_TO).getIntValue();
+		}
+		catch (XMLException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		System.out.println("from = " + from);
+		System.out.println("to = " + to);
 
-  /**
-   *
-   */
-  static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, IBXMLPage ibxml) {
-    List regionAttrList = reg.getAttributes();
-    PresentationObjectContainer newRegionParent = regionParent;
-    if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
-      System.err.println("Table region has no attributes");
-      return;
-    }
-
-    int x = 1;
-    int y = 1;
-    boolean isLocked = true;
-
-    XMLAttribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
-    if (locked != null) {
-      if (locked.getValue().equalsIgnoreCase("true"))
-	isLocked = true;
-      else
-	isLocked = false;
-    }
-
-    XMLAttribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
-
-    XMLAttribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
-    String regionID = null;
-    if (regionIDattr != null) {
-      regionID = regionIDattr.getValue();
-      try {
-	int region_id_int = Integer.parseInt(regionID);
-	XMLAttribute regionAttrX = reg.getAttribute(XMLConstants.X_REGION_STRING);
-	if (regionAttrX != null) {
-	  try {
-	    x = regionAttrX.getIntValue();
-	  }
-	  catch(XMLException e) {
-	    System.err.println("Unable to convert x region attribute to integer");
-	    x = 1;
-	  }
+		if (from != -1 && to != -1) {
+			List children = page.getAllContainedObjectsRecursive();
+			if (children != null) {
+				Iterator it = children.iterator();
+				while (it.hasNext()) {
+					PresentationObject obj = (PresentationObject) it.next();
+					System.out.println("child.id = " + obj.getICObjectInstanceID());
+					if (obj.getICObjectInstanceID() == from) {
+						obj.setICObjectInstanceID(to);
+						ObjectInstanceCacher.changeObjectInstanceID(page, Integer.toString(from), Integer.toString(to), obj);
+						System.out.println("cached id changed");
+						return;
+					}
+				}
+			}
+		}
 	}
-	XMLAttribute regionAttrY = reg.getAttribute(XMLConstants.Y_REGION_STRING);
-	if (regionAttrY != null) {
-	  try {
-	    y = regionAttrY.getIntValue();
-	  }
-	  catch(XMLException e) {
-	    System.err.println("Unable to convert y region attribute to integer");
-	    y = 1;
-	  }
-	}
-      }
-      catch(NumberFormatException e) {
-	int parentID = Integer.parseInt(regionID.substring(0,regionID.indexOf(".")));
-	String theRest = regionID.substring(regionID.indexOf(".")+1,regionID.length());
-	x = Integer.parseInt(theRest.substring(0,theRest.indexOf(".")));
-	y = Integer.parseInt(theRest.substring(theRest.indexOf(".")+1,theRest.length()));
-      }
-    }
-
-    boolean parseChildren = true;
-    boolean emptyParent = false;
-
-    if (regionParent instanceof com.idega.presentation.Page) {
-      if ((regionID == null) || (regionID.equals(""))) {
-	System.err.println("Missing id attribute for region tag");
-	return;
-      }
-      if (((Page)regionParent).getIsExtendingTemplate()) {
-	newRegionParent = (PresentationObjectContainer)regionParent.getContainedObject(regionID);
-
-	if (newRegionParent == null) {
-	  if (label != null) {
-	    newRegionParent = (PresentationObjectContainer)regionParent.getContainedLabeledObject(label.getValue());
-	    if (newRegionParent == null) {
-	      parseChildren = false;
-	    }
-	  }
-	  else
-	    parseChildren = false;
-	}
-	else {
-	  if ((newRegionParent.getBelongsToParent()) && (newRegionParent.isLocked()))
-	    parseChildren = false;
-	  else
-	    emptyParent = true;
-	}
-      }
-    }
-    else if (regionParent instanceof com.idega.presentation.Table) {
-      if (isLocked)
-	((Table)regionParent).lock(x,y);
-      else
-	((Table)regionParent).unlock(x,y);
-
-      if (label != null) {
-	((Table)regionParent).setLabel(label.getValue(),x,y);
-      }
-
-      newRegionParent = ((Table)regionParent).containerAt(x,y);
-    }
-
-    if (parseChildren) {
-      if (reg.hasChildren()) {
-	if (emptyParent)
-	  newRegionParent.empty();
-	List children = reg.getChildren();
-	Iterator childrenIt = children.iterator();
-
-	while (childrenIt.hasNext())
-	  parseElement((XMLElement)childrenIt.next(),newRegionParent, ibxml);
-      }
-    }
-  }
-
-  /**
-   *
-   */
-  static void setProperties(XMLElement properties, PresentationObject object) {
-    String key = null;
-    Vector values = new Vector(1);
-    String vals[] = null;
-
-    List li = properties.getChildren();
-    Iterator it = li.iterator();
-
-    while (it.hasNext()) {
-      XMLElement e = (XMLElement)it.next();
-
-      if (e.getName().equalsIgnoreCase(XMLConstants.NAME_STRING)) {
-	if (key != null) {
-	  vals = new String[values.size()];
-	  for (int i = 0; i < values.size(); i++)
-	    vals[i] = (String)values.elementAt(i);
-	  object.setProperty(key,vals);
-	  values.clear();
-	}
-	key = e.getTextTrim();
-      }
-      else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
-	values.addElement(e.getTextTrim());
-      }
-    }
-
-    if (key != null) {
-      //key is MethodIdentifier
-      if(key.startsWith(XMLConstants.METHOD_STRING)){
-	setReflectionProperty(object,key,values);
-      }
-      else{
-	vals = new String[values.size()];
-	for (int i = 0; i < values.size(); i++)
-	  vals[i] = (String)values.elementAt(i);
-	object.setProperty(key,vals);
-      }
-    }
-  }
-
-  /**
-   *
-   */
-  static void setReflectionProperty(PresentationObject instance,String methodIdentifier,Vector stringValues){
-    ComponentPropertyHandler.getInstance().setReflectionProperty(instance,methodIdentifier,stringValues);
-  }
-
-  /**
-   *
-   */
-  static void parseElement(XMLElement el, PresentationObjectContainer parent, IBXMLPage ibxml) {
-    PresentationObject inst = null;
-    List at = el.getAttributes();
-    boolean isLocked = true;
-
-    if ((at == null) || (at.isEmpty())) {
-      System.err.println("No attributes specified");
-      return;
-    }
-    String className = null;
-    String id = null;
-    String ic_object_id = null;
-    Iterator it = at.iterator();
-    while (it.hasNext()) {
-      XMLAttribute attr = (XMLAttribute)it.next();
-      if (attr.getName().equalsIgnoreCase(XMLConstants.CLASS_STRING)) {
-	className = attr.getValue();
-      }
-      else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
-	id = attr.getValue();
-      }
-      else if (attr.getName().equalsIgnoreCase(XMLConstants.IC_OBJECT_ID_STRING)) {
-	ic_object_id = attr.getValue();
-      }
-      else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
-	if (attr.getValue().equals("false"))
-	  isLocked = false;
-	else
-	  isLocked = true;
-      }
-    }
-
-    try {
-      if (id == null) {
-	try {
-	  inst = (PresentationObject)Class.forName(className).newInstance();
-	}
-	catch(Exception e){
-	  e.printStackTrace(System.err);
-	  throw new Exception("Invalid Class tag for module");
-	}
-      }
-      else {
-	ICObjectInstance ico = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(id));
-	inst = ico.getNewInstance();
-	inst.setICObjectInstance(ico);
-	if (ic_object_id == null) {
-	  inst.setICObject(ico.getObject());
-	}
-	else {
-	  inst.setICObjectID(Integer.parseInt(ic_object_id));
-	}
-	// added by gummi@idega.is // - cache ObjectInstance
-	if(!"0".equals(id)){
-	  ObjectInstanceCacher.setObjectInstance(ibxml,id,inst);
-	}
-      }
-
-      if (inst instanceof PresentationObjectContainer) {
-	if (isLocked)
-	  ((PresentationObjectContainer)inst).lock();
-	else
-	  ((PresentationObjectContainer)inst).unlock();
-      }
-
-      if (inst instanceof com.idega.presentation.Table) {
-	com.idega.presentation.Table table = (com.idega.presentation.Table)inst;
-	parent.add(table);
-
-	if (el.hasChildren()) {
-	  List children = el.getChildren();
-	  Iterator itr = children.iterator();
-
-	  while (itr.hasNext()) {
-	    XMLElement child = (XMLElement)itr.next();
-	    if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
-	      setProperties(child,table);
-	    }
-	    else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-	      parseElement(child,table,ibxml);
-	    }
-	    else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-	      parseRegion(child,table,ibxml);
-	    }
-	    else
-	      System.err.println("Unknown tag in xml description file : " + child.getName());
-	  }
-	}
-      }
-      else {
-	try {
-	  parent.add(inst);
-	}
-	catch (Exception e) {
-	  e.printStackTrace(System.err);
-	  if ( parent != null )
-	    System.err.println("ParentID: "+parent.getID());
-	  if ( inst != null )
-	    System.err.println("InstanceID: "+inst.getICObjectInstanceID());
-	}
-	if (el.hasChildren()) {
-	  List children = el.getChildren();
-	  Iterator itr = children.iterator();
-
-	  while (itr.hasNext()) {
-	    XMLElement child = (XMLElement)itr.next();
-	    if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
-	      setProperties(child,inst);
-	    }
-	    else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-	      parseElement(child,(PresentationObjectContainer)inst,ibxml);
-	    }
-	    else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-	      parseRegion(child,(PresentationObjectContainer)inst,ibxml);
-	    }
-	    else {
-	      System.err.println("Unknown tag in xml description file : " + child.getName());
-	    }
-	  }
-	}
-      }
-    }
-    catch(ClassNotFoundException e) {
-      System.err.println("The specified class can not be found: "+className);
-      e.printStackTrace();
-    }
-    catch(java.lang.IllegalAccessException e2) {
-      System.err.println("Illegal access");
-      e2.printStackTrace();
-    }
-    catch(java.lang.InstantiationException e3) {
-      System.err.println("Unable to instanciate class: " +className);
-      e3.printStackTrace();
-    }
-    catch(Exception e4) {
-      System.err.println("Exception");
-      e4.printStackTrace();
-    }
-  }
-
-  /**
-   *
-   */
-  static void changeLinkProperty(XMLElement change, PresentationObjectContainer parent) {
-    List regionAttrList = change.getAttributes();
-    if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
-      System.err.println("Table region has no attributes");
-      return;
-    }
-
-    XMLAttribute id = change.getAttribute(XMLConstants.LINK_ID_STRING);
-    XMLAttribute newPageLink = change.getAttribute(XMLConstants.LINK_TO);
-
-    int intId = -1;
-    int intNewPage = -1;
-    try {
-      intId = id.getIntValue();
-      intNewPage = newPageLink.getIntValue();
-    }
-    catch(com.idega.xml.XMLException e) {
-      e.printStackTrace();
-    }
-    List li = parent.getAllContainedObjectsRecursive();
-    if(li != null){
-      Iterator it = li.iterator();
-      while (it.hasNext()) {
-	PresentationObject obj = (PresentationObject)it.next();
-	if (obj instanceof Link) {
-	  Link l = (Link)obj;
-	  if (intId == l.getICObjectInstanceID()) {
-	    l.setPage(intNewPage);
-	  }
-	}
-      }
-    }
-  }
-
-  /**
-   *
-   */
-  static void changeInstanceId(XMLElement change, Page page) {
-    //System.out.println("in XMLReader.changeInstanceId(...)");
-    int from = -1, to = -1;
-    try {
-      from = change.getAttribute(XMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
-      to = change.getAttribute(XMLConstants.IC_INSTANCE_ID_TO).getIntValue();
-    }
-    catch(XMLException e) {
-      return;
-    }
-
-    if (from != -1 && to != -1) {
-      List children = page.getAllContainedObjectsRecursive();
-      if (children != null) {
-	Iterator it = children.iterator();
-	while(it.hasNext()) {
-	  PresentationObject obj = (PresentationObject)it.next();
-	  if (obj.getICObjectInstanceID() == from) {
-	    obj.setICObjectInstanceID(to);
-	    ObjectInstanceCacher.changeObjectInstanceID(page,Integer.toString(from),Integer.toString(to),obj);
-	    //System.out.println("chached id changed");
-	    return;
-	  }
-	}
-      }
-    }
-  }
 }
