@@ -210,9 +210,9 @@ public class IBPermissionWindow extends IBAdminWindow{
       frameTable.add(permissionKeyText,1,1);
       frameTable.add(permissionTypes,1,1);
       frameTable.add(permissionBox,1,2);
-      frameTable.add(cancel,1,3);
-      frameTable.add(Text.getNonBrakingSpace(),1,3);
       frameTable.add(submit,1,3);
+      frameTable.add(Text.getNonBrakingSpace(),1,3);
+      frameTable.add(cancel,1,3);
       frameTable.add(new HiddenInput(lastPermissionKeyParameterString, permissionType ));
 
     }
@@ -243,13 +243,12 @@ public class IBPermissionWindow extends IBAdminWindow{
 	else {
 	  this.add("ERROR: nothing to save");
 	}
-	this.setParentToReload();
+	//this.setParentToReload();
       }
       else if(cancel){
 	this.dispose(iwc);
 	this.close();
-      }
-      else {
+      } else {
 	String permissionType = iwc.getParameter(permissionKeyParameterString);
 	if(permissionType != null){
 	  collect(iwc);
