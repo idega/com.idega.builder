@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.9 2002/03/06 23:58:45 eiki Exp $
+ * $Id: IBPageHelper.java,v 1.10 2002/03/26 14:32:17 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import java.util.Iterator;
 import com.idega.presentation.IWContext;
 import java.util.Map;
 import com.idega.core.data.ICMimeType;
+import com.idega.idegaweb.IWUserContext;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -53,6 +54,28 @@ public class IBPageHelper {
    */
 
   public static int createNewPage(String parentId, String name, String type, String templateId, Map tree) {
+    return createNewPage(parentId,name,type,templateId,tree,null);
+  }
+
+
+
+
+  /**
+   * Creates a new IBPage. Sets its name and type and stores it to the database.
+   * If the parentId and the tree parameter are valid it also stores the page in
+   * the cached IWContext tree.
+   *
+   * @param parentId The id of the parent of this page
+   * @param name The name this page is to be given
+   * @param type The type of the page, ie. PAGE, TEMPLATE, DRAFT, ...
+   * @param templateId The id of the page this page is extending, if any
+   * @param tree A map of PageTreeNode objects representing the whole page tree
+   * @param creatorContext the context of the User that created the page
+   *
+   * @return The id of the new IBPage
+   */
+
+  public static int createNewPage(String parentId, String name, String type, String templateId, Map tree,IWUserContext creatorContext) {
 
     IBPage ibPage = new IBPage();
 
@@ -92,6 +115,9 @@ public class IBPageHelper {
 
     try {
       ibPage.insert();
+      if(creatorContext!=null){
+        ibPage.setOwner(creatorContext);
+      }
       IBPage ibPageParent = new IBPage(Integer.parseInt(parentId));
       ibPageParent.addChild(ibPage);
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.34 2002/03/21 12:42:52 tryggvil Exp $
+ * $Id: IBPage.java,v 1.35 2002/03/26 14:30:01 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
 import com.idega.util.idegaTimestamp;
 //import com.idega.presentation.IWContext;
-
+import com.idega.idegaweb.IWUserContext;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -496,4 +496,14 @@ public class IBPage extends TreeableEntity {
   public boolean isLeaf(){
     return true;
   }
+
+  public void setOwner(IWUserContext iwuc){
+    try{
+      iwuc.getAccessController().setAsOwner(this,iwuc);
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
+  }
+
 }
