@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.19 2001/10/10 10:37:58 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.20 2001/10/12 18:10:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,6 +44,8 @@ public class IBApplication extends IWApplication {
   private final static String ACTION_TEMPLATES = "templates";
   private final static String ACTION_SETTINGS = "settings";
   private final static String ACTION_HELP = "help";
+
+  private static final String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
 
   private final static String CONTENT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
 
@@ -111,10 +113,15 @@ public class IBApplication extends IWApplication {
      *
      */
     public IBBanner() {
+    }
+
+    public void main(IWContext iwc){
       setBackgroundColor("#0E2456");
       Table table = new Table(1,1);
       add(table);
-      table.add(new Image("/common/pics/arachnea/header.gif","idegaWeb Builder",90,28),1,1);
+      Image image;
+      image = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("header.gif");
+      //table.add(new Image("/common/pics/arachnea/header.gif","idegaWeb Builder",90,28),1,1);
       table.setWidth("100%");
       table.setHeight("100%");
       table.setCellpadding(0);
@@ -132,15 +139,16 @@ public class IBApplication extends IWApplication {
      *
      */
     public IBMenu() {
-      setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-      setBackgroundImage("/common/pics/arachnea/toolbar_tiler.gif");
-      setAllMargins(0);
     }
 
-    /**
-     *
-     */
-    public void main(IWContext iwc) {
+    public void main(IWContext iwc){
+      setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+      //setBackgroundImage("/common/pics/arachnea/toolbar_tiler.gif");
+      IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
+      Image image = iwb.getImage("toolbar_tiler.gif");
+      setBackgroundImage(image);
+      setAllMargins(0);
+
       String builderControlParameter = "builder_controlparameter";
 
       Table controlTable = new Table(9,1);
@@ -151,33 +159,31 @@ public class IBApplication extends IWApplication {
       controlTable.setCellspacing(0);
       controlTable.setAlignment("left");
 
-      Image separator = new Image("/common/pics/arachnea/toolbar_separator.gif");
+      Image separator = iwb.getImage("toolbar_separator.gif");
       separator.setHorizontalSpacing(5);
 
       Link text1 = new Link("Builder");
       text1.setTarget("sidebar");
-      text1.setURL("sidebar.jsp");
       text1.addParameter(builderControlParameter,ACTION_BUILDER);
       text1.setFontSize(1);
       text1.setFontColor("black");
 
       Link text2 = new Link("Templates");
       text2.setTarget("sidebar");
-      text2.setURL("sidebar.jsp");
+
       text2.addParameter(builderControlParameter,ACTION_TEMPLATES);
       text2.setFontSize(1);
       text2.setFontColor("black");
 
       Link text3 = new Link("Settings");
       text3.setTarget("sidebar");
-      text3.setURL("sidebar.jsp");
       text3.addParameter(builderControlParameter,ACTION_SETTINGS);
       text3.setFontSize(1);
       text3.setFontColor("black");
 
       Link text5 = new Link("Help");
       text5.setTarget("sidebar");
-      text5.setURL("sidebar.jsp");
+
       text5.addParameter(builderControlParameter,ACTION_HELP);
       text5.setFontSize(1);
       text5.setFontColor("black");
@@ -202,6 +208,9 @@ public class IBApplication extends IWApplication {
      *
      */
     public IBLeftMenu() {
+    }
+
+    public void main(IWContext iwc){
       super.setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       setAlignment("left");
       setVerticalAlignment("top");
@@ -211,16 +220,12 @@ public class IBApplication extends IWApplication {
       idegawebBuilder.setFontSize(2);
       add(idegawebBuilder);
       addBreak();
-      Text build = new Text("Build 216a");
+      Text build = new Text(iwc.getApplication().getBuildNumber());
       build.setFontColor("blue");
       build.setFontSize(1);
       add(build);
-    }
 
-    /**
-     *
-     */
-    public void main(IWContext iwc) {
+
       int i_page_id = 1;
       int i_template_id = 2;
       try {
@@ -274,11 +279,12 @@ public class IBApplication extends IWApplication {
      */
     public void main(IWContext iwc) {
       super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-
+      IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
 
       setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-      setBackgroundImage("/common/pics/arachnea/toolbar_tiler.gif");
+      Image background = iwb.getImage("toolbar_tiler.gif");
+      setBackgroundImage(background);
       setAllMargins(0);
 
       String action = iwc.getParameter(controlParameter);
@@ -287,28 +293,28 @@ public class IBApplication extends IWApplication {
       }
 
       if (action.equals(ACTION_BUILDER)) {
-        Image separator = new Image("/common/pics/arachnea/toolbar_separator.gif");
+        Image separator = iwb.getImage("toolbar_separator.gif");
 
-        Image tool_new = new Image("/common/pics/arachnea/toolbar_new_1.gif","New Page");
+        Image tool_new = iwb.getImage("toolbar_new_1.gif","New Page");
         Link link_new = new Link(tool_new);
         link_new.setWindowToOpen(IBCreatePageWindow.class);
         add(link_new);
 
-        Image tool_open = new Image("/common/pics/arachnea/toolbar_open_1.gif","Open Page");
+        Image tool_open = iwb.getImage("toolbar_open_1.gif","Open Page");
         Link link_open = new Link(tool_open);
         add(link_open);
 
-        Image tool_save = new Image("/common/pics/arachnea/toolbar_save_1.gif","Save Page");
+        Image tool_save = iwb.getImage("toolbar_save_1.gif","Save Page");
         Link link_save = new Link(tool_save);
         link_save.setWindowToOpen(IBSavePageWindow.class);
         add(link_save);
 
-        Image tool_save_as = new Image("/common/pics/arachnea/toolbar_save_1.gif","Save As Page");
+        Image tool_save_as = iwb.getImage("toolbar_save_1.gif","Save As Page");
         Link link_save_as = new Link(tool_save_as);
         link_save_as.setWindowToOpen(IBSaveAsPageWindow.class);
         add(link_save_as);
 
-        Image tool_delete = new Image("/common/pics/arachnea/toolbar_delete_1.gif","Delete Page");
+        Image tool_delete = iwb.getImage("toolbar_delete_1.gif","Delete Page");
         Link link_delete = new Link(tool_delete);
         link_delete.setWindowToOpen(IBDeletePageWindow.class);
         add(link_delete);
@@ -321,27 +327,27 @@ public class IBApplication extends IWApplication {
 
         add(separator);
 
-        Image tool_1 = new Image("/common/pics/arachnea/toolbar_back_1.gif","Go back");
+        Image tool_1 = iwb.getImage("toolbar_back_1.gif","Go back");
         Link link_1 = new Link(tool_1);
         link_1.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].history.go(-1)");
         add(link_1);
 
-        Image tool_2 = new Image("/common/pics/arachnea/toolbar_forward_1.gif","Go forward");
+        Image tool_2 = iwb.getImage("toolbar_forward_1.gif","Go forward");
         Link link_2 = new Link(tool_2);
         link_2.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].history.go(1)");
         add(link_2);
 
-        Image tool_3 = new Image("/common/pics/arachnea/toolbar_stop_1.gif","Stop loading");
+        Image tool_3 = iwb.getImage("toolbar_stop_1.gif","Stop loading");
         Link link_3 = new Link(tool_3);
         link_3.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].stop()");
         add(link_3);
 
-        Image tool_4 = new Image("/common/pics/arachnea/toolbar_reload_1.gif","Reload page");
+        Image tool_4 = iwb.getImage("toolbar_reload_1.gif","Reload page");
         Link link_4 = new Link(tool_4);
         link_4.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
         add(link_4);
 
-        Image tool_5 = new Image("/common/pics/arachnea/toolbar_home_1.gif","Go to startpage");
+        Image tool_5 = iwb.getImage("toolbar_home_1.gif","Go to startpage");
         Link link_5 = new Link(tool_5);
         link_5.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_URL+"'");
 
@@ -353,7 +359,8 @@ public class IBApplication extends IWApplication {
      *
      */
     public PresentationObject getPropertiesIcon(IWContext iwc) {
-      Image image = new Image("/common/pics/arachnea/toolbar_properties_1.gif","Page Properties");
+      IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
+      Image image = iwb.getImage("toolbar_properties_1.gif","Page Properties");
       Link link = new Link(image);
       link.setWindowToOpen(IBPropertiesWindow.class);
       link.addParameter(BuilderLogic.IB_PAGE_PARAMETER,BuilderLogic.getInstance().getCurrentIBPage(iwc));
@@ -365,9 +372,8 @@ public class IBApplication extends IWApplication {
     }
 
     public PresentationObject getPermissionIcon(IWContext iwc){
-      //IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-      //Image image = bundle.getImage("properties.gif","Page properties");
-      Image image = new Image("/common/pics/arachnea/toolbar_permissions_1.gif","Page Permissions");
+      IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
+      Image image = iwb.getImage("toolbar_permissions_1.gif","Page Permissions");
       Link link = new Link(image);
       link.setWindowToOpen(IBPermissionWindow.class);
       link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,BuilderLogic.getInstance().getCurrentIBPage(iwc));
@@ -393,12 +399,14 @@ public class IBApplication extends IWApplication {
      *
      */
     public void main(IWContext iwc) {
+      IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       IWBundle _iwrb = getBundle(iwc);
       String controlParameter = "builder_controlparameter";
 
 
       setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-      setBackgroundImage("/common/pics/arachnea/status_tiler.gif");
+      Image background = iwb.getImage("status_tiler.gif");
+      setBackgroundImage(background);
       setAllMargins(0);
 
       Table toolbarTable = new Table(2,1);
@@ -421,7 +429,8 @@ public class IBApplication extends IWApplication {
         text1.setFontSize(1);
         text1.setFontColor("Black");
 
-        Table toolTable = new Table(3,1);
+        Table toolTable = new Table(10,1);
+        toolTable.setWidth("100%");
         toolTable.setCellpadding(0);
         toolTable.setCellspacing(0);
 
@@ -438,7 +447,7 @@ public class IBApplication extends IWApplication {
         //Link sourceLink = new Link(_iwrb.getImage("editorwindow/source.gif"));
         Link sourceLink = new Link("Source");
         sourceLink.setWindowToOpen(IBSourceView.class);
-        toolTable.add(sourceLink,3,1);
+        toolTable.add(sourceLink,10,1);
 
 
 
