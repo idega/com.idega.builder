@@ -100,7 +100,7 @@ public class XMLReader {
                 if (at.getName().equalsIgnoreCase("template")) {
                     hasTemplate = true;
                     parentContainer = PageCacher.getPage(at.getValue());
-                    ((Page)parentContainer).setTemplate(true);
+                    ((Page)parentContainer).setIsTemplate();
                     //parseXML(at.getValue(),verifyPage,parent);
                 }
                 else
@@ -204,7 +204,7 @@ public class XMLReader {
                 System.err.println("Missing id attribute for region tag");
                 return;
             }
-            if(((Page)regionParent).isTemplate()){
+            if(((Page)regionParent).getIsTemplate()){
                 newRegionParent = (ModuleObjectContainer)regionParent.getContainedObject(regionID);
             }
         }
