@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.18 2001/09/13 19:34:28 tryggvil Exp $
+ * $Id: IBPage.java,v 1.19 2001/09/15 23:54:20 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -60,7 +60,6 @@ public class IBPage extends TreeableEntity {
                 addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
                 addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
                 addAttribute(getColumnType(),"Type",true,true,String.class,1);
-
 	}
 
   /**
