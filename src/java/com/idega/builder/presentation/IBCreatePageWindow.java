@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.36 2002/10/10 13:37:10 laddi Exp $
+ * $Id: IBCreatePageWindow.java,v 1.37 2002/10/15 10:50:12 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -132,13 +133,12 @@ public class IBCreatePageWindow extends IBPageWindow {
     }
 
     SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"submit");
-    SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),"close");
+    CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("close","Close"));
     tab.add(close,2,6);
     tab.add(Text.getNonBrakingSpace(),2,6);
     tab.add(button,2,6);
 
     boolean submit = iwc.isParameterSet("submit");
-    boolean quit = iwc.isParameterSet("close");
 
     if (submit) {
       String parentPageId = iwc.getParameter(PAGE_CHOOSER_NAME);
@@ -168,9 +168,6 @@ public class IBCreatePageWindow extends IBPageWindow {
 
       iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
       setOnUnLoad("window.opener.parent.parent.location.reload()");
-    }
-    else if (quit) {
-      close();
     }
     else {
       String name = iwc.getParameter(PAGE_NAME_PARAMETER);
