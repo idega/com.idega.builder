@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.105 2002/02/27 00:04:23 aron Exp $
+ * $Id: BuilderLogic.java,v 1.106 2002/02/27 18:45:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.RaisedTable;
 import com.idega.presentation.IWContext;
