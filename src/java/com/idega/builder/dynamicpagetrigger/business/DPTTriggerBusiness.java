@@ -20,6 +20,8 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.GenericGroup;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.util.idegaTimestamp;
+import com.idega.builder.business.IBPageHelper;
+import com.idega.builder.business.PageTreeNode;
 
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
@@ -178,7 +180,10 @@ public class DPTTriggerBusiness {
   private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name, Map createdPages) throws SQLException{
     BuilderLogic instance = BuilderLogic.getInstance();
 
-    IBPage page = new IBPage();
+    Map tree = PageTreeNode.getTree(iwc);
+    IBPage page = IBPageHelper.createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree);
+
+/*    IBPage page = new IBPage();
     if (name == null){
       name = "Untitled";
     }
@@ -194,16 +199,17 @@ public class DPTTriggerBusiness {
     catch(SQLException e) {
       return(-1);
     }
-
+*/
     copyPagePermissions(Integer.toString(dptTemplateId), Integer.toString(page.getID()));
 
 
     createdPages.put(Integer.toString(dptTemplateId),Integer.toString(page.getID()));
-
+/*
     instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
     IBXMLPage ibxmlPage =  instance.getIBXMLPage(dptTemplateId);
     ibxmlPage.addUsingTemplate(Integer.toString(page.getID()));
 
+*/
 
     IBXMLPage currentXMLPage = instance.getIBXMLPage(page.getID());
     Page current = currentXMLPage.getPopulatedPage();
@@ -356,7 +362,7 @@ public class DPTTriggerBusiness {
   }
 
 
-  public boolean invalidatePageLink(PageLink l, int userId){
+  public boolean invalidatePageLink(IWContext iwc, PageLink l, int userId){
     try {
       l.setDeleted(true);
       l.setDeletedBy(userId);
@@ -364,7 +370,7 @@ public class DPTTriggerBusiness {
       l.update();
 
 
-      //com.idega.builder.business.IBPageHelper.deletePages()
+      com.idega.builder.business.IBPageHelper.deletePage(Integer.toString(l.getPageId()),true,PageTreeNode.getTree(iwc),userId);
 
       return true;
     }

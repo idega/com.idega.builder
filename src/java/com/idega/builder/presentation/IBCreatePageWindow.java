@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.22 2002/02/12 12:46:21 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.23 2002/02/12 13:36:59 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -108,9 +108,9 @@ public class IBCreatePageWindow extends IWAdminWindow {
        * @todo Breyta þessu þannig að createNewPage setji tréð inn í mappið...
        */
         Map tree = PageTreeNode.getTree(iwc);
-        int id = IBPageHelper.createNewPage(parentPageId,name,type,templateId,tree);
-        if (id != -1) {
-          iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
+        IBPage p = IBPageHelper.createNewPage(parentPageId,name,type,templateId,tree);
+        if (p != null && p.getID() != -1) {
+          iwc.setSessionAttribute("ib_page_id",Integer.toString(p.getID()));
         }
 
         setParentToReload();

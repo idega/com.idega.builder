@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.4 2002/02/12 13:18:35 palli Exp $
+ * $Id: IBPageHelper.java,v 1.5 2002/02/12 13:36:59 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,9 +45,9 @@ public class IBPageHelper {
    * @param templateId The id of the page this page is extending, if any
    * @param tree A map of PageTreeNode objects representing the whole page tree
    *
-   * @return The id of the new page
+   * @return The new IBPage
    */
-  public static int createNewPage(String parentId, String name, String type, String templateId, Map tree) {
+  public static IBPage createNewPage(String parentId, String name, String type, String templateId, Map tree) {
     IBPage ibPage = new IBPage();
     if (name == null)
       name = "Untitled";
@@ -88,7 +88,8 @@ public class IBPageHelper {
       ibPageParent.addChild(ibPage);
     }
     catch(SQLException e) {
-      return(-1);
+      //return(-1);
+      return (null);
     }
 
     if (tid != -1) {
@@ -101,7 +102,8 @@ public class IBPageHelper {
           PresentationObject obj = (PresentationObject)it.next();
           boolean ok = changeInstanceId(obj,currentXMLPage);
           if (!ok)
-            return(-1);
+            //return(-1);
+            return (null);
         }
       }
     }
@@ -126,7 +128,8 @@ public class IBPageHelper {
       }
     }
 
-    return(id);
+    //return(id);
+    return (ibPage);
   }
 
   /**
