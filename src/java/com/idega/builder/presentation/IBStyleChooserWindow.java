@@ -40,7 +40,6 @@ private String[] _styles = StyleConstants.ALL_STYLES;
     setScrollbar(true);
     setWidth(370);
     setHeight(350);
-    this.setStatus(true);
   }
 
   public void displaySelection(IWContext iwc) {
@@ -241,7 +240,10 @@ private String[] _styles = StyleConstants.ALL_STYLES;
       lineHeightText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
     leftTable.add(lineHeightText,4,row);
     leftTable.add(lineHeight,5,row);
-    row++;
+
+    formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("preview","Preview")),1,2);
+    formTable.add(Text.getNonBrakingSpace(),1,2);
+    formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("submit","Submit"),"submit"),1,2);
 
     Text previewText = new Text("Preview:");
       previewText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -253,9 +255,9 @@ private String[] _styles = StyleConstants.ALL_STYLES;
       innerTable.setColor("#FFFFFF");
       innerTable.setCellpadding(4);
     previewTable.add(innerTable,2,2);
-    formTable.add(previewText,1,2);
-    formTable.add(Text.getBreak(),1,2);
-    formTable.add(previewTable,1,2);
+    formTable.add(previewText,1,3);
+    formTable.add(Text.getBreak(),1,3);
+    formTable.add(previewTable,1,3);
 
     Paragraph paragraph = new Paragraph();
     Text text = new Text(TextFormatter.getLoremIpsumString(iwc,256));
@@ -263,16 +265,11 @@ private String[] _styles = StyleConstants.ALL_STYLES;
       paragraph.setStyleAttribute(_styleString);
     paragraph.add(text);
     innerTable.add(paragraph,1,1);
-    row++;
 
     form.maintainParameter(SCRIPT_PREFIX_PARAMETER);
     form.maintainParameter(SCRIPT_SUFFIX_PARAMETER);
     form.maintainParameter(DISPLAYSTRING_PARAMETER_NAME);
     form.maintainParameter(VALUE_PARAMETER_NAME);
-
-    formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("preview","Preview")),1,3);
-    formTable.add(Text.getNonBrakingSpace(),1,3);
-    formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("submit","Submit"),"submit"),1,3);
 
     form.add(formTable);
     add(form);
