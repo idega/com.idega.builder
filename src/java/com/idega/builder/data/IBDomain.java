@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomain.java,v 1.9 2001/11/01 17:21:07 palli Exp $
+ * $Id: IBDomain.java,v 1.10 2001/11/02 11:35:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -87,14 +87,14 @@ public class IBDomain extends GenericEntity {
     page.setName("Web root");
     page.setType(IBPage.PAGE);
     page.insert();
-    instance.unlockRegion(Integer.toString(page.getID()),"-1");
+    instance.unlockRegion(Integer.toString(page.getID()),"-1",null);
 
     IBPage page2 = new IBPage();
     page2.setName("Default Template");
     page2.setType(IBPage.TEMPLATE);
     page2.insert();
 
-    instance.unlockRegion(Integer.toString(page2.getID()),"-1");
+    instance.unlockRegion(Integer.toString(page2.getID()),"-1",null);
 
     page.setTemplateId(page2.getID());
     page.update();

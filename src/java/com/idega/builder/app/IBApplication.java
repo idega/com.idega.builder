@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.35 2001/11/01 22:31:42 laddi Exp $
+ * $Id: IBApplication.java,v 1.36 2001/11/02 11:35:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -635,7 +635,8 @@ public class IBApplication extends IWApplication {
         toolTable.add(sourceLink,3,1);
 
 
-        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
+//        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
+        String name = "Drasl";//Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
         Text pageName = new Text(name);
           pageName.setFontStyle("font-face: Geneva, Helvetica, sans-serif; font-weight: bold; font-size: 8pt;");
         toolbarTable.add(tilerCell,1,1);

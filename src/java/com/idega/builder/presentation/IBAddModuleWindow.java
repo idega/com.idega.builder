@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.10 2001/10/21 15:40:32 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.11 2001/11/02 11:35:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,11 +93,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
     }
 
     String label = iwc.getParameter(IB_LABEL_PARAMETER);
-System.out.println("label = " + label);
-    if (label == null) {
-      System.out.println("label==null");
-    }
-    else {
+    if (label != null) {
       form.add(new Parameter(IB_LABEL_PARAMETER,label));
     }
 

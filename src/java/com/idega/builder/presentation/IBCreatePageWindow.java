@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.16 2001/11/02 10:52:19 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.17 2001/11/02 11:35:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -153,7 +153,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
           xml.addUsingTemplate(Integer.toString(ibPage.getID()));
           Page templateParent = xml.getPopulatedPage();
           if (!templateParent.isLocked()) {
-            BuilderLogic.getInstance().unlockRegion(Integer.toString(ibPage.getID()),"-1");
+            BuilderLogic.getInstance().unlockRegion(Integer.toString(ibPage.getID()),"-1",null);
           }
         }
 

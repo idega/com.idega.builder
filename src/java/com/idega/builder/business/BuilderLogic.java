@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.73 2001/11/02 02:15:43 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.74 2001/11/02 11:35:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -181,7 +181,7 @@ public class BuilderLogic {
       page.add(getPasteIcon(Integer.toString(-1),iwc));
       if (page.getIsTemplate())
         if (page.isLocked())
-          page.add(getLockedIcon(Integer.toString(-1),iwc));
+          page.add(getLockedIcon(Integer.toString(-1),iwc,null));
         else
           page.add(getUnlockedIcon(Integer.toString(-1),iwc));
       //page.add(layer);
@@ -332,9 +332,9 @@ public class BuilderLogic {
                 tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                 tab.add(getPasteIcon(newParentKey,iwc),x,y);
                 if (curr.getIsTemplate()) {
-                  tab.add(getLabelIcon(newParentKey,iwc),x,y);
+                  tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                   if (tab.isLocked(x,y))
-                    tab.add(getLockedIcon(newParentKey,iwc),x,y);
+                    tab.add(getLockedIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                   else
                     tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
                 }
@@ -344,9 +344,9 @@ public class BuilderLogic {
               tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
               tab.add(getPasteIcon(newParentKey,iwc),x,y);
               if (curr.getIsTemplate()) {
-                tab.add(getLabelIcon(newParentKey,iwc),x,y);
+                tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                 if (tab.isLocked(x,y))
-                  tab.add(getLockedIcon(newParentKey,iwc),x,y);
+                  tab.add(getLockedIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                 else
                   tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
               }
@@ -387,9 +387,9 @@ public class BuilderLogic {
               ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
               ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (curr.getIsTemplate()) {
-                ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+                ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
                 if (!((PresentationObjectContainer)obj).isLocked())
-                  ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+                  ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
                 else
                   ((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               }
@@ -399,9 +399,9 @@ public class BuilderLogic {
             ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
             ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             if (curr.getIsTemplate()) {
-              ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+              ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
               if (!((PresentationObjectContainer)obj).isLocked())
-                ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+                ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
               else
                 ((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             }
@@ -465,7 +465,7 @@ public class BuilderLogic {
   /**
    *
    */
-  public PresentationObject getLockedIcon(String parentKey, IWContext iwc) {
+  public PresentationObject getLockedIcon(String parentKey, IWContext iwc, String label) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image lockImage = bundle.getImage("las_close.gif","Unlock region");
     Link link = new Link(lockImage);
@@ -473,6 +473,7 @@ public class BuilderLogic {
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_UNLOCK_REGION);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
+    link.addParameter(IB_LABEL_PARAMETER,label);
 
     return(link);
   }
@@ -827,7 +828,7 @@ public class BuilderLogic {
     return(false);
   }
 
-  public boolean unlockRegion(String pageKey, String parentObjectInstanceID) {
+  public boolean unlockRegion(String pageKey, String parentObjectInstanceID, String label) {
     IBXMLPage xml = getIBXMLPage(pageKey);
     if (XMLWriter.unlockRegion(xml,parentObjectInstanceID)) {
       xml.update();
@@ -839,11 +840,13 @@ public class BuilderLogic {
             Iterator i = extend.iterator();
             while (i.hasNext()) {
               String child = (String)i.next();
-              unlockRegion(child,parentObjectInstanceID);
+              unlockRegion(child,parentObjectInstanceID,null);
             }
           }
         }
       }
+
+      labelRegion(pageKey,parentObjectInstanceID,label);
 
       return true;
     }
@@ -936,7 +939,7 @@ public class BuilderLogic {
   /**
    *
    */
-  public PresentationObject getLabelIcon(String parentKey, IWContext iwc) {
+  public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image labelImage = bundle.getImage("label.gif","Put label on region");
     Link link = new Link(labelImage);
@@ -944,6 +947,7 @@ public class BuilderLogic {
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_LABEL);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
+    link.addParameter(IB_LABEL_PARAMETER,label);
 
     return(link);
   }
@@ -988,17 +992,6 @@ public class BuilderLogic {
     IBXMLPage xml = getIBXMLPage(pageKey);
     if (XMLWriter.labelRegion(xml,parentObjectInstanceID,label)) {
       xml.update();
-
-/*      if (parentObjectInstanceID.equals("-1")) {
-        if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
-          List extend = xml.getUsingTemplate();
-          if (extend != null) {
-            Iterator i = extend.iterator();
-            while (i.hasNext())
-              unlockRegion((String)i.next(),parentObjectInstanceID);
-          }
-        }
-      }*/
 
       return true;
     }

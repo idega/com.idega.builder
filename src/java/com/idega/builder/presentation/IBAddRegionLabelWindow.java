@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddRegionLabelWindow.java,v 1.1 2001/10/18 11:32:14 palli Exp $
+ * $Id: IBAddRegionLabelWindow.java,v 1.2 2001/11/02 11:35:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,6 +40,7 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
   private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
   private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String ACTION_LABEL = BuilderLogic.ACTION_LABEL;
+  private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
 
   private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
 
@@ -57,6 +58,7 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
     String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
     String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
     String action = iwc.getParameter(IB_CONTROL_PARAMETER);
+    String label = iwc.getParameter(IB_LABEL_PARAMETER);
 
     if (action.equalsIgnoreCase(ACTION_LABEL)) {
       IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
@@ -73,17 +75,16 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
       tab.add(iwrb.getLocalizedString("Label","Label"),1,1);
       tab.add(inputName,2,1);
 
+      if (label != null)
+        inputName.setValue(label);
+
       SubmitButton button = new SubmitButton("subbi",iwrb.getLocalizedString("save","Save"));
       tab.add(button,2,2);
 
       String submit = iwc.getParameter("subbi");
 
       if (submit != null) {
-        String label = iwc.getParameter(LABEL_PARAMETER);
-        System.out.println("Adding lagbel : ");
-        System.out.println("         page : " + ib_page_id);
-        System.out.println("       parent : " + ib_parent_id);
-        System.out.println("        label : " + label);
+        label = iwc.getParameter(LABEL_PARAMETER);
         BuilderLogic.getInstance().labelRegion(ib_page_id,ib_parent_id,label);
 
         setParentToReload();
