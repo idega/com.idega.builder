@@ -163,9 +163,9 @@ public class IBPropertyHandler{
       else if(parameterClass.equals(com.idega.builder.data.IBPage.class)){
           obj = new com.idega.builder.presentation.IBPageChooser(name);
       }
-      else if(parameterClass.equals(com.idega.builder.data.IBTemplatePage.class)){
+      /*else if(parameterClass.equals(com.idega.builder.data.IBTemplatePage.class)){
           obj = new com.idega.builder.presentation.IBTemplateChooser(name);
-      }
+      }*/
       else{
         obj = new TextInput(name);
         if(stringValue!=null){

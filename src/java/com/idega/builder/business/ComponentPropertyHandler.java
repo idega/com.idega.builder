@@ -131,7 +131,7 @@ public class ComponentPropertyHandler {
           catch (Exception ex) {
             ex.printStackTrace(System.err);
           }
-        }
+        }/*
         else if(parameterType.equals(IBTemplatePage.class)){
           try {
             argument = new IBTemplatePage(Integer.parseInt(stringValue));
@@ -139,7 +139,7 @@ public class ComponentPropertyHandler {
           catch (Exception ex) {
             ex.printStackTrace(System.err);
           }
-        }
+        }*/
         else if(parameterType.equals(Image.class)){
           try {
             argument = new Image(Integer.parseInt(stringValue));
