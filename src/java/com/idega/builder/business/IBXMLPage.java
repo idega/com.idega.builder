@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.32 2001/12/19 11:20:51 palli Exp $
+ * $Id: IBXMLPage.java,v 1.33 2002/01/07 10:24:30 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -258,12 +258,18 @@ public class IBXMLPage implements IBXMLAble {
    */
   public void setXMLPageDescriptionFile(String URI) throws PageDoesNotExist {
     try {
-      _xmlDocument = _parser.parse(URI);
-      _rootElement = _xmlDocument.getRootElement();
+      //_xmlDocument = _parser.parse(URI);
+      //_rootElement = _xmlDocument.getRootElement();
+      this.setXMLDocument(_parser.parse(URI));
     }
     catch(XMLException e) {
       throw new PageDoesNotExist();
     }
+  }
+
+  private void setXMLDocument(XMLDocument document){
+    this._xmlDocument=document;
+    this._rootElement=document.getRootElement();
   }
 
   /**
@@ -338,9 +344,10 @@ public class IBXMLPage implements IBXMLAble {
   public void setXMLPageDescriptionFile(InputStream stream) throws PageDoesNotExist {
     boolean streamopen = true;
     try {
-      _xmlDocument = _parser.parse(stream);
+      this.setXMLDocument(_parser.parse(stream));
+      //_xmlDocument = _parser.parse(stream);
       stream.close();
-      _rootElement = _xmlDocument.getRootElement();
+      //_rootElement = _xmlDocument.getRootElement();
       streamopen=false;
     }
     catch(XMLException e) {
@@ -390,8 +397,9 @@ public class IBXMLPage implements IBXMLAble {
 //      pageElement.addAttribute(XMLConstants.TEMPLATE_STRING,template);
       pageElement.setAttribute(XMLConstants.TEMPLATE_STRING,template);
 
+    this.setXMLDocument( new XMLDocument(_rootElement));
     _rootElement.addContent(pageElement);
-    _xmlDocument = new XMLDocument(_rootElement);
+    //_xmlDocument = new XMLDocument(_rootElement);
     setPopulatedPage(XMLReader.getPopulatedPage(this));
   }
 
@@ -468,8 +476,9 @@ public class IBXMLPage implements IBXMLAble {
     StringReader reader = new StringReader(xmlRepresentation);
     XMLParser parser = new XMLParser();
     XMLDocument doc = parser.parse(reader);
-    _rootElement = doc.getRootElement();
-    _xmlDocument.setRootElement(_rootElement);
+    //_rootElement = doc.getRootElement();
+    //_xmlDocument.setRootElement(_rootElement);
+    this.setXMLDocument(doc);
     update();
   }
 

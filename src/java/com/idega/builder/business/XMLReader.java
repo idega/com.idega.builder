@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.27 2002/01/02 12:14:37 palli Exp $
+ * $Id: XMLReader.java,v 1.28 2002/01/07 10:26:05 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -380,6 +380,10 @@ public class XMLReader {
         else {
           inst.setICObjectID(Integer.parseInt(ic_object_id));
         }
+        // added by gummi@idega.is // - cache ObjectInstance
+        if(!"0".equals(id)){
+          ObjectInstanceCacher.setObjectInstance(id,inst);
+        }
       }
 
       if (inst instanceof PresentationObjectContainer) {
@@ -468,7 +472,8 @@ System.out.println("Entering changeLinkProperty");
 
     XMLAttribute id = change.getAttribute(XMLConstants.ID_STRING);
     XMLAttribute newPageLink = change.getAttribute(XMLConstants.IC_OBJECT_ID_to);
-
+System.out.println("id = " + id.getValue());
+System.out.println("newPageLink = "+ newPageLink.getValue());
 
     int intId = -1;
     int intNewPage = -1;
@@ -478,15 +483,19 @@ System.out.println("Entering changeLinkProperty");
     }
     catch(com.idega.xml.XMLException e) {
       System.out.println("Error in converting values to int");
+      e.printStackTrace();
     }
     List li = parent.getAllContainedObjectsRecursive();
-    Iterator it = li.iterator();
-    while (it.hasNext()) {
-      PresentationObject obj = (PresentationObject)it.next();
-      if (obj instanceof Link) {
-        Link l = (Link)obj;
-        if (intId == l.getICObjectInstanceID()) {
-          l.setPage(intNewPage);
+    if(li != null){
+      Iterator it = li.iterator();
+      while (it.hasNext()) {
+        PresentationObject obj = (PresentationObject)it.next();
+        if (obj instanceof Link) {
+          Link l = (Link)obj;
+          if (intId == l.getICObjectInstanceID()) {
+            System.out.println("Found link");
+            l.setPage(intNewPage);
+          }
         }
       }
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.87 2002/01/02 13:12:06 palli Exp $
+ * $Id: BuilderLogic.java,v 1.88 2002/01/07 10:25:08 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1121,9 +1121,10 @@ public class BuilderLogic {
   }
 
   public PresentationObject getIFrameContent(int ibPageId, int instanceId, IWContext iwc){
-    Page parentPage = BuilderLogic.getInstance().getIBXMLPage(ibPageId).getPopulatedPage();
+    //Page parentPage = BuilderLogic.getInstance().getIBXMLPage(ibPageId).getPopulatedPage();
 
-    PresentationObject obj = parentPage.getContainedICObjectInstance(instanceId);
+    //PresentationObject obj = parentPage.getContainedICObjectInstance(instanceId);
+    PresentationObject obj = getPopulatedObjectInstance(instanceId,iwc);
     PresentationObject iframeContent = null;
 
     if(obj instanceof IFrameContainer && obj != null){
@@ -1153,9 +1154,10 @@ public class BuilderLogic {
         String page = crdnts.substring(0,index);
         String inst = crdnts.substring(index+1,crdnts.length());
         if(!"".equals(page) && !"".equals(inst)){
-          Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
-          PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
-          if(obj != null){
+          //Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
+          //PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
+          PresentationObject obj = getPopulatedObjectInstance(inst,iwc);
+          if(obj != null && !obj.equals(PresentationObject.NULL_CLONE_OBJECT)){
             l.add(obj);
           }
         }
@@ -1189,9 +1191,10 @@ public class BuilderLogic {
       String page = crdnts.substring(0,index);
       String inst = crdnts.substring(index+1,crdnts.length());
       if(!"".equals(page) && !"".equals(inst)){
-        Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
+        /*Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
         PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
-        return obj;
+        return obj;*/
+        return getPopulatedObjectInstance(inst,iwc);
       }
     }
     return null;
@@ -1239,4 +1242,13 @@ public class BuilderLogic {
     page.update();
     PageCacher.flagPageInvalid(linkParentPageId);
   }
+
+  public PresentationObject getPopulatedObjectInstance(int id, IWContext iwc){
+    return ObjectInstanceCacher.getObjectInstanceClone(id,iwc);
+  }
+
+  public PresentationObject getPopulatedObjectInstance(String key, IWContext iwc){
+    return ObjectInstanceCacher.getObjectInstanceClone(key,iwc);
+  }
+
 }
