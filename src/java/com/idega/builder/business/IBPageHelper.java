@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.36 2004/06/01 14:50:05 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.37 2004/06/01 15:20:57 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -60,11 +60,50 @@ public class IBPageHelper {
 	private static IBPageHelper _instance = null;
 	private IBPageHelper() {
 	}
+	
 	public static IBPageHelper getInstance() {
 		if (_instance == null)
 			_instance = new IBPageHelper();
 		return _instance;
 	}
+	
+	/**
+	 * Creates a new IBPage. Sets its name, type and parent and stores it to the database.
+	 * If the parentId is null the page is stored as top level page. 
+	 * If the type is equal to template the value of the templateId is ignored.
+	 * If the parentId and the tree parameter are valid it also stores the page in
+	 * the cached IWContext tree.
+	 * Example: 
+	 * top level template:
+	 * createPageOrTemplateToplevelOrWithParent("main template", null, "T", null, a tree, a context);
+	 * page with parent (42) using template (13):
+	 * createPageOrTemplateToplevelOrWithParent("my page", "42", "P", "13", a tree, a context);
+	 * top level page using template (13):
+	 * createPageOrTemplateToplevelOrWithParent("my page", null , "P", "13", a tree, a context);
+	 * @param name The name this page is to be given
+	 * @param parentId The id of the parent of this page, should be null if the page is a top level page
+	 * @param type The type of the page, ie. PAGE, TEMPLATE, DRAFT, ...
+	 * @param templateId The id of the template the page is using, should be null if the type is equal to template or if the
+	 * page is not using a template
+	 * @param tree A map of PageTreeNode objects representing the whole page tree
+	 * @param creatorContext
+	 *
+	 * @return The id of the new IBPage
+	 */	
+	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map tree, IWContext creatorContext) {
+		int domainId = -1;
+		if (parentId == null) {
+			// that means top level
+			domainId = ((Integer) BuilderLogic.getCurrentDomain(creatorContext).getPrimaryKey()).intValue();
+		}
+		if (type.equals(TEMPLATE)) {
+			// templates don't use templates
+			// set templateId to null (usually it is already null)
+			templateId = null;
+		}
+		return createNewPage(parentId, name, type, templateId,tree, creatorContext, null, domainId);
+	}
+	
 	/**
 	 * Creates a new IBPage. Sets its name and type and stores it to the database.
 	 * If the parentId and the tree parameter are valid it also stores the page in
