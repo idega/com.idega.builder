@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.40 2001/11/12 15:58:28 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.41 2001/11/14 16:16:23 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,6 +93,7 @@ public class IBApplication extends IWApplication {
 
   //To prevent constant realoding when many frames are loaded at the same time
   static void startIBApplication(IWContext iwc){
+    BuilderLogic.getInstance().startBuilderSession(iwc);
     List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
     if(l==null){
       l = new Vector();

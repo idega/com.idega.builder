@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.77 2001/11/12 15:58:21 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.78 2001/11/14 16:16:32 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -81,6 +81,8 @@ public class BuilderLogic {
 
   public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
   public static final String IMAGE_IC_OBJECT_INSTANCE_SESSION_ADDRESS = "ic_object_id_image";
+
+  private static final String IB_APPLICATION_RUNNING_SESSION = "ib_application_running";
 
   private static final String DEFAULT_PAGE = "1";
 
@@ -1058,6 +1060,21 @@ public class BuilderLogic {
         }
       }
     }
+  }
+
+
+
+  public void startBuilderSession(IWContext iwc){
+    iwc.setSessionAttribute(IB_APPLICATION_RUNNING_SESSION,Boolean.TRUE);
+  }
+
+
+  public void endBuilderSession(IWContext iwc){
+    iwc.removeSessionAttribute(IB_APPLICATION_RUNNING_SESSION);
+  }
+
+  public boolean isBuilderApplicationRunning(IWContext iwc){
+    return !(iwc.getSessionAttribute(IB_APPLICATION_RUNNING_SESSION)==null);
   }
 
 }

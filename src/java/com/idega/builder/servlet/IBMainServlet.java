@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.12 2001/11/12 15:58:37 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.13 2001/11/14 16:16:17 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ public class IBMainServlet extends IWJSPPresentationServlet {
 
 
   public void initializePage(){
+    BuilderLogic blogic = BuilderLogic.getInstance();
     IWContext iwc = getIWContext();
     /**
      * @todo change from hardcoded domain_id
@@ -36,10 +37,12 @@ public class IBMainServlet extends IWJSPPresentationServlet {
     boolean builderview = false;
     boolean inBuilder = false;
     if (iwc.isParameterSet("view")) {
-      inBuilder=true;
-      String view = iwc.getParameter("view");
-      if(view.equals("builder"))
-        builderview=true;
+      if(blogic.isBuilderApplicationRunning(iwc)){
+        inBuilder=true;
+        String view = iwc.getParameter("view");
+        if(view.equals("builder"))
+          builderview=true;
+      }
     }
 
     if(inBuilder){
@@ -69,7 +72,7 @@ public class IBMainServlet extends IWJSPPresentationServlet {
       i_page_id = Integer.parseInt(page_id);
     }*/
 
-    setPage(BuilderLogic.getInstance().getPage(i_page_id,builderview,iwc));
+    setPage(blogic.getPage(i_page_id,builderview,iwc));
 
   }
 
