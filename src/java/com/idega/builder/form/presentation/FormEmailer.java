@@ -117,9 +117,11 @@ public class FormEmailer extends Block {
     cleanUpFromSession(iwc);
   }
 
-  public void addRecievedParameter(String paramName,String description,String type){
+  public void setToAddRecievedParameter(String paramName,String description,String type){
     handler.addProcessedParameter(paramName,description,type);
   }
+
+
 
 
   public void setTextInBeginningOfMail(String beginningText){
