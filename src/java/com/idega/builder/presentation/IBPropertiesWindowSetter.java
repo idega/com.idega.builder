@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.20 2002/04/10 02:18:51 tryggvil Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.21 2002/04/10 02:26:11 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -311,8 +311,7 @@ public class IBPropertiesWindowSetter extends Page {
    */
   public boolean setProperty(String key, String values[], String icObjectInstanceID, String pageKey, IWMainApplication iwma) {
   //invalidate cache for blocks
-    PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(icObjectInstanceID);
-    System.out.println("DEBUG setting property obj is = "+obj.getClassName());
+    PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(Integer.parseInt(icObjectInstanceID));
     if( obj instanceof com.idega.presentation.Block ){
       ((com.idega.presentation.Block)obj).invalidateCache(iwma);
     }
@@ -331,7 +330,7 @@ public class IBPropertiesWindowSetter extends Page {
      * @todo Change so that it removes properties of specific values for multivalued properties
      */
   //invalidate cache for blocks
-    PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(icObjectInstanceID);
+    PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(Integer.parseInt(icObjectInstanceID));
     if( obj instanceof com.idega.presentation.Block ){
       ((com.idega.presentation.Block)obj).invalidateCache(iwma);
     }
