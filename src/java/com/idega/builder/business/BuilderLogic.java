@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.169 2005/02/24 00:11:13 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.170 2005/02/24 11:30:23 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -541,7 +541,7 @@ public class BuilderLogic implements Singleton {
 		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
 			int indexOfPage = requestURI.indexOf("/pages/");
 			if (indexOfPage != -1) {
-				boolean pageISNumber = true;
+				//boolean pageISNumber = true;
 				String pageID = null;
 				//try {
 					String subString = requestURI.substring(indexOfPage + 7);
