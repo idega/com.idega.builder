@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.12 2003/07/30 12:15:19 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.13 2003/08/05 19:45:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -435,6 +435,15 @@ public class PageTreeNode implements ICTreeNode {
 	}
 	
 	protected IWApplicationContext getIWApplicationContext(){
+		if(_iwac==null){
+			try{
+				//Workaround solution if iwac is not set normally
+				_iwac = IWContext.getInstance().getApplicationContext();
+			}
+			catch(Exception e){
+				System.err.println("PageTreeNode.getIWApplicationContext() : Tried to get IWApplicationContext from runtime but failed : "+e.getMessage());
+			}
+		}
 		return _iwac;
 	}
 }

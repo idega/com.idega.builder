@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.42 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.43 2003/08/05 19:45:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Vector;
 
 import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBPageHome;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.Page;
 import com.idega.xml.XMLDocument;
@@ -63,8 +64,10 @@ public class IBXMLPage implements IBXMLAble {
 
 		IBPage ibpage = null;
 		try {
-			ibpage = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(key));
-			setXMLPageDescriptionFile(ibpage.getPageValue());
+			IBPageHome pHome = (IBPageHome) com.idega.data.IDOLookup.getHome(IBPage.class);
+			int pageId = Integer.parseInt(key);
+			ibpage = pHome.findByPrimaryKey(pageId);
+			readXMLDocument(ibpage.getPageValue());
 			if (ibpage.isPage())
 				setType(TYPE_PAGE);
 			else if (ibpage.isDraft())
@@ -99,7 +102,7 @@ public class IBXMLPage implements IBXMLAble {
 		catch (NumberFormatException ne) {
 			try {
 				InputStream stream = new FileInputStream(key);
-				setXMLPageDescriptionFile(stream);
+				readXMLDocument(stream);
 			}
 			catch (FileNotFoundException fnfe) {
 				fnfe.printStackTrace();
@@ -293,13 +296,13 @@ public class IBXMLPage implements IBXMLAble {
 	}
 
 	/**
-	 * Sets the ...
+	 * Sets the InputStream to read the 
 	 *
 	 * @param stream Stream to the file containing the XML description of the page.
 	 *
 	 * @throws com.idega.exception.PageDescriptionDoesNotExists The given XML file does not exists.
 	 */
-	public void setXMLPageDescriptionFile(InputStream stream) throws PageDoesNotExist {
+	public void readXMLDocument(InputStream stream) throws PageDoesNotExist {
 		boolean streamopen = true;
 		try {
 			this.setXMLDocument(_parser.parse(stream));
@@ -319,6 +322,7 @@ public class IBXMLPage implements IBXMLAble {
 				try {
 					if (stream != null) {
 						stream.close();
+						streamopen = false;
 					}
 				}
 				catch (IOException e) {

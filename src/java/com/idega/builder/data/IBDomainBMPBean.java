@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.7 2003/05/27 20:33:02 eiki Exp $
+ * $Id: IBDomainBMPBean.java,v 1.8 2003/08/05 19:45:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -82,28 +82,31 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
 
   public void insertStartData() throws Exception {
     BuilderLogic instance = BuilderLogic.getInstance();
-    IBDomain domain = ((IBDomainHome)IDOLookup.getHomeLegacy(IBDomain.class)).createLegacy();
+    IBDomainHome dHome = (IBDomainHome)getIDOHome(IBDomain.class);
+    IBDomain domain = dHome.create();
     domain.setName("Default Site");
 
-    IBPage page = ((IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+	IBPageHome pageHome = (IBPageHome)getIDOHome(IBPage.class);
+
+    IBPage page = pageHome.create();
     page.setName("Web root");
     page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
-    page.insert();
+    page.store();
     instance.unlockRegion(Integer.toString(page.getID()),"-1",null);
 
-    IBPage page2 = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+    IBPage page2 = pageHome.create();
     page2.setName("Default Template");
     page2.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
-    page2.insert();
+    page2.store();
 
     instance.unlockRegion(Integer.toString(page2.getID()),"-1",null);
 
     page.setTemplateId(page2.getID());
-    page.update();
+    page.store();
 
     domain.setIBPage(page);
     domain.setStartTemplate(page2);
-    domain.insert();
+    domain.store();
 
     instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(page2.getID()));
     instance.getIBXMLPage(page2.getID()).addUsingTemplate(Integer.toString(page.getID()));

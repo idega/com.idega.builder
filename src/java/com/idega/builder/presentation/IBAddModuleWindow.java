@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.29 2003/05/23 09:17:44 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.30 2003/08/05 19:45:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,10 +19,12 @@ import com.idega.core.data.ICLocale;
 import com.idega.core.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -292,5 +294,22 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				elementImage = iwc.getApplication().getCoreBundle().getImage("elementicon16x16.gif");
 			return elementImage;
 		}
+	}
+
+	/**
+	 *
+	 */
+	public static PresentationObject getAddIcon(String parentKey, IWContext iwc, String label)
+	{
+		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image addImage = bundle.getImage("add.gif", "Add new component");
+		//addImage.setAttribute("style","z-index: 0;");
+		Link link = new Link(addImage);
+		link.setWindowToOpen(IBAddModuleWindow.class);
+		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
+		return (link);
 	}
 }

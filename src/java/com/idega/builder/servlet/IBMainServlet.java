@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.22 2003/04/03 19:54:57 laddi Exp $
+ * $Id: IBMainServlet.java,v 1.23 2003/08/05 19:45:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,10 @@ package com.idega.builder.servlet;
 
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.business.IBOLookup;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.IWJSPPresentationServlet;
 
@@ -21,9 +25,11 @@ import com.idega.servlet.IWJSPPresentationServlet;
 
 public class IBMainServlet extends IWJSPPresentationServlet {
 
-  public void initializePage(){
+  public void initializePage()throws Exception{
   	setHandleJSPTags(false);
-    BuilderLogic blogic = BuilderLogic.getInstance();
+  	IWApplicationContext iwac = this.getApplication().getIWApplicationContext();
+  	BuilderLogic blogic = BuilderLogic.getInstance();
+  	BuilderService bs = BuilderServiceFactory.getBuilderService(iwac);
     IWContext iwc = getIWContext();
 
     boolean builderview = false;
@@ -35,7 +41,7 @@ public class IBMainServlet extends IWJSPPresentationServlet {
       }
     }
 
-    int i_page_id = BuilderLogic.getInstance().getCurrentIBPageID(iwc);
+    int i_page_id = bs.getCurrentPageId(iwc);
     setPage(blogic.getPage(i_page_id,builderview,iwc));
   }
   

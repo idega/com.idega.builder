@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.44 2003/04/04 07:44:17 laddi Exp $
+ * $Id: XMLReader.java,v 1.45 2003/08/05 19:45:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,17 +9,19 @@
  */
 package com.idega.builder.business;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import com.idega.core.data.ICObjectInstance;
+import com.idega.event.ObjectInstanceCacher;
 import com.idega.presentation.Page;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Vector;
-import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
+import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
 
 /**
@@ -98,7 +100,7 @@ public class XMLReader {
 			parentContainer = new Page();
 		}
 		else {
-			ObjectInstanceCacher.setTemplateObjectsForPage(ibxml);
+			setTemplateObjectsForPage(ibxml);
 		}
 
 		if (isLocked)
@@ -393,7 +395,7 @@ public class XMLReader {
 				}
 				// added by gummi@idega.is // - cache ObjectInstance
 				if (!"0".equals(id)) {
-					ObjectInstanceCacher.setObjectInstance(ibxml, id, inst);
+					setObjectInstance(ibxml, id, inst);
 				}
 			}
 
@@ -545,4 +547,26 @@ public class XMLReader {
 			}
 		}
 	}
+	
+
+	public static void setTemplateObjectsForPage(IBXMLPage ibxml){
+	  setObjectInstance(ibxml, null, null);
+	}
+
+	public static void setObjectInstance(IBXMLPage ibxml, String instanceKey, PresentationObject objectInstance){
+	  if(instanceKey != null){
+		ObjectInstanceCacher.putObjectIntanceInCache(instanceKey,objectInstance);
+	  }
+	  //System.err.println("Cashing objectInstance: "+instanceKey);
+	  String pageKey = ibxml.getKey();
+	  String templatePageKey = Integer.toString(ibxml.getTemplateId());
+	  
+	  ObjectInstanceCacher.copyInstancesFromPageToPage(pageKey,templatePageKey);
+
+	  //System.err.println("Cashing objectInstance: "+instanceKey+" on page "+ ibxml.getKey()+" extending: "+ibxml.getTemplateId());
+	  if(instanceKey != null){
+		ObjectInstanceCacher.getObjectInstancesCachedForPage(ibxml.getKey()).put(instanceKey,objectInstance);
+	  }
+	}
+	
 }
