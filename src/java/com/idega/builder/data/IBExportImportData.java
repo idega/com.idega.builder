@@ -20,9 +20,9 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.io.ObjectReader;
-import com.idega.io.ObjectWriter;
-import com.idega.io.Storable;
+import com.idega.io.export.ObjectReader;
+import com.idega.io.export.ObjectWriter;
+import com.idega.io.export.Storable;
 import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
@@ -55,7 +55,7 @@ public class IBExportImportData implements Storable {
 	private Map childParent = null;
 	protected List pageIds = null;
 
-	
+	private static String PAGE_PRIMARY_KEY = "page_primary_key";
 	private static String SOURCE_CLASS_FOR_PAGE;
 	
 	static {
@@ -173,13 +173,27 @@ public class IBExportImportData implements Storable {
 		files.add(page);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
 		fileElement.addContent(XMLConstants.FILE_MODULE, SOURCE_CLASS_FOR_PAGE);
-		fileElement.addContent(XMLConstants.FILE_NAME, page.getIDColumnName());
+		fileElement.addContent(XMLConstants.FILE_NAME, PAGE_PRIMARY_KEY);
 		fileElement.addContent(XMLConstants.FILE_SOURCE, SOURCE_CLASS_FOR_PAGE);
 		fileElement.addContent(XMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
 		fileElements.add(fileElement);
 	}
 	
 	public void addNecessaryModule(String moduleClassName) throws IOException {
+		// ignore special case page, it is not a module
+		if (ICPage.class.getName().equals(moduleClassName)) {
+			return;
+		}
+		// the list isn't really large
+		Iterator iterator = necessaryModules.iterator();
+		while (iterator.hasNext()) {
+			XMLElement element = (XMLElement) iterator.next();
+			String className = element.getTextTrim(XMLConstants.MODULE_CLASS);
+			if (className.equals(moduleClassName)) {
+				// do not add the same module twice
+				return; 
+			}
+		}
 		ICObject module = getICObject(moduleClassName);
 		String bundle = module.getBundleIdentifier();
 		String type = module.getObjectType();
@@ -188,15 +202,14 @@ public class IBExportImportData implements Storable {
 		moduleElement.addContent(XMLConstants.MODULE_TYPE, type);
 		moduleElement.addContent(XMLConstants.MODULE_BUNDLE, bundle);
 		necessaryModules.add(moduleElement);
-	}
-		
+	}	
 	
-	public Object write(ObjectWriter writer) throws RemoteException {
-		return writer.write(this);
+	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
+		return writer.write(this, iwc);
 	}
 	
-	public Object read(ObjectReader reader) throws RemoteException {
-		return reader.read(this);
+	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
+		return reader.read(this, iwc);
 	}
 
 	public XMLData createMetadataSummary() {
@@ -247,7 +260,11 @@ public class IBExportImportData implements Storable {
 		Iterator iterator = fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement fileElement = (XMLElement) iterator.next();
-			if (getPageElements == SOURCE_CLASS_FOR_PAGE.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)))		{
+			// only get file elements that represent a page
+			boolean isPageElement =	
+					SOURCE_CLASS_FOR_PAGE.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)) &&
+					PAGE_PRIMARY_KEY.equals(fileElement.getTextTrim(XMLConstants.FILE_NAME));
+			if ((getPageElements && isPageElement) || (! getPageElements && ! isPageElement)) {
 				elements.add(fileElement);
 			}
 		}
@@ -331,7 +348,6 @@ public class IBExportImportData implements Storable {
 		return missingModules;
 	}
 
-	
 	class PageElementComparator implements Comparator {
 
 
