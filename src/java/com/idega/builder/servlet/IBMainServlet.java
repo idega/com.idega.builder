@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.26 2004/03/31 17:37:20 eiki Exp $
+ * $Id: IBMainServlet.java,v 1.27 2004/03/31 18:10:59 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,8 +14,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.builder.business.BuilderService;
@@ -58,7 +58,7 @@ public class IBMainServlet extends IWJSPPresentationServlet {
     /* (non-Javadoc)
      * @see com.idega.servlet.IWCoreServlet#getIfSyncronizeAccess(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
      */
-    protected boolean getIfSyncronizeAccess(ServletRequest _req,ServletResponse _res) {
+    protected boolean getIfSyncronizeAccess(HttpServletRequest _req,HttpServletResponse _res) {
         //if using a PageIncluder that calls a page on the same server and the pageincluder page is the first page loaded
         //we will get a deadlock in the super impl of this method. 
         //However one will never create a pageincluder pointing to the page it is contained in so all we need to do is to
@@ -70,6 +70,7 @@ public class IBMainServlet extends IWJSPPresentationServlet {
         }
         
         try {
+            initializeIWContext(_req,_res);
             IWContext iwc = getIWContext();
             IWApplicationContext iwac = this.getApplication().getIWApplicationContext();
             BuilderService bs = BuilderServiceFactory.getBuilderService(iwac);
@@ -86,6 +87,8 @@ public class IBMainServlet extends IWJSPPresentationServlet {
 	        }
 	        
         } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         
