@@ -18,6 +18,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.io.ICFileWriter;
 import com.idega.io.ObjectWriter;
 import com.idega.io.Storable;
@@ -43,9 +44,9 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
 	public final static String AUXILIARY_FOLDER = "auxiliaryDataFolder";
 	public final static String AUXILIARY_FILE = "auxililary_data_file_";
 	
-	public IBExportImportData getIBExportImportData(UploadFile uploadFile, int parentPageId, int templatePageId) throws IOException {
+	public IBExportImportData getIBExportImportData(UploadFile uploadFile, boolean performValidation, int parentPageId, int templatePageId, IWUserContext iwuc) throws IOException {
 		IBExportImportData exportImportData = new IBExportImportData();
-		IBExportImportDataReader reader = new IBExportImportDataReader(exportImportData,getIWApplicationContext());
+		IBExportImportDataReader reader = new IBExportImportDataReader(exportImportData,performValidation, getIWApplicationContext(), iwuc);
 		reader.setParentPageForImportedPages(parentPageId);
 		reader.setParentTemplateForImportedTemplates(templatePageId);
 		reader.openContainer(uploadFile);

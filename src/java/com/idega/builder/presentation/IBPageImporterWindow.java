@@ -2,6 +2,8 @@ package com.idega.builder.presentation;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.List;
 
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPageImportBusiness;
@@ -20,6 +22,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.FileInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.datastructures.MessageContainer;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -55,6 +58,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   private int parentPageId = -1; 
   private int templatePageId = -1;
   
+  private MessageContainer messageContainer = null;
 	private String downloadLink = null;
 	
 	private IBPageImportBusiness pageImportBusiness = null;
@@ -71,10 +75,15 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
 
   public void main(IWContext iwc) throws Exception {
+  	setTitle("PageImporter");
   	String action = parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
-		doAction(action, iwc);
-		getContent(resourceBundle, iwc);
+		if (doAction(action, iwc)) {
+			getContent(resourceBundle, iwc);
+		}
+		else {
+			getErrorContent(resourceBundle);
+		}
 
   }
   
@@ -103,6 +112,25 @@ public class IBPageImporterWindow extends IBPageWindow {
   	}
   }
   
+  private void getErrorContent(IWResourceBundle resourceBundle) {
+  	List messages = messageContainer.getMessages();
+  	int numberOfRows = 1 + messages.size();
+  	Table table = new Table(1, numberOfRows);
+  	int row = 1;
+  	String mainErrorMessage = resourceBundle.getLocalizedString("ib_page_export_missing_modules", "Some modules are missing:");
+  	table.add(mainErrorMessage, 1, row++);
+  	Iterator iterator = messages.iterator();
+  	while (iterator.hasNext()) {
+  		String message = (String) iterator.next();
+  		table.add(message, 1, row++);
+  	}
+  	Form form = new Form();
+  	form.add(table);
+  	form.add(getCloseButton(resourceBundle));
+  	add(form);
+  }
+  	
+  	
   private PresentationObject getTopLevelCheckBox(String keyName, boolean setChecked, IWResourceBundle resourceBundle) {
   	Table table = new Table(2,1);
  		CheckBox topLevelCheckBox = new CheckBox(keyName, "true");
@@ -144,7 +172,8 @@ public class IBPageImporterWindow extends IBPageWindow {
   	else if (IMPORT_ACTION.equals(action)) {
 	  	UploadFile file = iwc.getUploadedFile();
 	  	if (file != null) {
-	  		importPages(iwc, file);
+	  		messageContainer = importPages(file, iwc);
+	  		return (messageContainer == null);
 	  	}
   	}
   	return true;
@@ -163,8 +192,8 @@ public class IBPageImporterWindow extends IBPageWindow {
 		}
   }
   
-  private void importPages(IWContext iwc, UploadFile file) throws IBOLookupException, RemoteException, IOException { 
-  	getPageImportBusiness(iwc).importPages(file,  parentPageId, templatePageId);
+  private MessageContainer importPages(UploadFile file, IWContext iwc) throws IBOLookupException, RemoteException, IOException { 
+  	return getPageImportBusiness(iwc).importPages(file, true, parentPageId, templatePageId, iwc);
 	}
   	
   		
@@ -173,9 +202,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   	SubmitButton importButton = 
       new SubmitButton(resourceBundle.getLocalizedString("ib_page_import_Import","Import"), SUBMIT_IMPORT_KEY, "true");
   	importButton.setAsImageButton(true);
-  	SubmitButton closeButton = 
-      new SubmitButton(resourceBundle.getLocalizedString("ib_page_import_Close", "Close"), SUBMIT_CLOSE_KEY, "true");
-  	closeButton.setAsImageButton(true);
+  	SubmitButton closeButton = getCloseButton(resourceBundle);
   	Table table = new Table(2,1);
   	table.add(importButton, 1,1);
   	table.add(closeButton, 2,1);
@@ -183,6 +210,13 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
   	
   		
+	private SubmitButton getCloseButton(IWResourceBundle resourceBundle) {
+		SubmitButton closeButton = 
+      new SubmitButton(resourceBundle.getLocalizedString("ib_page_import_Close", "Close"), SUBMIT_CLOSE_KEY, "true");
+  	closeButton.setAsImageButton(true);
+		return closeButton;
+	}
+
 	private IBPageImportBusiness getPageImportBusiness(IWApplicationContext iwac) throws IBOLookupException {
 		if (pageImportBusiness == null) {
 			pageImportBusiness =  (IBPageImportBusiness) IBOLookup.getServiceInstance(iwac,IBPageImportBusiness.class);
