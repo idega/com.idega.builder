@@ -38,7 +38,10 @@ import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.interfaceobject.Window;
 
+//import com.idega.block.media.presentation.ImageInserter;
+//import com.idega.block.media.presentation.ImageEditorWindow;
 import com.idega.jmodule.image.presentation.ImageInserter;
+import com.idega.jmodule.image.presentation.ImageEditorWindow;
 
 import java.util.ListIterator;
 import java.util.List;
@@ -134,8 +137,8 @@ public class BuilderLogic{
       //"-1" is identified as the top page object (parent)
       if (!page.isLocked())
         page.add(getAddIcon(Integer.toString(-1),modinfo));
-      if (page.getIsTemplate())
-        page.add(getLockIcon(Integer.toString(-1),modinfo));
+//      if (page.getIsTemplate())
+//        page.add(getLockIcon(Integer.toString(-1),modinfo));
       return page;
   }
 
@@ -170,6 +173,8 @@ public class BuilderLogic{
 
       inserter.setImSessionImageName(sessionID);
       inserter.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
+      //inserter.setWindowClassToOpen(ImageEditorWindow.class);
+
       obj = inserter;
       obj.setICObjectInstanceID(ICObjectIntanceID);
     }
@@ -192,8 +197,8 @@ public class BuilderLogic{
               }
               if (!tab.isLocked(x,y))
                 tab.add(getAddIcon(newParentKey,modinfo),x,y);
-              if (tab.getParentPage().getIsTemplate())
-                tab.add(getLockIcon(newParentKey,modinfo),x,y);
+//            if (tab.getParentPage().getIsTemplate())
+//              tab.add(getLockIcon(newParentKey,modinfo),x,y);
           }
         }
       }
@@ -220,8 +225,8 @@ public class BuilderLogic{
         if (index != -1) {
           if (!((ModuleObjectContainer)obj).isLocked())
             ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
-          if (obj.getParentPage().getIsTemplate())
-            ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+//        if (obj.getParentPage().getIsTemplate())
+//          ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
         }
       }
     }
@@ -308,7 +313,7 @@ public class BuilderLogic{
 
   public  ModuleObject getPermissionIcon(int key,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image editImage = bundle.getImage("edit.gif","Set permissions");
+    Image editImage = bundle.getImage("las_open.gif","Set permissions");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPermissionWindow.class);
     link.addParameter(ib_page_parameter,"1");
