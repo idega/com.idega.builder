@@ -62,12 +62,14 @@ public class IBReferences {
 		
 			
 	
-	public void checkElementForReferences(XMLElement element,IBExportImportData metadata) throws IOException {
+	public void checkElementForReferencesNoteNecessaryModules(XMLElement element,IBExportImportData metadata) throws IOException {
 		String nameOfElement = element.getName();
 		// is it a module?
 		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement)) {
 			// ask for the class
 			String moduleClass = element.getAttributeValue(XMLConstants.CLASS_STRING);
+			// mark the module as necessary
+			metadata.addNecessaryModule(moduleClass);
 			if (moduleReference.containsKey(moduleClass)) {
 				IBReference reference = (IBReference) moduleReference.get(moduleClass);
 				Collection entries = reference.getEntries();
@@ -82,7 +84,7 @@ public class IBReferences {
 		Iterator childrenIterator = children.iterator();
 		while (childrenIterator.hasNext()) {
 			XMLElement childElement = (XMLElement) childrenIterator.next();
-			checkElementForReferences(childElement, metadata);
+			checkElementForReferencesNoteNecessaryModules(childElement, metadata);
 		}
 	}
 	
