@@ -15,9 +15,9 @@ import com.idega.jmodule.object.ModuleInfo;
 
 public class IBDeleteModuleWindow extends IBAdminWindow{
 
-  private static final String ic_object_id_parameter = BuilderLogic.ic_object_id_parameter;
-  private static final String ib_parent_parameter = BuilderLogic.ib_parent_parameter;
-  private static final String ib_page_parameter = BuilderLogic.ib_page_parameter;
+  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+  private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
+  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
 
   public IBDeleteModuleWindow() {
   }

@@ -177,7 +177,7 @@ public class IBApplication extends IWApplication {
         idegawebBuilder.setFontSize(2);
         add(idegawebBuilder);
         addBreak();
-        Text build = new Text("Build 215a");
+        Text build = new Text("Build 216a");
         build.setFontColor("blue");
         build.setFontSize(1);
         add(build);
@@ -189,7 +189,7 @@ public class IBApplication extends IWApplication {
         try {
           TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),modinfo);
           viewer.setTarget(IB_LEFT_MENU_FRAME);
-          viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+          viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
           Link l = new Link();
           l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
           viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
@@ -202,7 +202,7 @@ public class IBApplication extends IWApplication {
 
           TreeViewer viewer2 = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),modinfo);
           viewer2.setTarget(IB_LEFT_MENU_FRAME);
-          viewer2.setNodeActionParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+          viewer2.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
           Link l2 = new Link();
           l2.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
           viewer2.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
@@ -211,7 +211,7 @@ public class IBApplication extends IWApplication {
           viewer2.setLinkProtototype(l2);
           add(viewer2);
 
-          String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+          String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
           if(page_id!=null){
             modinfo.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);
           }
@@ -312,11 +312,11 @@ public class IBApplication extends IWApplication {
         Image image = new Image("/common/pics/arachnea/toolbar_properties_1.gif","Page Properties");
         Link link = new Link(image);
         link.setWindowToOpen(IBPropertiesWindow.class);
-        link.addParameter(BuilderLogic.ib_page_parameter,BuilderLogic.getInstance().getCurrentIBPage(modinfo));
-        link.addParameter(BuilderLogic.ib_control_parameter,BuilderLogic.ACTION_EDIT);
+        link.addParameter(BuilderLogic.IB_PAGE_PARAMETER,BuilderLogic.getInstance().getCurrentIBPage(modinfo));
+        link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER,BuilderLogic.ACTION_EDIT);
         //Hardcoded -1 for the top page
         String pageICObjectInstanceID = "-1";
-        link.addParameter(BuilderLogic.ic_object_id_parameter,pageICObjectInstanceID);
+        link.addParameter(BuilderLogic.IC_OBJECT_ID_PARAMETER,pageICObjectInstanceID);
         return link;
       }
   }

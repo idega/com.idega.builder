@@ -1,13 +1,13 @@
-package com.idega.builder.business;
-
-/**
- * Title:        idegaclasses
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
- * @author       <a href="tryggvi@idega.is">Tryggvi Larusson</a>
- * @version 1.0
+/*
+ * $Id: BuilderLogic.java,v 1.28 2001/09/25 13:33:16 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
  */
+package com.idega.builder.business;
 
 import com.idega.builder.data.IBPage;
 import com.idega.builder.presentation.IBAdminWindow;
@@ -16,20 +16,16 @@ import com.idega.builder.presentation.IBDeleteModuleWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
-
 import com.idega.core.data.ICObject;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICObjectInstance;
-
 import com.idega.core.business.ICObjectBusiness;
 import com.idega.block.IWBlock;
-
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWMainApplication;
-
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.ModuleObject;
@@ -41,61 +37,61 @@ import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.interfaceobject.Window;
-
-//import com.idega.block.media.presentation.ImageInserter;
-//import com.idega.block.media.presentation.ImageEditorWindow;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.jmodule.image.presentation.ImageEditorWindow;
-
 import java.util.ListIterator;
 import java.util.List;
 
-public class BuilderLogic{
+/**
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
+ * @version 1.0
+ */
+public class BuilderLogic {
+  public static final String IC_OBJECT_ID_PARAMETER = "ic_object_id_par";
+  public static final String IB_PARENT_PARAMETER = "ib_parent_par";
+  public static final String IB_PAGE_PARAMETER ="ib_page_par";
 
+  public static final String IB_CONTROL_PARAMETER = "ib_control_par";
+  public static final String ACTION_DELETE ="ACTION_DELETE";
+  public static final String ACTION_EDIT ="ACTION_EDIT";
+  public static final String ACTION_ADD ="ACTION_ADD";
+  public static final String ACTION_MOVE ="ACTION_MOVE";
+  public static final String ACTION_LOCK_REGION ="ACTION_LOCK";
+  public static final String ACTION_UNLOCK_REGION ="ACTION_UNLOCK";
+  public static final String ACTION_PERMISSION ="ACTION_PERMISSION";
 
-    public static final String ic_object_id_parameter = "ic_object_id_par";
-    public static final String ib_parent_parameter = "ib_parent_par";
-    public static final String ib_page_parameter ="ib_page_par";
+  public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
 
-    public static final String ib_control_parameter = "ib_control_par";
-    public static final String ACTION_DELETE ="ACTION_DELETE";
-    public static final String ACTION_EDIT ="ACTION_EDIT";
-    public static final String ACTION_ADD ="ACTION_ADD";
-    public static final String ACTION_MOVE ="ACTION_MOVE";
-    public static final String ACTION_LOCK_REGION ="ACTION_LOCK";
-    public static final String ACTION_UNLOCK_REGION ="ACTION_UNLOCK";
-    public static final String ACTION_PERMISSION ="ACTION_PERMISSION";
+  public static final String SESSION_PAGE_KEY = "ib_page_id";
 
-    public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
+  public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
+  public static final String IMAGE_IC_OBJECT_INSTANCE_SESSION_ADDRESS = "ic_object_id_image";
 
-    public static final String SESSION_PAGE_KEY = "ib_page_id";
+  private static final String DEFAULT_PAGE = "1";
 
-    public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
-    public static final String IMAGE_IC_OBJECT_INSTANCE_SESSION_ADDRESS = "ic_object_id_image";
-
-  private static BuilderLogic instance;
+  private static BuilderLogic _instance;
 
   private BuilderLogic(){
 
   }
 
   public static BuilderLogic getInstance(){
-    if(instance==null){
-      instance = new BuilderLogic();
+    if (_instance == null) {
+      _instance = new BuilderLogic();
     }
-    return instance;
+    return(_instance);
   }
 
-  public boolean updatePage(int id){
-    String theID=Integer.toString(id);
+  public boolean updatePage(int id) {
+    String theID = Integer.toString(id);
     IBXMLPage xml = PageCacher.getXML(theID);
     xml.update();
-    System.err.println("Invalidating page = " + theID);
+//    System.err.println("Invalidating page = " + theID);
     PageCacher.flagPageInvalid(theID);
-    return true;
+    return(true);
   }
 
-  public IBXMLPage getIBXMLPage(String key){
+  public IBXMLPage getIBXMLPage(String key) {
     return PageCacher.getXML(key);
   }
 
@@ -103,27 +99,26 @@ public class BuilderLogic{
     return PageCacher.getXML(Integer.toString(id));
   }
 
-  public Page getPage(int id,ModuleInfo modinfo){
-    try{
-      boolean builderview=false;
-      if(modinfo.isParameterSet("view")){
-        //if(modinfo.getParameter("view").equals("builder")){
-          builderview=true;
-        //}
+  public Page getPage(int id,ModuleInfo modinfo) {
+    try {
+      boolean builderview = false;
+      if (modinfo.isParameterSet("view")) {
+        builderview = true;
       }
+
       Page page = PageCacher.getPage(Integer.toString(id),modinfo);
-      if(builderview){
-        return BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,modinfo);
+      if (builderview) {
+        return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,modinfo));
       }
-      else{
-        return page;
+      else {
+        return(page);
       }
     }
-    catch(Exception e){
+    catch(Exception e) {
       e.printStackTrace();
       Page theReturn = new Page();
       theReturn.add("Page invalid");
-      return theReturn;
+      return(theReturn);
     }
   }
 
@@ -142,9 +137,32 @@ public class BuilderLogic{
       if (!page.isLocked())
         page.add(getAddIcon(Integer.toString(-1),modinfo));
 //      if (page.getIsTemplate())
-//        page.add(getLockIcon(Integer.toString(-1),modinfo));
+//        page.add(getUnlockIcon(Integer.toString(-1),modinfo));
       return page;
   }
+
+  /**
+   *
+   */
+  public ModuleObjectContainer getModuleTransformed(String pageKey, ModuleObjectContainer module, ModuleInfo modinfo){
+      List list = module.getAllContainingObjects();
+      if (list != null) {
+        ListIterator iter = list.listIterator();
+        ModuleObjectContainer parent = module;
+        while (iter.hasNext()) {
+          int index = iter.nextIndex();
+          ModuleObject item = (ModuleObject)iter.next();
+          transformObject(pageKey,item,index,parent,"-1",modinfo);
+        }
+      }
+      //"-1" is identified as the top page object (parent)
+//      if (!module.isLocked())
+//        module.add(getAddIcon(Integer.toString(-1),modinfo));
+//      if (module.getIsTemplate())
+//        module.add(getUnlockIcon(Integer.toString(-1),modinfo));
+      return(module);
+  }
+
 
   private void processImageSet(String pageKey,int ICObjectInstanceID,int imageID,IWMainApplication iwma){
     setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID),iwma);
@@ -204,7 +222,7 @@ public class BuilderLogic{
               if (!tab.isLocked(x,y))
                 tab.add(getAddIcon(newParentKey,modinfo),x,y);
 //            if (tab.getParentPage().getIsTemplate())
-//              tab.add(getLockIcon(newParentKey,modinfo),x,y);
+//              tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
           }
         }
       }
@@ -232,12 +250,12 @@ public class BuilderLogic{
           if (!((ModuleObjectContainer)obj).isLocked())
             ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
 //        if (obj.getParentPage().getIsTemplate())
-//          ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+//          ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
         }
       }
     }
 
-    if (useBuilderObjectControl) {
+    if (obj.getUseBuilderObjectControl()) {
       if(index != -1){
         //parent.remove(obj);
         //parent.add(new BuilderObjectControl(obj,parent));
@@ -247,10 +265,10 @@ public class BuilderLogic{
 
   }
 
-  public String getCurrentIBPage(ModuleInfo modinfo){
+  public String getCurrentIBPage(ModuleInfo modinfo) {
     String theReturn = (String)modinfo.getSessionAttribute(SESSION_PAGE_KEY);
-    if(theReturn==null){
-      return "1";
+    if (theReturn == null) {
+      return(DEFAULT_PAGE);
     }
     else
       return theReturn;
@@ -261,9 +279,9 @@ public class BuilderLogic{
     Image addImage = bundle.getImage("add.gif","Add new component");
     Link link = new Link(addImage);
     link.setWindowToOpen(IBAddModuleWindow.class);
-    link.addParameter(ib_page_parameter,getCurrentIBPage(modinfo));
-    link.addParameter(ib_control_parameter,ACTION_ADD);
-    link.addParameter(ib_parent_parameter,parentKey);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_ADD);
+    link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return link;
   }
@@ -273,9 +291,9 @@ public class BuilderLogic{
     Image lockImage = bundle.getImage("las_open.gif","Lock region");
     Link link = new Link(lockImage);
     link.setWindowToOpen(IBLockRegionWindow.class);
-    link.addParameter(ib_page_parameter,"1");
-    link.addParameter(ib_control_parameter,ACTION_LOCK_REGION);
-    link.addParameter(ib_parent_parameter,parentKey);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_LOCK_REGION);
+    link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return(link);
   }
@@ -285,9 +303,9 @@ public class BuilderLogic{
     Image lockImage = bundle.getImage("las_close.gif","Unlock region");
     Link link = new Link(lockImage);
     link.setWindowToOpen(IBLockRegionWindow.class);
-    link.addParameter(ib_page_parameter,"1");
-    link.addParameter(ib_control_parameter,ACTION_UNLOCK_REGION);
-    link.addParameter(ib_parent_parameter,parentKey);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_UNLOCK_REGION);
+    link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return(link);
   }
@@ -297,10 +315,10 @@ public class BuilderLogic{
     Image deleteImage = bundle.getImage("delete.gif","Delete component");
     Link link = new Link(deleteImage);
     link.setWindowToOpen(IBDeleteModuleWindow.class);
-    link.addParameter(ib_page_parameter,getCurrentIBPage(modinfo));
-    link.addParameter(ib_control_parameter,ACTION_DELETE);
-    link.addParameter(ib_parent_parameter,parentKey);
-    link.addParameter(ic_object_id_parameter,key);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_DELETE);
+    link.addParameter(IB_PARENT_PARAMETER,parentKey);
+    link.addParameter(IC_OBJECT_ID_PARAMETER,key);
     return link;
   }
 
@@ -310,10 +328,10 @@ public class BuilderLogic{
     Image moveImage = bundle.getImage("move.gif");
     Link link = new Link(moveImage);
     link.setWindowToOpen(IBAdminWindow.class);
-    link.addParameter(ib_page_parameter,"1");
-    link.addParameter(ib_control_parameter,ACTION_MOVE);
-    link.addParameter(ib_parent_parameter,parentKey);
-    link.addParameter(ic_object_id_parameter,key);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_MOVE);
+    link.addParameter(IB_PARENT_PARAMETER,parentKey);
+    link.addParameter(IC_OBJECT_ID_PARAMETER,key);
     return link;
   }
 
@@ -322,8 +340,8 @@ public class BuilderLogic{
     Image editImage = bundle.getImage("key_small.gif","Set permissions");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPermissionWindow.class);
-    link.addParameter(ib_page_parameter,"1");
-    link.addParameter(ib_control_parameter,ACTION_PERMISSION);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_PERMISSION);
     link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,key);
     link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,AccessControl._CATEGORY_OBJECT_INSTANCE);
 
@@ -335,48 +353,46 @@ public class BuilderLogic{
     Image editImage = bundle.getImage("edit.gif","Edit component");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPropertiesWindow.class);
-    link.addParameter(ib_page_parameter,getCurrentIBPage(modinfo));
-    link.addParameter(ib_control_parameter,ACTION_EDIT);
-    link.addParameter(ic_object_id_parameter,key);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_EDIT);
+    link.addParameter(IC_OBJECT_ID_PARAMETER,key);
     return link;
   }
 
-  private class BuilderObjectControl extends ModuleObjectContainer{
+  private class BuilderObjectControl extends ModuleObjectContainer {
+    private Table _table;
+    private ModuleObjectContainer _parent;
+    private String _parentKey;
+    private ModuleObject _theObject;
 
-    private Table table;
-    private ModuleObjectContainer parent;
-    private String parentKey;
-    private ModuleObject theObject;
-
-
-    public BuilderObjectControl(ModuleObject obj,ModuleObjectContainer objectParent,String theParentKey,ModuleInfo modinfo){
-      parent=objectParent;
-      theObject=obj;
-      parentKey=theParentKey;
+    public BuilderObjectControl(ModuleObject obj, ModuleObjectContainer objectParent, String theParentKey, ModuleInfo modinfo) {
+      _parent = objectParent;
+      _theObject = obj;
+      _parentKey = theParentKey;
       init(modinfo);
       add(obj);
     }
 
     private void init(ModuleInfo modinfo){
-      table = new Table(1,2);
-      super.add(table);
-      table.setBorder(0);
-      table.setCellpadding(0);
-      table.setCellspacing(2);
-      table.setColor("gray");
-      table.setColor(1,2,"white");
-      table.setHeight(1,1,"11");
+      _table = new Table(1,2);
+      super.add(_table);
+      _table.setBorder(0);
+      _table.setCellpadding(0);
+      _table.setCellspacing(2);
+      _table.setColor("gray");
+      _table.setColor(1,2,"white");
+      _table.setHeight(1,1,"11");
 
-      if(theObject!=null){
+      if(_theObject!=null){
         //table.add(theObject.getClassName());
-        table.add(getDeleteIcon(theObject.getICObjectInstanceID(),parentKey,modinfo));
-        table.add(getEditIcon(theObject.getICObjectInstanceID(),modinfo));
-        table.add(getPermissionIcon(theObject.getICObjectInstanceID(),modinfo));
+        _table.add(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,modinfo));
+        _table.add(getEditIcon(_theObject.getICObjectInstanceID(),modinfo));
+        _table.add(getPermissionIcon(_theObject.getICObjectInstanceID(),modinfo));
       }
       else{
           System.out.println("theObject==null");
-          table.add(getDeleteIcon(0,parentKey,modinfo));
-          table.add(getEditIcon(0,modinfo));
+          _table.add(getDeleteIcon(0,_parentKey,modinfo));
+          _table.add(getEditIcon(0,modinfo));
       }
     }
 
@@ -384,20 +400,20 @@ public class BuilderLogic{
       if(obj instanceof Table){
         String width=((Table)obj).getWidth();
         if(width!=null){
-          table.setWidth(width);
+          _table.setWidth(width);
           ((Table)obj).setWidth("100%");
         }
 
         String height=((Table)obj).getHeight();
         if(height!=null){
-          table.setHeight(height);
+          _table.setHeight(height);
           ((Table)obj).setHeight("100%");
 
         }
 
       }
-      table.add(obj,1,2);
-      obj.setParentObject(parent);
+      _table.add(obj,1,2);
+      obj.setParentObject(_parent);
     }
   }
 

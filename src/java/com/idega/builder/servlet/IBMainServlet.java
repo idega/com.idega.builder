@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.7 2001/09/03 10:54:56 haffi Exp $
+ * $Id: IBMainServlet.java,v 1.8 2001/09/25 13:33:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class IBMainServlet extends JSPModule {
      */
     int domain_id=1;
     int i_page_id=1;
-    String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+    String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
     if(page_id == null){
       page_id = (String) modinfo.getSessionAttribute(BuilderLogic.SESSION_PAGE_KEY);
       if(page_id==null){

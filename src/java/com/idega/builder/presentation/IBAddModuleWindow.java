@@ -37,11 +37,11 @@ import com.idega.data.EntityFinder;
 public class IBAddModuleWindow extends IBAdminWindow{
 
 
-  private static final String ic_object_id_parameter = BuilderLogic.ic_object_id_parameter;
-  private static final String ib_parent_parameter = BuilderLogic.ib_parent_parameter;
-  private static final String ib_page_parameter = BuilderLogic.ib_page_parameter;
+  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+  private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
+  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
 
-  private static final String ib_control_parameter = BuilderLogic.ib_control_parameter;
+  private static final String ib_control_parameter = BuilderLogic.IB_CONTROL_PARAMETER;
   //private static final String ACTION_DELETE = BuilderLogic.ACTION_DELETE;
   private static final String ACTION_EDIT = BuilderLogic.ACTION_EDIT;
   private static final String ACTION_ADD = BuilderLogic.ACTION_ADD;

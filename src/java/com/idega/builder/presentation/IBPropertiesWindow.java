@@ -31,8 +31,8 @@ import java.util.Iterator;
 
 public class IBPropertiesWindow extends IBAdminWindow{
 
-  private static final String ic_object_id_parameter = BuilderLogic.ic_object_id_parameter;
-  private static final String ib_page_parameter = BuilderLogic.ib_page_parameter;
+  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
   private final static String METHOD_ID_PARAMETER="iw_method_identifier";
   private final static String VALUE_SAVE_PARAMETER = "ib_method_save";
   private final static String VALUE_PARAMETER = "ib_method_value";

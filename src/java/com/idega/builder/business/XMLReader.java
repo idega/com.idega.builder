@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.10 2001/09/24 14:22:37 palli Exp $
+ * $Id: XMLReader.java,v 1.11 2001/09/25 13:33:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,20 @@ public class XMLReader {
   private XMLReader() {
   }
 
+  private static void setAllBuilderControls(ModuleObjectContainer parent, boolean setTo) {
+    List list = parent.getAllContainingObjects();
+    if (list != null) {
+      Iterator it = list.iterator();
+      while (it.hasNext()) {
+        ModuleObject obj = (ModuleObject)it.next();
+        obj.setUseBuilderObjectControl(setTo);
+        if (obj instanceof ModuleObjectContainer) {
+          setAllBuilderControls((ModuleObjectContainer)obj,setTo);
+        }
+      }
+    }
+  }
+
   /**
    *
    */
@@ -49,6 +63,7 @@ public class XMLReader {
         hasTemplate = true;
         parentContainer = PageCacher.getPage(at.getValue());
         parentContainer.setIsExtendingTemplate();
+        setAllBuilderControls(parentContainer,false);
       }
       else if (at.getName().equals(XMLConstants.PAGE_TYPE)) {
         if (at.getValue().equals(XMLConstants.PAGE_TYPE_TEMPLATE)) {

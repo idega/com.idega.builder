@@ -1,5 +1,5 @@
 /*
- * $Id: IBLockRegionWindow.java,v 1.1 2001/09/12 12:42:01 palli Exp $
+ * $Id: IBLockRegionWindow.java,v 1.2 2001/09/25 13:33:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,11 +33,11 @@ import com.idega.data.EntityFinder;
  */
 
 public class IBLockRegionWindow extends IBAdminWindow {
-  private static final String ic_object_id_parameter = BuilderLogic.ic_object_id_parameter;
-  private static final String ib_parent_parameter = BuilderLogic.ib_parent_parameter;
-  private static final String ib_page_parameter = BuilderLogic.ib_page_parameter;
+  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+  private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
+  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
 
-  private static final String ib_control_parameter = BuilderLogic.ib_control_parameter;
+  private static final String ib_control_parameter = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String ACTION_LOCK = BuilderLogic.ACTION_LOCK_REGION;
   private static final String ACTION_UNLOCK = BuilderLogic.ACTION_UNLOCK_REGION;
 
