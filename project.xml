@@ -5,7 +5,7 @@
   <pomVersion>3</pomVersion>
   <name>idegaWeb Builder</name>
   <artifactId>com.idega.builder</artifactId>
-  <currentVersion>1.3.0</currentVersion>
+  <currentVersion>1.4.0-SNAPSHOT</currentVersion>
   <organization/>
   <inceptionYear>2000</inceptionYear>
   <shortDescription>idegaWeb Builder is a Webapplication RAD and CMS tool</shortDescription>
