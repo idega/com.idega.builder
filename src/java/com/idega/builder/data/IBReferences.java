@@ -88,10 +88,12 @@ public class IBReferences {
 			}
 		}
 		List children = element.getChildren();
-		Iterator childrenIterator = children.iterator();
-		while (childrenIterator.hasNext()) {
-			XMLElement childElement = (XMLElement) childrenIterator.next();
-			checkElementForReferencesNoteNecessaryModules(childElement, metadata);
+		if (children != null) {
+			Iterator childrenIterator = children.iterator();
+			while (childrenIterator.hasNext()) {
+				XMLElement childElement = (XMLElement) childrenIterator.next();
+				checkElementForReferencesNoteNecessaryModules(childElement, metadata);
+			}
 		}
 	}
 	
