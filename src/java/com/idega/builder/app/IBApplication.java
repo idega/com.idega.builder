@@ -176,7 +176,7 @@ public class IBApplication extends IWApplication {
         idegawebBuilder.setFontSize(2);
         add(idegawebBuilder);
         addBreak();
-        Text build = new Text("Build 205b");
+        Text build = new Text("Build 215a");
         build.setFontColor("blue");
         build.setFontSize(1);
         add(build);
@@ -234,7 +234,7 @@ public class IBApplication extends IWApplication {
       }
 
       public void main(ModuleInfo modinfo){
-        super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload();top.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload()");
+        super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
 
         String controlParameter = "builder_controlparameter";
 
