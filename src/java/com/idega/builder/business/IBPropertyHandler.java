@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.39 2004/02/20 16:37:43 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.40 2004/02/25 16:57:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.builder.business;
 
 import com.idega.util.caching.Cache;
 import com.idega.block.media.business.MediaBusiness;
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -35,7 +36,7 @@ import com.idega.builder.handler.TableColumnsHandler;
 import com.idega.builder.handler.TableRowsHandler;
 import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
 import com.idega.data.EntityFinder;
-import com.idega.block.media.presentation.ImageInserter;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -340,9 +341,7 @@ public class IBPropertyHandler {
 		}
 	}
 	/**
-	
 	 *
-	
 	 */
 	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, Class parameterClass, String name, String stringValue) {
 		PresentationObject obj = null;
