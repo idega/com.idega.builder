@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.31 2002/03/11 18:18:10 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.32 2002/03/15 20:06:43 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,8 @@
  */
 package com.idega.builder.business;
 
+import com.idega.util.caching.Cache;
+import com.idega.block.media.business.MediaBusiness;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -398,8 +400,8 @@ public class IBPropertyHandler {
       obj = new com.idega.builder.presentation.IBFileChooser(name);
       try{
         //extends block.media.presentation.FileChooser
-        com.idega.core.data.ICFile file = new com.idega.core.data.ICFile(Integer.parseInt(stringValue));
-        ((com.idega.builder.presentation.IBFileChooser)obj).setValue(file);
+        Cache cache = MediaBusiness.getCachedFileInfo(Integer.parseInt(stringValue),iwc.getApplication());
+        ((com.idega.builder.presentation.IBFileChooser)obj).setValue((com.idega.core.data.ICFile)cache.getEntity());
       }
       catch(Exception e){
         //throw new RuntimeException(e.getMessage());
