@@ -19,9 +19,12 @@ import com.idega.util.datastructures.HashMatrix;
  */
 public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession {
 	
-	private boolean runingSession = false;
+	private boolean runningSession = false;
 	
 	private HashMatrix matrix = null;
+	
+	private boolean copyInstancePermissions = false;
+	private boolean copyPagePermissions=false;
 	
 	
 	/**
@@ -34,17 +37,19 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	
 	
 	public void startCopySession() throws Exception {
-		if(runingSession) {
+		if(runningSession) {
 			throw new Exception("Not allowed to run more than one copySession at ones.");
 		} else {
-			runingSession = true;
+			runningSession = true;
 			matrix = new HashMatrix();
+			copyInstancePermissions = false;
+			copyPagePermissions=false;
 		}
 	}
 	
 	public void endCopySession() {
-		if(runingSession) {
-			runingSession = false;
+		if(runningSession) {
+			runningSession = false;
 			matrix = null;
 		} else {
 			System.out.println("No copySession to end.  Either it has not started or already ended.");
@@ -77,13 +82,43 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	 * @return is copySession running
 	 */
 	private boolean sessionIsRunnig() {
-		if(!runingSession) {
+		if(!runningSession) {
 			System.out.println("[WARNING]: trying to use "+this.getClass().getName()+" but no copySession has started.");
 		}
 		
-		return runingSession;
+		return runningSession;
 	}
 	
 	
 
+	/**
+	 * @return Returns the copyInstancePermissions.
+	 */
+	public boolean doCopyInstancePermissions() {
+		return copyInstancePermissions;
+	}
+	/**
+	 * @param copyInstancePermissions The copyInstancePermissions to set.
+	 */
+	public void setToCopyInstancePermissions(boolean copyInstancePermissions) {
+		this.copyInstancePermissions = copyInstancePermissions;
+	}
+	/**
+	 * @return Returns the copyPagePermissions.
+	 */
+	public boolean doCopyPagePermissions() {
+		return copyPagePermissions;
+	}
+	/**
+	 * @param copyPagePermissions The copyPagePermissions to set.
+	 */
+	public void setToCopyPagePermissions(boolean copyPagePermissions) {
+		this.copyPagePermissions = copyPagePermissions;
+	}
+	/**
+	 * @return Returns the runningSession.
+	 */
+	public boolean isRunningSession() {
+		return runningSession;
+	}
 }

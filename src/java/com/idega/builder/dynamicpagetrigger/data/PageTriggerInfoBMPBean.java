@@ -9,6 +9,8 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.data.GenericGroup;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.user.data.Group;
 
 
 /**
@@ -110,6 +112,10 @@ public class PageTriggerInfoBMPBean extends com.idega.data.GenericEntity impleme
   
   public Collection ejbFindAllByICObjectID(ICObject obj) throws FinderException {
   	return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(_COLUMNNAME_REFERENCED_IC_OBJECT_ID,obj));
+  }
+  
+  public void setRelatedGroup(Group gr) throws IDOAddRelationshipException {
+  	idoAddTo(gr);
   }
 
 }

@@ -10,7 +10,7 @@ package com.idega.builder.dynamicpagetrigger.data;
  * @version 1.0
  */
 
-public class DPTPermissionGroupBMPBean extends com.idega.core.data.GenericGroupBMPBean implements com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup {
+public class DPTPermissionGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup {
 //public class DPTPermissionGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup {
 	public static final String GROUP_TYPE="dpt_permission";
 

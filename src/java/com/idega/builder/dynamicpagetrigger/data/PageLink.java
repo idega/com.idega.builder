@@ -7,6 +7,7 @@ public interface PageLink extends com.idega.data.IDOLegacyEntity
  public boolean getDeleted();
  public int getDeletedBy();
  public java.sql.Timestamp getDeletedWhen();
+ public com.idega.user.data.Group getGroup();
  public int getLinkImageId();
  public java.lang.String getName();
  public int getOnClickImageId();
@@ -19,6 +20,7 @@ public interface PageLink extends com.idega.data.IDOLegacyEntity
  public void setDeleted(boolean p0);
  public void setDeletedBy(int p0);
  public void setDeletedWhen(java.sql.Timestamp p0);
+ public void setGroup(com.idega.user.data.Group p0);
  public void setLinkImageId(int p0);
  public void setName(java.lang.String p0);
  public void setOnClickImageId(int p0);

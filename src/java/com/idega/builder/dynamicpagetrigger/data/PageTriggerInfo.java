@@ -1,5 +1,8 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.user.data.Group;
+
 
 public interface PageTriggerInfo extends com.idega.data.IDOLegacyEntity
 {
@@ -12,4 +15,5 @@ public interface PageTriggerInfo extends com.idega.data.IDOLegacyEntity
  public void setICObject(int p0);
  public void setName(java.lang.String p0);
  public void setRootPageId(int p0);
+ public void setRelatedGroup(Group gr) throws IDOAddRelationshipException;
 }

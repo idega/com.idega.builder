@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.50 2004/05/05 17:16:50 gummi Exp $
+ * $Id: XMLReader.java,v 1.51 2004/05/07 14:55:44 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -72,7 +72,6 @@ public class XMLReader {
 		// Parse the page attributes
 		while (attr.hasNext()) {
 			XMLAttribute at = (XMLAttribute) attr.next();
-			System.out.println("Page attribute: " + at.getName()+ " - "+at.getValue());
 			if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
 				hasTemplate = true;
 				parentContainer = PageCacher.getPage(at.getValue());
@@ -554,7 +553,7 @@ public class XMLReader {
 				while (it.hasNext()) {
 					PresentationObject obj = (PresentationObject) it.next();
 					if (obj.getICObjectInstanceID() == from) {
-						obj.setICObjectInstanceID(to);
+						obj.changeInstanceIdForInheritedObject(to);
 						ObjectInstanceCacher.changeObjectInstanceID(page, Integer.toString(from), Integer.toString(to), obj);
 						return;
 					}

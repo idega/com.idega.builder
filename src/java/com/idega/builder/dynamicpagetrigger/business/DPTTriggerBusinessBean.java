@@ -1,11 +1,14 @@
 package com.idega.builder.dynamicpagetrigger.business;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import javax.ejb.FinderException;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageFinder;
@@ -14,7 +17,9 @@ import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
+import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroupHome;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
+import com.idega.builder.dynamicpagetrigger.data.PageLinkHome;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -24,11 +29,15 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Link;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -118,9 +127,53 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 //  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws SQLException {
 //  	
 //  }
+  
+  /**
+   * 
+   * Creates new page tree using the information in pti, the PageTriggerInfo object,
+   * but creating a new DPTPermission group to be some kind of owner for the tree, that is
+   * users that are put into that group will get permissions for this new pagetree as set for
+   * for the template object.  The user running this method is added automaticly to this group.
+   * @param iwc
+   * @param pti
+   * @param referencedDataId
+   * @param defaultLinkText
+   * @param ownerGroup
+   * @param standardParameters - depricated
+   * @param imageFileId - depricated
+   * @param onMouseOverImageFileId - depricated
+   * @param onClickImageFileId     - depricated
+   * @return
+   * @throws Exception
+   */
+  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws Exception{
+    DPTPermissionGroup prGroup = ((DPTPermissionGroupHome)IDOLookup.getHome(DPTPermissionGroup.class)).create();
+    prGroup.setName(defaultLinkText);
+    prGroup.setDescription("This group is created for permission handling of a generated pagetree");
+    prGroup.store();
+    
+    prGroup.addGroup(iwc.getCurrentUser());
+    
+    return createPageLink(iwc,pti,referencedDataId,defaultLinkText,prGroup,standardParameters,imageFileId,onMouseOverImageFileId,onClickImageFileId);
+  }
 
-  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws Exception {
-    PageLink pl = ((com.idega.builder.dynamicpagetrigger.data.PageLinkHome)com.idega.data.IDOLookup.getHomeLegacy(PageLink.class)).createLegacy();
+ 
+
+  
+  /**
+   * @see #createPageLink(IWContext, PageTriggerInfo, String, String, String, Integer, Integer, Integer)
+   * The difference between this and #createPageLink(IWContext, PageTriggerInfo, String, String, String, Integer, Integer, Integer) 
+   * is that here you can set an existing Group as the owner, but when using this one has to be sure that the group type of this group is
+   * cashed by the Login, otherwise permissions will NOT inherit from the template.
+   * 
+   * This is mainly created to avoid problems while synchronizing between eGolf and Felix
+   */
+  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, Group ownerGroup, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws Exception {
+    if(ownerGroup==null) {
+    		return createPageLink(iwc,pti,referencedDataId,defaultLinkText,standardParameters,imageFileId,onMouseOverImageFileId,onClickImageFileId);
+    }
+  	
+  	PageLink pl = ((com.idega.builder.dynamicpagetrigger.data.PageLinkHome)com.idega.data.IDOLookup.getHomeLegacy(PageLink.class)).createLegacy();
 
     pl.setPageTriggerInfoId(pti.getID());
     pl.setReferencedDataId(referencedDataId);
@@ -131,15 +184,16 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     }
 
     int pageId = createPage(iwc,pti.getDefaultTemplateId(), pti.getRootPageId(), defaultLinkText);
-
     if(pageId == -1){
       return (null);
     }
-
     pl.setPageId(pageId);
+    
 
+    pl.setGroup(ownerGroup);
+    
 
-    pl.insert();
+    pl.store();
 
     return pl;
 
@@ -193,51 +247,31 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     catch(SQLException e) {
       return (-1);
     }
-/*    IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
-    if (name == null){
-      name = "Untitled";
-    }
-    page.setName(name);
-    page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
-    page.setTemplateId(dptTemplateId);
 
-    try {
-      page.insert();
-      IBPage ibPageParent = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(parentId);
-      ibPageParent.addChild(page);
+    
+    boolean copyPagePermission = false;
+	try {
+		copyPagePermission = ((DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class)).doCopyPagePermissions();
+	} catch (IBOLookupException e2) {
+		e2.printStackTrace();
+	} catch (RemoteException e2) {
+		e2.printStackTrace();
+	}
+    if(copyPagePermission) {
+    		copyPagePermissions(Integer.toString(dptTemplateId), Integer.toString(id));
     }
-    catch(SQLException e) {
-      return(-1);
-    }
-*/
-    copyPagePermissions(Integer.toString(dptTemplateId), Integer.toString(id));
 
 
     createdPages.put(Integer.toString(dptTemplateId),Integer.toString(id));
-/*
-    instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
-    IBXMLPage ibxmlPage =  instance.getIBXMLPage(dptTemplateId);
-    ibxmlPage.addUsingTemplate(Integer.toString(page.getID()));
 
-*/
 
     IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
 	currentXMLPage.getPageRootElement().setAttribute(XMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(((rootPageID!=-1)?rootPageID:id)));
 	currentXMLPage.update();
     Page current = currentXMLPage.getPopulatedPage();
     List children = current.getChildrenRecursive();
-/*
-    if (children != null) {
-      Iterator it = children.iterator();
-      while (it.hasNext()) {
-        PresentationObject obj = (PresentationObject)it.next();
-        boolean ok = changeInstanceId(obj,currentXMLPage,true);
-        if(!ok){
-          return(-1);
-        }
-      }
-    }
-*/
+
+
     if(children != null){
       Iterator iter = children.iterator();
       while (iter.hasNext()) {
@@ -281,10 +315,15 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 
   private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name) throws Exception{
     DPTCopySession cSession = ((DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class));
-  	cSession.startCopySession();
+  	boolean sessionAlreadyStarted = cSession.isRunningSession();
+    if(!sessionAlreadyStarted) {
+    		cSession.startCopySession();
+    }
     int pageID = createPage(iwc, dptTemplateId, parentId, name, new Hashtable(),-1);
-    cSession.endCopySession();
-    return pageID;
+    if(!sessionAlreadyStarted) {
+    		cSession.endCopySession();
+    }
+    	return pageID;
   }
 
 
@@ -304,6 +343,10 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     //
   }
 
+  
+  /**
+   * @deprecated not useful anymore.  Only used in eProject
+   */
   public void copyPagePermissions( String oldPageID, String newPageID) throws SQLException{
     AccessControl.copyPagePermissions(oldPageID,newPageID);
     //
@@ -320,64 +363,19 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     //
   }
 
-
-
-  /**
-   *
-   *//*
-  private static boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
-    if (obj.getChangeInstanceIDOnInheritance()) {
-      int object_id = obj.getICObjectID();
-      int ic_instance_id = obj.getICObjectInstanceID();
-      ICObjectInstance instance = null;
-
-      try {
-        instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
-        instance.setICObjectID(object_id);
-        instance.insert();
-        if(copyPermissions){
-          copyInstencePermissions(Integer.toString(ic_instance_id),Integer.toString(instance.getID()));
-        }
-      }
-      catch(SQLException e) {
-        //System.err.println("DPTTriggerBusiness: "+e.getMessage());
-        //e.printStackTrace();
-        return(false);
-      }
-
-      if(obj instanceof IWBlock){
-        boolean ok = ((IWBlock)obj).copyBlock(instance.getID());
-        if (!ok){
-          return(false);
-        }
-      }
-
-      XMLElement element = new XMLElement(XMLConstants.CHANGE_IC_INSTANCE_ID);
-      XMLAttribute from = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_FROM,Integer.toString(ic_instance_id));
-      XMLAttribute to = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_TO,Integer.toString(instance.getID()));
-      element.setAttribute(from);
-      element.setAttribute(to);
-
-      XMLWriter.addNewElement(xmlpage,-1,element);
-    }
-
-    return(true);
-  }
-*/
-
   public List getDPTPermissionGroups(PageTriggerInfo pti) throws SQLException{
     return EntityFinder.findRelated(pti, com.idega.core.data.GenericGroupBMPBean.getStaticInstance());
   }
 
-  public static void createDPTPermissionGroup(PageTriggerInfo pti, String name, String description) throws SQLException {
+  public static void createDPTPermissionGroup(PageTriggerInfo pti, String name, String description) throws IDOAddRelationshipException {
     DPTPermissionGroup newGroup = ((com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroupHome)com.idega.data.IDOLookup.getHomeLegacy(DPTPermissionGroup.class)).createLegacy();
     newGroup.setName(name);
     newGroup.setDescription(description);
 
-    newGroup.insert();
+    newGroup.store();
 
 
-    pti.addTo(newGroup);
+    pti.setRelatedGroup(newGroup);
 
   }
 
@@ -426,6 +424,17 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     return addObjectInstancToSubPages(objinst,iwuc);
   }
 
+  public Group getOwnerGroupFromRootPageID(int rootPageID) {
+  	try {
+		PageLink pl = ((PageLinkHome)IDOLookup.getHome(PageLink.class)).findByRootPageID(rootPageID);
+		return pl.getGroup();
+	} catch (IDOLookupException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+  	return null;
+  }
 
 
 }

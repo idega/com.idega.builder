@@ -9,13 +9,14 @@ import javax.ejb.FinderException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
+import com.idega.user.data.Group;
 
 /**
  * Title:        idegaWeb
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Gudmundur Agust Saemundsson</a>
  * @version 1.0
  */
 
@@ -33,7 +34,7 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
   private final static String _COLUMN_DELETED = "deleted";
   private final static String _COLUMN_DELETED_BY = "deleted_by";
   private final static String _COLUMN_DELETED_WHEN = "deleted_when";
-
+  private final static String _COLUMNNAME_DPT_PERMISSION_GROUP = "IC_GROUP_ID";
 
   public PageLinkBMPBean() {
     super();
@@ -48,7 +49,7 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
     this.addAttribute(_COLUMNNAME_LINK_IMAGE,"link image",true,true,Integer.class,"one-to-many",ICFile.class);
     this.addAttribute(_COLUMNNAME_ONCLICK_IMAGE,"onClick image",true,true,Integer.class,"one-to-many",ICFile.class);
     this.addAttribute(_COLUMNNAME_ONMOUSEOVER_IMAGE,"onMouseOver image",true,true,Integer.class,"one-to-many",ICFile.class);
-    this.addAttribute(_COLUMNNAME_PAGE_ID,"síðu id",true,true,Integer.class,"one-to-many",ICPage.class);
+    this.addAttribute(_COLUMNNAME_PAGE_ID,"page id",true,true,Integer.class,"one-to-many",ICPage.class);
     this.addAttribute(_COLUMNNAME_PAGE_TRIGGER_INFO_ID,"trigger upplýsingar",true,true,Integer.class,"one-to-many",PageTriggerInfo.class);
     addAttribute(_COLUMN_DELETED,"Deleted",true,true,Boolean.class);
     addAttribute(_COLUMN_DELETED_BY,"Deleted by",true,true,Integer.class,"many-to-one",User.class);
@@ -57,7 +58,7 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
     //this.addAttribute(_COLUMNNAME_IS_VISIBLE,"",true,true,String.class,250);
     this.addAttribute(_COLUMNNAME_REFERENCED_DATA_ID,"",true,true,String.class,250);
     this.addAttribute(_COLUMNNAME_STANDARD_PRM,"",true,true,String.class,250);
-
+    addOneToOneRelationship(_COLUMNNAME_DPT_PERMISSION_GROUP,"Group representing this pagetree for the accesscontrol system",Group.class);
   }
 
   public String getEntityName() {
@@ -129,6 +130,9 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
     return this.getStringColumnValue(this._COLUMNNAME_STANDARD_PRM);
   }
 
+  public Group getGroup() {
+  	return (Group)getColumnValue(_COLUMNNAME_DPT_PERMISSION_GROUP);
+  }
 
 
 
@@ -164,6 +168,11 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
     this.setColumn(this._COLUMNNAME_STANDARD_PRM, value);
   }
   
+  public void setGroup(Group group) {
+  	setColumn(_COLUMNNAME_DPT_PERMISSION_GROUP,group);
+  }
+  
+  
   public Collection ejbFindAllByPageTriggerInfo(PageTriggerInfo info) throws FinderException {
   	return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(_COLUMNNAME_PAGE_TRIGGER_INFO_ID,info));
   }
@@ -172,7 +181,16 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
   	return idoFindPKsByQuery(idoQueryGetSelect().appendWhere(_COLUMNNAME_PAGE_TRIGGER_INFO_ID).appendInCollection(info));
   }
 
+  public Object ejbFindByGroup(Group group) throws FinderException {
+  	return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(_COLUMNNAME_DPT_PERMISSION_GROUP,group));
+  }
 
-
+  public Object ejbFindByRootPageID(int rootpageID) throws FinderException {
+  	return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(_COLUMNNAME_PAGE_ID,rootpageID));
+  }
+  
+  public Object ejbFindByRootPage(ICPage rootpage) throws FinderException {
+  	return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(_COLUMNNAME_PAGE_ID,rootpage));
+  }
 
 }

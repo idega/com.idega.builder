@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.32 2004/05/05 12:49:07 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.33 2004/05/07 14:55:44 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package com.idega.builder.business;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -229,9 +230,17 @@ public class IBPageHelper {
 //			System.out.println("children size = " + children.size());
 			if (children != null) {
 				Iterator it = children.iterator();
+				boolean copyInstancePermissions = false;
+				try {
+					copyInstancePermissions = ((DPTCopySession)IBOLookup.getSessionInstance(creatorContext,DPTCopySession.class)).doCopyInstancePermissions();
+				} catch (IBOLookupException e2) {
+					e2.printStackTrace();
+				} catch (RemoteException e2) {
+					e2.printStackTrace();
+				}
 				while (it.hasNext()) {
 					PresentationObject obj = (PresentationObject) it.next();
-					boolean ok = changeInstanceId(obj, currentXMLPage, true,creatorContext);
+					boolean ok = changeInstanceId(obj, currentXMLPage, copyInstancePermissions,creatorContext);
 					if (!ok) {
 //						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
 						return (-1);
@@ -268,12 +277,20 @@ public class IBPageHelper {
 			Page current = currentXMLPage.getPopulatedPage();
 			List children = current.getChildrenRecursive();
 			if (children != null) {
+				boolean copyInstancePermissions = false;
+				try {
+					copyInstancePermissions = ((DPTCopySession)IBOLookup.getSessionInstance(iwuc,DPTCopySession.class)).doCopyInstancePermissions();
+				} catch (IBOLookupException e2) {
+					e2.printStackTrace();
+				} catch (RemoteException e2) {
+					e2.printStackTrace();
+				}
 				Iterator it = children.iterator();
 				while (it.hasNext()) {
 					PresentationObject obj = (PresentationObject) it.next();
 					for (int i = 0; i < templateObjInstID.length; i++) {
 						if (obj.getICObjectInstanceID() == templateObjInstID[i]) {
-							boolean ok = changeInstanceId(obj, currentXMLPage, true,iwuc);
+							boolean ok = changeInstanceId(obj, currentXMLPage, copyInstancePermissions,iwuc);
 							if (!ok) {
 								System.out.println("addElementToPage - changeInstanceId failed");
 								return false;
@@ -300,11 +317,11 @@ public class IBPageHelper {
 		return addElementToPage(ibPage, ids,iwuc);
 	}
 	private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions, IWUserContext iwuc) {
-		System.out.println("changeInstanceId begins");
-		System.out.println("obj.name = " + obj.getName());
-		System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
-		System.out.println("obj.getId = " + obj.getICObjectID());
-		System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
+//		System.out.println("changeInstanceId begins");
+//		System.out.println("obj.name = " + obj.getName());
+//		System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
+//		System.out.println("obj.getId = " + obj.getICObjectID());
+//		System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
 		if (obj.getChangeInstanceIDOnInheritance()) {
 			int object_id = obj.getICObjectID();
 			int ic_instance_id = obj.getICObjectInstanceID();
@@ -332,12 +349,12 @@ public class IBPageHelper {
 					DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwuc,DPTCopySession.class);
 					boolean ok = ((Builderaware) obj).copyBlock(instance.getID(),cSession);
 					if (!ok) {
-						System.out.println("changeInstanceId - copyBlock failed");
+						System.err.println("changeInstanceId - copyBlock failed");
 						return false;
 					}
 				} catch (IBOLookupException e1) {
 					e1.printStackTrace();
-					System.out.println("changeInstanceId - copyBlock failed");
+					System.err.println("changeInstanceId - copyBlock failed");
 					return false;
 				}
 			}
@@ -348,7 +365,7 @@ public class IBPageHelper {
 			element.setAttribute(to);
 			XMLWriter.addNewElement(xmlpage, -1, element);
 		}
-		System.out.println("changeInstanceId ends");
+//		System.out.println("changeInstanceId ends");
 		return true;
 	}
 	/**
