@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.30 2002/04/03 12:44:55 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.31 2002/04/05 19:15:50 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -143,7 +143,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
         setOnUnLoad("window.opener.parent.parent.location.reload()");
 
 //        setParentToReload();
-	      close();
+	     // close();
       }
     }
     else if (quit) {
