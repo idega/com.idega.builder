@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.20 2001/10/10 13:03:59 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.21 2001/10/19 13:56:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -163,6 +163,8 @@ public class XMLReader {
         isLocked = false;
     }
 
+    Attribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
+
     Attribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
     String regionID = null;
     if (regionIDattr != null) {
@@ -225,6 +227,11 @@ public class XMLReader {
         ((Table)regionParent).lock(x,y);
       else
         ((Table)regionParent).unlock(x,y);
+
+      if (label != null) {
+        ((Table)regionParent).setLabel(label.getValue(),x,y);
+      }
+
       newRegionParent = ((Table)regionParent).containerAt(x,y);
     }
 

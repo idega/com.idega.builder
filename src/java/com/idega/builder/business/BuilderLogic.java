@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.51 2001/10/19 12:50:13 palli Exp $
+ * $Id: BuilderLogic.java,v 1.52 2001/10/19 13:56:51 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -614,7 +614,6 @@ public class BuilderLogic {
     try {
       IBXMLPage xml = getIBXMLPage(pageKey);
       boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
-      //System.out.println("AllowMultiValued="+allowMultivalued);
       if (XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)) {
         xml.update();
         return(true);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.8 2001/10/19 12:50:13 palli Exp $
+ * $Id: IBAddModuleWindow.java,v 1.9 2001/10/19 13:57:03 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -92,6 +92,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
     }
 
     String label = iwc.getParameter(IB_LABEL_PARAMETER);
+System.out.println("label = " + label);
     if (label == null) {
       System.out.println("label==null");
     }
@@ -189,6 +190,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
         link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,item.getID());
         link.maintainParameter(IB_PAGE_PARAMETER,iwc);
         link.maintainParameter(IB_PARENT_PARAMETER,iwc);
+        link.maintainParameter(IB_LABEL_PARAMETER,iwc);
         subComponentTable.add(link,1,ypos);
         ypos++;
       }
