@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
+import com.idega.builder.data.IBExportMetadata;
+import com.idega.builder.data.IBReferences;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -15,6 +17,9 @@ import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.util.xml.XMLData;
+import com.idega.xml.XMLDocument;
+import com.idega.xml.XMLElement;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -27,14 +32,36 @@ import com.idega.data.IDOLookupException;
  */
 public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageExportBusiness {
 	
+
+
+	
 	private ICPageHome pageHome = null;
 	private FileBusiness fileBusiness = null;
+	private IBReferences references = null;
+
 	
-	public String exportPages(List pageIds) throws IOException, FinderException  {
-  	if (pageIds == null) {
-  		throw new IOException("List of page ids is empty");
-  	}
-  	List files = new ArrayList();
+	public String exportPages(List pageIds, List templateIds) throws IOException, FinderException {
+		List ids = null;
+		boolean pageIdsExists = (pageIds != null && ! pageIds.isEmpty());
+		boolean templateIdsExists = (templateIds != null && ! templateIds.isEmpty());
+		if (! pageIdsExists && ! templateIdsExists) {
+			return "";
+		}
+		if (pageIdsExists) {
+			ids = new ArrayList(pageIds);
+			if (templateIdsExists) {
+				ids.addAll(templateIds);
+			}
+		}
+		else {
+			ids = new ArrayList(templateIds);
+		}
+		return exportPages(ids);
+	}
+		
+	private String exportPages(List pageIds) throws IOException, FinderException  {
+  	IBExportMetadata metadata = new IBExportMetadata();
+		List files = new ArrayList();
 //  	XMLData exportXML = XMLData.getInstanceWithoutExistingFile("export");
 //  	XMLDocument exportDocument = exportXML.getDocument();
 //  	XMLElement exportRoot = exportDocument.getRootElement();
@@ -43,20 +70,27 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
   	while (pageIterator.hasNext()) {
   		Integer pageId = (Integer) pageIterator.next();
   		ICPageHome pageHome = getPageHome();
-  		ICPage page = pageHome.findByPrimaryKey(pageId.intValue());
+  		ICPage page = pageHome.findByPrimaryKey(pageId);
   		ICFile file = page.getFile();
-  		files.add(file);
-//  		XMLData xmlData = XMLData.getInstanceForFile(file);
-//  		XMLDocument pageXML = xmlData.getDocument();
-//  		XMLElement pageRoot = pageXML.getRootElement().getChild(XMLConstants.PAGE_STRING);
-//  		pageRoot.detach();
-//  		exportRoot.addContent(pageRoot);
-  	}	
+  		XMLData xmlData = XMLData.getInstanceForFile(file);
+  		XMLDocument pageXML = xmlData.getDocument();
+  		XMLElement pageRoot = pageXML.getRootElement().getChild(XMLConstants.PAGE_STRING);
+  		getReferences().checkElementForReferences(pageRoot, files, metadata);
+  		files.add(page);
+  		metadata.addFileEntry(page);
+  	}
   	FileBusiness fileBusiness = getFileBusiness();
-  	return fileBusiness.getURLForOfferingDownload("export", files);
+  	return fileBusiness.getURLForOfferingDownload("export", files, metadata);
   	//return fileBusiness.getURLForOfferingDownload(exportXML);
   }
- 		
+	
+	private IBReferences getReferences() throws IOException {
+		if (references == null) {
+			references = new IBReferences(getIWMainApplication());
+		}
+		return references;
+	}	
+	
 	private ICPageHome getPageHome() throws IDOLookupException {
 		if (pageHome == null)  {
 			pageHome = (ICPageHome) IDOLookup.getHome(ICPage.class);

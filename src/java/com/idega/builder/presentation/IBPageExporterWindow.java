@@ -51,7 +51,7 @@ public class IBPageExporterWindow extends IWAdminWindow {
   // list of page ids (type Integer) 
   private List pageIds = null; 
   // list of template ids (type Intger)
-	//private List templateIds = null;
+	private List templateIds = null;
 	// download link
 	private String downloadLink = null;
 	
@@ -96,7 +96,7 @@ public class IBPageExporterWindow extends IWAdminWindow {
   private String parseAction(IWContext iwc) {
   	String action = null;
   	pageIds = getSelectedIds(PAGE_KEY, iwc);
-  	//templateIds = getSelectedIds(TEMPLATE_KEY, iwc);
+  	templateIds = getSelectedIds(TEMPLATE_KEY, iwc);
   	if (iwc.isParameterSet(SUBMIT_EXPORT_KEY)) {
   		action = EXPORT_ACTION;
   	}
@@ -106,12 +106,12 @@ public class IBPageExporterWindow extends IWAdminWindow {
   	return action;
   }
   
-  private boolean doAction(String action, IWApplicationContext iwac) throws IOException, FinderException {
+  private boolean doAction(String action, IWContext iwc) throws IOException, FinderException {
   	if (CLOSE_ACTION.equals(action)) {
   		close();
   	}
   	else if (EXPORT_ACTION.equals(action)) {
- 			downloadLink = exportPages(iwac);
+ 			downloadLink = exportPages(iwc);
   	}
   	return true;
   }
@@ -129,11 +129,9 @@ public class IBPageExporterWindow extends IWAdminWindow {
   	return list;
   }
   
-  private String exportPages(IWApplicationContext iwac) throws IOException, FinderException {
-  	if (pageIds == null || pageIds.isEmpty()) {
-  		return null;
-  	}
-  	return getPageExportBusiness(iwac).exportPages(pageIds);
+  private String exportPages(IWContext iwc) throws IOException, FinderException {
+  	// accepts null and empty values
+  	return getPageExportBusiness(iwc).exportPages(pageIds, templateIds); 
   }
   		
   		
