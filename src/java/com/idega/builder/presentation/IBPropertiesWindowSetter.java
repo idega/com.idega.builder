@@ -1,32 +1,34 @@
+/*
+ * $Id: IBPropertiesWindowSetter.java,v 1.11 2001/12/13 11:27:01 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.builder.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-
-import com.idega.idegaweb.*;
-
+import com.idega.presentation.Page;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Script;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.text.Text;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.BuilderLogic;
-
+import com.idega.builder.handler.PropertyHandler;
 import com.idega.util.reflect.MethodFinder;
 
-import com.idega.core.data.ICObject;
-
-import java.util.List;
-import java.util.Iterator;
-
 /**
- * Title:        idegaclasses
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-
 public class IBPropertiesWindowSetter extends Page {
-
   //Parameters used in the window
   public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = IBPropertiesWindow.IC_OBJECT_INSTANCE_ID_PARAMETER;
   public static final String IB_PAGE_PARAMETER = IBPropertiesWindow.IB_PAGE_PARAMETER;
@@ -39,17 +41,16 @@ public class IBPropertiesWindowSetter extends Page {
   final static String SAVE_PROPERTY_PARAMETER = "ib_save_prop";
 
   //Javascript Functions names used in the window
-  final static String CHANGE_PROPERTY_FUNCTION_NAME="setProperty";
-  final static String UPDATE_PROPERTY_FUNCTION_NAME="update";
-  public final static String MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME="multivalueChange";
+  final static String CHANGE_PROPERTY_FUNCTION_NAME = "setProperty";
+  final static String UPDATE_PROPERTY_FUNCTION_NAME = "update";
+  public final static String MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME = "multivalueChange";
 
-  public IBPropertiesWindowSetter(){
+  public IBPropertiesWindowSetter() {
   }
 
-  public String getUsedICObjectInstanceID(IWContext iwc){
+  public String getUsedICObjectInstanceID(IWContext iwc) {
     return iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
   }
-
 
   public int getUsedICObjectInstanceIDInt(IWContext iwc){
     String s = getUsedICObjectInstanceID(iwc);
@@ -109,7 +110,6 @@ public class IBPropertiesWindowSetter extends Page {
     boolean doSave = true;
     String sDoSave = iwc.getParameter(SAVE_PROPERTY_PARAMETER);
     if(sDoSave!=null){
-      //System.out.println("IBPropertyWindowSetter, sDoSave="+sDoSave);
       if(sDoSave.equalsIgnoreCase("false")){
         doSave=false;
       }
@@ -126,7 +126,6 @@ public class IBPropertiesWindowSetter extends Page {
           String[] values = parseValues(iwc);
           if(values==null) doSave=false;
           if(remove){
-            //System.out.println("IBPropertyWindowSetter, Trying to remove");
             if(values!=null){
               propertyChange=true;
               removeProperty(iwc.getApplication(),propertyID,values,ic_object_id,pageKey);
@@ -134,21 +133,24 @@ public class IBPropertiesWindowSetter extends Page {
           }
           else{
             if(doSave){
-              //System.out.println("IBPropertyWindowSetter, Trying to save");
               propertyChange = this.setProperty(propertyID,values,ic_object_id,pageKey,iwc.getApplication());
+
+              PropertyHandler handler = (PropertyHandler)iwc.getSessionAttribute("handler");
+
+              if (handler != null) {
+                iwc.removeSessionAttribute("handler");
+                handler.onUpdate(values,iwc);
+              }
             }
             else{
-              //System.out.println("IBPropertyWindowSetter, Not Trying to save - values == null");
             }
           }
       }
 
       if(propertyChange){
-        //System.out.println("IBPropertyWindowSetter, Propertychange");
         doReload();
       }
       else{
-        //System.out.println("IBPropertyWindowSetter, No Propertychange");
         if(newPropertyID!=null){
           int iICObjectInstanceID = this.getUsedICObjectInstanceIDInt(iwc);
           Text description = new Text(IBPropertyHandler.getInstance().getMethodDescription(iICObjectInstanceID,newPropertyID,iwc));
@@ -160,10 +162,8 @@ public class IBPropertiesWindowSetter extends Page {
         }
       }
 
-      //System.out.println("IBPropertiesWindowList: Getting IC_OBJECT_ID");
     }
     else{
-      //System.out.println("IBPropertiesWindowList: Not getting IC_OBJECT_ID");
     }
   }
 
@@ -219,8 +219,6 @@ public class IBPropertiesWindowSetter extends Page {
       String namePrefix = "ib_property_";
       java.lang.reflect.Method method = MethodFinder.getInstance().getMethod(methodIdentifier,ICObjectClass);
       Class[] parameters = method.getParameterTypes();
-      //System.out.println("parameters.length="+parameters.length);
-      //System.out.println("method.toString()="+method.toString());
       String[] selectedValues = parseValues(iwc);
       String[] paramDescriptions = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc,icObjectInstanceID,methodIdentifier);
       boolean isChangingProperty = this.isChangingProperty(iwc);
@@ -232,16 +230,24 @@ public class IBPropertiesWindowSetter extends Page {
 
         try{
           sValue = realValues[i];
-          //System.out.println("IBPropertyWindowSetter, Realvalues["+i+"]="+sValue);
         }
         catch(java.lang.ArrayIndexOutOfBoundsException e){
         }
         catch(java.lang.NullPointerException npe){
-          //System.out.println("IBPropertyWindowSetter, realvalues is null");
         }
         String sName=namePrefix+i;
         String sParamDescription = paramDescriptions[i];
         PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,icObjectInstanceID,methodIdentifier,i,parameterClass,sName,sValue);
+
+        String handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc,icObjectInstanceID,methodIdentifier,i,IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
+
+        PropertyHandler handler = null;
+        if (handlerClass != null && !handlerClass.equals(""))
+          handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
+
+        if (handler != null)
+          iwc.setSessionAttribute("handler",handler);
+
         Parameter param = new Parameter(VALUE_PARAMETER,sName);
         if(sParamDescription!=null){
           Text tDescription = formatDescription(sParamDescription);
@@ -260,9 +266,11 @@ public class IBPropertiesWindowSetter extends Page {
     return new Text(text);
   }
 
-
+  /**
+   *
+   */
   public boolean setProperty(String key,String[] values,String icObjectInstanceID,String pageKey,IWMainApplication iwma){
-    return BuilderLogic.getInstance().setProperty(pageKey,Integer.parseInt(icObjectInstanceID),key,values,iwma);
+    return(BuilderLogic.getInstance().setProperty(pageKey,Integer.parseInt(icObjectInstanceID),key,values,iwma));
   }
 
   public void removeProperty(IWMainApplication iwma,String key,String[] values,String icObjectInstanceID,String pageKey){

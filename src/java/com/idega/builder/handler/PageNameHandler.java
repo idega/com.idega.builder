@@ -1,5 +1,5 @@
 /*
- * $Id: PageNameHandler.java,v 1.1 2001/12/12 21:06:32 palli Exp $
+ * $Id: PageNameHandler.java,v 1.2 2001/12/13 11:23:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,14 @@
  */
 package com.idega.builder.handler;
 
-import java.util.List;
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.PageTreeNode;
+import com.idega.builder.business.IBPageUpdater;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.TextInput;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -46,7 +50,22 @@ public class PageNameHandler implements PropertyHandler {
    *
    */
   public void onUpdate(String values[], IWContext iwc) {
-    System.out.println("Getting to onUpdate in PageNameHandler");
-    System.out.println("values = " + values);
+    if (values != null) {
+      String value = values[0];
+
+      if (value != null) {
+        String currPage = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+
+        if (currPage != null) {
+          Map tree = PageTreeNode.getTree(iwc);
+
+          Integer i = new Integer(currPage);
+
+          PageTreeNode node = (PageTreeNode)tree.get(i);
+          node.setNodeName(value);
+          IBPageUpdater.updatePageName(i.intValue(),value);
+        }
+      }
+    }
   }
 }

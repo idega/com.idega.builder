@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.6 2001/11/06 18:18:03 palli Exp $
+ * $Id: IBTemplateChooser.java,v 1.7 2001/12/13 11:25:59 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,9 @@ public class IBTemplateChooser extends AbstractChooser {
     _name = name;
   }
 
-
+  /**
+   *
+   */
   public void main(IWContext iwc) {
     IWBundle iwb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
     setChooseButtonImage(iwb.getImage("open.gif","Choose"));
@@ -49,20 +51,22 @@ public class IBTemplateChooser extends AbstractChooser {
    *
    */
   public Class getChooserWindowClass() {
+    int i = 1;
     return(IBTemplateChooserWindow.class);
   }
 
-
+  /**
+   *
+   */
   public void setSelectedPage(IBPage page) {
     super.setChooserValue(page.getName(),page.getID());
   }
 
+  /**
+   *
+   */
   public void setSelectedPage(int id, String name) {
   System.out.println("Setting selected page to " + id + ", name = " + name);
     super.setChooserValue(name,id);
   }
-
-/*  public void setSelectedPage(String id) {
-    super.setChooserValue(page.getName(),page.getID());
-  }*/
 }

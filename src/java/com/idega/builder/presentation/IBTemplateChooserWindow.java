@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.6 2001/11/14 17:58:48 eiki Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.7 2001/12/13 11:25:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import com.idega.presentation.ui.TreeViewer;
 import com.idega.presentation.text.Link;
 import com.idega.builder.data.IBDomain;
 import com.idega.builder.business.PageTreeNode;
+import com.idega.builder.business.BuilderLogic;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -37,16 +38,14 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
   }
 
   /**
-   * @todo get a treeviewer with the top page selected by default
-   * with better implementation ibdomain...
+   *
    */
   public void displaySelection(IWContext iwc) {
     add("Select a template");
 
     try {
-      int i_page_id = 2;
+      int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartTemplateID();
 
-//      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
       TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc),iwc);
 
       add(viewer);
@@ -54,7 +53,6 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
       viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
       viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
       viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
-//      viewer.setToMaintainParameter("chooser_value",iwc);
 
       Link prototype = new Link();
       viewer.setToUseOnClick();
