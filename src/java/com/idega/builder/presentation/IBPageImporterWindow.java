@@ -1,7 +1,6 @@
 package com.idega.builder.presentation;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import com.idega.io.UploadFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.FileInput;
@@ -50,7 +48,6 @@ public class IBPageImporterWindow extends IBPageWindow {
   public static final String CLOSE_ACTION = "ib_page_import_close_action";
   public static final String IMPORT_ACTION = "ib_page_import_action";
   
-  public static final String NODE_DELIMITER = " > ";
   
   boolean topLevelForPagesIsChosen = false;
   boolean topLevelForTemplatesIsChosen = false;
@@ -59,7 +56,6 @@ public class IBPageImporterWindow extends IBPageWindow {
   private int templatePageId = -1;
   
   private MessageContainer messageContainer = null;
-	private String downloadLink = null;
 	
 	private IBPageImportBusiness pageImportBusiness = null;
 	
@@ -78,18 +74,24 @@ public class IBPageImporterWindow extends IBPageWindow {
   	setTitle("PageImporter");
   	String action = parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
-		if (doAction(action, iwc)) {
+		if (doAction(action, resourceBundle, iwc)) {
 			getContent(resourceBundle, iwc);
 		}
 		else {
 			getErrorContent(resourceBundle);
 		}
-
   }
   
   private void getContent(IWResourceBundle resourceBundle, IWContext iwc)  {
-  	Table table = new Table(1, 6);
+  	int numberOfRows = (messageContainer == null) ? 6 : 7;
   	int row = 1;
+  	Table table = new Table( 1, numberOfRows);
+  	// add message if there is a message
+  	if (messageContainer != null) {
+  		Text text = new Text(messageContainer.getMainMessage());
+  		text.setBold();
+  		table.add(text,1, row++);
+  	}
   	// add file input
   	table.add(getFileInput(), 1, row++);
   	// top level checkbox
@@ -106,23 +108,26 @@ public class IBPageImporterWindow extends IBPageWindow {
   	form.add(table);
   	form.add(getButtons(resourceBundle));
   	add(form);
-  	if (downloadLink != null) {
-  		String downloadText = resourceBundle.getLocalizedString("ib_page_export_download", "Download");
-  		add(new Link(downloadText, downloadLink));
-  	}
   }
   
   private void getErrorContent(IWResourceBundle resourceBundle) {
   	List messages = messageContainer.getMessages();
-  	int numberOfRows = 1 + messages.size();
+  	int numberOfRows = 1 + ((messages == null) ? 0 : messages.size());
   	Table table = new Table(1, numberOfRows);
   	int row = 1;
-  	String mainErrorMessage = resourceBundle.getLocalizedString("ib_page_export_missing_modules", "Some modules are missing:");
-  	table.add(mainErrorMessage, 1, row++);
-  	Iterator iterator = messages.iterator();
-  	while (iterator.hasNext()) {
-  		String message = (String) iterator.next();
-  		table.add(message, 1, row++);
+  	String mainErrorMessage = messageContainer.getMainMessage();
+  	if (mainErrorMessage == null) {
+  		mainErrorMessage = resourceBundle.getLocalizedString("ib_page_export_missing_modules", "Some modules are missing:");
+  	}
+  	Text text = new Text(mainErrorMessage);
+  	text.setBold();
+  	table.add(text, 1, row++);
+  	if (messages != null) {
+	  	Iterator iterator = messages.iterator();
+	  	while (iterator.hasNext()) {
+	  		String message = (String) iterator.next();
+	  		table.add(message, 1, row++);
+	  	}
   	}
   	Form form = new Form();
   	form.add(table);
@@ -165,17 +170,39 @@ public class IBPageImporterWindow extends IBPageWindow {
   	return action;
   }
   
-  private boolean doAction(String action, IWContext iwc) throws IOException {
+  private boolean doAction(String action, IWResourceBundle resourceBundle, IWContext iwc)  {
+  	messageContainer = null;
   	if (CLOSE_ACTION.equals(action)) {
   		close();
+  		return true;
   	}
   	else if (IMPORT_ACTION.equals(action)) {
 	  	UploadFile file = iwc.getUploadedFile();
 	  	if (file != null) {
-	  		messageContainer = importPages(file, iwc);
-	  		return (messageContainer == null);
+	  		try {
+	  			messageContainer = importPages(file, iwc);
+	  		}
+	  		catch (IOException ex) {
+	  			messageContainer = new MessageContainer();
+	  			StringBuffer mainMessage = new StringBuffer(resourceBundle.getLocalizedString("ib_page_import_error", "Import failed, but some elements might have been already imported"));
+	  			mainMessage.append(" ").append(ex.getMessage());
+	  			messageContainer.setMainMessage(mainMessage.toString());
+	  			return false;
+	  		}
+	  		if (messageContainer == null) {
+	  			messageContainer = new MessageContainer();
+	  			messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_import_success", "Files were successfully imported"));
+	  			return true;
+	  		}
+	  		return false;
 	  	}
-  	}
+	  	else {
+	  		messageContainer = new MessageContainer();
+	  		String mainMessage = resourceBundle.getLocalizedString("ib_page_import_file_does_not_exist", "Import failed, the uploaded file couldn't be found");
+	  		messageContainer.setMainMessage(mainMessage);
+	  		return false;
+	  	}
+	  }
   	return true;
   }
 
@@ -192,7 +219,7 @@ public class IBPageImporterWindow extends IBPageWindow {
 		}
   }
   
-  private MessageContainer importPages(UploadFile file, IWContext iwc) throws IBOLookupException, RemoteException, IOException { 
+  private MessageContainer importPages(UploadFile file, IWContext iwc) throws IOException { 
   	return getPageImportBusiness(iwc).importPages(file, true, parentPageId, templatePageId, iwc);
 	}
   	

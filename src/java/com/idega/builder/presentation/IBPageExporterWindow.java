@@ -19,10 +19,12 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.datastructures.MessageContainer;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -54,6 +56,8 @@ public class IBPageExporterWindow extends IBPageWindow {
 	// download link
 	private String downloadLink = null;
 	
+	private MessageContainer messageContainer = null;
+	
 	private IBPageExportBusiness pageExportBusiness = null;
 	
 	public String getBundleIdentifier() {
@@ -71,13 +75,17 @@ public class IBPageExporterWindow extends IBPageWindow {
   	setTitle("PageExporter");
   	String action = parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
-		doAction(action, iwc);
+		doAction(action, resourceBundle, iwc);
 		getContent(resourceBundle, iwc);
-
   }
   
   private void getContent(IWResourceBundle resourceBundle, IWContext iwc) throws IDOLookupException, FinderException {
   	Form form = new Form();
+  	if (messageContainer != null) {
+  		Text text = new Text(messageContainer.getMainMessage());
+  		text.setBold();
+  		form.add(text);
+  	}
   	IBPageHelper pageHelper = IBPageHelper.getInstance();
   	List startPages = pageHelper.getFirstLevelPageTreeNodesDomainFirst(iwc);
   	List templateStartPages = pageHelper.getFirstLevelPageTreeNodesTemplateDomainFirst(iwc);
@@ -106,12 +114,27 @@ public class IBPageExporterWindow extends IBPageWindow {
   	return action;
   }
   
-  private boolean doAction(String action, IWContext iwc) throws IOException, FinderException {
+  private boolean doAction(String action, IWResourceBundle resourceBundle, IWContext iwc) throws FinderException {
+  	messageContainer = null;
   	if (CLOSE_ACTION.equals(action)) {
   		close();
+  		return true;
   	}
   	else if (EXPORT_ACTION.equals(action)) {
- 			downloadLink = exportPages(iwc);
+  		try {
+  			downloadLink = exportPages(iwc);
+  		}
+  		catch (IOException ex) {
+	  		messageContainer = new MessageContainer();
+	  		StringBuffer mainMessage = new StringBuffer(resourceBundle.getLocalizedString("ib_page_export_error", "Export failed"));
+	  		mainMessage.append(" ");
+	  		mainMessage.append(ex.getMessage());
+	  		messageContainer.setMainMessage(mainMessage.toString());
+	  		return false;
+  		}
+	  	messageContainer = new MessageContainer();
+	  	messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_exportt_success", "Files were successfully exported"));
+	  	return true;
   	}
   	return true;
   }
