@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserGroupBusiness;
@@ -36,7 +37,7 @@ import com.idega.presentation.ui.SubmitButton;
 public class IBPermissionWindow extends IBAdminWindow{
 
   private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
-  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
+  private static final String ib_page_parameter = BuilderConstants.IB_PAGE_PARAMETER;
 
   public static final String _PARAMETERSTRING_IDENTIFIER = AccessControl._PARAMETERSTRING_IDENTIFIER;
   public static final String _PARAMETERSTRING_PERMISSION_CATEGORY = AccessControl._PARAMETERSTRING_PERMISSION_CATEGORY;

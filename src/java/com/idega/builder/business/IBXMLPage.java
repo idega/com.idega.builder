@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.47 2004/06/21 17:01:06 eiki Exp $
+ * $Id: IBXMLPage.java,v 1.48 2004/06/24 20:12:25 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -293,7 +293,9 @@ public class IBXMLPage implements IBXMLAble {
 			}
 			else if(this.getPageFormat().equals("HTML")){
 				//convert the string to utf-8
+				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
 				String theString = new String(this.toString().getBytes(),"UTF-8");
+				//String theString = this.toString();
 				StringReader sr = new StringReader(theString);
 				
 				OutputStreamWriter out = new OutputStreamWriter(stream);

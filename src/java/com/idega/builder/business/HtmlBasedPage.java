@@ -38,11 +38,12 @@ public class HtmlBasedPage extends IBXMLPage {
 	protected void readPageStream(InputStream stream) throws PageDoesNotExist {
 		//HtmlPage hPage = new HtmlPage();
 		//hPage.setResource(stream);
-		InputStreamReader reader = new InputStreamReader(stream);
-		int bufferlength=1000;
-		char[] buf = new char[bufferlength];
-		StringBuffer sbuffer = new StringBuffer();
+
 		try {
+			InputStreamReader reader = new InputStreamReader(stream,"UTF-8");
+			int bufferlength=1000;
+			char[] buf = new char[bufferlength];
+			StringBuffer sbuffer = new StringBuffer();			
 			int read = reader.read(buf);
 			while(read!=-1){
 				sbuffer.append(buf,0,read);

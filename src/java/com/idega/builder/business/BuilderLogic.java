@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.153 2004/06/24 13:57:01 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.154 2004/06/24 20:12:25 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -54,7 +54,6 @@ public class BuilderLogic {
 
 	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	public static final String IB_PARENT_PARAMETER = "ib_parent_par";
-	public static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	public static final String IB_LABEL_PARAMETER = "ib_label";
 
 	public static final String IB_LIBRARY_NAME = "ib_library_name";
@@ -495,13 +494,13 @@ public class BuilderLogic {
 	public static String getCurrentIBPage(IWContext iwc) {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
-		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderServletURI())) {
-			int indexOfPage = requestURI.indexOf("/page/");
+		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
+			int indexOfPage = requestURI.indexOf("/pages/");
 			if (indexOfPage != -1) {
 				boolean pageISNumber = true;
 				String pageID = null;
 				try {
-					String subString = requestURI.substring(indexOfPage + 6);
+					String subString = requestURI.substring(indexOfPage + 7);
 					int lastSlash = subString.indexOf("/");
 					if (lastSlash == -1) {
 						pageID = subString;
@@ -527,8 +526,8 @@ public class BuilderLogic {
 			iwc.removeSessionAttribute(SESSION_PRIORITY_PAGE_KEY);
 		}
 		// normal page check
-		else if (iwc.isParameterSet(IB_PAGE_PARAMETER)) {
-			theReturn = iwc.getParameter(IB_PAGE_PARAMETER);
+		else if (iwc.isParameterSet(BuilderConstants.IB_PAGE_PARAMETER)) {
+			theReturn = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
 		}
 		// session page check
 		else if (iwc.getSessionAttribute(SESSION_PAGE_KEY) != null) {
@@ -890,7 +889,7 @@ public class BuilderLogic {
 		Image pasteImage = bundle.getImage("paste.gif", "Paste component");
 		Link link = new Link(pasteImage);
 		link.setWindowToOpen(IBPasteModuleWindow.class);
-		link.addParameter(IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(IB_CONTROL_PARAMETER, ACTION_PASTE);
 		link.addParameter(IB_PARENT_PARAMETER, parentKey);
 		return (link);
@@ -908,18 +907,29 @@ public class BuilderLogic {
 		return (false);
 	}
 
+	
+	public String getCurrentIBPageURL(IWContext iwc) {
+		String sPageId = getCurrentIBPage(iwc);
+		int pageId = Integer.parseInt(sPageId);
+		return getIBPageURL(iwc,pageId);
+	}	
+	
 	/**
 	 *  	 *
 	 */
 	public String getIBPageURL(IWApplicationContext iwc, int ib_page_id) {
-		//    return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
-		StringBuffer url = new StringBuffer();
-		url.append(iwc.getIWMainApplication().getBuilderServletURI());
-		url.append("?");
-		url.append(IB_PAGE_PARAMETER);
-		url.append("=");
-		url.append(ib_page_id);
-		return url.toString();
+		if(IWMainApplication.USE_NEW_URL_SCHEME){
+			return iwc.getIWMainApplication().getBuilderPagePrefixURI()+ib_page_id+"/";
+		}
+		else{
+			StringBuffer url = new StringBuffer();
+			url.append(iwc.getIWMainApplication().getBuilderPagePrefixURI());
+			url.append("?");
+			url.append(BuilderConstants.IB_PAGE_PARAMETER);
+			url.append("=");
+			url.append(ib_page_id);
+			return url.toString();
+		}
 	}
 
 	/**

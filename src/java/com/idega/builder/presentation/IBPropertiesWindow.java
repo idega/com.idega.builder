@@ -1,6 +1,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWURL;
@@ -25,7 +26,7 @@ import com.idega.presentation.Table;
 public class IBPropertiesWindow extends FrameSet{
 
    static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
-   static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+   static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
    final static String METHOD_ID_PARAMETER="iw_method_identifier";
    final static String VALUE_SAVE_PARAMETER = "ib_method_save";
    final static String VALUE_PARAMETER = "ib_method_value";

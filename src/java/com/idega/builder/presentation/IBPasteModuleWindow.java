@@ -1,5 +1,5 @@
 /*
- * $Id: IBPasteModuleWindow.java,v 1.4 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBPasteModuleWindow.java,v 1.5 2004/06/24 20:12:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.presentation.IWContext;
 
 /**
@@ -18,7 +19,7 @@ import com.idega.presentation.IWContext;
  */
 public class IBPasteModuleWindow extends IBAdminWindow {
   private static final String IC_OBJECT_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
-  private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+  private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
   private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String ACTION_PASTE = BuilderLogic.ACTION_PASTE;

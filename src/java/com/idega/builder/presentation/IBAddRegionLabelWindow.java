@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddRegionLabelWindow.java,v 1.4 2002/10/10 13:14:05 laddi Exp $
+ * $Id: IBAddRegionLabelWindow.java,v 1.5 2004/06/24 20:12:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -29,7 +30,7 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
 	private static final String SUBMIT_PARAMETER = "submit";
 
 	private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
-	private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+	private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
 	private static final String ACTION_LABEL = BuilderLogic.ACTION_LABEL;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;

@@ -11,6 +11,7 @@ package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -366,7 +367,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		Image labelImage = bundle.getImage("label.gif", "Put label on region");
 		Link link = new Link(labelImage);
 		link.setWindowToOpen(IBAddRegionLabelWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
@@ -379,7 +380,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		Image cutImage = bundle.getImage("shared/menu/cut.gif", "Cut component");
 		Link link = new Link(cutImage);
 		link.setWindowToOpen(IBCutModuleWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
@@ -396,7 +397,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(copyImage);
 		link.setWindowToOpen(IBCopyModuleWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
@@ -409,7 +410,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		Image deleteImage = bundle.getImage("shared/menu/delete.gif", "Delete component");
 		Link link = new Link(deleteImage);
 		link.setWindowToOpen(IBDeleteModuleWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_DELETE);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
@@ -422,7 +423,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		Image editImage = bundle.getImage("shared/menu/permission.gif", "Set permissions");
 		Link link = new Link(editImage);
 		link.setWindowToOpen(IBPermissionWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PERMISSION);
 		link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, key);
 		link.addParameter(
@@ -437,7 +438,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		Image editImage = bundle.getImage("shared/menu/edit.gif", "Properties");
 		Link link = new Link(editImage);
 		link.setWindowToOpen(IBPropertiesWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
 		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
 		return link;
@@ -453,7 +454,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(pasteImage);
 		link.setWindowToOpen(IBPasteModuleWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PASTE_ABOVE);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);

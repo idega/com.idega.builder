@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.38 2004/06/03 12:54:32 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.39 2004/06/24 20:12:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
@@ -41,7 +42,7 @@ import com.idega.presentation.ui.Window;
 public class IBAddModuleWindow extends IBAdminWindow {
 	private static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
-	private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+	private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
 	private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
 	private static final String ACTION_EDIT = BuilderLogic.ACTION_EDIT;
@@ -347,7 +348,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		//addImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(addImage);
 		link.setWindowToOpen(IBAddModuleWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);

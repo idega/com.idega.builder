@@ -1,5 +1,5 @@
 /*
- * $Id: IBLockRegionWindow.java,v 1.9 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: IBLockRegionWindow.java,v 1.10 2004/06/24 20:12:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -33,7 +34,7 @@ public class IBLockRegionWindow extends IBAdminWindow {
 	private static final String SUBMIT_PARAMETER = "submit";
 
 	private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
-	private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+	private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
 	private static final String ACTION_LOCK = BuilderLogic.ACTION_LOCK_REGION;
 	private static final String ACTION_UNLOCK = BuilderLogic.ACTION_UNLOCK_REGION;
@@ -138,7 +139,7 @@ public class IBLockRegionWindow extends IBAdminWindow {
 		Image lockImage = bundle.getImage("las_close.gif", "Unlock region");
 		Link link = new Link(lockImage);
 		link.setWindowToOpen(IBLockRegionWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_UNLOCK_REGION);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
@@ -154,7 +155,7 @@ public class IBLockRegionWindow extends IBAdminWindow {
 		Image lockImage = bundle.getImage("las_open.gif", "Lock region");
 		Link link = new Link(lockImage);
 		link.setWindowToOpen(IBLockRegionWindow.class);
-		link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LOCK_REGION);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		return (link);

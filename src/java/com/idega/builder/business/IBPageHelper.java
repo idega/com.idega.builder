@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.38 2004/06/09 16:12:58 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.39 2004/06/24 20:12:25 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -644,7 +644,7 @@ public class IBPageHelper {
 			e.printStackTrace();
 			return null;
 		}
-		viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+		viewer.setNodeActionParameter(BuilderConstants.IB_PAGE_PARAMETER);
 		Link l = new Link();
 		l.setNoTextObject(true);
 		l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);

@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.78 2004/03/25 17:52:32 thomas Exp $
+ *  $Id: IBApplication.java,v 1.79 2004/06/24 20:12:24 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.presentation.IBCreatePageWindow;
@@ -26,6 +27,8 @@ import com.idega.builder.presentation.IBSaveAsPageWindow;
 import com.idega.builder.presentation.IBSavePageWindow;
 import com.idega.builder.presentation.IBSourceView;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
@@ -79,10 +82,24 @@ public class IBApplication extends IWApplication {
 		super.setHeight(700);
 	}
 	protected static String getContentEditURL(IWContext iwc) {
-		return iwc.getIWMainApplication().getBuilderServletURI() + "?view=builder";
+		//return iwc.getIWMainApplication().getBuilderServletURI() + "?view=builder";
+		String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
+		if(urlString.indexOf("?")==-1){
+			return urlString+ "?view=builder";
+		}
+		else{
+			return urlString+ "&view=builder";
+		}
 	}
 	protected static String getContentPreviewURL(IWContext iwc) {
-		return iwc.getIWMainApplication().getBuilderServletURI() + "?view=preview";
+		//return iwc.getIWMainApplication().getBuilderServletURI() + "?view=preview";
+		String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
+		if(urlString.indexOf("?")==-1){
+			return urlString+ "?view=preview";
+		}
+		else{
+			return urlString+ "&view=preview";
+		}
 	}
 	
 	protected static String getContentPDFPreviewURL(IWContext iwc) {
@@ -302,7 +319,10 @@ public class IBApplication extends IWApplication {
 				viewer.getLocation().setApplicationClass(IBApplication.class);
 				viewer.getLocation().isInFrameSet(true);
 				//        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
-				String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+				
+				//String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+				BuilderService bs = BuilderServiceFactory.getBuilderService(iwc);
+				String page_id = String.valueOf(bs.getCurrentPageId(iwc));
 				if (page_id != null) {
 					iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
 				}
@@ -377,7 +397,9 @@ public class IBApplication extends IWApplication {
 				viewer.getLocation().setApplicationClass(IBApplication.class);
 				viewer.getLocation().isInFrameSet(true);
 				//        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
-				String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+				//String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+				BuilderService bs = BuilderServiceFactory.getBuilderService(iwc);
+				String page_id = String.valueOf(bs.getCurrentPageId(iwc));
 				if (page_id != null) {
 					iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
 				}
@@ -677,7 +699,7 @@ public class IBApplication extends IWApplication {
 			image.setHorizontalSpacing(2);
 			Link link = new Link(image);
 			link.setWindowToOpen(IBPropertiesWindow.class);
-			link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+			link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 			link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
 			//Hardcoded -1 for the top page
 			String pageICObjectInstanceID = "-1";
