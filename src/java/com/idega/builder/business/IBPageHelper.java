@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.30 2004/02/20 16:37:43 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.31 2004/03/25 15:42:31 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,16 +9,20 @@
  */
 package com.idega.builder.business;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import com.idega.idegaweb.block.presentation.Builderaware;
-import com.idega.builder.data.IBStartPages;
-import com.idega.builder.data.IBStartPagesHome;
+import com.idega.builder.data.IBStartPage;
+import com.idega.builder.data.IBStartPageHome;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.data.ICObjectInstance;
@@ -181,8 +185,8 @@ public class IBPageHelper {
 				ibPageParent.addChild(ibPage);
 			}
 			else {
-				IBStartPagesHome home = (IBStartPagesHome) IDOLookup.getHome(IBStartPages.class);
-				IBStartPages page = home.create();
+				IBStartPageHome home = (IBStartPageHome) IDOLookup.getHome(IBStartPage.class);
+				IBStartPage page = home.create();
 				page.setPageId(ibPage.getID());
 				if (type.equals(PAGE)) {
 					page.setPageTypePage();
@@ -546,7 +550,7 @@ public class IBPageHelper {
 		return getTreeViewer(iwc, TEMPLATEVIEWER);
 	}
 	private TreeViewer getTreeViewer(IWContext iwc, int type) {
-		com.idega.core.builder.data.ICDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
+		com.idega.core.builder.data.ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
 		int id = -1;
 		if (type == PAGEVIEWER) {
 			id = domain.getStartPageID();
@@ -558,12 +562,12 @@ public class IBPageHelper {
 		try {
 			java.util.Collection coll = null;
 			if (type == PAGEVIEWER)
-				coll = ((com.idega.builder.data.IBStartPagesHome) com.idega.data.IDOLookup.getHome(com.idega.builder.data.IBStartPages.class)).findAllPagesByDomain(((Integer) domain.getPrimaryKeyValue()).intValue());
+				coll = getStartPages(domain);
 			else
-				coll = ((com.idega.builder.data.IBStartPagesHome) com.idega.data.IDOLookup.getHome(com.idega.builder.data.IBStartPages.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKeyValue()).intValue());
+				coll = getTemplateStartPages(domain);
 			java.util.Iterator it = coll.iterator();
 			while (it.hasNext()) {
-				com.idega.builder.data.IBStartPages startPage = (com.idega.builder.data.IBStartPages) it.next();
+				com.idega.builder.data.IBStartPage startPage = (com.idega.builder.data.IBStartPage) it.next();
 				if (startPage.getPageId() != id)
 					viewer.addFirstLevelNode(new PageTreeNode(startPage.getPageId(), iwc));
 			}
@@ -582,6 +586,47 @@ public class IBPageHelper {
 		viewer.setLinkPrototype(l);
 		return viewer;
 	}
+	
+	/**
+	 * @return list of PageTreeNode
+	 */
+	public List getFirstLevelPageTreeNodesDomainFirst(IWContext iwc) throws IDOLookupException, FinderException {
+		return getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(iwc, PAGEVIEWER);
+	}
+	
+	/** 
+	 * @return list of PageTreeNode
+	 */
+	public List getFirstLevelPageTreeNodesTemplateDomainFirst(IWContext iwc) throws IDOLookupException, FinderException {
+		return getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(iwc, TEMPLATEVIEWER);
+	}
+
+	private List getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(IWContext iwc, int type) throws IDOLookupException, FinderException {
+		ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
+		int domainStartPageId = (PAGEVIEWER == type) ? domain.getStartPageID() : domain.getStartTemplateID();
+		Collection startPages = (PAGEVIEWER == type) ? getStartPages(domain) : getTemplateStartPages(domain);
+		List pages = new ArrayList(1 +  startPages.size());
+		pages.add(new PageTreeNode(domainStartPageId, iwc));
+		Iterator iterator = startPages.iterator();
+		while (iterator.hasNext()) {
+			IBStartPage startPage = (IBStartPage) iterator.next();
+			int id = startPage.getPageId();
+			// do not add the domain start page again
+			if (id != domainStartPageId) {
+				pages.add(new PageTreeNode(id, iwc));
+			}
+		}
+		return pages;
+	}
+		
+	private Collection getStartPages(ICDomain domain) throws IDOLookupException, FinderException {
+		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllPagesByDomain(((Integer) domain.getPrimaryKeyValue()).intValue());
+	}
+	
+	private Collection getTemplateStartPages(ICDomain domain) throws IDOLookupException, FinderException {
+		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKeyValue()).intValue());
+	}
+	
 	protected ICPageHome getIBPageHome() {
 		try {
 			return (ICPageHome) IDOLookup.getHome(ICPage.class);
