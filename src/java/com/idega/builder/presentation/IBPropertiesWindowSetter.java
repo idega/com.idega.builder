@@ -224,7 +224,7 @@ public class IBPropertiesWindowSetter extends Page {
       String[] selectedValues = parseValues(iwc);
       String[] paramDescriptions = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc,icObjectInstanceID,methodIdentifier);
       boolean isChangingProperty = this.isChangingProperty(iwc);
-      String[] realValues = BuilderLogic.getInstance().getPropertyValues(iwc.getApplication(),pageID,Integer.parseInt(icObjectInstanceID),methodIdentifier,selectedValues,isChangingProperty);
+      String[] realValues = BuilderLogic.getInstance().getPropertyValues(iwc.getApplication(),pageID,Integer.parseInt(icObjectInstanceID),methodIdentifier,selectedValues,!isChangingProperty);
 
       for (int i = 0; i < parameters.length; i++) {
         Class parameterClass = parameters[i];
