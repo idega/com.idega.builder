@@ -15,7 +15,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -34,9 +34,9 @@ import com.idega.presentation.ui.SubmitButton;
  * @version 1.0
  * Created on Mar 4, 2004
  */
-public class IBPageExporterWindow extends IWAdminWindow {
+public class IBPageExporterWindow extends StyledIWAdminWindow {
 
-  protected static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
+  public static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
   
   public static final String SUBMIT_EXPORT_KEY = "ib_page_export_submit_key";
   public static final String SUBMIT_CLOSE_KEY = "ib_page_close_submit_key";
@@ -131,7 +131,7 @@ public class IBPageExporterWindow extends IWAdminWindow {
   
   private String exportPages(IWContext iwc) throws IOException, FinderException {
   	// accepts null and empty values
-  	return getPageExportBusiness(iwc).exportPages(pageIds, templateIds); 
+  	return getPageExportBusiness(iwc).exportPages(pageIds, templateIds, iwc); 
   }
   		
   		
