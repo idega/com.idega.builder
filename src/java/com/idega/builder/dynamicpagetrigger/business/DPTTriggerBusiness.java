@@ -16,6 +16,10 @@ import com.idega.presentation.PresentationObject;
 import com.idega.builder.business.XMLConstants;
 import com.idega.builder.business.XMLWriter;
 import com.idega.block.IWBlock;
+import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.data.GenericGroup;
+import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
+import com.idega.util.idegaTimestamp;
 
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
@@ -118,7 +122,7 @@ public class DPTTriggerBusiness {
   }
 
 
-  public int createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws SQLException {
+  public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws SQLException {
     PageLink pl = new PageLink();
 
     pl.setPageTriggerInfoId(pti.getID());
@@ -136,7 +140,7 @@ public class DPTTriggerBusiness {
 
     pl.insert();
 
-    return pl.getID();
+    return pl;
 
   }
 
@@ -191,6 +195,9 @@ public class DPTTriggerBusiness {
       return(-1);
     }
 
+    copyPagePermissions(Integer.toString(dptTemplateId), Integer.toString(page.getID()));
+
+
     createdPages.put(Integer.toString(dptTemplateId),Integer.toString(page.getID()));
 
     instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
@@ -206,7 +213,7 @@ public class DPTTriggerBusiness {
       Iterator it = children.iterator();
       while (it.hasNext()) {
         PresentationObject obj = (PresentationObject)it.next();
-        boolean ok = changeInstanceId(obj,currentXMLPage);
+        boolean ok = changeInstanceId(obj,currentXMLPage,true);
         if(!ok){
           return(-1);
         }
@@ -255,7 +262,24 @@ public class DPTTriggerBusiness {
   }
 
 
-  public void copyPermission(PermissionGroup template, String oldModuleID, String newModuleID){
+  public static void copyInstencePermissions( String oldInstanceID, String newInstanceID) throws SQLException{
+    AccessControl.copyObjectInstancePermissions(oldInstanceID,newInstanceID);
+    //
+    //
+    //
+    /**
+     * getTemplateGroups (linked to copyRule)
+     * copy group
+     * add templateGroup to new group
+     * set group to have same permission as templateGroup for new module id
+     */
+    //
+    //
+    //
+  }
+
+  public static void copyPagePermissions( String oldPageID, String newPageID) throws SQLException{
+    AccessControl.copyPagePermissions(oldPageID,newPageID);
     //
     //
     //
@@ -271,10 +295,11 @@ public class DPTTriggerBusiness {
   }
 
 
+
   /**
    *
    */
-  private static boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage) {
+  private static boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
     if (obj.getChangeInstanceIDOnInheritance()) {
       int object_id = obj.getICObjectID();
       int ic_instance_id = obj.getICObjectInstanceID();
@@ -284,8 +309,13 @@ public class DPTTriggerBusiness {
         instance = new ICObjectInstance();
         instance.setICObjectID(object_id);
         instance.insert();
+        if(copyPermissions){
+          copyInstencePermissions(Integer.toString(ic_instance_id),Integer.toString(instance.getID()));
+        }
       }
       catch(SQLException e) {
+        //System.err.println("DPTTriggerBusiness: "+e.getMessage());
+        //e.printStackTrace();
         return(false);
       }
 
@@ -307,5 +337,42 @@ public class DPTTriggerBusiness {
 
     return(true);
   }
+
+
+  public static List getDPTPermissionGroups(PageTriggerInfo pti) throws SQLException{
+    return EntityFinder.findRelated(pti, GenericGroup.getStaticInstance());
+  }
+
+  public static void createDPTPermissionGroup(PageTriggerInfo pti, String name, String description) throws SQLException {
+    DPTPermissionGroup newGroup = new DPTPermissionGroup();
+    newGroup.setName(name);
+    newGroup.setDescription(description);
+
+    newGroup.insert();
+
+
+    pti.addTo(newGroup);
+
+  }
+
+
+  public boolean invalidatePageLink(PageLink l, int userId){
+    try {
+      l.setDeleted(true);
+      l.setDeletedBy(userId);
+      l.setDeletedWhen(idegaTimestamp.getTimestampRightNow());
+      l.update();
+
+
+      // invalidatePage
+
+      return true;
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+      return false;
+    }
+  }
+
 
 }

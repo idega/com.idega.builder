@@ -202,7 +202,7 @@ public class IBPermissionWindow extends IBAdminWindow{
       myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
       myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
 
-      System.out.println("_PARAMETERSTRING_PERMISSION_CATEGORY: "+iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)+" and _PARAMETERSTRING_IDENTIFIER: "+iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
+      //System.out.println("_PARAMETERSTRING_PERMISSION_CATEGORY: "+iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)+" and _PARAMETERSTRING_IDENTIFIER: "+iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
 
       if(submit != null){
         if(submit.equals("save")){

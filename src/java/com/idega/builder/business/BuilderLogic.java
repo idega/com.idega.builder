@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.97 2002/01/15 16:08:30 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.98 2002/01/29 13:58:37 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -59,6 +59,8 @@ import java.sql.SQLException;
 import java.util.StringTokenizer;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import java.util.Map;
+import java.util.Set;
+
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -1364,6 +1366,24 @@ public class BuilderLogic {
 
   public Map getCashedObjectInstancesForPage(String pageKey){
     return ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
+  }
+
+  public Set getInstanceIdsOnPage(String pageKey){
+    Map m = ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
+    if(m != null){
+      return m.keySet();
+    }else{
+      return null;
+    }
+  }
+
+  public Set getInstanceIdsOnPage(int pageKey){
+    Map m = ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
+    if(m != null){
+      return m.keySet();
+    }else{
+      return null;
+    }
   }
 
   public static int getStartPageId(IWContext iwc){

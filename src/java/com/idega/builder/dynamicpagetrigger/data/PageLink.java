@@ -5,9 +5,10 @@ import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICObject;
 import com.idega.builder.data.IBPage;
+import com.idega.core.user.data.User;
 
 import java.sql.SQLException;
-
+import java.sql.Timestamp;
 
 /**
  * Title:        idegaWeb
@@ -29,6 +30,9 @@ public class PageLink extends GenericEntity {
   //public static final String _COLUMNNAME_IS_VISIBLE = "is_visible";
   public static final String _COLUMNNAME_REFERENCED_DATA_ID = "referenced_data_id";
   public static final String _COLUMNNAME_STANDARD_PRM = "standard_prm";
+  private final static String _COLUMN_DELETED = "deleted";
+  private final static String _COLUMN_DELETED_BY = "deleted_by";
+  private final static String _COLUMN_DELETED_WHEN = "deleted_when";
 
 
   public PageLink() {
@@ -46,6 +50,9 @@ public class PageLink extends GenericEntity {
     this.addAttribute(_COLUMNNAME_ONMOUSEOVER_IMAGE,"onMouseOver image",true,true,Integer.class,"one-to-many",ICFile.class);
     this.addAttribute(_COLUMNNAME_PAGE_ID,"síðu id",true,true,Integer.class,"one-to-many",IBPage.class);
     this.addAttribute(_COLUMNNAME_PAGE_TRIGGER_INFO_ID,"trigger upplýsingar",true,true,Integer.class,"one-to-many",PageTriggerInfo.class);
+    addAttribute(_COLUMN_DELETED,"Deleted",true,true,Boolean.class);
+    addAttribute(_COLUMN_DELETED_BY,"Deleted by",true,true,Integer.class,"many-to-one",User.class);
+    addAttribute(_COLUMN_DELETED_WHEN,"Deleted when",true,true,Timestamp.class);
     this.addAttribute(_COLUMNNAME_DEFAULT_LINK_TEXT,"",true,true,String.class,250);
     //this.addAttribute(_COLUMNNAME_IS_VISIBLE,"",true,true,String.class,250);
     this.addAttribute(_COLUMNNAME_REFERENCED_DATA_ID,"",true,true,String.class,250);
@@ -57,6 +64,39 @@ public class PageLink extends GenericEntity {
     return "dpt_page_link";
   }
 
+
+  public void setDeleted(boolean value){
+      setColumn(_COLUMN_DELETED,value);
+    }
+
+    public void setDeletedBy(int userId){
+      setColumn(_COLUMN_DELETED_BY,userId);
+    }
+
+    public void setDeletedWhen(Timestamp time){
+      setColumn(_COLUMN_DELETED_WHEN,time);
+    }
+
+    public boolean getDeleted(){
+      return getBooleanColumnValue(_COLUMN_DELETED);
+    }
+
+    public int getDeletedBy(){
+      return getIntColumnValue(_COLUMN_DELETED_BY);
+    }
+
+    public Timestamp getDeletedWhen(){
+      return (Timestamp)this.getColumnValue(_COLUMN_DELETED_WHEN);
+    }
+
+
+  public String getName(){
+    return this.getDefaultLinkText();
+  }
+
+  public void setName(String name){
+    this.setDefaultLinkText(name);
+  }
   public String getDefaultLinkText(){
     return this.getStringColumnValue(_COLUMNNAME_DEFAULT_LINK_TEXT);
   }

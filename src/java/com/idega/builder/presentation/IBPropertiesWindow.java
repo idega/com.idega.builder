@@ -53,6 +53,8 @@ public class IBPropertiesWindow extends FrameSet{
     super.setStatus(true);
     String title = "Properties";
 
+    //System.out.println("BuilderLogic.IB_CONTROL_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_CONTROL_PARAMETER)+" and BuilderLogic.IB_PAGE_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
+
     try{
       String sICObjectInstanceID = iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
       if(sICObjectInstanceID!=null){
