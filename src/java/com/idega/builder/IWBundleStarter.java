@@ -1,5 +1,6 @@
 package com.idega.builder;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.IBMainServiceBean;
 import com.idega.builder.data.IBDomainBMPBean;
 import com.idega.builder.data.IBPageBMPBean;
@@ -7,6 +8,7 @@ import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
 import com.idega.builder.presentation.InvisibleInBuilder;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.data.ICBuilderConstants;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.core.builder.data.ICPage;
@@ -36,7 +38,9 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.addImplementor(InvisibleInBuilder.class, Applet.class);
 		repository.addImplementor(InvisibleInBuilder.class, GenericPlugin.class);
 		repository.addImplementor(InvisibleInBuilder.class, DropdownMenu.class);
+		
 		repository.addImplementor(ICDynamicPageTrigger.class, DynamicPageTrigger.class);
+		repository.addImplementor(ICBuilderConstants.class, BuilderConstants.class);
 		
 		// services registration
 		IBOLookup.registerImplementationForBean(ICDomain.class, IBDomainBMPBean.class);
