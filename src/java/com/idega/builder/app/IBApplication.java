@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.22 2001/10/17 08:26:04 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.23 2001/10/19 00:48:48 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.presentation.ui.IFrame;
 import com.idega.idegaweb.IWBundle;
 import com.idega.builder.presentation.IBPermissionWindow;
 
@@ -45,6 +46,9 @@ public class IBApplication extends IWApplication {
   private final static String ACTION_SETTINGS = "settings";
   private final static String ACTION_HELP = "help";
 
+  private static boolean noToolBar = false;
+  private static String URL = "";
+
   private static final String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
 
   private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
@@ -55,18 +59,42 @@ public class IBApplication extends IWApplication {
    */
   public IBApplication() {
     super("idegaWeb Builder");
-    add(IBBanner.class);
-    add(FrameSet1.class);
-    setSpanPixels(1,30);
-    setScrolling(1,false);
-    setSpanAdaptive(2);
-    setScrolling(2,false);
-    setFrameName(2,IB_FRAMESET1_FRAME);
     super.setResizable(true);
     super.setWidth(900);
     super.setHeight(700);
   }
 
+  public void main(IWContext iwc) {
+    add(IBBanner.class);
+    if ( iwc.getParameter("toolbar") != null ) {
+      iwc.setSessionAttribute("toolbar",iwc.getParameter("toolbar"));
+    }
+    if ( iwc.getSessionAttribute("toolbar") != null ) {
+      String toolbar = (String) iwc.getSessionAttribute("toolbar");
+      if ( toolbar.equalsIgnoreCase("remove") ) {
+        noToolBar = true;
+      }
+      else if ( toolbar.equalsIgnoreCase("add") ) {
+        noToolBar = false;
+      }
+    }
+
+    URL = iwc.getRequestURI();
+
+    if ( noToolBar ) {
+      add(FrameSet2.class);
+      setScrolling(2,true);
+    }
+    else {
+      add(FrameSet1.class);
+      setScrolling(2,false);
+    }
+
+    setSpanPixels(1,30);
+    setScrolling(1,false);
+    setSpanAdaptive(2);
+    setFrameName(2,IB_FRAMESET1_FRAME);
+  }
   /**
    *
    */
@@ -77,11 +105,13 @@ public class IBApplication extends IWApplication {
     public FrameSet1() {
       add(IBLeftMenu.class);
       add(FrameSet2.class);
-      setScrolling(1,true);
+      setScrolling(1,false);
       setFrameName(1,IB_LEFT_MENU_FRAME);
       setFrameName(2,IB_FRAMESET2_FRAME);
       setSpanPixels(1,180);
       setSpanAdaptive(2);
+      setNoresize(1,true);
+      setNoresize(2,true);
       setHorizontal();
     }
   }
@@ -118,13 +148,19 @@ public class IBApplication extends IWApplication {
 
     public void main(IWContext iwc){
       setBackgroundColor("#0E2456");
-      Table table = new Table(1,1);
+      Table table = new Table(2,1);
       add(table);
       Image image;
       image = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("header.gif");
-      //table.add(new Image("/common/pics/arachnea/header.gif","idegaWeb Builder",90,28),1,1);
+      table.add(image,1,1);
+      Text buildText = new Text("build 220c");
+        buildText.setFontColor("#FFFFFF");
+        buildText.setFontSize(1);
+      table.add(buildText,2,1);
       table.setWidth("100%");
       table.setHeight("100%");
+      table.setAlignment(2,1,"right");
+      table.setVerticalAlignment(2,1,"bottom");
       table.setCellpadding(0);
       table.setCellpadding(0);
 
@@ -201,34 +237,19 @@ public class IBApplication extends IWApplication {
     }
   }
 
-  /**
-   *
-   */
-  public static class IBLeftMenu extends IWApplicationComponent {
-    /**
-     *
-     */
-    public IBLeftMenu() {
+  public static class PageTree extends Page {
+    public PageTree() {
     }
 
     public void main(IWContext iwc){
-      super.setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-      setAlignment("left");
-      setVerticalAlignment("top");
-      Text idegawebBuilder = new Text("idegaWeb Builder");
-      idegawebBuilder.setFontColor("black");
-      idegawebBuilder.setBold();
-      idegawebBuilder.setFontSize(2);
-      add(idegawebBuilder);
-      addBreak();
-      Text build = new Text(iwc.getApplication().getBuildNumber());
-      build.setFontColor("blue");
-      build.setFontSize(1);
-      add(build);
-
-
+      if ( noToolBar ) {
+        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+      }
+      else {
+        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+      }
+      getParentPage().setAllMargins(2);
       int i_page_id = 1;
-      int i_template_id = 2;
       try {
         TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
@@ -241,23 +262,109 @@ public class IBApplication extends IWApplication {
         viewer.setLinkProtototype(l);
         add(viewer);
 
-        add(Text.getBreak());
+        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+        if (page_id != null) {
+          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);
+        }
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+    }
+  }
 
-        TreeViewer viewer2 = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
-        viewer2.setTarget(IB_LEFT_MENU_FRAME);
-        viewer2.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-        Link l2 = new Link();
-        l2.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
-        viewer2.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
-        viewer2.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
+  public static class TemplateTree extends Page {
+    public TemplateTree() {
+    }
 
-        viewer2.setLinkProtototype(l2);
-        add(viewer2);
+    public void main(IWContext iwc){
+      if ( noToolBar ) {
+        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+      }
+      else {
+        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+      }
+      getParentPage().setAllMargins(2);
+
+      int i_template_id = 2;
+      try {
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
+        viewer.setTarget(IB_LEFT_MENU_FRAME);
+        viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+        Link l = new Link();
+        l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
+
+        viewer.setLinkProtototype(l);
+        add(viewer);
 
         String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         if (page_id != null) {
           iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);
         }
+      }
+      catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+    }
+  }
+
+  /**
+   *
+   */
+  public static class IBLeftMenu extends IWApplicationComponent {
+    /**
+     *
+     */
+    public IBLeftMenu() {
+    }
+
+    public void main(IWContext iwc){
+      setAlignment("left");
+      setVerticalAlignment("top");
+
+      try {
+        Image closeImage = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("toolbar_remove.gif","toolbar_remove_1.gif","Hide Curtain",16,16);
+          closeImage.setAlignment("right");
+          closeImage.setVerticalSpacing(2);
+
+        Link closeLink = new Link(closeImage);
+          closeLink.setTarget(Link.TARGET_TOP_WINDOW);
+          closeLink.addParameter("toolbar","remove");
+          closeLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER,IBApplication.class);
+
+        Image divider = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("transparentcell.gif");
+          divider.setWidth("100%");
+          divider.setHeight(5);
+
+        add(closeLink);
+        addBreak();
+
+        Text pageText = new Text("Page Tree:");
+          pageText.setFontSize(1);
+        Text templateText = new Text("Template Tree:");
+          templateText.setFontSize(1);
+
+        add(pageText);
+        addBreak();
+        IFrame frame = new IFrame("Name",PageTree.class);
+          frame.setWidth(176);
+          frame.setHeight(150);
+          frame.setScrolling(IFrame.SCROLLING_YES);
+        add(frame);
+
+        addBreak();
+        add(divider);
+        addBreak();
+
+        add(templateText);
+        addBreak();
+        IFrame frame2 = new IFrame("Name",TemplateTree.class);
+          frame2.setWidth(176);
+          frame2.setHeight(150);
+          frame2.setScrolling(IFrame.SCROLLING_YES);
+        add(frame2);
       }
       catch(Exception e) {
         e.printStackTrace();
@@ -351,8 +458,20 @@ public class IBApplication extends IWApplication {
         Image tool_5 = iwb.getImage("toolbar_home_1.gif","Go to startpage");
         Link link_5 = new Link(tool_5);
         link_5.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_EDIT_URL+"'");
-
         add(link_5);
+
+        if ( noToolBar ) {
+          add(separator);
+
+          Image leftMenuImage = iwb.getImage("toolbar_addtoolbar_1.gif","Show Curtain");
+
+          Link leftMenuLink = new Link(leftMenuImage);
+            leftMenuLink.setTarget(Link.TARGET_TOP_WINDOW);
+            leftMenuLink.addParameter("toolbar","add");
+            leftMenuLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER,IBApplication.class);
+
+          add(leftMenuLink);
+        }
       }
     }
 
