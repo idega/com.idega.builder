@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.95 2002/01/11 17:36:34 eiki Exp $
+ * $Id: BuilderLogic.java,v 1.96 2002/01/14 09:31:42 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -58,6 +58,7 @@ import java.util.Iterator;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import java.util.Map;
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -141,7 +142,7 @@ public class BuilderLogic {
       }
 
       Page page = PageCacher.getPage(Integer.toString(id),iwc);
-      if (builderview) {
+      if (builderview && iwc.hasEditPermission(page)) {
         return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,iwc));
       }
       else if(permissionview) {
@@ -1158,8 +1159,13 @@ public class BuilderLogic {
     return IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id;
   }
 
-  public static String getIFrameContentURL(int ICObjectInstanceId, int ibPageId){
-      return IWMainApplication._IFRAME_CONTENT_URL+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId+"&"+IB_PAGE_PARAMETER+"="+ibPageId;
+  public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId){
+    String src = IWMainApplication._IFRAME_CONTENT_URL+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId;
+    String query = iwc.getQueryString();
+    if(query != null & !query.equals("")){
+      src += ("&"+query);
+    }
+    return src;
   }
 
   public void changeName(String name, IWContext iwc) {
@@ -1350,6 +1356,14 @@ public class BuilderLogic {
 
   public PresentationObject getPopulatedObjectInstance(String key, IWContext iwc){
     return ObjectInstanceCacher.getObjectInstanceClone(key,iwc);
+  }
+
+  public Map getCashedObjectInstancesForPage(int pageId){
+    return ObjectInstanceCacher.getObjectInstancesCachedForPage(pageId);
+  }
+
+  public Map getCashedObjectInstancesForPage(String pageKey){
+    return ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
   }
 
   public static int getStartPageId(IWContext iwc){

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.31 2002/01/11 13:44:33 palli Exp $
+ * $Id: XMLReader.java,v 1.32 2002/01/14 09:31:43 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -96,6 +96,8 @@ public class XMLReader {
     //If the page does not extend a template it has no parent container
     if (!hasTemplate) {
       parentContainer = new Page();
+    }else{
+      ObjectInstanceCacher.setTemplateObjectsForPage(ibxml);
     }
 
     if (isLocked)
@@ -133,13 +135,13 @@ public class XMLReader {
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
           if (!parentContainer.getIsExtendingTemplate())
-            parseElement(child,parentContainer);
+            parseElement(child,parentContainer, ibxml);
           else
             if (!parentContainer.isLocked())
-              parseElement(child,parentContainer);
+              parseElement(child,parentContainer, ibxml);
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-          parseRegion(child,parentContainer);
+          parseRegion(child,parentContainer, ibxml);
         }
         else if (child.getName().equalsIgnoreCase(XMLConstants.CHANGE_PAGE_LINK)) {
           changeLinkProperty(child,parentContainer);
@@ -174,7 +176,7 @@ public class XMLReader {
   /**
    *
    */
-  static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent) {
+  static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, IBXMLPage ibxml) {
     List regionAttrList = reg.getAttributes();
     PresentationObjectContainer newRegionParent = regionParent;
     if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
@@ -281,7 +283,7 @@ public class XMLReader {
         Iterator childrenIt = children.iterator();
 
         while (childrenIt.hasNext())
-          parseElement((XMLElement)childrenIt.next(),newRegionParent);
+          parseElement((XMLElement)childrenIt.next(),newRegionParent, ibxml);
       }
     }
   }
@@ -339,7 +341,7 @@ public class XMLReader {
   /**
    *
    */
-  static void parseElement(XMLElement el, PresentationObjectContainer parent) {
+  static void parseElement(XMLElement el, PresentationObjectContainer parent, IBXMLPage ibxml) {
     PresentationObject inst = null;
     List at = el.getAttributes();
     boolean isLocked = true;
@@ -393,7 +395,7 @@ public class XMLReader {
         }
         // added by gummi@idega.is // - cache ObjectInstance
         if(!"0".equals(id)){
-          ObjectInstanceCacher.setObjectInstance(id,inst);
+          ObjectInstanceCacher.setObjectInstance(ibxml,id,inst);
         }
       }
 
@@ -418,10 +420,10 @@ public class XMLReader {
               setProperties(child,table);
             }
             else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-              parseElement(child,table);
+              parseElement(child,table,ibxml);
             }
             else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-              parseRegion(child,table);
+              parseRegion(child,table,ibxml);
             }
             else
               System.err.println("Unknown tag in xml description file : " + child.getName());
@@ -440,10 +442,10 @@ public class XMLReader {
               setProperties(child,inst);
             }
             else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-              parseElement(child,(PresentationObjectContainer)inst);
+              parseElement(child,(PresentationObjectContainer)inst,ibxml);
             }
             else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-              parseRegion(child,(PresentationObjectContainer)inst);
+              parseRegion(child,(PresentationObjectContainer)inst,ibxml);
             }
             else {
               System.err.println("Unknown tag in xml description file : " + child.getName());

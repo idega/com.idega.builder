@@ -18,7 +18,8 @@ import java.util.HashMap;
 
 public class ObjectInstanceCacher{
 
-  private static Map objectInstanceCache = new HashMap();
+  private static Map _objectInstanceCache = new HashMap();
+  private static Map _objectInstanceCacheForPage = new HashMap();
 
   private ObjectInstanceCacher(){
 
@@ -38,6 +39,19 @@ public class ObjectInstanceCacher{
     }
   }
 
+  public static Map getObjectInstancesCachedForPage(String pageKey){
+    Map map = getObjectInstanceCacheMapForPage();
+    if(map != null){
+      return (Map)map.get(pageKey);
+    }else{
+      return null;
+    }
+  }
+
+  public static Map getObjectInstancesCachedForPage(int pageKey ){
+    return getObjectInstancesCachedForPage(Integer.toString(pageKey));
+  }
+
   public static PresentationObject getObjectInstanceCached(int key ){
     return getObjectInstanceCached(Integer.toString(key));
   }
@@ -47,13 +61,43 @@ public class ObjectInstanceCacher{
     return getObjectInstanceClone(Integer.toString(key),iwc);
   }
 
-
-  public static Object setObjectInstance(String key, PresentationObject objectInstance){
-    return getObjectInstanceCacheMap().put(key,objectInstance);
+  public static void setTemplateObjectsForPage(IBXMLPage ibxml){
+    setObjectInstance(ibxml, null, null);
   }
 
+  public static void setObjectInstance(IBXMLPage ibxml, String instanceKey, PresentationObject objectInstance){
+    if(instanceKey != null){
+      getObjectInstanceCacheMap().put(instanceKey,objectInstance);
+    }
+    //System.err.println("Cashing objectInstance: "+instanceKey);
+    Map map = getObjectInstancesCachedForPage(ibxml.getKey());
+    if(map == null){
+      String templateKey = Integer.toString(ibxml.getTemplateId());
+      Map templateMap = getObjectInstancesCachedForPage(templateKey);
+      if(templateMap != null){
+        //System.err.println("geting template Map");
+        map = (Map)((Hashtable)templateMap).clone();
+      } else {
+        //System.err.println("creating new Map");
+        map = new Hashtable();
+      }
+      getObjectInstanceCacheMapForPage().put(ibxml.getKey(),map);
+    }
+
+    //System.err.println("Cashing objectInstance: "+instanceKey+" on page "+ ibxml.getKey()+" extending: "+ibxml.getTemplateId());
+    if(instanceKey != null){
+      getObjectInstancesCachedForPage(ibxml.getKey()).put(instanceKey,objectInstance);
+    }
+  }
+
+
+
   private static Map getObjectInstanceCacheMap(){
-    return objectInstanceCache;
+    return _objectInstanceCache;
+  }
+
+  private static Map getObjectInstanceCacheMapForPage(){
+    return _objectInstanceCacheForPage;
   }
 
 
