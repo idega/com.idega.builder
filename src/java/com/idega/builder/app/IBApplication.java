@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.30 2001/11/01 17:21:07 palli Exp $
+ * $Id: IBApplication.java,v 1.31 2001/11/01 18:08:02 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -74,8 +74,9 @@ public class IBApplication extends IWApplication {
 
   static boolean startupInProgress(IWContext iwc){
     List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
-    if(l==null)
+    if(l==null){
       return false;
+    }
     return true;
   }
 
@@ -95,7 +96,7 @@ public class IBApplication extends IWApplication {
     iwc.setSessionAttribute("ib_startup_class_list",l);
     l.add(IBToolBar.class);
     l.add(PageTree.class);
-    l.add(PageTree.class);
+    l.add(TemplateTree.class);
   }
 
   public void main(IWContext iwc) {
@@ -217,7 +218,7 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc){
 
       boolean startupInProgress = startupInProgress(iwc);
-
+      //System.out.println("Startup in progress for PageTree:"+startupInProgress);
       if(!startupInProgress){
         if ( noCurtain ) {
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
@@ -262,7 +263,7 @@ public class IBApplication extends IWApplication {
 
     public void main(IWContext iwc){
       boolean startupInProgress = startupInProgress(iwc);
-
+      //System.out.println("Startup in progress for TemplateTree:"+startupInProgress);
       if(!startupInProgress){
         if ( noCurtain ) {
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
@@ -377,6 +378,7 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc) {
 
       boolean startupInProgress = startupInProgress(iwc);
+      //System.out.println("Startup in progress for IBToolBar:"+startupInProgress);
       if(!startupInProgress){
         super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       }
