@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.35 2002/03/26 20:31:49 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.36 2002/03/26 20:43:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -72,15 +72,15 @@ public class IBXMLPage implements IBXMLAble {
     try {
       ibpage = new IBPage(Integer.parseInt(key));
       setXMLPageDescriptionFile(ibpage.getPageValue());
-      if (ibpage.getType().equals(ibpage.PAGE))
+      if (ibpage.isPage())
         setType(TYPE_PAGE);
-      else if (ibpage.getType().equals(ibpage.DRAFT))
+      else if (ibpage.isDraft())
         setType(TYPE_DRAFT);
-      else if (ibpage.getType().equals(ibpage.TEMPLATE))
+      else if (ibpage.isTemplate())
         setType(TYPE_TEMPLATE);
-      else if (ibpage.getType().equals(ibpage.DPT_TEMPLATE))
+      else if (ibpage.isDynamicTriggeredTemplate())
         setType(TYPE_DPT_TEMPLATE);
-      else if (ibpage.getType().equals(ibpage.DPT_PAGE))
+      else if (ibpage.isDynamicTriggeredPage())
         setType(TYPE_DPT_PAGE);
       else
         setType(TYPE_PAGE);
@@ -90,15 +90,15 @@ public class IBXMLPage implements IBXMLAble {
       String templateString = null;
       if (template != -1)
         templateString = Integer.toString(template);
-      if (ibpage.getType().equals(IBPage.PAGE))
+      if (ibpage.isPage())
         setPageAsEmptyPage(TYPE_PAGE,templateString);
-      else if (ibpage.getType().equals(IBPage.DRAFT))
+      else if (ibpage.isDraft())
         setPageAsEmptyPage(TYPE_DRAFT,templateString);
-      else if (ibpage.getType().equals(IBPage.TEMPLATE))
+      else if (ibpage.isTemplate())
         setPageAsEmptyPage(TYPE_TEMPLATE,templateString);
-      else if (ibpage.getType().equals(IBPage.DPT_TEMPLATE))
+      else if (ibpage.isDynamicTriggeredTemplate())
         setPageAsEmptyPage(TYPE_DPT_TEMPLATE,templateString);
-      else if (ibpage.getType().equals(IBPage.DPT_PAGE))
+      else if (ibpage.isDynamicTriggeredPage())
         setPageAsEmptyPage(TYPE_DPT_PAGE,templateString);
       else
         setPageAsEmptyPage(TYPE_PAGE,templateString);

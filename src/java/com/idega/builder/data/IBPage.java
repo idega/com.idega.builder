@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.35 2002/03/26 14:30:01 tryggvil Exp $
+ * $Id: IBPage.java,v 1.36 2002/03/26 20:43:41 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -487,6 +487,28 @@ public class IBPage extends TreeableEntity {
   public boolean isDraft() {
     String type = getType();
     if (type.equals(DRAFT))
+      return(true);
+    else
+      return(false);
+  }
+
+  /**
+   *
+   */
+  public boolean isDynamicTriggeredPage() {
+    String type = getType();
+    if (type.equals(DPT_PAGE))
+      return(true);
+    else
+      return(false);
+  }
+
+  /**
+   *
+   */
+  public boolean isDynamicTriggeredTemplate() {
+    String type = getType();
+    if (type.equals(DPT_TEMPLATE))
       return(true);
     else
       return(false);
