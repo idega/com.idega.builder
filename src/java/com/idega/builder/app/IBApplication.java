@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.61 2002/03/21 11:23:16 palli Exp $
+ *  $Id: IBApplication.java,v 1.62 2002/03/26 16:29:34 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -86,11 +86,11 @@ public class IBApplication extends IWApplication {
 
 
   protected static String getContentEditURL(IWContext iwc){
-    return iwc.getApplication().getBuilderServletURL()+ "?view=builder";
+    return iwc.getApplication().getBuilderServletURI()+ "?view=builder";
   }
 
   protected static String getContentPreviewURL(IWContext iwc){
-    return iwc.getApplication().getBuilderServletURL()+ "?view=preview";
+    return iwc.getApplication().getBuilderServletURI()+ "?view=preview";
   }
 
   /**
