@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.15 2001/11/02 10:35:48 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.16 2001/11/02 10:52:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.Page;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.TextInput;
@@ -150,6 +151,10 @@ public class IBCreatePageWindow extends IWAdminWindow {
         if ((templateId != null) && (!templateId.equals(""))) {
           IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
           xml.addUsingTemplate(Integer.toString(ibPage.getID()));
+          Page templateParent = xml.getPopulatedPage();
+          if (!templateParent.isLocked()) {
+            BuilderLogic.getInstance().unlockRegion(Integer.toString(ibPage.getID()),"-1");
+          }
         }
 
         iwc.setSessionAttribute("ib_page_id",Integer.toString(ibPage.getID()));
