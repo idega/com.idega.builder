@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.15 2001/10/18 11:32:14 palli Exp $
+ * $Id: XMLWriter.java,v 1.16 2001/10/19 12:50:13 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -344,7 +344,7 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos) {
+  static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos, String label) {
     String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
     Element region = findRegion(xml,regionId);
 
@@ -357,6 +357,10 @@ public class XMLWriter {
       if (parent != null)
         parent.addContent(region);
       else { //Þetta er í síðu sem extendar template
+        if (label != null) {
+          Attribute labelAttribute = new Attribute(XMLConstants.LABEL_STRING,label);
+          region.addAttribute(labelAttribute);
+        }
         xml.getPageRootElement().addContent(region);
       }
     }
@@ -370,14 +374,14 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID){
+  static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID, String label){
     return addNewModule(findModule(xml,parentObjectInstanceID),newICObjectID);
   }
 
   /**
    *
    */
-  static boolean addNewModule(IBXMLPage xml,String parentObjectInstanceID,int newICObjectID){
+  static boolean addNewModule(IBXMLPage xml,String parentObjectInstanceID,int newICObjectID,String label){
     try{
       return addNewModule(findModule(xml,Integer.parseInt(parentObjectInstanceID)),newICObjectID);
     }
@@ -389,15 +393,15 @@ public class XMLWriter {
       int xpos = Integer.parseInt(theRest.substring(0,theRest.indexOf(".")));
       int ypos = Integer.parseInt(theRest.substring(theRest.indexOf(".")+1,theRest.length()));
 
-      return addNewModule(xml,parentID,newICObjectID,xpos,ypos);
+      return addNewModule(xml,parentID,newICObjectID,xpos,ypos,label);
     }
   }
 
   /**
    *
    */
-  static boolean addNewModule(IBXMLPage xml,String parentObjectInstanceID,ICObject newObjectType){
-    return addNewModule(xml,parentObjectInstanceID,newObjectType.getID());
+  static boolean addNewModule(IBXMLPage xml,String parentObjectInstanceID,ICObject newObjectType, String label){
+    return addNewModule(xml,parentObjectInstanceID,newObjectType.getID(),label);
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.50 2001/10/18 11:32:13 palli Exp $
+ * $Id: BuilderLogic.java,v 1.51 2001/10/19 12:50:13 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -53,11 +53,11 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class BuilderLogic {
-
   public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
 
   public static final String IB_PARENT_PARAMETER = "ib_parent_par";
   public static final String IB_PAGE_PARAMETER ="ib_page";
+  public static final String IB_LABEL_PARAMETER = "ib_label";
 
   public static final String IB_CONTROL_PARAMETER = "ib_control_par";
   public static final String ACTION_DELETE ="ACTION_DELETE";
@@ -164,11 +164,11 @@ public class BuilderLogic {
     //"-1" is identified as the top page object (parent)
     if (page.getIsExtendingTemplate()) {
       if (!page.isLocked()) {
-        page.add(getAddIcon(Integer.toString(-1),iwc));
+        page.add(getAddIcon(Integer.toString(-1),iwc,null));
       }
     }
     else {
-      page.add(getAddIcon(Integer.toString(-1),iwc));
+      page.add(getAddIcon(Integer.toString(-1),iwc,null));
       if (page.getIsTemplate())
         if (page.isLocked())
           page.add(getLockedIcon(Integer.toString(-1),iwc));
@@ -310,10 +310,10 @@ public class BuilderLogic {
             if (curr.getIsExtendingTemplate()) {
               if (tab.getBelongsToParent()) {
                 if (!tab.isLocked(x,y))
-                  tab.add(getAddIcon(newParentKey,iwc),x,y);
+                  tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
               }
               else {
-                tab.add(getAddIcon(newParentKey,iwc),x,y);
+                tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                 tab.add(getLabelIcon(newParentKey,iwc),x,y);
                 if (curr.getIsTemplate()) {
                   if (tab.isLocked(x,y))
@@ -324,7 +324,7 @@ public class BuilderLogic {
               }
             }
             else {
-              tab.add(getAddIcon(newParentKey,iwc),x,y);
+              tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
               tab.add(getLabelIcon(newParentKey,iwc),x,y);
               if (curr.getIsTemplate()) {
                 if (tab.isLocked(x,y))
@@ -361,10 +361,10 @@ public class BuilderLogic {
           if (curr.getIsExtendingTemplate()) {
             if (obj.getBelongsToParent()) {
               if (!((PresentationObjectContainer)obj).isLocked())
-                ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+                ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
             }
             else {
-              ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+              ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
               ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (curr.getIsTemplate()) {
                 if (!((PresentationObjectContainer)obj).isLocked())
@@ -375,7 +375,7 @@ public class BuilderLogic {
             }
           }
           else {
-            ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+            ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
             ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             if (curr.getIsTemplate()) {
               if (!((PresentationObjectContainer)obj).isLocked())
@@ -419,7 +419,7 @@ public class BuilderLogic {
   /**
    *
    */
-  public PresentationObject getAddIcon(String parentKey,IWContext iwc){
+  public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif","Add new component");
     Link link = new Link(addImage);
@@ -427,6 +427,7 @@ public class BuilderLogic {
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_ADD);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
+    link.addParameter(IB_LABEL_PARAMETER,label);
 
     return(link);
   }
@@ -689,8 +690,10 @@ public class BuilderLogic {
           List extend = xml.getUsingTemplate();
           if (extend != null) {
             Iterator i = extend.iterator();
-            while (i.hasNext())
-              unlockRegion((String)i.next(),parentObjectInstanceID);
+            while (i.hasNext()) {
+              String child = (String)i.next();
+              unlockRegion(child,parentObjectInstanceID);
+            }
           }
         }
       }
@@ -701,20 +704,26 @@ public class BuilderLogic {
     return(false);
   }
 
-  public boolean addNewModule(String pageKey,String parentObjectInstanceID,int newICObjectID){
+  /**
+   *
+   */
+  public boolean addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
     IBXMLPage xml = getIBXMLPage(pageKey);
-    if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newICObjectID)){
+    if (XMLWriter.addNewModule(xml,parentObjectInstanceID,newICObjectID,label)) {
       xml.update();
-      return true;
+      return(true);
     }
-    else{
-      return false;
+    else {
+      return(false);
     }
   }
 
-  public boolean addNewModule(String pageKey,String parentObjectInstanceID,ICObject newObjectType){
+  /**
+   *
+   */
+  public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
     IBXMLPage xml = getIBXMLPage(pageKey);
-    if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newObjectType)){
+    if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newObjectType,label)){
       xml.update();
       return true;
     }
