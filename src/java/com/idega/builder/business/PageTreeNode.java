@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.13 2003/08/05 19:45:36 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.14 2003/09/18 11:28:05 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,18 +42,28 @@ public class PageTreeNode implements ICTreeNode {
 	protected Object _extra = null;
 	protected int _order = -1;
 	protected IWApplicationContext _iwac;
+	protected boolean _isCategory = false;
 
 	protected PageTreeNode(int id, String name) {
-		this(id, name, -1);
+		this(id, name, -1, false);
 	}
 
 	protected PageTreeNode(int id, String name, int order) {
+		this(id, name, order, false);
+	}
+
+	protected PageTreeNode(int id, String name, boolean isCategory) {
+		this(id, name, -1, isCategory);
+	}
+
+	protected PageTreeNode(int id, String name, int order, boolean isCategory) {
 		_id = id;
 		_name = name;
 		_parent = null;
 		_children = new Vector();
 		_extra = null;
 		_order = order;
+		_isCategory = isCategory;
 	}
 
 	/**
@@ -148,9 +158,9 @@ public class PageTreeNode implements ICTreeNode {
 				PageTreeNode node = null;
 				int order = pages.getTreeOrder();
 				if (order == -1)
-					node = new PageTreeNode(pages.getID(), pages.getName());
+					node = new PageTreeNode(pages.getID(), pages.getName(), pages.isCategory());
 				else
-					node = new PageTreeNode(pages.getID(), pages.getName(), order);
+					node = new PageTreeNode(pages.getID(), pages.getName(), order, pages.isCategory());
 				tree.put(new Integer(node.getNodeID()), node);
 			}
 		}
@@ -180,8 +190,9 @@ public class PageTreeNode implements ICTreeNode {
 					parent.addChild(child);
 				}
 
-				if (child != null)
+				if (child != null) {
 					child._parent = parent;
+				}
 			}
 		}
 
@@ -446,4 +457,11 @@ public class PageTreeNode implements ICTreeNode {
 		}
 		return _iwac;
 	}
+	/**
+	 * @return
+	 */
+	public boolean isCategory() {
+		return _isCategory;
+	}
+
 }
