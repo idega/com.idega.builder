@@ -2,8 +2,8 @@ package com.idega.builder.servlet;
 
 import com.idega.servlet.IWPresentationServlet;
 import com.idega.builder.business.PageCacher;
-import com.idega.jmodule.object.Page;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Page;
+import com.idega.presentation.IWContext;
 import java.io.*;
 import com.idega.builder.business.BuilderLogic;
 
@@ -25,15 +25,15 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
   public void initializePage(){
     //String servletName = this.getServletConfig().getServletName();
     //System.out.println("Inside initializePage for "+servletName);
-    ModuleInfo modinfo = getModuleInfo();
+    IWContext iwc = getIWContext();
     boolean builderview=false;
-    if(modinfo.isParameterSet("view")){
-      //if(modinfo.getParameter("view").equals("builder")){
+    if(iwc.isParameterSet("view")){
+      //if(iwc.getParameter("view").equals("builder")){
         builderview=true;
       //}
     }
-    String fileName = modinfo.getRequestURI();
-    String prefix = modinfo.getApplication().getApplicationRealPath();
+    String fileName = iwc.getRequestURI();
+    String prefix = iwc.getApplication().getApplicationRealPath();
 
     Page page = null;
     String pageKey = null;
@@ -45,7 +45,7 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
       e.printStackTrace();
     }
     if(builderview){
-      setPage(BuilderLogic.getInstance().getBuilderTransformed(pageKey,page,modinfo));
+      setPage(BuilderLogic.getInstance().getBuilderTransformed(pageKey,page,iwc));
     }
     else{
       setPage(page);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.2 2001/09/25 13:33:16 palli Exp $
+ * $Id: IBPageChooserWindow.java,v 1.3 2001/10/05 08:04:05 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,10 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.jmodule.object.interfaceobject.AbstractChooserWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.TreeViewer;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.TreeViewer;
+import com.idega.presentation.text.Link;
 import com.idega.builder.data.IBDomain;
 
 
@@ -35,23 +35,23 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
   /**
    *
    */
-  public void displaySelection(ModuleInfo modinfo) {
+  public void displaySelection(IWContext iwc) {
     try{
       /**
        * @todo get a treeviewer with the top page selected by default with better implementation ibdomain...
        */
-      // TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),modinfo);
+      // TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),iwc);
       //IBDomain domain = IBDomain.getDomain(1);
       //int i_page_id = domain.getStartPageID();
       int i_page_id = 1;
 
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),modinfo);
+      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
 
       add(viewer);
-      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,modinfo);
-      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,modinfo);
+      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
+      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
 
       Link prototype = new Link();
       viewer.setToUseOnClick();
@@ -66,7 +66,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
   /**
    *
    */
-/*  public ModuleObject getTable(ModuleInfo modinfo,IWBundle bundle){
+/*  public PresentationObject getTable(IWContext iwc,IWBundle bundle){
     Table table = new Table(2,1);
     TextInput input = new TextInput(displayInputName);
     Parameter value = new Parameter(getChooserParameter(),"");

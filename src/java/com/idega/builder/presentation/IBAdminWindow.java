@@ -15,9 +15,9 @@ import java.beans.Introspector;
 import com.idega.util.*;
 import com.idega.builder.data.*;
 import com.idega.core.data.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.builder.business.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -31,11 +31,11 @@ public class IBAdminWindow extends IWAdminWindow{
 
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
 
   }
 
-  /*public void add(ModuleObject obj){
+  /*public void add(PresentationObject obj){
     super.addBottom(obj);
   }
 

@@ -2,8 +2,8 @@ package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.FrameSet;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.FrameSet;
 
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
@@ -11,9 +11,9 @@ import com.idega.idegaweb.IWPropertyListIterator;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWURL;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 
 import com.idega.util.reflect.MethodFinder;
 
@@ -44,14 +44,14 @@ public class IBPropertiesWindow extends FrameSet{
    final static String BOTTOM_FRAME = "ib_prop_win_bottom";
 
 
-  public void main(ModuleInfo modinfo) throws Exception{
+  public void main(IWContext iwc) throws Exception{
     super.setTitle("Properties");
     super.setWidth(600);
     super.setHeight(600);
     add(IBPropertiesWindowTop.class);
 
     IWURL mURL = FrameSet.getFrameURL(IBPropertiesWindowMiddle.class);
-    mURL.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
+    mURL.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
     add(mURL.toString());
     //add(IBPropertiesWindowMiddle.class);
 
@@ -66,25 +66,25 @@ public class IBPropertiesWindow extends FrameSet{
   }
 
 
-  public void main2(ModuleInfo modinfo)throws Exception{
+  public void main2(IWContext iwc)throws Exception{
       //super.addTitle("IBPropertiesWindow");
       //setParentToReload();
-      String ib_page_id = modinfo.getParameter(IB_PAGE_PARAMETER);
-      String ic_objectinstance_id = modinfo.getParameter(IC_OBJECT_ID_PARAMETER);
+      String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
+      String ic_objectinstance_id = iwc.getParameter(IC_OBJECT_ID_PARAMETER);
       if(ic_objectinstance_id!=null){
-        String methodIdentifier = modinfo.getParameter(METHOD_ID_PARAMETER);
+        String methodIdentifier = iwc.getParameter(METHOD_ID_PARAMETER);
         if(methodIdentifier==null){
-          add(getPropertiesList(ic_objectinstance_id,modinfo));
+          add(getPropertiesList(ic_objectinstance_id,iwc));
         }
         else{
-          if(modinfo.isParameterSet(VALUE_SAVE_PARAMETER)){
-            String[] valueParams = modinfo.getParameterValues(VALUE_PARAMETER);
+          if(iwc.isParameterSet(VALUE_SAVE_PARAMETER)){
+            String[] valueParams = iwc.getParameterValues(VALUE_PARAMETER);
             //add("value="+value);
             if(valueParams!=null){
               boolean deleteProperty=true;
               String[] values = new String[valueParams.length];
               for (int i = 0; i < valueParams.length; i++) {
-                values[i]=modinfo.getParameter(valueParams[i]);
+                values[i]=iwc.getParameter(valueParams[i]);
                 if(!values[i].equals("")){deleteProperty=false;}
               }
               //System.out.println("setting property 1");
@@ -92,7 +92,7 @@ public class IBPropertiesWindow extends FrameSet{
                 removeProperty(methodIdentifier,ic_objectinstance_id,ib_page_id);
               }
               else{
-                setProperty(methodIdentifier,values,ic_objectinstance_id,ib_page_id,modinfo.getApplication());
+                setProperty(methodIdentifier,values,ic_objectinstance_id,ib_page_id,iwc.getApplication());
                 setParentToReload();
                 close();
               }
@@ -102,7 +102,7 @@ public class IBPropertiesWindow extends FrameSet{
             Form form = new Form();
             add(form);
             form.maintainAllParameters();
-            form.add(getPropertySetterBox(methodIdentifier,modinfo,ib_page_id,ic_objectinstance_id));
+            form.add(getPropertySetterBox(methodIdentifier,iwc,ib_page_id,ic_objectinstance_id));
           }
         }
       }
@@ -111,10 +111,10 @@ public class IBPropertiesWindow extends FrameSet{
       }
   }
 
-  public ModuleObject getPropertiesList(String ic_object_id,ModuleInfo modinfo)throws Exception{
+  public PresentationObject getPropertiesList(String ic_object_id,IWContext iwc)throws Exception{
     Table table = new Table();
     int icObjectInstanceID = Integer.parseInt(ic_object_id);
-    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(icObjectInstanceID,modinfo.getApplication());
+    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(icObjectInstanceID,iwc.getApplication());
     IWPropertyListIterator iter = methodList.getIWPropertyListIterator();
     int counter=1;
     while (iter.hasNext()) {
@@ -122,8 +122,8 @@ public class IBPropertiesWindow extends FrameSet{
       String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
       String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp);
       Link link = new Link(methodDescr);
-      link.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
-      link.maintainParameter(IB_PAGE_PARAMETER,modinfo);
+      link.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
+      link.maintainParameter(IB_PAGE_PARAMETER,iwc);
       link.addParameter(METHOD_ID_PARAMETER,methodIdentifier);
       table.add(link,1,counter);
       counter++;
@@ -131,7 +131,7 @@ public class IBPropertiesWindow extends FrameSet{
     return table;
   }
 
-  public ModuleObject getPropertySetterBox(String methodIdentifier,ModuleInfo modinfo,String pageID,String icObjectInstanceID)throws Exception{
+  public PresentationObject getPropertySetterBox(String methodIdentifier,IWContext iwc,String pageID,String icObjectInstanceID)throws Exception{
       Table table = new Table();
       int ypos = 1;
       /*TextInput input = new TextInput(VALUE_PARAMETER);
@@ -143,7 +143,7 @@ public class IBPropertiesWindow extends FrameSet{
       Class ICObjectClass = null;
       int icObjectInstanceIDint = Integer.parseInt(icObjectInstanceID);
       if(icObjectInstanceIDint == -1){
-        ICObjectClass = com.idega.jmodule.object.Page.class;
+        ICObjectClass = com.idega.presentation.Page.class;
       }
       else{
         ICObjectClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
@@ -167,7 +167,7 @@ public class IBPropertiesWindow extends FrameSet{
         catch(java.util.NoSuchElementException e){
         }
         String sName=namePrefix+i;
-        ModuleObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(parameterClass,sName,sValue);
+        PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(parameterClass,sName,sValue);
         Parameter param = new Parameter(VALUE_PARAMETER,sName);
         table.add(param,2,ypos);
         table.add(handlerBox,2,ypos);
@@ -193,14 +193,14 @@ public class IBPropertiesWindow extends FrameSet{
 
   public static class IBPropertiesWindowMiddle extends FrameSet{
 
-    public void main(ModuleInfo modinfo){
+    public void main(IWContext iwc){
       super.setHorizontal();
       IWURL url1 = FrameSet.getFrameURL(IBPropertiesWindowList.class);
-      url1.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
+      url1.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
       add(url1.toString());
 
       IWURL url2 = FrameSet.getFrameURL(IBPropertiesWindowSetter.class);
-      url2.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
+      url2.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
       add(url2.toString());
 
       setFrameName(1,IBPropertiesWindowList.LIST_FRAME);
@@ -222,7 +222,7 @@ public class IBPropertiesWindow extends FrameSet{
 
     }
 
-    public void main(ModuleInfo modinfo){
+    public void main(IWContext iwc){
       SubmitButton b1 = new SubmitButton("OK");
       b1.setOnClick("doClose()");
       SubmitButton b2 = new SubmitButton("Apply");
@@ -241,7 +241,7 @@ public class IBPropertiesWindow extends FrameSet{
       setBackgroundColor("gray");
     }
 
-    public void main(ModuleInfo modinfo){
+    public void main(IWContext iwc){
       add("Properties");
     }
   }

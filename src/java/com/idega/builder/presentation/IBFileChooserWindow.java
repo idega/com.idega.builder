@@ -1,9 +1,9 @@
 package com.idega.builder.presentation;
 
-import com.idega.jmodule.object.interfaceobject.AbstractChooserWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.TreeViewer;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.TreeViewer;
+import com.idega.presentation.text.Link;
 import com.idega.builder.data.IBDomain;
 
 
@@ -28,21 +28,21 @@ public class IBFileChooserWindow extends AbstractChooserWindow {
  * @todo get a treeviewer with the top File selected by default
  * with better implementation ibdomain...
  */
-  public void displaySelection(ModuleInfo modinfo){
+  public void displaySelection(IWContext iwc){
 
     try{
-     // TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),modinfo);
+     // TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),iwc);
      //IBDomain domain = IBDomain.getDomain(1);
     //int i_page_id = domain.getStartPageID();
     int i_file_id = 1;
 
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.core.data.ICFile(i_file_id),modinfo);
+      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.core.data.ICFile(i_file_id),iwc);
 
       add(viewer);
-      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,modinfo);
-      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,modinfo);
+      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
+      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
 
       Link prototype = new Link();
       viewer.setToUseOnClick();

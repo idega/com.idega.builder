@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.9 2001/10/02 15:40:09 palli Exp $
+ * $Id: IBXMLPage.java,v 1.10 2001/10/05 08:04:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import java.io.IOException;
 import com.idega.builder.data.IBPage;
 import com.idega.exception.PageDoesNotExist;
-import com.idega.jmodule.object.Page;
+import com.idega.presentation.Page;
 
 /**
  * A class that reads XML page descriptions from the database and returns

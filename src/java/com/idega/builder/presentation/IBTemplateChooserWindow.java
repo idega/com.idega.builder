@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.2 2001/10/02 10:34:12 palli Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.3 2001/10/05 08:04:05 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,10 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.jmodule.object.interfaceobject.AbstractChooserWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.TreeViewer;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.TreeViewer;
+import com.idega.presentation.text.Link;
 import com.idega.builder.data.IBDomain;
 
 /**
@@ -40,17 +40,17 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
    * @todo get a treeviewer with the top page selected by default
    * with better implementation ibdomain...
    */
-  public void displaySelection(ModuleInfo modinfo) {
+  public void displaySelection(IWContext iwc) {
     try {
       int i_page_id = 2;
 
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),modinfo);
+      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
 
       add(viewer);
-      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,modinfo);
-      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,modinfo);
+      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
+      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
 
       Link prototype = new Link();
       viewer.setToUseOnClick();

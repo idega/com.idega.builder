@@ -2,7 +2,7 @@ package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.business.ICObjectBusiness;
@@ -15,9 +15,9 @@ import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWPropertyListIterator;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 
 import java.util.List;
 import java.util.Vector;
@@ -52,10 +52,10 @@ public class IBPermissionWindow extends IBAdminWindow{
 
 
 
-  private Table lineUpElements(ModuleInfo modinfo,String permissionType) throws Exception{
+  private Table lineUpElements(IWContext iwc,String permissionType) throws Exception{
 
-    String identifier = modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER);
-    String category = modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
+    String identifier = iwc.getParameter(_PARAMETERSTRING_IDENTIFIER);
+    String category = iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
     Table frameTable = new Table(1,4);
     if(identifier != null && category != null){
       int intPermissionCategory = Integer.parseInt(category);
@@ -122,7 +122,7 @@ public class IBPermissionWindow extends IBAdminWindow{
         right.selectAllOnSubmit();
 
 
-      Map hash = (Map)modinfo.getSessionAttribute(this.SessionAddressPermissionMap);
+      Map hash = (Map)iwc.getSessionAttribute(this.SessionAddressPermissionMap);
       List directGroups = null;
       List oldvalues = null;
       if(hash != null && hash.get(permissionType)!=null){
@@ -147,7 +147,7 @@ public class IBPermissionWindow extends IBAdminWindow{
             right.addElement(groupId,((GenericGroup)item).getName());
             oldValueIDs.add(groupId);
           }
-          this.collectOldValues(modinfo,oldValueIDs, permissionType);
+          this.collectOldValues(iwc,oldValueIDs, permissionType);
         } else {
           while (iter.hasNext()) {
             Object item = iter.next();
@@ -193,41 +193,41 @@ public class IBPermissionWindow extends IBAdminWindow{
 
 
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
       super.addTitle("IBPermissionWindow");
-      String submit = modinfo.getParameter("subm");
+      String submit = iwc.getParameter("subm");
       Form myForm = new Form();
       myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
       myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
 
       if(submit != null){
         if(submit.equals("save")){
-          String permissionType = modinfo.getParameter(permissionKeyParameterString);
+          String permissionType = iwc.getParameter(permissionKeyParameterString);
           if(permissionType != null){
-            this.collect(modinfo);
-            this.store(modinfo);
-            this.dispose(modinfo);
+            this.collect(iwc);
+            this.store(iwc);
+            this.dispose(iwc);
             this.close();
           }else {
             this.add("ERROR: nothing to save");
           }
           this.setParentToReload();
         }else if(submit.equals("cancel")){
-          this.dispose(modinfo);
+          this.dispose(iwc);
           this.close();
         } else {
-          String permissionType = modinfo.getParameter(permissionKeyParameterString);
+          String permissionType = iwc.getParameter(permissionKeyParameterString);
           if(permissionType != null){
-            collect(modinfo);
+            collect(iwc);
           }
-          myForm.add(this.lineUpElements(modinfo,permissionType));
+          myForm.add(this.lineUpElements(iwc,permissionType));
         }
       }else{
-        String permissionType = modinfo.getParameter(permissionKeyParameterString);
+        String permissionType = iwc.getParameter(permissionKeyParameterString);
         if(permissionType != null){
-          collect(modinfo);
+          collect(iwc);
         }
-        myForm.add(this.lineUpElements(modinfo,permissionType));
+        myForm.add(this.lineUpElements(iwc,permissionType));
       }
       this.add(myForm);
 
@@ -236,48 +236,48 @@ public class IBPermissionWindow extends IBAdminWindow{
 
 
 
-  private void collect(ModuleInfo modinfo){
-    Object obj = modinfo.getSessionAttribute(SessionAddressPermissionMap);
+  private void collect(IWContext iwc){
+    Object obj = iwc.getSessionAttribute(SessionAddressPermissionMap);
     Map hash = null;
     if(obj != null){
       hash = (Map)obj;
-      if(!hash.get(_PARAMETERSTRING_IDENTIFIER).equals(modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER)) && !hash.get(_PARAMETERSTRING_PERMISSION_CATEGORY).equals(modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY))){
+      if(!hash.get(_PARAMETERSTRING_IDENTIFIER).equals(iwc.getParameter(_PARAMETERSTRING_IDENTIFIER)) && !hash.get(_PARAMETERSTRING_PERMISSION_CATEGORY).equals(iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY))){
         hash = new Hashtable();
-        hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
-        hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
-        modinfo.setSessionAttribute(SessionAddressPermissionMap,hash);
+        hash.put(_PARAMETERSTRING_IDENTIFIER,iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
+        hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
+        iwc.setSessionAttribute(SessionAddressPermissionMap,hash);
       }
     }else{
       hash = new Hashtable();
-      hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
-      hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
-      modinfo.setSessionAttribute(SessionAddressPermissionMap,hash);
+      hash.put(_PARAMETERSTRING_IDENTIFIER,iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
+      hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
+      iwc.setSessionAttribute(SessionAddressPermissionMap,hash);
     }
-    String[] groups = modinfo.getParameterValues(permissionGroupParameterString);
+    String[] groups = iwc.getParameterValues(permissionGroupParameterString);
     if(groups != null){
-      hash.put(modinfo.getParameter(lastPermissionKeyParameterString),groups);
+      hash.put(iwc.getParameter(lastPermissionKeyParameterString),groups);
     } else{
-      hash.put(modinfo.getParameter(lastPermissionKeyParameterString),new String[0]);
+      hash.put(iwc.getParameter(lastPermissionKeyParameterString),new String[0]);
     }
   }
 
 
-  private void collectOldValues(ModuleInfo modinfo, List groups, String permissionKey){
-    Object obj = modinfo.getSessionAttribute(SessionAddressPermissionMapOldValue);
+  private void collectOldValues(IWContext iwc, List groups, String permissionKey){
+    Object obj = iwc.getSessionAttribute(SessionAddressPermissionMapOldValue);
     Map hash = null;
     if(obj != null){
       hash = (Map)obj;
-      if(!hash.get(_PARAMETERSTRING_IDENTIFIER).equals(modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER)) && !hash.get(_PARAMETERSTRING_PERMISSION_CATEGORY).equals(modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY))){
+      if(!hash.get(_PARAMETERSTRING_IDENTIFIER).equals(iwc.getParameter(_PARAMETERSTRING_IDENTIFIER)) && !hash.get(_PARAMETERSTRING_PERMISSION_CATEGORY).equals(iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY))){
         hash = new Hashtable();
-        hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
-        hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
-        modinfo.setSessionAttribute(SessionAddressPermissionMapOldValue,hash);
+        hash.put(_PARAMETERSTRING_IDENTIFIER,iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
+        hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
+        iwc.setSessionAttribute(SessionAddressPermissionMapOldValue,hash);
       }
     }else{
       hash = new Hashtable();
-      hash.put(_PARAMETERSTRING_IDENTIFIER,modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER));
-      hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
-      modinfo.setSessionAttribute(SessionAddressPermissionMapOldValue,hash);
+      hash.put(_PARAMETERSTRING_IDENTIFIER,iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
+      hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
+      iwc.setSessionAttribute(SessionAddressPermissionMapOldValue,hash);
     }
 
     if(hash.get(permissionKey) == null){
@@ -291,16 +291,16 @@ public class IBPermissionWindow extends IBAdminWindow{
 
 
 
-  private void store(ModuleInfo modinfo) throws Exception {
-    Object obj = modinfo.getSessionAttribute(SessionAddressPermissionMap);
-    Object oldObj= modinfo.getSessionAttribute(SessionAddressPermissionMapOldValue);
+  private void store(IWContext iwc) throws Exception {
+    Object obj = iwc.getSessionAttribute(SessionAddressPermissionMap);
+    Object oldObj= iwc.getSessionAttribute(SessionAddressPermissionMapOldValue);
     if(obj != null && oldObj != null){
       Map map = (Map)obj;
       Map oldMap = (Map)oldObj;
       String instanceId = (String)map.remove(_PARAMETERSTRING_IDENTIFIER);
       String category = (String)map.remove(_PARAMETERSTRING_PERMISSION_CATEGORY);
 
-      if((instanceId != null && instanceId.equals(modinfo.getParameter(_PARAMETERSTRING_IDENTIFIER)) && instanceId.equals(oldMap.get(_PARAMETERSTRING_IDENTIFIER)))&&(category != null && category.equals(modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)) && category.equals(oldMap.get(_PARAMETERSTRING_PERMISSION_CATEGORY)))){
+      if((instanceId != null && instanceId.equals(iwc.getParameter(_PARAMETERSTRING_IDENTIFIER)) && instanceId.equals(oldMap.get(_PARAMETERSTRING_IDENTIFIER)))&&(category != null && category.equals(iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)) && category.equals(oldMap.get(_PARAMETERSTRING_PERMISSION_CATEGORY)))){
         Iterator iter = map.keySet().iterator();
         while (iter.hasNext()) {
           Object item = iter.next();
@@ -312,7 +312,7 @@ public class IBPermissionWindow extends IBAdminWindow{
           int intCategory = Integer.parseInt(category);
           for (int i = 0; i < groups.length; i++) {
             oldGroups.remove(groups[i]);
-            AccessControl.setPermission(intCategory, modinfo, groups[i],instanceId,(String)item,Boolean.TRUE);
+            AccessControl.setPermission(intCategory, iwc, groups[i],instanceId,(String)item,Boolean.TRUE);
           }
           if(oldGroups.size()>0){
             String[] groupsToRemove = new String[oldGroups.size()];
@@ -321,7 +321,7 @@ public class IBPermissionWindow extends IBAdminWindow{
             while (iter2.hasNext()) {
               groupsToRemove[index2++] = (String)iter2.next();
             }
-            AccessControl.removePermissionRecords(intCategory,modinfo, instanceId,(String)item, groupsToRemove);
+            AccessControl.removePermissionRecords(intCategory,iwc, instanceId,(String)item, groupsToRemove);
           }
         }
       }else{
@@ -330,15 +330,15 @@ public class IBPermissionWindow extends IBAdminWindow{
     }
   }
 
-  private void dispose(ModuleInfo modinfo){
+  private void dispose(IWContext iwc){
     try {
-      modinfo.removeSessionAttribute(SessionAddressPermissionMap);
+      iwc.removeSessionAttribute(SessionAddressPermissionMap);
     }
     catch (Exception ex) {
 
     }
     try {
-      modinfo.removeSessionAttribute(SessionAddressPermissionMapOldValue);
+      iwc.removeSessionAttribute(SessionAddressPermissionMapOldValue);
     }
     catch (Exception ex) {
 

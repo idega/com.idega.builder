@@ -1,7 +1,7 @@
 package com.idega.builder.presentation;
 
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Image;
 
 
 /**

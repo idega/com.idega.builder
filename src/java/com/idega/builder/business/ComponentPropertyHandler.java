@@ -21,13 +21,13 @@ import java.util.Hashtable;
 import org.jdom.Element;
 import org.jdom.Attribute;
 
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.*;
 
 import com.idega.core.data.ICFile;
 import com.idega.builder.data.IBPage;
 //import com.idega.builder.data.IBTemplatePage;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Image;
 
 public class ComponentPropertyHandler {
 
@@ -47,7 +47,7 @@ public class ComponentPropertyHandler {
     return instance;
   }
 
-     void setReflectionProperty(ModuleObject instance,String methodIdentifier,Vector stringValues){
+     void setReflectionProperty(PresentationObject instance,String methodIdentifier,Vector stringValues){
       Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier,instance.getClass());
       if(method==null){
         throw new RuntimeException("Method: "+methodIdentifier+" not found");
@@ -57,7 +57,7 @@ public class ComponentPropertyHandler {
       }
     }
 
-     void setReflectionProperty(ModuleObject instance,Method method,Vector stringValues){
+     void setReflectionProperty(PresentationObject instance,Method method,Vector stringValues){
         //Object[] args = getObjectArguments(stringValues);
         //method.invoke(instance,args);
         Object[] args = new Object[stringValues.size()];
@@ -169,7 +169,7 @@ public class ComponentPropertyHandler {
     }
 
 
-    public ModuleObject getSetPropertyComponent(String className,String name){
+    public PresentationObject getSetPropertyComponent(String className,String name){
       if(className.equals("int")){
         return new IntegerInput(name);
       }

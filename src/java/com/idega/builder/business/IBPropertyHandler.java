@@ -5,9 +5,9 @@
 */
 package com.idega.builder.business;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 
 import com.idega.idegaweb.*;
 import com.idega.util.reflect.*;
@@ -72,8 +72,8 @@ public class IBPropertyHandler{
       IWBundle iwb = null;
       //Hardcoded -1 for the top page
       if(ic_object_instance_id==-1){
-        componentKey = "com.idega.jmodule.object.Page";
-        iwb = iwma.getBundle(com.idega.jmodule.object.Page.IW_BUNDLE_IDENTIFIER);
+        componentKey = "com.idega.presentation.Page";
+        iwb = iwma.getBundle(com.idega.presentation.Page.IW_BUNDLE_IDENTIFIER);
       }
       else{
         ICObjectInstance icoi = new ICObjectInstance(ic_object_instance_id);
@@ -106,8 +106,8 @@ public class IBPropertyHandler{
       return methodList;
     }*/
 
-    /*public static ModuleObject[] getInterfaceComponent(Class[] classes,String[] names){
-      ModuleObject[] objects = new ModuleObject[classes.length];
+    /*public static PresentationObject[] getInterfaceComponent(Class[] classes,String[] names){
+      PresentationObject[] objects = new PresentationObject[classes.length];
       for (int i = 0; i < classes.length; i++) {
         if(names==null){
             objects[i]=getInterfaceComponent(classes[i],"parameter_nr_"+i);
@@ -120,8 +120,8 @@ public class IBPropertyHandler{
     }*/
 
 
-    public static ModuleObject getPropertySetterComponent(Class parameterClass,String name,String stringValue){
-      ModuleObject obj =null;
+    public static PresentationObject getPropertySetterComponent(Class parameterClass,String name,String stringValue){
+      PresentationObject obj =null;
       //String className = parameterClass.getName();
       if(parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)){
           obj = new IntegerInput(name);
@@ -153,7 +153,7 @@ public class IBPropertyHandler{
             ((FloatInput)obj).setContent(stringValue);
           }
       }
-      else if(parameterClass.equals(com.idega.jmodule.object.Image.class)){
+      else if(parameterClass.equals(com.idega.presentation.Image.class)){
           obj = new ImageInserter(name,false);
       }
       /**@todo : handle page,template,file if the inputs already hava a value

@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.16 2001/10/04 18:59:56 gummi Exp $
+ * $Id: IBApplication.java,v 1.17 2001/10/05 08:04:02 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,17 +15,17 @@ import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBDeletePageWindow;
 import com.idega.builder.presentation.IBSaveAsPageWindow;
 import com.idega.builder.presentation.IBSavePageWindow;
-import com.idega.jmodule.object.app.IWApplication;
-import com.idega.jmodule.object.app.IWApplicationComponent;
-import com.idega.jmodule.object.FrameSet;
-import com.idega.jmodule.object.Page;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.interfaceobject.TreeViewer;
+import com.idega.presentation.app.IWApplication;
+import com.idega.presentation.app.IWApplicationComponent;
+import com.idega.presentation.FrameSet;
+import com.idega.presentation.Page;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.TreeViewer;
 import com.idega.idegaweb.IWBundle;
 import com.idega.builder.presentation.IBPermissionWindow;
 
@@ -139,7 +139,7 @@ public class IBApplication extends IWApplication {
     /**
      *
      */
-    public void main(ModuleInfo modinfo) {
+    public void main(IWContext iwc) {
       String builderControlParameter = "builder_controlparameter";
 
       Table controlTable = new Table(9,1);
@@ -219,16 +219,16 @@ public class IBApplication extends IWApplication {
     /**
      *
      */
-    public void main(ModuleInfo modinfo) {
+    public void main(IWContext iwc) {
       int i_page_id = 1;
       int i_template_id = 2;
       try {
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),modinfo);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
-        l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
-        viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+        l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
         viewer.setLinkProtototype(l);
@@ -236,20 +236,20 @@ public class IBApplication extends IWApplication {
 
         add(Text.getBreak());
 
-        TreeViewer viewer2 = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),modinfo);
+        TreeViewer viewer2 = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
         viewer2.setTarget(IB_LEFT_MENU_FRAME);
         viewer2.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l2 = new Link();
-        l2.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
-        viewer2.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+        l2.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        viewer2.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer2.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
         viewer2.setLinkProtototype(l2);
         add(viewer2);
 
-        String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         if (page_id != null) {
-          modinfo.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);
+          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);
         }
       }
       catch(Exception e) {
@@ -271,7 +271,7 @@ public class IBApplication extends IWApplication {
     /**
      *
      */
-    public void main(ModuleInfo modinfo) {
+    public void main(IWContext iwc) {
       super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
 
       String controlParameter = "builder_controlparameter";
@@ -280,7 +280,7 @@ public class IBApplication extends IWApplication {
       setBackgroundImage("/common/pics/arachnea/toolbar_tiler.gif");
       setAllMargins(0);
 
-      String action = modinfo.getParameter(controlParameter);
+      String action = iwc.getParameter(controlParameter);
       if (action == null) {
         action=ACTION_BUILDER;
       }
@@ -312,10 +312,10 @@ public class IBApplication extends IWApplication {
         link_delete.setWindowToOpen(IBDeletePageWindow.class);
         add(link_delete);
 
-        ModuleObject propertiesIcon = getPropertiesIcon(modinfo);
+        PresentationObject propertiesIcon = getPropertiesIcon(iwc);
         add(propertiesIcon);
 
-        ModuleObject permissionIcon = getPermissionIcon(modinfo);
+        PresentationObject permissionIcon = getPermissionIcon(iwc);
         add(permissionIcon);
 
         add(separator);
@@ -351,11 +351,11 @@ public class IBApplication extends IWApplication {
     /**
      *
      */
-    public ModuleObject getPropertiesIcon(ModuleInfo modinfo) {
+    public PresentationObject getPropertiesIcon(IWContext iwc) {
       Image image = new Image("/common/pics/arachnea/toolbar_properties_1.gif","Page Properties");
       Link link = new Link(image);
       link.setWindowToOpen(IBPropertiesWindow.class);
-      link.addParameter(BuilderLogic.IB_PAGE_PARAMETER,BuilderLogic.getInstance().getCurrentIBPage(modinfo));
+      link.addParameter(BuilderLogic.IB_PAGE_PARAMETER,BuilderLogic.getInstance().getCurrentIBPage(iwc));
       link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER,BuilderLogic.ACTION_EDIT);
       //Hardcoded -1 for the top page
       String pageICObjectInstanceID = "-1";
@@ -363,13 +363,13 @@ public class IBApplication extends IWApplication {
       return(link);
     }
 
-    public ModuleObject getPermissionIcon(ModuleInfo modinfo){
-      //IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    public PresentationObject getPermissionIcon(IWContext iwc){
+      //IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
       //Image image = bundle.getImage("properties.gif","Page properties");
       Image image = new Image("/common/pics/arachnea/toolbar_permissions_1.gif","Page Permissions");
       Link link = new Link(image);
       link.setWindowToOpen(IBPermissionWindow.class);
-      link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,BuilderLogic.getInstance().getCurrentIBPage(modinfo));
+      link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,BuilderLogic.getInstance().getCurrentIBPage(iwc));
       link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,com.idega.core.accesscontrol.business.AccessControl._CATEGORY_PAGE_INSTANCE);
 
       return link;
@@ -391,8 +391,8 @@ public class IBApplication extends IWApplication {
     /**
      *
      */
-    public void main(ModuleInfo modinfo) {
-      IWBundle _iwrb = getBundle(modinfo);
+    public void main(IWContext iwc) {
+      IWBundle _iwrb = getBundle(iwc);
       String controlParameter = "builder_controlparameter";
 
 
@@ -410,7 +410,7 @@ public class IBApplication extends IWApplication {
       toolbarTable.setVerticalAlignment(1,1,"top");
       add(toolbarTable);
 
-      String action = modinfo.getParameter(controlParameter);
+      String action = iwc.getParameter(controlParameter);
       if (action == null) {
         action = ACTION_BUILDER;
       }

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.35 2001/10/04 18:59:56 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.36 2001/10/05 08:04:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,17 +26,17 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.Page;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.interfaceobject.Window;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Page;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.Block;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Window;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.jmodule.image.presentation.ImageEditorWindow;
 import java.util.ListIterator;
@@ -101,22 +101,22 @@ public class BuilderLogic {
     return PageCacher.getXML(Integer.toString(id));
   }
 
-  public Page getPage(int id,ModuleInfo modinfo) {
+  public Page getPage(int id,IWContext iwc) {
     try {
       boolean builderview = false;
       boolean permissionview = false;
-      if (modinfo.isParameterSet("view")) {
+      if (iwc.isParameterSet("view")) {
         builderview = true;
-      } else if (modinfo.isParameterSet("ic_pm") && AccessControl.isAdmin(modinfo)) {
+      } else if (iwc.isParameterSet("ic_pm") && AccessControl.isAdmin(iwc)) {
         permissionview = true;
       }
 
-      Page page = PageCacher.getPage(Integer.toString(id),modinfo);
+      Page page = PageCacher.getPage(Integer.toString(id),iwc);
       if (builderview) {
-        return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,modinfo));
+        return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,iwc));
       }else if(permissionview){
         int groupId = -1906;
-        String bla = modinfo.getParameter("ic_pm");
+        String bla = iwc.getParameter("ic_pm");
         if(bla != null){
           try {
             groupId = Integer.parseInt(bla);
@@ -127,7 +127,7 @@ public class BuilderLogic {
 
         }
         page = PageCacher.getPage(Integer.toString(id));
-        return(BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id),page,modinfo));
+        return(BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id),page,iwc));
       }else {
         return(page);
       }
@@ -140,38 +140,38 @@ public class BuilderLogic {
     }
   }
 
-  public Page getBuilderTransformed(String pageKey,Page page,ModuleInfo modinfo){
+  public Page getBuilderTransformed(String pageKey,Page page,IWContext iwc){
       List list = page.getAllContainingObjects();
       if(list!=null){
         ListIterator iter = list.listIterator();
-        ModuleObjectContainer parent = page;
+        PresentationObjectContainer parent = page;
         while (iter.hasNext()) {
           int index = iter.nextIndex();
-          ModuleObject item = (ModuleObject)iter.next();
-          transformObject(pageKey,item,index,parent,"-1",modinfo);
+          PresentationObject item = (PresentationObject)iter.next();
+          transformObject(pageKey,item,index,parent,"-1",iwc);
         }
       }
       //"-1" is identified as the top page object (parent)
       if (page.getIsExtendingTemplate()) {
         if (!page.isLocked()) {
-          page.add(getAddIcon(Integer.toString(-1),modinfo));
+          page.add(getAddIcon(Integer.toString(-1),iwc));
           if (page.getIsTemplate())
-            page.add(getUnlockedIcon(Integer.toString(-1),modinfo));
+            page.add(getUnlockedIcon(Integer.toString(-1),iwc));
         }
       }
       else {
-        page.add(getAddIcon(Integer.toString(-1),modinfo));
+        page.add(getAddIcon(Integer.toString(-1),iwc));
         if (page.getIsTemplate())
           if (page.isLocked())
-            page.add(getLockedIcon(Integer.toString(-1),modinfo));
+            page.add(getLockedIcon(Integer.toString(-1),iwc));
           else
-            page.add(getUnlockedIcon(Integer.toString(-1),modinfo));
+            page.add(getUnlockedIcon(Integer.toString(-1),iwc));
       }
 
       return page;
   }
 
-    public Page getPermissionTransformed(int groupId, String pageKey,Page page,ModuleInfo modinfo){
+    public Page getPermissionTransformed(int groupId, String pageKey,Page page,IWContext iwc){
       List groupIds = new Vector();
       groupIds.add(Integer.toString(groupId));
       try {
@@ -193,8 +193,8 @@ public class BuilderLogic {
         while (iter.hasNext()) {
           int index = iter.nextIndex();
           Object item = iter.next();
-          if(item instanceof ModuleObject){
-            filterForPermission(groupIds,(ModuleObject)item,page,index,modinfo);
+          if(item instanceof PresentationObject){
+            filterForPermission(groupIds,(PresentationObject)item,page,index,iwc);
           }
         }
       }
@@ -202,19 +202,19 @@ public class BuilderLogic {
       return page;
   }
 
-  private void filterForPermission(List groupIds, ModuleObject obj, ModuleObjectContainer parentObject, int index, ModuleInfo modinfo){
-    if(!AccessControl.hasViewPermission(groupIds,obj,modinfo)){
+  private void filterForPermission(List groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc){
+    if(!AccessControl.hasViewPermission(groupIds,obj,iwc)){
       System.err.println(obj+": removed");
       parentObject.getAllContainingObjects().remove(index);
-      parentObject.getAllContainingObjects().add(index,ModuleObject.NULL_CLONE_OBJECT);
-    }else if(obj instanceof ModuleObjectContainer){
+      parentObject.getAllContainingObjects().add(index,PresentationObject.NULL_CLONE_OBJECT);
+    }else if(obj instanceof PresentationObjectContainer){
       if(obj instanceof Table){
         Table tab = (Table)obj;
         int cols = tab.getColumns();
         int rows = tab.getRows();
         for (int x=1;x<=cols ;x++ ) {
           for (int y=1;y<=rows ;y++ ) {
-            ModuleObjectContainer moc = tab.containerAt(x,y);
+            PresentationObjectContainer moc = tab.containerAt(x,y);
             if(moc!=null){
               List l = moc.getAllContainingObjects();
               if(l != null){
@@ -222,8 +222,8 @@ public class BuilderLogic {
                 while (iterT.hasNext()) {
                   int index2 = iterT.nextIndex();
                   Object itemT = iterT.next();
-                  if(itemT instanceof ModuleObject){
-                    filterForPermission(groupIds,(ModuleObject)itemT,moc,index2,modinfo);
+                  if(itemT instanceof PresentationObject){
+                    filterForPermission(groupIds,(PresentationObject)itemT,moc,index2,iwc);
                   }
                 }
               }
@@ -231,13 +231,13 @@ public class BuilderLogic {
           }
         }
       } else{
-        List list = ((ModuleObjectContainer)obj).getAllContainingObjects();
+        List list = ((PresentationObjectContainer)obj).getAllContainingObjects();
         if(list!=null){
           ListIterator iter = list.listIterator();
           while (iter.hasNext()) {
             int index2 = iter.nextIndex();
-            ModuleObject item = (ModuleObject)iter.next();
-            filterForPermission(groupIds,item,(ModuleObjectContainer)obj,index2,modinfo);
+            PresentationObject item = (PresentationObject)iter.next();
+            filterForPermission(groupIds,item,(PresentationObjectContainer)obj,index2,iwc);
           }
         }
       }
@@ -251,22 +251,22 @@ public class BuilderLogic {
     setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID),iwma);
   }
 
-  private void transformObject(String pageKey,ModuleObject obj,int index, ModuleObjectContainer parent,String parentKey,ModuleInfo modinfo){
+  private void transformObject(String pageKey,PresentationObject obj,int index, PresentationObjectContainer parent,String parentKey,IWContext iwc){
     if(obj instanceof Image){
       Image imageObj = (Image)obj;
       boolean useBuilderObjectControl = obj.getUseBuilderObjectControl();
       ImageInserter inserter = null;
       int ICObjectIntanceID = imageObj.getICObjectInstanceID();
       String sessionID="ic_"+ICObjectIntanceID;
-      String session_image_id = (String)modinfo.getSessionAttribute(sessionID);
+      String session_image_id = (String)iwc.getSessionAttribute(sessionID);
       if(session_image_id!=null){
         int image_id = Integer.parseInt(session_image_id);
         /**
          * @todo
          * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
          */
-        processImageSet(pageKey,ICObjectIntanceID,image_id,modinfo.getApplication());
-        modinfo.removeSessionAttribute(sessionID);
+        processImageSet(pageKey,ICObjectIntanceID,image_id,iwc.getApplication());
+        iwc.removeSessionAttribute(sessionID);
         imageObj.setImageID(image_id);
       }
       inserter = new ImageInserter();
@@ -285,94 +285,94 @@ public class BuilderLogic {
       obj.setICObjectInstanceID(ICObjectIntanceID);
       obj.setUseBuilderObjectControl(useBuilderObjectControl);
     }
-    else if(obj instanceof JModuleObject) {
+    else if(obj instanceof Block) {
 
     }
-    else if(obj instanceof ModuleObjectContainer){
+    else if(obj instanceof PresentationObjectContainer){
       if(obj instanceof Table){
         Table tab = (Table)obj;
         int cols = tab.getColumns();
         int rows = tab.getRows();
         for (int x=1;x<=cols ;x++ ) {
           for (int y=1;y<=rows ;y++ ) {
-            ModuleObjectContainer moc = tab.containerAt(x,y);
+            PresentationObjectContainer moc = tab.containerAt(x,y);
             String newParentKey = obj.getICObjectInstanceID()+"."+x+"."+y;
             if(moc!=null){
-              transformObject(pageKey,moc,-1,tab,newParentKey,modinfo);
+              transformObject(pageKey,moc,-1,tab,newParentKey,iwc);
             }
 
-            Page curr = PageCacher.getPage(this.getCurrentIBPage(modinfo),modinfo);
+            Page curr = PageCacher.getPage(this.getCurrentIBPage(iwc),iwc);
             if (curr.getIsExtendingTemplate()) {
               if (tab.getBelongsToParent()) {
                 if (!tab.isLocked(x,y))
-                  tab.add(getAddIcon(newParentKey,modinfo),x,y);
+                  tab.add(getAddIcon(newParentKey,iwc),x,y);
               }
               else {
-                tab.add(getAddIcon(newParentKey,modinfo),x,y);
+                tab.add(getAddIcon(newParentKey,iwc),x,y);
                 if (curr.getIsTemplate()) {
                   if (tab.isLocked(x,y))
-                    tab.add(getLockedIcon(newParentKey,modinfo),x,y);
+                    tab.add(getLockedIcon(newParentKey,iwc),x,y);
                   else
-                    tab.add(getUnlockedIcon(newParentKey,modinfo),x,y);
+                    tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
                 }
               }
             }
             else {
-              tab.add(getAddIcon(newParentKey,modinfo),x,y);
+              tab.add(getAddIcon(newParentKey,iwc),x,y);
               if (curr.getIsTemplate()) {
                 if (tab.isLocked(x,y))
-                  tab.add(getLockedIcon(newParentKey,modinfo),x,y);
+                  tab.add(getLockedIcon(newParentKey,iwc),x,y);
                 else
-                  tab.add(getUnlockedIcon(newParentKey,modinfo),x,y);
+                  tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
               }
             }
           }
         }
       }
       else{
-        List list = ((ModuleObjectContainer)obj).getAllContainingObjects();
+        List list = ((PresentationObjectContainer)obj).getAllContainingObjects();
         if(list!=null){
           ListIterator iter = list.listIterator();
           while (iter.hasNext()) {
             int index2 = iter.nextIndex();
-            ModuleObject item = (ModuleObject)iter.next();
+            PresentationObject item = (PresentationObject)iter.next();
             /**
              * If parent is Table
              */
             if(index==-1){
-                transformObject(pageKey,item,index2,(ModuleObjectContainer)obj,parentKey,modinfo);
+                transformObject(pageKey,item,index2,(PresentationObjectContainer)obj,parentKey,iwc);
             }
             else{
               String newParentKey = Integer.toString(obj.getICObjectInstanceID());
-              transformObject(pageKey,item,index2,(ModuleObjectContainer)obj,newParentKey,modinfo);
+              transformObject(pageKey,item,index2,(PresentationObjectContainer)obj,newParentKey,iwc);
             }
           }
         }
 
         if (index != -1) {
-          Page curr = PageCacher.getPage(this.getCurrentIBPage(modinfo),modinfo);
+          Page curr = PageCacher.getPage(this.getCurrentIBPage(iwc),iwc);
           if (curr.getIsExtendingTemplate()) {
             if (obj.getBelongsToParent()) {
-              if (!((ModuleObjectContainer)obj).isLocked())
-                ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+              if (!((PresentationObjectContainer)obj).isLocked())
+                ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             }
             else {
-              ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+              ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (curr.getIsTemplate()) {
-                if (!((ModuleObjectContainer)obj).isLocked())
-                  ((ModuleObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                if (!((PresentationObjectContainer)obj).isLocked())
+                  ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
                 else
-                  ((ModuleObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                  ((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               }
             }
           }
           else {
-            ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+            ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             if (curr.getIsTemplate()) {
-              if (!((ModuleObjectContainer)obj).isLocked())
-                ((ModuleObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+              if (!((PresentationObjectContainer)obj).isLocked())
+                ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               else
-                ((ModuleObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                ((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             }
           }
         }
@@ -383,14 +383,14 @@ public class BuilderLogic {
       if(index != -1){
         //parent.remove(obj);
         //parent.add(new BuilderObjectControl(obj,parent));
-        parent.set(index,new BuilderObjectControl(obj,parent,parentKey,modinfo));
+        parent.set(index,new BuilderObjectControl(obj,parent,parentKey,iwc));
       }
     }
 
   }
 
-  public String getCurrentIBPage(ModuleInfo modinfo) {
-    String theReturn = (String)modinfo.getSessionAttribute(SESSION_PAGE_KEY);
+  public String getCurrentIBPage(IWContext iwc) {
+    String theReturn = (String)iwc.getSessionAttribute(SESSION_PAGE_KEY);
     if (theReturn == null) {
       return(DEFAULT_PAGE);
     }
@@ -398,48 +398,48 @@ public class BuilderLogic {
       return theReturn;
   }
 
-  public  ModuleObject getAddIcon(String parentKey,ModuleInfo modinfo){
-    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public  PresentationObject getAddIcon(String parentKey,IWContext iwc){
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif","Add new component");
     Link link = new Link(addImage);
     link.setWindowToOpen(IBAddModuleWindow.class);
-    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_ADD);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return link;
   }
 
-  public ModuleObject getLockedIcon(String parentKey, ModuleInfo modinfo) {
-    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public PresentationObject getLockedIcon(String parentKey, IWContext iwc) {
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image lockImage = bundle.getImage("las_close.gif","Unlock region");
     Link link = new Link(lockImage);
     link.setWindowToOpen(IBLockRegionWindow.class);
-    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_UNLOCK_REGION);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return(link);
   }
 
-  public ModuleObject getUnlockedIcon(String parentKey, ModuleInfo modinfo) {
-    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public PresentationObject getUnlockedIcon(String parentKey, IWContext iwc) {
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image lockImage = bundle.getImage("las_open.gif","Lock region");
     Link link = new Link(lockImage);
     link.setWindowToOpen(IBLockRegionWindow.class);
-    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_LOCK_REGION);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
 
     return(link);
   }
 
-  public  ModuleObject getDeleteIcon(int key,String parentKey,ModuleInfo modinfo){
-    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public  PresentationObject getDeleteIcon(int key,String parentKey,IWContext iwc){
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image deleteImage = bundle.getImage("delete.gif","Delete component");
     Link link = new Link(deleteImage);
     link.setWindowToOpen(IBDeleteModuleWindow.class);
-    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_DELETE);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
     link.addParameter(IC_OBJECT_ID_PARAMETER,key);
@@ -447,24 +447,24 @@ public class BuilderLogic {
   }
 
 
-  public  ModuleObject getMoveIcon(int key,String parentKey,ModuleInfo modinfo){
-    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public  PresentationObject getMoveIcon(int key,String parentKey,IWContext iwc){
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image moveImage = bundle.getImage("move.gif");
     Link link = new Link(moveImage);
     link.setWindowToOpen(IBAdminWindow.class);
-    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_MOVE);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
     link.addParameter(IC_OBJECT_ID_PARAMETER,key);
     return link;
   }
 
-  public  ModuleObject getPermissionIcon(int key,ModuleInfo modinfo){
-    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public  PresentationObject getPermissionIcon(int key,IWContext iwc){
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image editImage = bundle.getImage("key_small.gif","Set permissions");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPermissionWindow.class);
-    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_PERMISSION);
     link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,key);
     link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,AccessControl._CATEGORY_OBJECT_INSTANCE);
@@ -472,34 +472,34 @@ public class BuilderLogic {
     return link;
   }
 
-  public  ModuleObject getEditIcon(int key,ModuleInfo modinfo){
-    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public  PresentationObject getEditIcon(int key,IWContext iwc){
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image editImage = bundle.getImage("edit.gif","Edit component");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPropertiesWindow.class);
-    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(modinfo));
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_EDIT);
     link.addParameter(IC_OBJECT_ID_PARAMETER,key);
     return link;
   }
 
-  private class BuilderObjectControl extends ModuleObjectContainer {
-    private com.idega.jmodule.object.Layer _layer;
+  private class BuilderObjectControl extends PresentationObjectContainer {
+    private com.idega.presentation.Layer _layer;
     private Table _table;
-    private ModuleObjectContainer _parent;
+    private PresentationObjectContainer _parent;
     private String _parentKey;
-    private ModuleObject _theObject;
+    private PresentationObject _theObject;
 
-    public BuilderObjectControl(ModuleObject obj, ModuleObjectContainer objectParent, String theParentKey, ModuleInfo modinfo) {
+    public BuilderObjectControl(PresentationObject obj, PresentationObjectContainer objectParent, String theParentKey, IWContext iwc) {
       _parent = objectParent;
       _theObject = obj;
       _parentKey = theParentKey;
-      init(modinfo);
+      init(iwc);
       add(obj);
     }
 
-    private void init(ModuleInfo modinfo){
-      _layer = new com.idega.jmodule.object.Layer();
+    private void init(IWContext iwc){
+      _layer = new com.idega.presentation.Layer();
       _table = new Table(1,2);
       _layer.add(_table);
       super.add(_layer);
@@ -512,17 +512,17 @@ public class BuilderLogic {
 
       if(_theObject!=null){
         //table.add(theObject.getClassName());
-        _table.add(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,modinfo));
-        _table.add(getEditIcon(_theObject.getICObjectInstanceID(),modinfo));
-        _table.add(getPermissionIcon(_theObject.getICObjectInstanceID(),modinfo));
+        _table.add(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc));
+        _table.add(getEditIcon(_theObject.getICObjectInstanceID(),iwc));
+        _table.add(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc));
       }
       else{
-          _table.add(getDeleteIcon(0,_parentKey,modinfo));
-          _table.add(getEditIcon(0,modinfo));
+          _table.add(getDeleteIcon(0,_parentKey,iwc));
+          _table.add(getEditIcon(0,iwc));
       }
     }
 
-    public void add(ModuleObject obj){
+    public void add(PresentationObject obj){
       if(obj instanceof Table){
         String width=((Table)obj).getWidth();
         if(width!=null){
@@ -608,7 +608,7 @@ public class BuilderLogic {
     /** @todo  */
       ////////
       try {
-        ModuleObject Block = ICObjectBusiness.getNewObjectInstance(ICObjectInstanceID);
+        PresentationObject Block = ICObjectBusiness.getNewObjectInstance(ICObjectInstanceID);
         if(Block != null){
           if(Block instanceof IWBlock){
             blockDeleted = ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
@@ -688,8 +688,8 @@ public class BuilderLogic {
       Class c = null;
       IWBundle iwb = null;
       if(icObjecctInstanceID==-1){
-        c = com.idega.jmodule.object.Page.class;
-        iwb = iwma.getBundle(ModuleObject.IW_BUNDLE_IDENTIFIER);
+        c = com.idega.presentation.Page.class;
+        iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
       }
       else{
         ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);

@@ -20,9 +20,9 @@ import com.idega.jmodule.news.presentation.*;
 import com.idega.util.*;
 import com.idega.builder.data.*;
 import com.idega.core.data.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.builder.business.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -51,23 +51,23 @@ public class IBAddModuleWindow extends IBAdminWindow{
 
   private static final String internal_control_parameter ="ib_adminwindow_par";
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
     //empty();
       super.addTitle("IBAddModuleWindow");
 
-    String action = modinfo.getParameter(ib_control_parameter);
+    String action = iwc.getParameter(ib_control_parameter);
     if(action.equals(ACTION_ADD)){
-      addNewObject(modinfo);
+      addNewObject(iwc);
     }
     else if(action.equals(ACTION_EDIT)){
-      //edit(modinfo);
+      //edit(iwc);
     }
   }
 
-  public void addNewObject(ModuleInfo modinfo)throws Exception{
+  public void addNewObject(IWContext iwc)throws Exception{
 
-        //IWBundle bundle = this.getBundle(modinfo);
-        //IWResourceBundle iwrb = bundle.getResourceBundle(modinfo);
+        //IWBundle bundle = this.getBundle(iwc);
+        //IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 
         Window window = this;
         String insert = "object_has_inserted";
@@ -80,22 +80,22 @@ public class IBAddModuleWindow extends IBAdminWindow{
         //menu.setToSubmit();
         //table.add(menu,1,1);
         //table.add(new SubmitButton("Choose"),1,2);
-        form.add(getComponentList(modinfo));
-        String ib_parent_id = modinfo.getParameter(ib_parent_parameter);
+        form.add(getComponentList(iwc));
+        String ib_parent_id = iwc.getParameter(ib_parent_parameter);
         if(ib_parent_id==null){
           System.out.println("ib_parent_id==null");
         }
         else{
           form.add(new Parameter(ib_parent_parameter,ib_parent_id));
         }
-        String ib_page_id = modinfo.getParameter(ib_page_parameter);
+        String ib_page_id = iwc.getParameter(ib_page_parameter);
         if(ib_page_id==null){
           System.out.println("ib_page_id==null");
         }
         else{
           form.add(new Parameter(ib_page_parameter,ib_page_id));
         }
-        String control = modinfo.getParameter(ib_control_parameter);
+        String control = iwc.getParameter(ib_control_parameter);
         if(control==null){
           System.out.println("control==null");
         }
@@ -106,9 +106,9 @@ public class IBAddModuleWindow extends IBAdminWindow{
         //form.maintainParameter(ib_page_id);
         //form.maintainParameter(ib_control_parameter);
 
-        if(hasSubmitted(modinfo)){
+        if(hasSubmitted(iwc)){
           window.setParentToReload();
-          String ic_object_id = modinfo.getParameter(ic_object_id_parameter);
+          String ic_object_id = iwc.getParameter(ic_object_id_parameter);
           BuilderLogic.getInstance().addNewModule(ib_page_id,ib_parent_id,Integer.parseInt(ic_object_id));
           window.close();
         }
@@ -125,12 +125,12 @@ public class IBAddModuleWindow extends IBAdminWindow{
           return form;
         }
 
-        private boolean hasSubmitted(ModuleInfo modinfo){
-          return modinfo.isParameterSet(internal_control_parameter);
+        private boolean hasSubmitted(IWContext iwc){
+          return iwc.isParameterSet(internal_control_parameter);
         }
 
 
-  public void changeObject(ModuleInfo modinfo)throws Exception{
+  public void changeObject(IWContext iwc)throws Exception{
 
 
         Window window = this;
@@ -143,21 +143,21 @@ public class IBAddModuleWindow extends IBAdminWindow{
 
 
 
-        if ( modinfo.getParameter("ib_object_instance_id") != null){
-                instance = new ICObjectInstance(Integer.parseInt(modinfo.getParameter("ib_object_instance_id")));
+        if ( iwc.getParameter("ib_object_instance_id") != null){
+                instance = new ICObjectInstance(Integer.parseInt(iwc.getParameter("ib_object_instance_id")));
                 add(new EntityUpdater(instance));
         }
         else{
                 add("Aðgerð tókst");
-                modinfo.removeSessionAttribute("idega_entity");
+                iwc.removeSessionAttribute("idega_entity");
                 window.close();
         }
 
   }
 
 
-  private Table getComponentList(ModuleInfo modinfo){
-    IWResourceBundle iwrb = getBundle(modinfo).getResourceBundle(modinfo);
+  private Table getComponentList(IWContext iwc){
+    IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
     Table theReturn = new Table();
       theReturn.setWidth("100%");
       theReturn.setHeight("100%");
@@ -183,9 +183,9 @@ public class IBAddModuleWindow extends IBAdminWindow{
       String sBlocks = iwrb.getLocalizedString("blocks_header","Blocks");
       String sApplications = iwrb.getLocalizedString("applicaitions_header","Applications");
 
-      addSubComponentList(sElements,elements,theReturn,1,1,modinfo);
-      addSubComponentList(sBlocks,blocks,theReturn,1,2,modinfo);
-      addSubComponentList(sApplications,applications,theReturn,1,3,modinfo);
+      addSubComponentList(sElements,elements,theReturn,1,1,iwc);
+      addSubComponentList(sBlocks,blocks,theReturn,1,2,iwc);
+      addSubComponentList(sApplications,applications,theReturn,1,3,iwc);
 
       theReturn.setColumnVerticalAlignment(1,"top");
       theReturn.setColumnVerticalAlignment(2,"top");
@@ -198,7 +198,7 @@ public class IBAddModuleWindow extends IBAdminWindow{
 
   }
 
-  private void addSubComponentList(String name,List list,Table table,int ypos,int xpos,ModuleInfo modinfo){
+  private void addSubComponentList(String name,List list,Table table,int ypos,int xpos,IWContext iwc){
       Table subComponentTable = new Table();
         subComponentTable.setWidth("100%");
       table.add(subComponentTable,xpos,ypos);
@@ -216,9 +216,9 @@ public class IBAddModuleWindow extends IBAdminWindow{
           link.addParameter(ib_control_parameter,ACTION_ADD);
           link.addParameter(internal_control_parameter," ");
           link.addParameter(ic_object_id_parameter,item.getID());
-          //link.maintainParameter(internal_control_parameter,modinfo);
-          link.maintainParameter(ib_page_parameter,modinfo);
-          link.maintainParameter(ib_parent_parameter,modinfo);
+          //link.maintainParameter(internal_control_parameter,iwc);
+          link.maintainParameter(ib_page_parameter,iwc);
+          link.maintainParameter(ib_parent_parameter,iwc);
           subComponentTable.add(link,1,ypos);
           ypos++;
         }
@@ -226,9 +226,9 @@ public class IBAddModuleWindow extends IBAdminWindow{
       subComponentTable.setColumnAlignment(1,"center");
   }
 
-  private Class[] getClasses(ModuleInfo modinfo,String parameterName){
+  private Class[] getClasses(IWContext iwc,String parameterName){
       try{
-        String[] classNames = modinfo.getParameterValues(parameterName);
+        String[] classNames = iwc.getParameterValues(parameterName);
         Class[] classes = new Class[classNames.length];
         for (int i = 0; i < classNames.length; i++) {
           if(classNames[i].equals("int")){

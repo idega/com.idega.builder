@@ -9,11 +9,11 @@ package com.idega.builder.business;
  * @version 1.0
  */
 
-import com.idega.jmodule.object.Page;
+import com.idega.presentation.Page;
 
 import com.idega.builder.data.IBPage;
 
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 
 import com.idega.exception.PageDoesNotExist;
 
@@ -60,12 +60,12 @@ public class PageCacher{
   }
 
 
-  public static Page getPage(String key, ModuleInfo modinfo ){
+  public static Page getPage(String key, IWContext iwc ){
     Page theReturn = null;
     IBXMLPage xml = null;
     xml = getXML(key);
     if(xml!=null){
-      return (Page)xml.getPopulatedPage().clone(modinfo);
+      return (Page)xml.getPopulatedPage().clone(iwc);
       //return (Page)xml.getPopulatedPage().clone();
     }
     return null;

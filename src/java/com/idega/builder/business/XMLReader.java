@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.16 2001/10/03 12:51:48 palli Exp $
+ * $Id: XMLReader.java,v 1.17 2001/10/05 08:04:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,10 +10,10 @@
 package com.idega.builder.business;
 
 import com.idega.core.data.ICObjectInstance;
-import com.idega.jmodule.object.Page;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Table;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
@@ -28,16 +28,16 @@ public class XMLReader {
   private XMLReader() {
   }
 
-  private static void setAllBuilderControls(ModuleObjectContainer parent, boolean setTo) {
+  private static void setAllBuilderControls(PresentationObjectContainer parent, boolean setTo) {
     List list = parent.getAllContainingObjects();
     if (list != null) {
       Iterator it = list.iterator();
       while (it.hasNext()) {
-        ModuleObject obj = (ModuleObject)it.next();
+        PresentationObject obj = (PresentationObject)it.next();
         obj.setUseBuilderObjectControl(setTo);
         obj.setBelongsToParent(true);
-        if (obj instanceof ModuleObjectContainer) {
-          setAllBuilderControls((ModuleObjectContainer)obj,setTo);
+        if (obj instanceof PresentationObjectContainer) {
+          setAllBuilderControls((PresentationObjectContainer)obj,setTo);
         }
       }
     }
@@ -146,9 +146,9 @@ public class XMLReader {
   /**
    *
    */
-  static void parseRegion(Element reg, ModuleObjectContainer regionParent) {
+  static void parseRegion(Element reg, PresentationObjectContainer regionParent) {
     List regionAttrList = reg.getAttributes();
-    ModuleObjectContainer newRegionParent = regionParent;
+    PresentationObjectContainer newRegionParent = regionParent;
     if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
       System.err.println("Table region has no attributes");
       return;
@@ -204,13 +204,13 @@ public class XMLReader {
     boolean parseChildren = true;
     boolean emptyParent = false;
 
-    if (regionParent instanceof com.idega.jmodule.object.Page) {
+    if (regionParent instanceof com.idega.presentation.Page) {
       if ((regionID == null) || (regionID.equals(""))) {
         System.err.println("Missing id attribute for region tag");
         return;
       }
       if (((Page)regionParent).getIsExtendingTemplate()) {
-        newRegionParent = (ModuleObjectContainer)regionParent.getContainedObject(regionID);
+        newRegionParent = (PresentationObjectContainer)regionParent.getContainedObject(regionID);
 
         if (newRegionParent == null) {
           parseChildren = false;
@@ -223,7 +223,7 @@ public class XMLReader {
         }
       }
     }
-    else if (regionParent instanceof com.idega.jmodule.object.Table) {
+    else if (regionParent instanceof com.idega.presentation.Table) {
       if (isLocked)
         ((Table)regionParent).lock(x,y);
       else
@@ -247,7 +247,7 @@ public class XMLReader {
   /**
    *
    */
-  static void setProperties(Element properties, ModuleObject object) {
+  static void setProperties(Element properties, PresentationObject object) {
     String key = null;
     Vector values = new Vector(1);
     String vals[] = null;
@@ -294,15 +294,15 @@ public class XMLReader {
   /**
    *
    */
-  static void setReflectionProperty(ModuleObject instance,String methodIdentifier,Vector stringValues){
+  static void setReflectionProperty(PresentationObject instance,String methodIdentifier,Vector stringValues){
     ComponentPropertyHandler.getInstance().setReflectionProperty(instance,methodIdentifier,stringValues);
   }
 
   /**
    *
    */
-  static void parseElement(Element el, ModuleObjectContainer parent) {
-    ModuleObject inst = null;
+  static void parseElement(Element el, PresentationObjectContainer parent) {
+    PresentationObject inst = null;
     List at = el.getAttributes();
     boolean isLocked = true;
 
@@ -331,7 +331,7 @@ public class XMLReader {
 
     try {
       if ( className != null ) {
-        inst = (ModuleObject)Class.forName(className).newInstance();
+        inst = (PresentationObject)Class.forName(className).newInstance();
       }
       else {
         ICObjectInstance ico = new ICObjectInstance(Integer.parseInt(id));
@@ -339,15 +339,15 @@ public class XMLReader {
         inst.setICObjectInstance(ico);
       }
 
-      if (inst instanceof ModuleObjectContainer) {
+      if (inst instanceof PresentationObjectContainer) {
         if (isLocked)
-          ((ModuleObjectContainer)inst).lock();
+          ((PresentationObjectContainer)inst).lock();
         else
-          ((ModuleObjectContainer)inst).unlock();
+          ((PresentationObjectContainer)inst).unlock();
       }
 
-      if (inst instanceof com.idega.jmodule.object.Table) {
-        com.idega.jmodule.object.Table table = (com.idega.jmodule.object.Table)inst;
+      if (inst instanceof com.idega.presentation.Table) {
+        com.idega.presentation.Table table = (com.idega.presentation.Table)inst;
         parent.add(table);
 
         if (el.hasChildren()) {
@@ -382,10 +382,10 @@ public class XMLReader {
               setProperties(child,inst);
             }
             else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-              parseElement(child,(ModuleObjectContainer)inst);
+              parseElement(child,(PresentationObjectContainer)inst);
             }
             else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-              parseRegion(child,(ModuleObjectContainer)inst);
+              parseRegion(child,(PresentationObjectContainer)inst);
             }
             else {
               System.err.println("Unknown tag in xml description file : " + child.getName());

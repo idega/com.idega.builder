@@ -1,5 +1,5 @@
 /*
- * $Id: IBLockRegionWindow.java,v 1.3 2001/09/28 15:39:45 palli Exp $
+ * $Id: IBLockRegionWindow.java,v 1.4 2001/10/05 08:04:05 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,14 +15,14 @@ import java.util.Iterator;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.Window;
-import com.idega.jmodule.object.interfaceobject.Parameter;
-import com.idega.jmodule.object.interfaceobject.EntityUpdater;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.Window;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.EntityUpdater;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.data.EntityFinder;
@@ -49,11 +49,11 @@ public class IBLockRegionWindow extends IBAdminWindow {
   /**
    *
    */
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
     super.addTitle("IBLockRegionWindow");
-    String ib_parent_id = modinfo.getParameter(IB_PARENT_PARAMETER);
-    String ib_page_id = modinfo.getParameter(IB_PAGE_PARAMETER);
-    String action = modinfo.getParameter(IB_CONTROL_PARAMETER);
+    String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
+    String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
+    String action = iwc.getParameter(IB_CONTROL_PARAMETER);
     setParentToReload();
     if (action.equalsIgnoreCase(ACTION_LOCK)) {
       lockRegion(ib_page_id,ib_parent_id);

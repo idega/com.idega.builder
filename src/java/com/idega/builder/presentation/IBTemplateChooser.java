@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.2 2001/10/02 10:34:12 palli Exp $
+ * $Id: IBTemplateChooser.java,v 1.3 2001/10/05 08:04:05 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,8 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Image;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

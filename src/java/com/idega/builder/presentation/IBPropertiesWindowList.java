@@ -1,8 +1,8 @@
 package com.idega.builder.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 
 import com.idega.idegaweb.*;
 
@@ -40,10 +40,10 @@ public class IBPropertiesWindowList extends Page{
     this.setAllMargins(0);
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
-    String ic_object_id = getICObjectID(modinfo);
+  public void main(IWContext iwc)throws Exception{
+    String ic_object_id = getICObjectID(iwc);
     if(ic_object_id!=null){
-      add(getPropertiesList(ic_object_id,modinfo));
+      add(getPropertiesList(ic_object_id,iwc));
       System.out.println("IBPropertiesWindowList: Getting IC_OBJECT_ID");
     }
     else{
@@ -51,14 +51,14 @@ public class IBPropertiesWindowList extends Page{
     }
   }
 
-  public String getICObjectID(ModuleInfo modinfo){
-    return modinfo.getParameter(IC_OBJECT_ID_PARAMETER);
+  public String getICObjectID(IWContext iwc){
+    return iwc.getParameter(IC_OBJECT_ID_PARAMETER);
   }
 
-  public ModuleObject getPropertiesList(String ic_object_id,ModuleInfo modinfo)throws Exception{
+  public PresentationObject getPropertiesList(String ic_object_id,IWContext iwc)throws Exception{
     Table table = new Table();
     int icObjectInstanceID = Integer.parseInt(ic_object_id);
-    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(icObjectInstanceID,modinfo.getApplication());
+    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(icObjectInstanceID,iwc.getApplication());
     IWPropertyListIterator iter = methodList.getIWPropertyListIterator();
     int counter=1;
     while (iter.hasNext()) {
@@ -67,9 +67,9 @@ public class IBPropertiesWindowList extends Page{
       String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp);
       Link link = new Link(methodDescr);
       /*link.setTarget(PROPERTY_FRAME);
-      link.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
-      link.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
-      link.maintainParameter(IB_PAGE_PARAMETER,modinfo);
+      link.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+      link.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
+      link.maintainParameter(IB_PAGE_PARAMETER,iwc);
       link.addParameter(METHOD_ID_PARAMETER,methodIdentifier);*/
       link.setURL("javascript:parent."+PROPERTY_FRAME+"."+IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME+"('"+methodIdentifier+"')");
       table.add(link,1,counter);

@@ -7,7 +7,7 @@ package com.idega.builder.data;
 //import java.util.*;
 import java.sql.*;
 import com.idega.data.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.jmodule.news.presentation.NewsReader;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.jmodule.login.presentation.Login;

@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.8 2001/09/25 13:33:16 palli Exp $
+ * $Id: IBMainServlet.java,v 1.9 2001/10/05 08:04:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package com.idega.builder.servlet;
 
 
 import com.idega.jmodule.JSPModule;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.*;
@@ -26,15 +26,15 @@ public class IBMainServlet extends JSPModule {
 
 
   public void initializePage(){
-    ModuleInfo modinfo = getModuleInfo();
+    IWContext iwc = getIWContext();
     /**
      * @todo change from hardcoded domain_id
      */
     int domain_id=1;
     int i_page_id=1;
-    String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+    String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
     if(page_id == null){
-      page_id = (String) modinfo.getSessionAttribute(BuilderLogic.SESSION_PAGE_KEY);
+      page_id = (String) iwc.getSessionAttribute(BuilderLogic.SESSION_PAGE_KEY);
       if(page_id==null){
         try{
           IBDomain domain = IBDomain.getDomain(domain_id);
@@ -49,10 +49,10 @@ public class IBMainServlet extends JSPModule {
       }
     }
     else {
-      modinfo.setSessionAttribute(BuilderLogic.SESSION_PAGE_KEY,page_id);
+      iwc.setSessionAttribute(BuilderLogic.SESSION_PAGE_KEY,page_id);
       i_page_id = Integer.parseInt(page_id);
     }
-    setPage(BuilderLogic.getInstance().getPage(i_page_id,modinfo));
+    setPage(BuilderLogic.getInstance().getPage(i_page_id,iwc));
 
   }
 
@@ -67,7 +67,7 @@ public class IBMainServlet extends JSPModule {
 
     public void __theService(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
       try {
-        main(getModuleInfo());
+        main(getIWContext());
       }
       catch(SQLException ex) {
         ex.printStackTrace(System.err);
@@ -75,13 +75,13 @@ public class IBMainServlet extends JSPModule {
       //_jspService(request,response);
     }
 
-  public void main(ModuleInfo modinfo)throws IOException,SQLException {
-    //boolean isAdmin = AccessControl.isAdmin(modinfo);
+  public void main(IWContext iwc)throws IOException,SQLException {
+    //boolean isAdmin = AccessControl.isAdmin(iwc);
     boolean isAdmin = true;
-    PrintWriter debugger = modinfo.getResponse().getWriter();
+    PrintWriter debugger = iwc.getResponse().getWriter();
     int id;
 
-    String page_id = modinfo.getParameter("idegaweb_page_id");
+    String page_id = iwc.getParameter("idegaweb_page_id");
     if(page_id == null){
       id = 1;
     }
@@ -89,7 +89,7 @@ public class IBMainServlet extends JSPModule {
       id = Integer.parseInt(page_id);
     }
 
-    String language = modinfo.getParameter("language");
+    String language = iwc.getParameter("language");
     if(language == null){
       language = "IS";
     }
@@ -103,7 +103,7 @@ public class IBMainServlet extends JSPModule {
     catch(Exception ex) {
       add("villa 1");
       System.err.println("ERROR!!!!!!");
-      ex.printStackTrace(modinfo.getResponse().getWriter());
+      ex.printStackTrace(iwc.getResponse().getWriter());
     }
 
     //AdminButton form = new AdminButton("Bæta við",window);

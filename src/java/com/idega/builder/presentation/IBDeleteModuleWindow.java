@@ -2,7 +2,7 @@ package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
 
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 
 /**
  * Title:        idegaclasses
@@ -22,11 +22,11 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
   public IBDeleteModuleWindow() {
   }
 
-  public void main(ModuleInfo modinfo){
-      String ib_parent_id = modinfo.getParameter(ib_parent_parameter);
-      String ib_page_id = modinfo.getParameter(ib_page_parameter);
+  public void main(IWContext iwc){
+      String ib_parent_id = iwc.getParameter(ib_parent_parameter);
+      String ib_page_id = iwc.getParameter(ib_page_parameter);
       this.setParentToReload();
-      String ic_object_id = modinfo.getParameter(ic_object_id_parameter);
+      String ic_object_id = iwc.getParameter(ic_object_id_parameter);
       deleteObject(ib_page_id,ib_parent_id,ic_object_id);
       this.close();
   }

@@ -1,8 +1,8 @@
 package com.idega.builder.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 
 import com.idega.idegaweb.*;
 
@@ -42,25 +42,25 @@ public class IBPropertiesWindowSetter extends Page {
   public IBPropertiesWindowSetter(){
   }
 
-  public String getICObjectID(ModuleInfo modinfo){
-    return modinfo.getParameter(IC_OBJECT_ID_PARAMETER);
+  public String getICObjectID(IWContext iwc){
+    return iwc.getParameter(IC_OBJECT_ID_PARAMETER);
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
     boolean propertyChange = false;
 
     Script script = this.getAssociatedScript();
     script.addFunction(CHANGE_PROPERTY_FUNCTION_NAME,"function "+CHANGE_PROPERTY_FUNCTION_NAME+"(method){var form = document.forms[0];form."+CHANGE_PROPERTY_PARAMETER+".value=method;"+UPDATE_PROPERTY_FUNCTION_NAME+"();}");
     script.addFunction(UPDATE_PROPERTY_FUNCTION_NAME,"function "+UPDATE_PROPERTY_FUNCTION_NAME+"(){var form = document.forms[0];form.submit();}");
 
-    String pageKey = BuilderLogic.getInstance().getCurrentIBPage(modinfo);
+    String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
 
     Form form = new Form();
     add(form);
     form.maintainParameter(IC_OBJECT_ID_PARAMETER);
 
     Parameter param = new Parameter(CHANGE_PROPERTY_PARAMETER);
-    String newPropertyID = modinfo.getParameter(CHANGE_PROPERTY_PARAMETER);
+    String newPropertyID = iwc.getParameter(CHANGE_PROPERTY_PARAMETER);
     if(newPropertyID!=null){
       param.setValue(newPropertyID);
     }
@@ -70,34 +70,34 @@ public class IBPropertiesWindowSetter extends Page {
 
     form.add(param);
 
-    String changePropertyID = modinfo.getParameter(CHANGE_PROPERTY_PARAMETER);
+    String changePropertyID = iwc.getParameter(CHANGE_PROPERTY_PARAMETER);
     if(changePropertyID!=null){
       Parameter param2 = new Parameter(METHOD_ID_PARAMETER,changePropertyID);
       form.add(param2);
     }
     else{
-      String oldPropertyPar = modinfo.getParameter(CHANGE_PROPERTY_PARAMETER);
+      String oldPropertyPar = iwc.getParameter(CHANGE_PROPERTY_PARAMETER);
       if(oldPropertyPar!=null){
       Parameter param2 = new Parameter(METHOD_ID_PARAMETER,oldPropertyPar);
         form.add(param2);
       }
     }
 
-    String ic_object_id = getICObjectID(modinfo);
+    String ic_object_id = getICObjectID(iwc);
     if(ic_object_id!=null){
-      String propertyID = modinfo.getParameter(METHOD_ID_PARAMETER);
+      String propertyID = iwc.getParameter(METHOD_ID_PARAMETER);
       if(propertyID!=null){
-          boolean remove = modinfo.isParameterSet(REMOVE_PARAMETER);
+          boolean remove = iwc.isParameterSet(REMOVE_PARAMETER);
           if(remove){
             System.out.println("Trying to remove");
             propertyChange=true;
             removeProperty(propertyID,ic_object_id,pageKey);
           }
           else{
-            String[] values = parseValues(modinfo);
+            String[] values = parseValues(iwc);
             if(values!=null){
               System.out.println("Trying to save");
-              propertyChange = this.setProperty(propertyID,values,ic_object_id,pageKey,modinfo.getApplication());
+              propertyChange = this.setProperty(propertyID,values,ic_object_id,pageKey,iwc.getApplication());
             }
             else{
               System.out.println("Not Trying to save - values == null");
@@ -110,7 +110,7 @@ public class IBPropertiesWindowSetter extends Page {
       }
       else{
         if(newPropertyID!=null){
-          form.add(getPropertySetterBox(newPropertyID,modinfo,null,ic_object_id));
+          form.add(getPropertySetterBox(newPropertyID,iwc,null,ic_object_id));
           form.add(getRemoveButton());
         }
       }
@@ -128,7 +128,7 @@ public class IBPropertiesWindowSetter extends Page {
     script.addFunction("doReload","function doReload(form){;parent.parent.opener.location.reload();document.forms[0].submit();}");
   }
 
-  public ModuleObject getRemoveButton(){
+  public PresentationObject getRemoveButton(){
     Table t = new Table(2,1);
     t.add("Remove Property",1,1);
     CheckBox button = new CheckBox(REMOVE_PARAMETER);
@@ -136,15 +136,15 @@ public class IBPropertiesWindowSetter extends Page {
     return t;
   }
 
-  public String[] parseValues(ModuleInfo modinfo){
-            String[] valueParams = modinfo.getParameterValues(VALUE_PARAMETER);
+  public String[] parseValues(IWContext iwc){
+            String[] valueParams = iwc.getParameterValues(VALUE_PARAMETER);
             String[] values = null;
             //add("value="+value);
             boolean setProperty=false;
             if(valueParams!=null){
               values = new String[valueParams.length];
               for (int i = 0; i < valueParams.length; i++) {
-                values[i]=modinfo.getParameter(valueParams[i]);
+                values[i]=iwc.getParameter(valueParams[i]);
                 if(!values[i].equals("")){setProperty=true;}
               }
             }
@@ -157,8 +157,8 @@ public class IBPropertiesWindowSetter extends Page {
             }
   }
 
-  public ModuleObject getPropertySetterBox(String methodIdentifier,ModuleInfo modinfo,String pageID,String icObjectInstanceID)throws Exception{
-      if(pageID==null){pageID = BuilderLogic.getInstance().getCurrentIBPage(modinfo);}
+  public PresentationObject getPropertySetterBox(String methodIdentifier,IWContext iwc,String pageID,String icObjectInstanceID)throws Exception{
+      if(pageID==null){pageID = BuilderLogic.getInstance().getCurrentIBPage(iwc);}
 
       Table table = new Table();
       int ypos = 1;
@@ -171,7 +171,7 @@ public class IBPropertiesWindowSetter extends Page {
       Class ICObjectClass = null;
       int icObjectInstanceIDint = Integer.parseInt(icObjectInstanceID);
       if(icObjectInstanceIDint == -1){
-        ICObjectClass = com.idega.jmodule.object.Page.class;
+        ICObjectClass = com.idega.presentation.Page.class;
       }
       else{
         ICObjectClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
@@ -195,7 +195,7 @@ public class IBPropertiesWindowSetter extends Page {
         catch(java.util.NoSuchElementException e){
         }
         String sName=namePrefix+i;
-        ModuleObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(parameterClass,sName,sValue);
+        PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(parameterClass,sName,sValue);
         Parameter param = new Parameter(VALUE_PARAMETER,sName);
         table.add(param,2,ypos);
         table.add(handlerBox,2,ypos);

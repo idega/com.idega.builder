@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.1 2001/10/04 14:49:43 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.2 2001/10/05 08:04:05 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,20 +12,20 @@ package com.idega.builder.presentation;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICFile;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.jmodule.object.interfaceobject.RadioGroup;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
+import com.idega.presentation.ui.RadioGroup;
+import com.idega.presentation.ui.DropdownMenu;
 import java.util.List;
 import java.util.Iterator;
-import com.idega.jmodule.object.interfaceobject.Window;
+import com.idega.presentation.ui.Window;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -40,8 +40,8 @@ public class IBDeletePageWindow extends IWAdminWindow {
   private static final String PAGE_TYPE             = "ib_page_type";
   private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    IWResourceBundle iwrb = getBundle(modinfo).getResourceBundle(modinfo);
+  public void main(IWContext iwc) throws Exception {
+    IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
     Form form = new Form();
 
     setTitle(iwrb.getLocalizedString("create_new_page","Create a new page"));
@@ -61,7 +61,7 @@ public class IBDeletePageWindow extends IWAdminWindow {
 
     mnu.setToSubmit();
 
-    String type = modinfo.getParameter(PAGE_TYPE);
+    String type = iwc.getParameter(PAGE_TYPE);
 
     tab.add(iwrb.getLocalizedString("parent_page","Create page under:"),1,3);
     if (type != null) {
@@ -79,13 +79,13 @@ public class IBDeletePageWindow extends IWAdminWindow {
     SubmitButton button = new SubmitButton("subbi",iwrb.getLocalizedString("save","Save"));
     tab.add(button,2,5);
 
-    String submit = modinfo.getParameter("subbi");
+    String submit = iwc.getParameter("subbi");
 
     if (submit != null) {
-      String pageId = modinfo.getParameter(PAGE_CHOOSER_NAME);
-      String name = modinfo.getParameter(PAGE_NAME_PARAMETER);
-      type = modinfo.getParameter(PAGE_TYPE);
-      String templateId = modinfo.getParameter(TEMPLATE_CHOOSER_NAME);
+      String pageId = iwc.getParameter(PAGE_CHOOSER_NAME);
+      String name = iwc.getParameter(PAGE_NAME_PARAMETER);
+      type = iwc.getParameter(PAGE_TYPE);
+      String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
 
       if (pageId != null) {
         IBPage ibPage = new IBPage();
@@ -114,16 +114,16 @@ public class IBDeletePageWindow extends IWAdminWindow {
         IBPage ibPageParent = new IBPage(Integer.parseInt(pageId));
         ibPageParent.addChild(ibPage);
 
-        modinfo.setSessionAttribute("ib_page_id",Integer.toString(ibPage.getID()));
+        iwc.setSessionAttribute("ib_page_id",Integer.toString(ibPage.getID()));
         setParentToReload();
         close();
       }
     }
     else {
-      String name = modinfo.getParameter(PAGE_NAME_PARAMETER);
-      type = modinfo.getParameter(PAGE_TYPE);
-      String templateId = modinfo.getParameter(TEMPLATE_CHOOSER_NAME);
-      String templateName = modinfo.getParameter(TEMPLATE_CHOOSER_NAME+"_displaystring");
+      String name = iwc.getParameter(PAGE_NAME_PARAMETER);
+      type = iwc.getParameter(PAGE_TYPE);
+      String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
+      String templateName = iwc.getParameter(TEMPLATE_CHOOSER_NAME+"_displaystring");
 
       if (name != null)
         inputName.setValue(name);
@@ -135,11 +135,11 @@ public class IBDeletePageWindow extends IWAdminWindow {
 /*      System.out.println("id = " + templateId);
       System.out.println("name = " + templateName);*/
 
-      java.util.Enumeration e = modinfo.getParameterNames();
+      java.util.Enumeration e = iwc.getParameterNames();
 
       while (e.hasMoreElements()) {
         String param = (String)e.nextElement();
-        String value = modinfo.getParameter(param);
+        String value = iwc.getParameter(param);
         System.out.println(param + " = " + value);
       }
 
@@ -149,14 +149,14 @@ public class IBDeletePageWindow extends IWAdminWindow {
   /*
    *
    */
-  private ModuleObject getPageChooser(String name){
+  private PresentationObject getPageChooser(String name){
     return new IBPageChooser(name);
   }
 
   /*
    *
    */
-  private ModuleObject getTemplateChooser(String name){
+  private PresentationObject getTemplateChooser(String name){
     return new IBTemplateChooser(name);
   }
 }
