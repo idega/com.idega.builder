@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.13 2002/01/09 15:33:11 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.14 2002/01/09 15:41:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,6 +42,11 @@ public class IBAddModuleWindow extends IBAdminWindow {
   private static final String ACTION_ADD = BuilderLogic.ACTION_ADD;
   private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
   private static final String INTERNAL_CONTROL_PARAMETER = "ib_adminwindow_par";
+
+
+  public IBAddModuleWindow(){
+    super.setResizable(true);
+  }
 
   /**
    *
