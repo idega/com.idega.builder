@@ -34,25 +34,6 @@ public class IBReference {
 	private Map nameEntries = null;
 	protected String moduleClass = null;
 
-	// this method is a shortcut because ICPage is a very special class 
-	public static StorableHolder createPage() throws IOException {
-			try {
-				ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
-				ICPage page = home.create();
-				page.store();
-				StorableHolder holder = new StorableHolder();
-				holder.setStorable((Storable) page);
-				holder.setValue(page.getPrimaryKey().toString());
-				return holder;
-			}
-			catch (IDOLookupException ex) {
-				throw new IOException("[IBReference] Provider class could not be found (Look up problem)");
-			}
-			catch (CreateException ex) {
-				throw new IOException("[IBReference] Identifier is not a number");
-			}
-		}
-	
 	public IBReference(XMLElement moduleElement) {
 		initialize(moduleElement);
 	}
