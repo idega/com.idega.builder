@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.108 2002/03/06 15:56:22 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.109 2002/03/12 09:47:10 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.IFrameContainer;
+import com.idega.util.FileUtil;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
 
@@ -498,17 +499,21 @@ public class BuilderLogic {
   }
 
   public IBDomain getCurrentDomain(IWContext iwc){
-      /**
-       * @todo: Change from hardcoded DomainID:
-       */
-       try{
-	 int domainID=1;
-	 return IBDomain.getDomain(domainID);
-       }
-       catch(Exception e){
-	e.printStackTrace();
-	throw new RuntimeException(e.getMessage());
-       }
+    /**
+     * @todo: Change from hardcoded DomainID:
+     */
+    try {
+      String id = (String)iwc.getApplicationAttribute("current_domain_id");
+      if (id != null) {
+        int test = Integer.parseInt(id);
+      }
+      int domainID=1;
+      return IBDomain.getDomain(domainID);
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException(e.getMessage());
+    }
   }
 
   /**
@@ -1486,5 +1491,31 @@ public class BuilderLogic {
   public static int getStartPageId(IWContext iwc) {
     IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
     return domain.getStartPageID();
+  }
+
+  /**
+   *
+   */
+  public String getCurrentPageHtml(IWContext iwc) {
+    String ibpage = getCurrentIBPage(iwc);
+    IBDomain domain = getCurrentDomain(iwc);
+
+    StringBuffer url = new StringBuffer(domain.getURL());
+    url.append(IWMainApplication.BUILDER_SERVLET_URL);
+    url.append("?");
+    url.append(IB_PAGE_PARAMETER);
+    url.append("=");
+    url.append(ibpage);
+
+    String html = FileUtil.getStringFromURL(url.toString());
+
+    return(html);
+  }
+
+  /**
+   *
+   */
+  public void add() {
+
   }
 }
