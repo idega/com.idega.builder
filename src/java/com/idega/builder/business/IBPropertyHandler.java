@@ -362,7 +362,18 @@ public class IBPropertyHandler{
       else if(parameterClass.equals(java.lang.Boolean.class) || parameterClass.equals(Boolean.TYPE)){
           obj = new BooleanInput(name);
           if(stringValue!=null){
-            ((BooleanInput)obj).setSelected(Boolean.getBoolean(stringValue));
+            if(stringValue.equalsIgnoreCase("Y")){
+              ((BooleanInput)obj).setSelected(true);
+            }
+            else if(stringValue.equalsIgnoreCase("T")){
+              ((BooleanInput)obj).setSelected(true);
+            }
+            else if(stringValue.equalsIgnoreCase("N")){
+              ((BooleanInput)obj).setSelected(false);
+            }
+            else if(stringValue.equalsIgnoreCase("F")){
+              ((BooleanInput)obj).setSelected(false);
+            }
           }
       }
       else if(parameterClass.equals(java.lang.Float.class) || parameterClass.equals(Float.TYPE)){

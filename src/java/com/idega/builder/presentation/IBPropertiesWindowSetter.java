@@ -98,7 +98,7 @@ public class IBPropertiesWindowSetter extends Page {
     boolean doSave = true;
     String sDoSave = iwc.getParameter(SAVE_PROPERTY_PARAMETER);
     if(sDoSave!=null){
-      System.out.println("sDoSave="+sDoSave);
+      System.out.println("IBPropertyWindowSetter, sDoSave="+sDoSave);
       if(sDoSave.equalsIgnoreCase("false")){
         doSave=false;
       }
