@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.18 2001/12/03 16:17:57 palli Exp $
+ * $Id: XMLWriter.java,v 1.19 2001/12/17 11:13:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -343,16 +343,16 @@ public class XMLWriter {
     }
 
     if(property==null){
-      System.out.println("XMLWriter, property==null");
+//      System.out.println("XMLWriter, property==null");
       property = getNewProperty(propertyName,propertyValues);
       module.addContent(property);
       changed=true;
     }
     else{
-      System.out.println("XMLWriter, property!=null");
+//      System.out.println("XMLWriter, property!=null");
       List values = property.getChildren(XMLConstants.VALUE_STRING);
       if(values!=null){
-        System.out.println("XMLWriter, values!=null");
+//        System.out.println("XMLWriter, values!=null");
         Iterator iter = values.iterator();
         int index = 0;
         while (iter.hasNext()) {
@@ -360,7 +360,7 @@ public class XMLWriter {
           String propertyValue = propertyValues[index];
           XMLElement value = (XMLElement)iter.next();
           String currentValue = value.getText();
-          System.out.println("XMLWriter, propertyValues["+index+"]="+propertyValue+",currentValue="+currentValue);
+//          System.out.println("XMLWriter, propertyValues["+index+"]="+propertyValue+",currentValue="+currentValue);
           if(!currentValue.equals(propertyValue)){
             value.setText(propertyValue);
             changed=true;
@@ -369,7 +369,7 @@ public class XMLWriter {
         }
       }
       else{
-        System.out.println("XMLWriter, values==null");
+//        System.out.println("XMLWriter, values==null");
         for (int index = 0; index < propertyValues.length; index++) {
             String propertyValue = propertyValues[index];
             XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
