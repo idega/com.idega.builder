@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.54 2002/03/11 22:59:05 palli Exp $
+ *  $Id: IBApplication.java,v 1.55 2002/03/12 14:15:22 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -106,7 +106,7 @@ public class IBApplication extends IWApplication {
       l.remove(c);
       Iterator iter = l.iterator();
       if (!iter.hasNext()) {
-        iwc.removeSessionAttribute("ib_startup_class_list");
+	iwc.removeSessionAttribute("ib_startup_class_list");
       }
     }
   }
@@ -158,10 +158,10 @@ public class IBApplication extends IWApplication {
     if (iwc.getSessionAttribute("toolbar") != null) {
       String toolbar = (String)iwc.getSessionAttribute("toolbar");
       if (toolbar.equalsIgnoreCase("remove")) {
-        noCurtain = true;
+	noCurtain = true;
       }
       else if (toolbar.equalsIgnoreCase("add")) {
-        noCurtain = false;
+	noCurtain = false;
       }
     }
 
@@ -283,39 +283,39 @@ public class IBApplication extends IWApplication {
 
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress && iwc.getParameter("reload") != null) {
-        if (noCurtain) {
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
-        else {
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
+	if (noCurtain) {
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
+	else {
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
       }
       getParentPage().setAllMargins(2);
       int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
 
       try {
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id, iwc), iwc);
-        viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-        Link l = new Link();
-        l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-        l.addParameter("reload", "t");
-        viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-        viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
+	TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id, iwc), iwc);
+	viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+	Link l = new Link();
+	l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+	l.addParameter("reload", "t");
+	viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+	viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
-        viewer.setLinkPrototype(l);
-        add(viewer);
+	viewer.setLinkPrototype(l);
+	add(viewer);
 
-        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-        if (page_id != null) {
-          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
-        }
+	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+	if (page_id != null) {
+	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+	}
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
       endStartup(iwc, PageTree.class);
     }
@@ -341,40 +341,40 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc) {
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress && iwc.getParameter("reload") != null) {
-        if (noCurtain) {
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
-        else {
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-          getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-        }
+	if (noCurtain) {
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
+	else {
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+	  getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+	}
       }
       getParentPage().setAllMargins(2);
 
       int i_template_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartTemplateID();
 
       try {
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id, iwc), iwc);
-        viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-        Link l = new Link();
-        l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-        l.addParameter("reload", "t");
-        viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-        viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
+	TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id, iwc), iwc);
+	viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+	Link l = new Link();
+	l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+	l.addParameter("reload", "t");
+	viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+	viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
-        viewer.setLinkPrototype(l);
-        add(viewer);
+	viewer.setLinkPrototype(l);
+	add(viewer);
 
-        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-        if (page_id != null) {
-          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
-        }
+	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+	if (page_id != null) {
+	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+	}
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
       endStartup(iwc, TemplateTree.class);
     }
@@ -403,55 +403,55 @@ public class IBApplication extends IWApplication {
       setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 
       try {
-        Table menuTable = new Table();
-        menuTable.setAlignment(1, 1, "right");
+	Table menuTable = new Table();
+	menuTable.setAlignment(1, 1, "right");
 
-        Image closeImage = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("toolbar_remove.gif", "toolbar_remove_1.gif", "Hide Curtain", 16, 16);
-        closeImage.setAlignment("right");
+	Image closeImage = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("toolbar_remove.gif", "toolbar_remove_1.gif", "Hide Curtain", 16, 16);
+	closeImage.setAlignment("right");
 
-        Link closeLink = new Link(closeImage);
-        closeLink.setTarget(Link.TARGET_TOP_WINDOW);
-        closeLink.addParameter("toolbar", "remove");
-        closeLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER, IBApplication.class);
+	Link closeLink = new Link(closeImage);
+	closeLink.setTarget(Link.TARGET_TOP_WINDOW);
+	closeLink.addParameter("toolbar", "remove");
+	closeLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER, IBApplication.class);
 
-        menuTable.add(closeLink, 1, 1);
+	menuTable.add(closeLink, 1, 1);
 
-        Text pageText = new Text("Page Tree:");
-        pageText.setFontSize(1);
-        Text templateText = new Text("Template Tree:");
-        templateText.setFontSize(1);
-        Text libraryText = new Text("Library Tree:");
-        libraryText.setFontSize(1);
+	Text pageText = new Text("Page Tree:");
+	pageText.setFontSize(1);
+	Text templateText = new Text("Template Tree:");
+	templateText.setFontSize(1);
+	Text libraryText = new Text("Library Tree:");
+	libraryText.setFontSize(1);
 
-        IFrame frame = new IFrame("PageTree", PageTree.class);
-        frame.setWidth(170);
-        frame.setHeight(200);
-        frame.setScrolling(IFrame.SCROLLING_YES);
-        menuTable.add(pageText, 1, 2);
-        menuTable.add(Text.getBreak(), 1, 2);
-        menuTable.add(frame, 1, 2);
+	IFrame frame = new IFrame("PageTree", PageTree.class);
+	frame.setWidth(170);
+	frame.setHeight(200);
+	frame.setScrolling(IFrame.SCROLLING_YES);
+	menuTable.add(pageText, 1, 2);
+	menuTable.add(Text.getBreak(), 1, 2);
+	menuTable.add(frame, 1, 2);
 
-        IFrame frame2 = new IFrame("TemplateTree", TemplateTree.class);
-        frame2.setWidth(170);
-        frame2.setHeight(200);
-        frame2.setScrolling(IFrame.SCROLLING_YES);
-        menuTable.add(templateText, 1, 3);
-        menuTable.add(Text.getBreak(), 1, 3);
-        menuTable.add(frame2, 1, 3);
+	IFrame frame2 = new IFrame("TemplateTree", TemplateTree.class);
+	frame2.setWidth(170);
+	frame2.setHeight(200);
+	frame2.setScrolling(IFrame.SCROLLING_YES);
+	menuTable.add(templateText, 1, 3);
+	menuTable.add(Text.getBreak(), 1, 3);
+	menuTable.add(frame2, 1, 3);
 
-        /*
-         *  IFrame frame3 = new IFrame("LibraryTree",LibraryTree.class);
-         *  frame3.setWidth(170);
-         *  frame3.setHeight(200);
-         *  frame3.setScrolling(IFrame.SCROLLING_YES);
-         *  menuTable.add(libraryText,1,4);
-         *  menuTable.add(Text.getBreak(),1,4);
-         *  menuTable.add(frame3,1,4);
-         */
-        add(menuTable);
+	/*
+	 *  IFrame frame3 = new IFrame("LibraryTree",LibraryTree.class);
+	 *  frame3.setWidth(170);
+	 *  frame3.setHeight(200);
+	 *  frame3.setScrolling(IFrame.SCROLLING_YES);
+	 *  menuTable.add(libraryText,1,4);
+	 *  menuTable.add(Text.getBreak(),1,4);
+	 *  menuTable.add(frame3,1,4);
+	 */
+	add(menuTable);
       }
       catch (Exception e) {
-        e.printStackTrace();
+	e.printStackTrace();
       }
     }
   }
@@ -471,7 +471,7 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc) {
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress) {
-        super.setOnLoad("parent.frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       }
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
@@ -483,138 +483,138 @@ public class IBApplication extends IWApplication {
 
       String action = iwc.getParameter(controlParameter);
       if (action == null) {
-        action = ACTION_BUILDER;
+	action = ACTION_BUILDER;
       }
 
       if (action.equals(ACTION_BUILDER)) {
-        int xpos = 1;
-        Table toolbarTable = new Table();
-        toolbarTable.setCellpadding(0);
-        toolbarTable.setCellspacing(0);
+	int xpos = 1;
+	Table toolbarTable = new Table();
+	toolbarTable.setCellpadding(0);
+	toolbarTable.setCellspacing(0);
 
-        Image separator = iwb.getImage("toolbar_separator.gif");
+	Image separator = iwb.getImage("toolbar_separator.gif");
 
-        Image tool_new = iwb.getImage("shared/toolbar/new.gif", "shared/toolbar/new1.gif", "New Page", 20, 20);
-        tool_new.setHorizontalSpacing(2);
-        Link link_new = new Link(tool_new);
-        link_new.setWindowToOpen(IBCreatePageWindow.class);
-        toolbarTable.add(link_new, xpos, 1);
+	Image tool_new = iwb.getImage("shared/toolbar/new.gif", "shared/toolbar/new1.gif", "New Page", 20, 20);
+	tool_new.setHorizontalSpacing(2);
+	Link link_new = new Link(tool_new);
+	link_new.setWindowToOpen(IBCreatePageWindow.class);
+	toolbarTable.add(link_new, xpos, 1);
 
-        Image tool_open = iwb.getImage("shared/toolbar/open.gif", "Open Page", 20, 20);
-        tool_open.setHorizontalSpacing(2);
-        Link link_open = new Link(tool_open);
-        toolbarTable.add(tool_open, xpos, 1);
+	Image tool_open = iwb.getImage("shared/toolbar/open.gif", "Open Page", 20, 20);
+	tool_open.setHorizontalSpacing(2);
+	Link link_open = new Link(tool_open);
+	toolbarTable.add(tool_open, xpos, 1);
 
-        Image tool_save = iwb.getImage("shared/toolbar/save.gif", "Save Page", 20, 20);
-        tool_save.setHorizontalSpacing(2);
-        Link link_save = new Link(tool_save);
-        link_save.setWindowToOpen(IBSavePageWindow.class);
-        toolbarTable.add(tool_save, xpos, 1);
+	Image tool_save = iwb.getImage("shared/toolbar/save.gif", "Save Page", 20, 20);
+	tool_save.setHorizontalSpacing(2);
+	Link link_save = new Link(tool_save);
+	link_save.setWindowToOpen(IBSavePageWindow.class);
+	toolbarTable.add(tool_save, xpos, 1);
 
-        Image tool_save_as = iwb.getImage("shared/toolbar/saveas.gif", "Save As Page", 20, 20);
-        tool_save_as.setHorizontalSpacing(2);
-        Link link_save_as = new Link(tool_save_as);
-        link_save_as.setWindowToOpen(IBSaveAsPageWindow.class);
-        toolbarTable.add(tool_save_as, xpos, 1);
+	Image tool_save_as = iwb.getImage("shared/toolbar/saveas.gif", "Save As Page", 20, 20);
+	tool_save_as.setHorizontalSpacing(2);
+	Link link_save_as = new Link(tool_save_as);
+	link_save_as.setWindowToOpen(IBSaveAsPageWindow.class);
+	toolbarTable.add(tool_save_as, xpos, 1);
 
-        Image tool_delete = iwb.getImage("shared/toolbar/delete.gif", "shared/toolbar/delete1.gif", "Delete Page", 20, 20);
-        tool_delete.setHorizontalSpacing(2);
-        Link link_delete = new Link(tool_delete);
-        link_delete.setWindowToOpen(IBDeletePageWindow.class);
-        toolbarTable.add(link_delete, xpos, 1);
+	Image tool_delete = iwb.getImage("shared/toolbar/delete.gif", "shared/toolbar/delete1.gif", "Delete Page", 20, 20);
+	tool_delete.setHorizontalSpacing(2);
+	Link link_delete = new Link(tool_delete);
+	link_delete.setWindowToOpen(IBDeletePageWindow.class);
+	toolbarTable.add(link_delete, xpos, 1);
 
-        PresentationObject propertiesIcon = getPropertiesIcon(iwc);
-        toolbarTable.add(propertiesIcon, xpos, 1);
+	PresentationObject propertiesIcon = getPropertiesIcon(iwc);
+	toolbarTable.add(propertiesIcon, xpos, 1);
 
-        PresentationObject permissionIcon = getPermissionIcon(iwc);
-        toolbarTable.add(permissionIcon, xpos, 1);
+	PresentationObject permissionIcon = getPermissionIcon(iwc);
+	toolbarTable.add(permissionIcon, xpos, 1);
 
-        xpos++;
-        toolbarTable.add(separator, xpos, 1);
+	xpos++;
+	toolbarTable.add(separator, xpos, 1);
 
-        xpos++;
-        Image tool_1 = iwb.getImage("shared/toolbar/back.gif", "shared/toolbar/back1.gif", "Go back", 20, 20);
-        tool_1.setHorizontalSpacing(2);
-        Link link_1 = new Link(tool_1);
-        link_1.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].history.go(-1)");
-        toolbarTable.add(link_1, xpos, 1);
+	xpos++;
+	Image tool_1 = iwb.getImage("shared/toolbar/back.gif", "shared/toolbar/back1.gif", "Go back", 20, 20);
+	tool_1.setHorizontalSpacing(2);
+	Link link_1 = new Link(tool_1);
+	link_1.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].history.go(-1)");
+	toolbarTable.add(link_1, xpos, 1);
 
-        Image tool_2 = iwb.getImage("shared/toolbar/forward.gif", "shared/toolbar/forward1.gif", "Go forward", 20, 20);
-        tool_2.setHorizontalSpacing(2);
-        Link link_2 = new Link(tool_2);
-        link_2.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].history.go(1)");
-        toolbarTable.add(link_2, xpos, 1);
+	Image tool_2 = iwb.getImage("shared/toolbar/forward.gif", "shared/toolbar/forward1.gif", "Go forward", 20, 20);
+	tool_2.setHorizontalSpacing(2);
+	Link link_2 = new Link(tool_2);
+	link_2.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].history.go(1)");
+	toolbarTable.add(link_2, xpos, 1);
 
-        Image tool_3 = iwb.getImage("shared/toolbar/stop.gif", "shared/toolbar/stop1.gif", "Stop loading", 20, 20);
-        tool_3.setHorizontalSpacing(2);
-        Link link_3 = new Link(tool_3);
-        link_3.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].stop()");
-        toolbarTable.add(link_3, xpos, 1);
+	Image tool_3 = iwb.getImage("shared/toolbar/stop.gif", "shared/toolbar/stop1.gif", "Stop loading", 20, 20);
+	tool_3.setHorizontalSpacing(2);
+	Link link_3 = new Link(tool_3);
+	link_3.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].stop()");
+	toolbarTable.add(link_3, xpos, 1);
 
-        Image tool_4 = iwb.getImage("shared/toolbar/refresh.gif", "shared/toolbar/refresh1.gif", "Reload page", 20, 20);
-        tool_4.setHorizontalSpacing(2);
-        Link link_4 = new Link(tool_4);
-        link_4.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-        toolbarTable.add(link_4, xpos, 1);
+	Image tool_4 = iwb.getImage("shared/toolbar/refresh.gif", "shared/toolbar/refresh1.gif", "Reload page", 20, 20);
+	tool_4.setHorizontalSpacing(2);
+	Link link_4 = new Link(tool_4);
+	link_4.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+	toolbarTable.add(link_4, xpos, 1);
 
-        xpos++;
-        toolbarTable.add(separator, xpos, 1);
+	xpos++;
+	toolbarTable.add(separator, xpos, 1);
 
-        Image leftMenuImage = null;
-        if (noCurtain) {
-          leftMenuImage = iwb.getImage("shared/toolbar/show_curtain.gif", "shared/toolbar/show_curtain1.gif", "Show Curtain", 20, 20);
-        }
-        else {
-          leftMenuImage = iwb.getImage("shared/toolbar/no_curtain.gif", "shared/toolbar/no_curtain1.gif", "Hide Curtain", 20, 20);
-        }
-        leftMenuImage.setHorizontalSpacing(2);
+	Image leftMenuImage = null;
+	if (noCurtain) {
+	  leftMenuImage = iwb.getImage("shared/toolbar/show_curtain.gif", "shared/toolbar/show_curtain1.gif", "Show Curtain", 20, 20);
+	}
+	else {
+	  leftMenuImage = iwb.getImage("shared/toolbar/no_curtain.gif", "shared/toolbar/no_curtain1.gif", "Hide Curtain", 20, 20);
+	}
+	leftMenuImage.setHorizontalSpacing(2);
 
-        Link leftMenuLink = new Link(leftMenuImage);
-        leftMenuLink.setTarget(Link.TARGET_TOP_WINDOW);
-        if (noCurtain) {
-          leftMenuLink.addParameter("toolbar", "add");
-        }
-        else {
-          leftMenuLink.addParameter("toolbar", "remove");
-        }
-        leftMenuLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER, IBApplication.class);
+	Link leftMenuLink = new Link(leftMenuImage);
+	leftMenuLink.setTarget(Link.TARGET_TOP_WINDOW);
+	if (noCurtain) {
+	  leftMenuLink.addParameter("toolbar", "add");
+	}
+	else {
+	  leftMenuLink.addParameter("toolbar", "remove");
+	}
+	leftMenuLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER, IBApplication.class);
 
-        xpos++;
-        toolbarTable.add(leftMenuLink, xpos, 1);
+	xpos++;
+	toolbarTable.add(leftMenuLink, xpos, 1);
 
-        xpos++;
-        toolbarTable.add(separator, xpos, 1);
+	xpos++;
+	toolbarTable.add(separator, xpos, 1);
 
-        xpos++;
-        toolbarTable.add(Text.getNonBrakingSpace(), xpos, 1);
-        toolbarTable.add(getLocaleMenu(iwc), xpos, 1);
+	xpos++;
+	toolbarTable.add(Text.getNonBrakingSpace(), xpos, 1);
+	toolbarTable.add(getLocaleMenu(iwc), xpos, 1);
 
-        /**
-         * @todo Move to extension thingie
-         */
+	/**
+	 * @todo Move to extension thingie
+	 */
 /*        xpos++;
-        toolbarTable.add(separator, xpos, 1);
-        xpos++;
-        Image tool_export = iwb.getImage("shared/toolbar/delete.gif", "shared/toolbar/delete1.gif", "IShop Export", 20, 20);
-        tool_export.setHorizontalSpacing(2);
-        Link link_export = new Link(tool_export);
-        link_export.setWindowToOpen(is.idega.idegaweb.intershop.presentation.IShopExportPage.class);
-        toolbarTable.add(link_export, xpos, 1);*/
+	toolbarTable.add(separator, xpos, 1);
+	xpos++;
+	Image tool_export = iwb.getImage("shared/toolbar/delete.gif", "shared/toolbar/delete1.gif", "IShop Export", 20, 20);
+	tool_export.setHorizontalSpacing(2);
+	Link link_export = new Link(tool_export);
+	link_export.setWindowToOpen(is.idega.idegaweb.intershop.presentation.IShopExportPage.class);
+	toolbarTable.add(link_export, xpos, 1);*/
 
-        List extension = (List)iwc.getApplicationAttribute(TOOLBAR_ITEMS);
-        if (extension != null) {
-          Iterator it = extension.iterator();
-          while (it.hasNext()) {
-            IBToolbarButton b = (IBToolbarButton)it.next();
-            xpos++;
-            if (b.getIsSeparator())
-              toolbarTable.add(separator, xpos, 1);
-            else
-              toolbarTable.add(b.getLink(), xpos, 1);
-          }
-        }
+	List extension = (List)iwc.getApplicationAttribute(TOOLBAR_ITEMS);
+	if (extension != null) {
+	  Iterator it = extension.iterator();
+	  while (it.hasNext()) {
+	    IBToolbarButton b = (IBToolbarButton)it.next();
+	    xpos++;
+	    if (b.getIsSeparator())
+	      toolbarTable.add(separator, xpos, 1);
+	    else
+	      toolbarTable.add(b.getLink(), xpos, 1);
+	  }
+	}
 
-        add(toolbarTable);
+	add(toolbarTable);
       }
 
       endStartup(iwc, IBToolBar.class);
@@ -646,8 +646,8 @@ public class IBApplication extends IWApplication {
       DropdownMenu down = new DropdownMenu(LocaleSwitcher.languageParameterString);
       Iterator iter = locales.iterator();
       while (iter.hasNext()) {
-        Locale item = (Locale)iter.next();
-        down.addMenuElement(url + item.toString(), item.getDisplayLanguage());
+	Locale item = (Locale)iter.next();
+	down.addMenuElement(url + item.toString(), item.getDisplayLanguage());
       }
       down.setSelectedElement(url + iwc.getCurrentLocale().toString());
       down.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE_SMALL);
@@ -735,90 +735,90 @@ public class IBApplication extends IWApplication {
 
       String action = iwc.getParameter(controlParameter);
       if (action == null) {
-        action = ACTION_BUILDER;
+	action = ACTION_BUILDER;
       }
 
       if (action.equals(ACTION_BUILDER)) {
-        /*
-         *  Text text1 = new Text("Status normal"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-         *  text1.setFontSize(1);
-         *  text1.setFontColor("Black");
-         */
-        Table toolTable = new Table(3, 1);
-        toolTable.setWidth("100%");
-        toolTable.setCellpadding(0);
-        toolTable.setCellspacing(0);
+	/*
+	 *  Text text1 = new Text("Status normal"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+	 *  text1.setFontSize(1);
+	 *  text1.setFontColor("Black");
+	 */
+	Table toolTable = new Table(3, 1);
+	toolTable.setWidth("100%");
+	toolTable.setCellpadding(0);
+	toolTable.setCellspacing(0);
 
-        Image editImage = _iwrb.getImage("shared/status/edit1.gif", "Edit", 64, 17);
-        editImage.setOnClickImage(_iwrb.getImage("shared/status/edit.gif"));
-        Link editLink = new Link(editImage);
-        editLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-        editLink.setURL(IBApplication.CONTENT_EDIT_URL);
-        toolTable.add(editLink, 1, 1);
+	Image editImage = _iwrb.getImage("shared/status/edit1.gif", "Edit", 64, 17);
+	editImage.setOnClickImage(_iwrb.getImage("shared/status/edit.gif"));
+	Link editLink = new Link(editImage);
+	editLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+	editLink.setURL(IBApplication.CONTENT_EDIT_URL);
+	toolTable.add(editLink, 1, 1);
 
-        getParentPage().setOnLoad("javascript: swapImage('" + editImage.getName() + "','','" + _iwrb.getImage("shared/status/edit.gif").getURL() + "',1)");
+	getParentPage().setOnLoad("javascript: swapImage('" + editImage.getName() + "','','" + _iwrb.getImage("shared/status/edit.gif").getURL() + "',1)");
 
-        Image previewImage = _iwrb.getImage("shared/status/preview1.gif", "Preview", 64, 17);
-        previewImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
-        Link previewLink = new Link(previewImage);
-        previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-        previewLink.setURL(IBApplication.CONTENT_PREVIEW_URL);
-        toolTable.add(previewLink, 2, 1);
+	Image previewImage = _iwrb.getImage("shared/status/preview1.gif", "Preview", 64, 17);
+	previewImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
+	Link previewLink = new Link(previewImage);
+	previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+	previewLink.setURL(IBApplication.CONTENT_PREVIEW_URL);
+	toolTable.add(previewLink, 2, 1);
 
-        boolean isSuperUser = false;
-        isSuperUser = iwc.isSuperAdmin();
+	boolean isSuperUser = false;
+	isSuperUser = iwc.isSuperAdmin();
 
-        //Display the source tab only if the current user is the SuperUser
-        if (isSuperUser) {
-          Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
-          sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
-          Link sourceLink = new Link(sourceImage, IBSourceView.class);
-          sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-          toolTable.add(sourceLink, 3, 1);
-        }
+	//Display the source tab only if the current user is the SuperUser
+	if (isSuperUser) {
+	  Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
+	  sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
+	  Link sourceLink = new Link(sourceImage, IBSourceView.class);
+	  sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+	  toolTable.add(sourceLink, 3, 1);
+	}
 
-        String id = (String)iwc.getSessionAttribute("ib_page_id");
-        if (id == null) {
-          int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
-          id = Integer.toString(i_page_id);
-        }
-        String name = null;
-        if (id != null && !id.equals("")) {
-          java.util.Map tree = PageTreeNode.getTree(iwc);
+	String id = (String)iwc.getSessionAttribute("ib_page_id");
+	if (id == null) {
+	  int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
+	  id = Integer.toString(i_page_id);
+	}
+	String name = null;
+	if (id != null && !id.equals("")) {
+	  java.util.Map tree = PageTreeNode.getTree(iwc);
 
-          Integer pageId = new Integer(id);
+	  Integer pageId = new Integer(id);
 
-          if (tree != null) {
-            PageTreeNode node = (PageTreeNode)tree.get(pageId);
-            if (node != null) {
-              name = Text.NON_BREAKING_SPACE + node.getNodeName();
-            }
-          }
+	  if (tree != null) {
+	    PageTreeNode node = (PageTreeNode)tree.get(pageId);
+	    if (node != null) {
+	      name = Text.NON_BREAKING_SPACE + node.getNodeName();
+	    }
+	  }
 
-          if (name == null) {
-            tree = PageTreeNode.getTree(iwc);
-            if (tree != null) {
-              PageTreeNode node = (PageTreeNode)tree.get(pageId);
-              if (node != null) {
-                name = Text.NON_BREAKING_SPACE + node.getNodeName();
-              }
-            }
-          }
+	  if (name == null) {
+	    tree = PageTreeNode.getTree(iwc);
+	    if (tree != null) {
+	      PageTreeNode node = (PageTreeNode)tree.get(pageId);
+	      if (node != null) {
+		name = Text.NON_BREAKING_SPACE + node.getNodeName();
+	      }
+	    }
+	  }
 
-          if (name == null) {
-            name = "Page name";
-          }
-        }
-        else {
-          name = "Page name";
-        }
+	  if (name == null) {
+	    name = "Page name";
+	  }
+	}
+	else {
+	  name = "Page name";
+	}
 
 //        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
-        Text pageName = new Text(name);
-        pageName.setFontStyle("font-face: Geneva, Helvetica, sans-serif; font-weight: bold; font-size: 8pt;");
-        toolbarTable.add(tilerCell, 1, 1);
-        toolbarTable.add(pageName, 1, 1);
-        toolbarTable.add(toolTable, 2, 1);
+	Text pageName = new Text(name);
+	pageName.setFontStyle("font-face: Geneva, Helvetica, sans-serif; font-weight: bold; font-size: 8pt;");
+	toolbarTable.add(tilerCell, 1, 1);
+	toolbarTable.add(pageName, 1, 1);
+	toolbarTable.add(toolTable, 2, 1);
       }
       else if (action.equals(ACTION_TEMPLATES)) {
       }
