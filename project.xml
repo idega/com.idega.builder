@@ -1,16 +1,10 @@
 <project>
     <extend>../com.idega.core.bundle/base-project.xml</extend>
     <name>idegaWeb Builder</name>
-    <groupId>com.idega.builder</groupId>
     <artifactId>com.idega.builder</artifactId>
     <currentVersion>2.0</currentVersion>
     <inceptionYear>2000</inceptionYear>
     <shortDescription>idegaWeb Builder is a Webapplication RAD and CMS tool</shortDescription>
-    <issueTrackingUrl>http://issues.idega.is</issueTrackingUrl>
-    <repository>
-        <connection>scm:cvs:ext:tryggvil@einstein.idega.is:/idega/cvs:bundles/com.idega.builder.bundle</connection>
-        <developerConnection>scm:cvs:ext:tryggvil@einstein.idega.is:/idega/cvs:bundles/com.idega.builder.bundle</developerConnection>
-    </repository>
     <versions/>
     <branches/>
     <mailingLists>
