@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.86 2005/03/03 04:16:24 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.87 2005/03/03 08:48:36 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import com.idega.builder.presentation.IBSaveAsPageWindow;
 import com.idega.builder.presentation.IBSavePageWindow;
 import com.idega.builder.presentation.IBSourceView;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -862,8 +863,9 @@ public class IBApplication extends IWApplication {
 				
 				boolean isSuperUser = false;
 				isSuperUser = iwc.isSuperAdmin();
+				boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER,iwc);
 				//Display the source tab only if the current user is the SuperUser
-				if (isSuperUser) {
+				if (isSuperUser||isBuilderUser) {
 					Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
 					sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
 					Link sourceLink = new Link(sourceImage, IBSourceView.class);
