@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.37 2002/04/07 20:11:44 laddi Exp $
+ * $Id: XMLReader.java,v 1.38 2002/04/07 20:19:22 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -427,8 +427,10 @@ public class XMLReader {
 	}
 	catch (Exception e) {
 	  e.printStackTrace(System.err);
-	  System.err.println("ParentPage: "+parent.getParentPageID());
-	  System.err.println("ParentID: "+parent.getID());
+	  if ( parent != null )
+	    System.err.println("ParentID: "+parent.getID());
+	  if ( inst != null )
+	    System.err.println("InstanceID: "+inst.getICObjectInstanceID());
 	}
 	if (el.hasChildren()) {
 	  List children = el.getChildren();
