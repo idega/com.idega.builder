@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.44 2001/12/19 17:37:07 eiki Exp $
+ * $Id: IBApplication.java,v 1.45 2002/01/23 21:18:19 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -91,9 +91,10 @@ public class IBApplication extends IWApplication {
     }
   }
 
-  //To prevent constant realoding when many frames are loaded at the same time
+
   static void startIBApplication(IWContext iwc){
     BuilderLogic.getInstance().startBuilderSession(iwc);
+    //To prevent constant realoding when many frames are loaded at the same time
     List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
     if(l==null){
       l = new Vector();
@@ -694,11 +695,17 @@ public class IBApplication extends IWApplication {
         previewLink.setURL(IBApplication.CONTENT_PREVIEW_URL);
         toolTable.add(previewLink,2,1);
 
-        Image sourceImage = _iwrb.getImage("shared/status/source1.gif","Source",64,17);
-          sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
-        Link sourceLink = new Link(sourceImage,IBSourceView.class);
-        sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-        toolTable.add(sourceLink,3,1);
+        boolean isSuperUser=false;
+        isSuperUser=iwc.isSuperAdmin();
+
+        //Display the source tab only if the current user is the SuperUser
+        if(isSuperUser){
+          Image sourceImage = _iwrb.getImage("shared/status/source1.gif","Source",64,17);
+            sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
+          Link sourceLink = new Link(sourceImage,IBSourceView.class);
+          sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+          toolTable.add(sourceLink,3,1);
+        }
 
         String id = (String)iwc.getSessionAttribute("ib_page_id");
         if (id == null) {
