@@ -4,7 +4,7 @@ package com.idega.builder.business;
 public interface FileBusiness extends com.idega.business.IBOService,com.idega.io.ObjectWriter
 {
  public com.idega.core.file.data.ICFile createFileFromInputStream(java.io.InputStream p0,java.lang.String p1,java.lang.String p2)throws java.io.IOException, java.rmi.RemoteException;
- public com.idega.builder.data.IBExportImportData getIBExportImportData(com.idega.io.UploadFile p0)throws java.io.IOException, java.rmi.RemoteException;
+ public com.idega.builder.data.IBExportImportData getIBExportImportData(com.idega.io.UploadFile p0, int p1, int p2)throws java.io.IOException, java.rmi.RemoteException;
  public java.lang.String getURLForOfferingDownload(com.idega.io.Storable p0)throws java.io.IOException, java.rmi.RemoteException;
  public java.lang.Object write(com.idega.core.file.data.ICFile p0) throws java.rmi.RemoteException;
  public java.lang.Object write(com.idega.builder.data.IBExportImportData p0) throws java.rmi.RemoteException;

@@ -43,9 +43,13 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
 	public final static String AUXILIARY_FOLDER = "auxiliaryDataFolder";
 	public final static String AUXILIARY_FILE = "auxililary_data_file_";
 	
-	public IBExportImportData getIBExportImportData(UploadFile uploadFile) throws IOException {
-		IBExportImportDataReader exportImportDataReader = new IBExportImportDataReader ();
-		return exportImportDataReader.getData(uploadFile, this);
+	public IBExportImportData getIBExportImportData(UploadFile uploadFile, int parentPageId, int templatePageId) throws IOException {
+		IBExportImportData exportImportData = new IBExportImportData();
+		IBExportImportDataReader reader = new IBExportImportDataReader(exportImportData,getIWApplicationContext());
+		reader.setParentPageForImportedPages(parentPageId);
+		reader.setParentTemplateForImportedTemplates(templatePageId);
+		reader.openContainer(uploadFile);
+		return exportImportData;
 	}
 		
 	public String getURLForOfferingDownload(Storable storableObject) throws IOException {
