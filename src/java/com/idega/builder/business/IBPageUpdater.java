@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageUpdater.java,v 1.3 2002/12/20 15:39:37 palli Exp $
+ * $Id: IBPageUpdater.java,v 1.4 2003/09/18 11:41:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,18 @@ public class IBPageUpdater {
 			IBPage page = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageId);
 
 			page.setName(pageName);
+			page.update();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void setAsCategory(int pageID, boolean isCategory) {
+		try {
+			IBPage page = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageID);
+
+			page.setIsCategory(isCategory);
 			page.update();
 		}
 		catch (SQLException e) {
