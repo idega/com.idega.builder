@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.43 2003/04/03 19:54:57 laddi Exp $
+ * $Id: XMLReader.java,v 1.44 2003/04/04 07:44:17 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -196,6 +196,7 @@ public class XMLReader {
 		if (regionIDattr != null) {
 			regionID = regionIDattr.getValue();
 			try {
+				Integer.parseInt(regionID);
 				XMLAttribute regionAttrX = reg.getAttribute(XMLConstants.X_REGION_STRING);
 				if (regionAttrX != null) {
 					try {
@@ -218,6 +219,7 @@ public class XMLReader {
 				}
 			}
 			catch (NumberFormatException e) {
+				//Integer.parseInt(regionID.substring(0, regionID.indexOf(".")));
 				String theRest = regionID.substring(regionID.indexOf(".") + 1, regionID.length());
 				x = Integer.parseInt(theRest.substring(0, theRest.indexOf(".")));
 				y = Integer.parseInt(theRest.substring(theRest.indexOf(".") + 1, theRest.length()));
