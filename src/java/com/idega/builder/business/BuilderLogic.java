@@ -171,6 +171,7 @@ public class BuilderLogic{
       }
       inserter = new ImageInserter();
       inserter.setHasUseBox(false);
+      inserter.limitImageWidth(false);
       int image_id=imageObj.getImageID();
       if(image_id!=-1){
         inserter.setImageId(image_id);
