@@ -34,6 +34,13 @@ public java.util.Collection findAllDomains()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllDomainsByServerURL(String serverURL)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((IBDomainBMPBean)entity).ejbFindAllDomainsByServerURL(serverURL);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public ICDomain findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (ICDomain) super.findByPrimaryKeyIDO(pk);
  }

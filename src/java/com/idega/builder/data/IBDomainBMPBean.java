@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.11 2003/12/01 18:25:14 sigtryggur Exp $
+ * $Id: IBDomainBMPBean.java,v 1.12 2004/07/06 10:33:10 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.user.data.GroupDomainRelation;
 import com.idega.user.data.GroupDomainRelationHome;
@@ -42,6 +43,7 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   public static final String start_page = "START_IB_PAGE_ID";
   public static final String start_template = "START_IB_TEMPLATE_ID";
   public static final String COLUMNNAME_GROUP_ID = "GROUP_ID";
+  public static final String COLUMNNAME_SERVER_URL = "SERVER_URL";
 
   private static Map cachedDomains;
 
@@ -60,6 +62,7 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
     addAttribute(getColumnURL(),"Domain URL",true,true,String.class,1000);
     addAttribute(getColumnStartPage(),"Start Page",true,true,Integer.class,"many-to-one",ICPage.class);
     addAttribute(getColumnStartTemplate(),"Start Template",true,true,Integer.class,"many-to-one",ICPage.class);
+    addAttribute(COLUMNNAME_SERVER_URL,"Server URL",true,true,String.class);
 //    this.addManyToManyRelationShip(Group.class);
 //    addAttribute(COLUMNNAME_GROUP_ID,"Group ID",true,true,Integer.class,"one-to-one",Group.class);
 
@@ -205,5 +208,11 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   public Collection ejbFindAllDomains() throws FinderException {
     String sql = "select * from " + getTableName();
     return super.idoFindIDsBySQL(sql);
+  }
+  
+  public Collection ejbFindAllDomainsByServerURL(String serverURL) throws FinderException{
+  	IDOQuery query = idoQueryGetSelect();
+  	query.appendWhereEquals(COLUMNNAME_SERVER_URL,serverURL);
+  	return idoFindPKsByQuery(query);
   }
 }

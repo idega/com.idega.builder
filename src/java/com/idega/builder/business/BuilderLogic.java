@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.156 2004/06/30 03:44:02 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.157 2004/07/06 10:33:10 gummi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -531,7 +531,7 @@ public class BuilderLogic {
 		}
 		// otherwise use startpage
 		else
-			theReturn = String.valueOf(getStartPageId(iwc));
+			theReturn = String.valueOf(getStartPageIdByServerURL(iwc,iwc.getServerURLWithoutProtocol()));
 		if (theReturn == null) {
 			return Integer.toString(getCurrentDomain(iwc).getStartPageID());
 		}
@@ -601,6 +601,16 @@ public class BuilderLogic {
 	public static ICDomain getCurrentDomain(IWApplicationContext iwac) {
 		try {
 			return iwac.getDomain();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+	
+	public static ICDomain getCurrentDomainByServerURL(IWApplicationContext iwac,String serverURL) {
+		try {
+			return iwac.getDomainByServerURL(serverURL);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1048,6 +1058,14 @@ public class BuilderLogic {
 	 */
 	public static int getStartPageId(IWApplicationContext iwac) {
 		ICDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwac);
+		return domain.getStartPageID();
+	}
+	
+	/**
+	 *  	 *
+	 */
+	public static int getStartPageIdByServerURL(IWApplicationContext iwac,String serverURL) {
+		ICDomain domain = BuilderLogic.getInstance().getCurrentDomainByServerURL(iwac,serverURL);
 		return domain.getStartPageID();
 	}
 
