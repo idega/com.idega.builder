@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.23 2002/01/10 16:57:21 palli Exp $
+ * $Id: XMLWriter.java,v 1.24 2002/01/15 13:47:17 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,8 @@ import com.idega.core.data.ICObjectInstance;
  * @version 1.0
  */
 public class XMLWriter {
+
+  private static final String EMPTY_STRING="";
 
   /**
    *
@@ -330,11 +332,34 @@ public class XMLWriter {
   }
 
 
+  /**
+   * Checks if the propertyValue array is correctly formcatted
+   * (Not with empty strings or null values)
+   */
+  private static boolean isPropertyValueArrayValid(String[] propertyValues){
+    for (int i = 0; i < propertyValues.length; i++) {
+      String s = propertyValues[i];
+      if(s==null){
+        return false;
+      }
+      else{
+        if(s.equals(EMPTY_STRING))
+          return false;
+      }
+    }
+    return true;
+  }
+
 
   /**
    * Returns true if properties changed, else false
    */
   static boolean setProperty(IWMainApplication iwma,IBXMLAble xml,int ICObjectInstanceId,String propertyName,String[] propertyValues,boolean allowMultiValued){
+
+    //Checks if the propertyValues array is correctly formatted
+    if(isPropertyValueArrayValid(propertyValues))
+      return false;
+
     boolean changed = false;
     XMLElement module = findModule(xml,ICObjectInstanceId);
     XMLElement property = null;
