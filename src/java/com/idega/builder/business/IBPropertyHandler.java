@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.36 2002/12/29 23:23:05 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.37 2003/02/03 11:48:15 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,12 +27,17 @@ import com.idega.util.reflect.MethodFinder;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.business.ICObjectBusiness;
+import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
+import com.idega.builder.handler.SpecifiedChoiceProvider;
 import com.idega.builder.handler.PropertyHandler;
 import com.idega.builder.handler.TableColumnsHandler;
 import com.idega.builder.handler.TableRowsHandler;
 import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
 import com.idega.data.EntityFinder;
 import com.idega.block.media.presentation.ImageInserter;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -225,6 +230,20 @@ public class IBPropertyHandler {
 		}
 		return 1;
 	}
+  
+  
+  /** Returns a proberty value.
+   * This method is used (or can be used) by presentation objects that
+   * implements the SpecifiedChoiceProvider interface. The presentation object
+   * asks for its proberty value in order to decide which values it should
+   * deliver for the drop down menue of the DropDownMenuSpecifiedChoiceHandler.
+  */
+ public String getPropertyValue(IWContext iwc, String ICObjectInstanceID, String methodIdentifier) {
+    String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+    String theReturn = BuilderLogic.getInstance().getProperty(pageKey, Integer.parseInt(ICObjectInstanceID), methodIdentifier);
+    return theReturn;
+  }
+  
 	/**
 	
 	 * Returns a property of a Method Parameter, Returns null if nothing set
@@ -257,6 +276,38 @@ public class IBPropertyHandler {
 		}
 		PropertyHandler handler = getPropertyHandler(handlerClass);
 		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc);
+
+    /* 
+     * special treatment for a drop down menu that gets the choice 
+     * (that is the elements of the menu)
+     * directly from the presentation object 
+     * (this presentation object must implement SpecifiedChoiceProvider).
+     * see also method getPropertyValue(IWContext, ICObjectInstanceID,
+     * String) of this class.
+     *  
+     */ 
+    if (handler instanceof DropDownMenuSpecifiedChoiceHandler)  {
+      // get the presentation object
+      Class aClass = BuilderLogic.getInstance().getObjectClass(Integer.parseInt(ICObjectInstanceID));
+      Collection menuElements;
+      if ((SpecifiedChoiceProvider.class).isAssignableFrom(aClass))  {
+        try {
+          SpecifiedChoiceProvider provider = (SpecifiedChoiceProvider) aClass.newInstance();
+          // ask the presentation object for the menu elements
+          menuElements = provider.getSpecifiedChoice(iwc,ICObjectInstanceID, methodIdentifier, this);
+        }
+        catch (Exception e) {
+          System.err.println("[IBPropertyHandler] Presentation class can not be created. Message: "+
+            e.getMessage());
+          e.printStackTrace(System.err);
+          menuElements = new ArrayList();
+        }
+      Iterator iterator = menuElements.iterator();
+      while (iterator.hasNext())
+        ((DropdownMenu) handlerPresentation).addMenuElement((String) iterator.next());
+      }
+    }
+    
 		/*
 		
 		 * Special treatment for tables
