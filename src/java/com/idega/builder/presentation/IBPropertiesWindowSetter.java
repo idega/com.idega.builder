@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.14 2002/03/11 10:50:23 palli Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.15 2002/04/05 19:52:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -77,7 +77,7 @@ public class IBPropertiesWindowSetter extends Page {
     String sValue = iwc.getParameter(IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER);
     if (sValue != null) {
       if (sValue.equals("Y"))
-        return(true);
+	return(true);
     }
 
     return(false);
@@ -123,8 +123,8 @@ public class IBPropertiesWindowSetter extends Page {
     else {
       String oldPropertyPar = iwc.getParameter(CHANGE_PROPERTY_PARAMETER);
       if (oldPropertyPar != null) {
-        Parameter param2 = new Parameter(METHOD_ID_PARAMETER,oldPropertyPar);
-      	form.add(param2);
+	Parameter param2 = new Parameter(METHOD_ID_PARAMETER,oldPropertyPar);
+	form.add(param2);
       }
     }
 
@@ -132,10 +132,10 @@ public class IBPropertiesWindowSetter extends Page {
     String sDoSave = iwc.getParameter(SAVE_PROPERTY_PARAMETER);
     if (sDoSave != null) {
       if (sDoSave.equalsIgnoreCase("false")) {
-      	doSave = false;
+	doSave = false;
       }
       else {
-      	doSave = true;
+	doSave = true;
       }
     }
 
@@ -143,41 +143,41 @@ public class IBPropertiesWindowSetter extends Page {
     if (ic_object_id != null) {
       String propertyID = iwc.getParameter(METHOD_ID_PARAMETER);
       if (propertyID != null) {
-    	  boolean remove = iwc.isParameterSet(REMOVE_PARAMETER);
-    	  String values[] = parseValues(iwc);
-    	  if (values == null)
-          doSave = false;
-    	  if (remove) {
-    	    if (values != null) {
-    	      propertyChange = true;
-	          removeProperty(iwc.getApplication(),propertyID,values,ic_object_id,pageKey);
-    	    }
+	  boolean remove = iwc.isParameterSet(REMOVE_PARAMETER);
+	  String values[] = parseValues(iwc);
+	  if (values == null)
+	  doSave = false;
+	  if (remove) {
+	    if (values != null) {
+	      propertyChange = true;
+		  removeProperty(iwc.getApplication(),propertyID,values,ic_object_id,pageKey);
+	    }
 	      }
-    	  else {
-    	    if (doSave) {
-    	      propertyChange = setProperty(propertyID,values,ic_object_id,pageKey,iwc.getApplication());
-            PropertyHandler handler = (PropertyHandler)iwc.getSessionAttribute(HANDLER_PARAMETER);
+	  else {
+	    if (doSave) {
+	      propertyChange = setProperty(propertyID,values,ic_object_id,pageKey,iwc.getApplication());
+	    PropertyHandler handler = (PropertyHandler)iwc.getSessionAttribute(HANDLER_PARAMETER);
 
-    	      if (handler != null) {
-          		handler.onUpdate(values,iwc);
-              iwc.removeSessionAttribute(HANDLER_PARAMETER);
-    	      }
-    	    }
+	      if (handler != null) {
+			handler.onUpdate(values,iwc);
+	      iwc.removeSessionAttribute(HANDLER_PARAMETER);
+	      }
+	    }
 	      }
       }
 
       if (propertyChange) {
-      	doReload();
+	doReload();
       }
       else {
-      	if (newPropertyID != null) {
-      	  int iICObjectInstanceID = this.getUsedICObjectInstanceIDInt(iwc);
-      	  Text description = new Text(IBPropertyHandler.getInstance().getMethodDescription(iICObjectInstanceID,newPropertyID,iwc));
-      	  description.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:11pt;font-weight:bold;");
-      	  form.add(description);
-      	  form.add(getPropertySetterBox(newPropertyID,iwc,null,ic_object_id));
-      	  form.add(getRemoveButton());
-      	}
+	if (newPropertyID != null) {
+	  int iICObjectInstanceID = this.getUsedICObjectInstanceIDInt(iwc);
+	  Text description = new Text(IBPropertyHandler.getInstance().getMethodDescription(iICObjectInstanceID,newPropertyID,iwc));
+	  description.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:11pt;font-weight:bold;");
+	  form.add(description);
+	  form.add(getPropertySetterBox(newPropertyID,iwc,null,ic_object_id));
+	  form.add(getRemoveButton());
+	}
       }
     }
   }
@@ -188,7 +188,7 @@ public class IBPropertiesWindowSetter extends Page {
   public void doReload() {
     setOnLoad("doReload()");
     Script script = this.getAssociatedScript();
-    script.addFunction("doReload","function doReload(form){;parent.parent.opener.location.reload();document.forms[0].submit();}");
+    script.addFunction("doReload","function doReload(form){document.forms[0].submit();}");
   }
 
   /**
@@ -214,10 +214,10 @@ public class IBPropertiesWindowSetter extends Page {
     if (valueParams != null) {
       values = new String[valueParams.length];
       for (int i = 0; i < valueParams.length; i++) {
-    		values[i] = iwc.getParameter(valueParams[i]);
-    		if (!values[i].equals("")) {
-          setProperty = true;
-        }
+		values[i] = iwc.getParameter(valueParams[i]);
+		if (!values[i].equals("")) {
+	  setProperty = true;
+	}
       }
     }
 
@@ -261,7 +261,7 @@ public class IBPropertiesWindowSetter extends Page {
       String sValue = "";
 
       try {
-        sValue = realValues[i];
+	sValue = realValues[i];
       }
       catch(ArrayIndexOutOfBoundsException e) {
       }
@@ -276,21 +276,21 @@ public class IBPropertiesWindowSetter extends Page {
 
       PropertyHandler handler = null;
       if (handlerClass != null && !handlerClass.equals("")) {
-        handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
+	handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
 
-        if (handler != null)
-          iwc.setSessionAttribute(HANDLER_PARAMETER,handler);
+	if (handler != null)
+	  iwc.setSessionAttribute(HANDLER_PARAMETER,handler);
       }
 
       if (handler == null) {
-        iwc.removeSessionAttribute(HANDLER_PARAMETER);
+	iwc.removeSessionAttribute(HANDLER_PARAMETER);
       }
 
       Parameter param = new Parameter(VALUE_PARAMETER,sName);
       if (sParamDescription != null) {
-        Text tDescription = formatDescription(sParamDescription+":");
-        tDescription.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;");
-        table.add(tDescription,1,ypos);
+	Text tDescription = formatDescription(sParamDescription+":");
+	tDescription.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;");
+	table.add(tDescription,1,ypos);
       }
       table.add(param,2,ypos);
       table.add(handlerBox,2,ypos);

@@ -56,7 +56,6 @@ public IBPropertiesWindow() {
 }
 
   public void main(IWContext iwc) throws Exception{
-    super.setStatus(true);
     String title = "Properties";
 
     //System.out.println("BuilderLogic.IB_CONTROL_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_CONTROL_PARAMETER)+" and BuilderLogic.IB_PAGE_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
@@ -129,7 +128,7 @@ public IBPropertiesWindow() {
       setAllMargins(0);
       Script script = this.getAssociatedScript();
       script.addFunction("doClose","function doClose(){parent.close();}");
-      script.addFunction("doApply","function doUpdate(){doSet();parent.opener.location.reload();");
+      script.addFunction("doApply","function doApply(){doSet();parent.opener.location.reload();}");
       script.addFunction("doSet","function doSet(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();top.ib_prop_win_middle.ib_prop_list_frame.location.reload();}");
 
     }
@@ -138,11 +137,11 @@ public IBPropertiesWindow() {
       IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
       Image b1 = iwrb.getLocalizedImageButton("close","CLOSE");
-      b1.setOnClick("doClose()");
+      b1.setOnClick("javascript:doClose()");
       Image b2 = iwrb.getLocalizedImageButton("set","SET");
-      b2.setOnClick("doSet()");
+      b2.setOnClick("javascript:doSet()");
       Image b3 = iwrb.getLocalizedImageButton("apply","Apply");
-      b3.setOnClick("doApply()");
+      b3.setOnClick("javascript:doApply()");
       Table t = new Table(3,1);
       t.setHeight("100%");
       t.setAlignment("right");
