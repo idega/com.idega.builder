@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.11 2002/05/10 15:55:26 palli Exp $
+ * $Id: IBPageChooserWindow.java,v 1.12 2002/06/24 12:12:21 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,9 @@
  */
 package com.idega.builder.presentation;
 
+import com.idega.idegaweb.*;
 import com.idega.presentation.text.*;
-import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.Table;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ui.AbstractChooserWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.TreeViewer;
@@ -40,7 +39,11 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
     setHeight(_height);
     setCellpadding(5);
     setScrollbar(true);
+    this.getLocation().setApplicationClass(this.getClass());
+    this.getLocation().isInPopUpWindow(true);
   }
+
+
 
   /**
    *
@@ -56,8 +59,11 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 
     try {
       TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
+      viewer.setLocation((IWLocation)this.getLocation().clone());
+      viewer.getLocation().setSubID(1);
 
       add(viewer);
+
       viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
       viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
       viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
