@@ -30,10 +30,8 @@ import com.idega.util.text.StyleConstants;
 public class IBStyleChooserWindow extends AbstractChooserWindow {
 
 	private HashMap _styleMap;
-	private HashMap _borderMap;
 	private String _styleString;
 	private String[] _styles = StyleConstants.ALL_STYLES;
-	private String[] _borderStyles = { StyleConstants.ATTRIBUTE_BORDER+"_style",StyleConstants.ATTRIBUTE_BORDER+"_color",StyleConstants.ATTRIBUTE_BORDER+"_width" };
 	private final String loremIpsum = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea c...";
 
 	public IBStyleChooserWindow() {
@@ -260,7 +258,7 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		leftTable.add(lineHeight, 5, row);
 		row++;
 
-		DropdownMenu borderStyle = new DropdownMenu(StyleConstants.ATTRIBUTE_BORDER + "_style");
+		DropdownMenu borderStyle = new DropdownMenu(StyleConstants.ATTRIBUTE_BORDER_STYLE);
 		borderStyle.addMenuElementFirst("", "");
 		borderStyle.addMenuElement(StyleConstants.BORDER_NONE, StyleConstants.BORDER_NONE);
 		borderStyle.addMenuElement(StyleConstants.BORDER_DASHED, StyleConstants.BORDER_DASHED);
@@ -271,15 +269,15 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		borderStyle.addMenuElement(StyleConstants.BORDER_RIDGE, StyleConstants.BORDER_RIDGE);
 		borderStyle.addMenuElement(StyleConstants.BORDER_INSET, StyleConstants.BORDER_INSET);
 		borderStyle.addMenuElement(StyleConstants.BORDER_OUTSET, StyleConstants.BORDER_OUTSET);
-		borderStyle.setSelectedElement(getBorderStyleValue(StyleConstants.ATTRIBUTE_BORDER + "_style"));
+		borderStyle.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_BORDER_STYLE));
 		borderStyle.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-		TextInput borderColor = new TextInput(StyleConstants.ATTRIBUTE_BORDER + "_color");
+		TextInput borderColor = new TextInput(StyleConstants.ATTRIBUTE_BORDER_COLOR);
 		borderColor.setLength(7);
-		borderColor.setContent(getBorderStyleValue(StyleConstants.ATTRIBUTE_BORDER + "_color"));
+		borderColor.setContent(getStyleValue(StyleConstants.ATTRIBUTE_BORDER_COLOR));
 		borderColor.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-		TextInput borderWidth = new TextInput(StyleConstants.ATTRIBUTE_BORDER + "_width");
+		TextInput borderWidth = new TextInput(StyleConstants.ATTRIBUTE_BORDER_WIDTH);
 		borderWidth.setLength(4);
-		borderWidth.setContent(getBorderStyleValue(StyleConstants.ATTRIBUTE_BORDER + "_width"));
+		borderWidth.setContent(getStyleValue(StyleConstants.ATTRIBUTE_BORDER_WIDTH));
 		borderWidth.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text borderText = new Text("Border style:");
 		borderText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -334,11 +332,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 				getParameter(_styles[a], iwc);
 			}
 		}
-		if (_borderStyles != null) {
-			for (int a = 0; a < _borderStyles.length; a++) {
-				getBorderParameter(_borderStyles[a], iwc);
-			}
-		}
 		getMapStyleString();
 	}
 
@@ -357,13 +350,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		}
 	}
 
-	private void getBorderParameter(String attribute, IWContext iwc) {
-		String value = iwc.getParameter(attribute);
-		if (value != null && value.length() > 0) {
-			setBorderStyleValue(attribute, value);
-		}
-	}
-
 	private void getMapStyleString() {
 		Iterator iter = _styleMap.keySet().iterator();
 		String attribute;
@@ -375,18 +361,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 			if (value != null) {
 				_styleString += attribute + StyleConstants.DELIMITER_COLON + value + StyleConstants.DELIMITER_SEMICOLON;
 			}
-		}
-		if ( _borderMap != null ) {
-			_styleString += StyleConstants.ATTRIBUTE_BORDER + StyleConstants.DELIMITER_COLON;
-			iter = _borderMap.keySet().iterator();
-			while (iter.hasNext()) {
-				value = (String) _borderMap.get((String)iter.next());
-				_styleString += value;
-				if ( iter.hasNext() )
-					_styleString += " ";
-				else
-					_styleString += StyleConstants.DELIMITER_SEMICOLON;	
-			}	
 		}
 	}
 
@@ -412,22 +386,7 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 					else if (a == 2)
 						value = tokens2.nextToken();
 				}
-				if ( attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_BORDER) ) {
-					if ( value != null ) {
-						StringTokenizer tokens3 = new StringTokenizer(value," ");
-						while (tokens3.hasMoreTokens()) {
-							value = tokens3.nextToken();
-							if ( value.indexOf("#") != -1 )
-								_borderMap.put(attribute+"_color", value);
-							else if ( value.length() >= 4 )
-								_borderMap.put(attribute+"_style", value);
-							else
-								_borderMap.put(attribute+"_width", value);
-						}	
-					}
-				}
-				else
-					_styleMap.put(attribute, value);
+				_styleMap.put(attribute, value);
 			}
 		}
 	}
@@ -435,8 +394,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 	private void setDefaultValues() {
 		if (_styleMap == null)
 			_styleMap = new HashMap();
-		if (_borderMap == null)
-			_borderMap = new HashMap();
 
 		if (_styles != null) {
 			for (int a = 0; a < _styles.length; a++) {
@@ -449,28 +406,12 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		_styleMap.put(attribute, value);
 	}
 
-	private void setBorderStyleValue(String attribute, String value) {
-		if ( _borderMap == null )
-			_borderMap = new HashMap();
-		_borderMap.put(attribute, value);
-	}
-
 	private String getStyleValue(String attribute) {
 		String value = (String) _styleMap.get(attribute);
 		if (value != null) {
 			if (attribute != StyleConstants.ATTRIBUTE_FONT_SIZE && value.indexOf("px") != -1)
 				value = value.substring(0, value.indexOf("px"));
 			return value;
-		}
-		return "";
-	}
-
-	private String getBorderStyleValue(String attribute) {
-		if ( _borderMap != null ) {
-			String value = (String) _borderMap.get(attribute);
-			if (value != null) {
-				return value;
-			}
 		}
 		return "";
 	}
