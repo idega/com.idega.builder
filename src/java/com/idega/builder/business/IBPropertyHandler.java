@@ -341,6 +341,14 @@ public class IBPropertyHandler{
             ((FloatInput)obj).setContent(stringValue);
           }
       }
+      else if(parameterClass.equals(java.lang.Void.class) || parameterClass.equals(Void.TYPE)){
+          obj = new CheckBox(name);
+          if(stringValue!=null){
+            //if(stringValue.equals("Y")){
+              ((CheckBox)obj).setChecked(true);
+            //}
+          }
+      }
       else if(parameterClass.equals(java.lang.Double.class) || parameterClass.equals(Double.TYPE)){
           obj = new FloatInput(name);
           if(stringValue!=null){
@@ -350,6 +358,8 @@ public class IBPropertyHandler{
       else if(parameterClass.equals(com.idega.presentation.Image.class)){
           //obj = new com.idega.jmodule.image.presentation.ImageInserter(name,false);
           obj = new ImageInserter(name,false);
+          ImageInserter inserter = ((ImageInserter)obj);
+          inserter.setNullImageIDDefault();
           try{
             ((ImageInserter)obj).setImageId(Integer.parseInt(stringValue));
           }

@@ -25,6 +25,7 @@ public class ImageHandler implements PropertyHandler {
   }
   public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
     ImageInserter po = new ImageInserter(name,false);
+    po.setNullImageIDDefault();
     try{
       po.setImageId(Integer.parseInt(value));
     }
