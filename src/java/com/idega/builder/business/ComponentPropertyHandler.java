@@ -53,6 +53,7 @@ public class ComponentPropertyHandler {
       }
     }
 
+     
      void setReflectionProperty(PresentationObject instance,Method method,Vector stringValues){
         //Object[] args = getObjectArguments(stringValues);
         //method.invoke(instance,args);
@@ -72,24 +73,6 @@ public class ComponentPropertyHandler {
         }
     }
 
-    private  Object[] getObjectArguments(XMLElement value){
-      List children = value.getChildren();
-      Object[] theReturn;
-      if(children!=null){
-        theReturn = new Object[children.size()];
-        Iterator iter = children.iterator();
-        int counter = 0;
-        while (iter.hasNext()) {
-          XMLElement item = (XMLElement)iter.next();
-          theReturn[counter]=handleElementProperty(item);
-          counter++;
-        }
-      }
-      else{
-        theReturn = new Object[0];
-      }
-      return theReturn;
-    }
 
     static Object handleParameter(Class parameterType,String stringValue)throws Exception{
         Object argument=null;
@@ -133,15 +116,15 @@ public class ComponentPropertyHandler {
           catch (Exception ex) {
             ex.printStackTrace(System.err);
           }
-        }/*
-        else if(parameterType.equals(IBTemplatePage.class)){
-          try {
-            argument = new IBTemplatePage(Integer.parseInt(stringValue));
-          }
-          catch (Exception ex) {
-            ex.printStackTrace(System.err);
-          }
-        }*/ 
+        }
+//        else if(parameterType.equals(IBTemplatePage.class)){
+//          try {
+//            argument = new IBTemplatePage(Integer.parseInt(stringValue));
+//          }
+//          catch (Exception ex) {
+//            ex.printStackTrace(System.err);
+//          }
+//        }
         else if(parameterType.equals(Image.class)){
           //try {
             argument = new Image(Integer.parseInt(stringValue));
@@ -162,6 +145,26 @@ public class ComponentPropertyHandler {
         return argument;
     }
 
+     private  Object[] getObjectArguments(XMLElement value){
+        List children = value.getChildren();
+        Object[] theReturn;
+        if(children!=null){
+          theReturn = new Object[children.size()];
+          Iterator iter = children.iterator();
+          int counter = 0;
+          while (iter.hasNext()) {
+            XMLElement item = (XMLElement)iter.next();
+            theReturn[counter]=handleElementProperty(item);
+            counter++;
+          }
+        }
+        else{
+          theReturn = new Object[0];
+        }
+        return theReturn;
+      }  
+     
+     
     public Object handleElementProperty(XMLElement el){
       XMLElement typeEl = el.getChild(XML_TYPE_TAG);
       XMLElement valueEl = el.getChild(XML_VALUE_TAG);

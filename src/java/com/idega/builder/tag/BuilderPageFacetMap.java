@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderPageFacetMap.java,v 1.2 2004/12/23 14:44:37 tryggvil Exp $
+ * $Id: BuilderPageFacetMap.java,v 1.3 2004/12/23 21:34:34 tryggvil Exp $
  * Created on 16.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.presentation.PresentationObjectContainer;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/23 14:44:37 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2004/12/23 21:34:34 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 
@@ -150,10 +150,12 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 	 * @return
 	 */
 	protected boolean doesComponentContainChild(UIComponent component,UIComponent child){
-		for (Iterator iter = component.getChildren().iterator(); iter.hasNext();) {
-			UIComponent element = (UIComponent) iter.next();
-			if(element.getId().equals(child.getId())){
-				return true;
+		if(component!=null){
+			for (Iterator iter = component.getChildren().iterator(); iter.hasNext();) {
+				UIComponent element = (UIComponent) iter.next();
+				if(element.getId().equals(child.getId())){
+					return true;
+				}
 			}
 		}
 		return false;
