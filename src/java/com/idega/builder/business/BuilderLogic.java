@@ -1,13 +1,10 @@
 /*
- * $Id: BuilderLogic.java,v 1.143 2004/02/20 16:37:43 tryggvil Exp $
- *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
+ * $Id: BuilderLogic.java,v 1.144 2004/02/26 09:08:48 laddi Exp $ Copyright
+ * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
+ * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -33,7 +30,6 @@ import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
-import com.idega.presentation.Block;
 import com.idega.presentation.IFrameContainer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -45,12 +41,13 @@ import com.idega.presentation.text.Link;
 import com.idega.util.FileUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
+
 /**
- * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * @version 1.0
  */
-public class BuilderLogic
-{
+public class BuilderLogic {
+
 	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	public static final String IB_PARENT_PARAMETER = "ib_parent_par";
 	public static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
@@ -81,115 +78,101 @@ public class BuilderLogic
 	//private static final String DEFAULT_PAGE = "1";
 	public static final String CLIPBOARD = "user_clipboard";
 	private static BuilderLogic _instance;
-	private BuilderLogic()
-	{}
-	public static BuilderLogic getInstance()
-	{
-		if (_instance == null)
-		{
+
+	private BuilderLogic() {
+	}
+
+	public static BuilderLogic getInstance() {
+		if (_instance == null) {
 			_instance = new BuilderLogic();
 		}
 		return (_instance);
 	}
-	public boolean updatePage(int id)
-	{
+
+	public boolean updatePage(int id) {
 		String theID = Integer.toString(id);
 		IBXMLPage xml = PageCacher.getXML(theID);
 		xml.update();
 		PageCacher.flagPageInvalid(theID);
 		return (true);
 	}
-	public IBXMLPage getIBXMLPage(String key)
-	{
+
+	public IBXMLPage getIBXMLPage(String key) {
 		return PageCacher.getXML(key);
 	}
-	public IBXMLPage getIBXMLPage(int id)
-	{
+
+	public IBXMLPage getIBXMLPage(int id) {
 		return PageCacher.getXML(Integer.toString(id));
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public Page getPage(int id, boolean builderview, IWContext iwc)
-	{
-		try
-		{
+	public Page getPage(int id, boolean builderview, IWContext iwc) {
+		try {
 			boolean permissionview = false;
-			if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin())
-			{
+			if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
 				permissionview = true;
 			}
 			Page page = PageCacher.getPage(Integer.toString(id), iwc);
-			if (builderview && iwc.hasEditPermission(page))
-			{
+			if (builderview && iwc.hasEditPermission(page)) {
 				return (BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id), page, iwc));
 			}
-			else if (permissionview)
-			{
+			else if (permissionview) {
 				int groupId = -1906;
 				String bla = iwc.getParameter("ic_pm");
-				if (bla != null)
-				{
-					try
-					{
+				if (bla != null) {
+					try {
 						groupId = Integer.parseInt(bla);
 					}
-					catch (NumberFormatException ex)
-					{}
+					catch (NumberFormatException ex) {
+					}
 				}
 				page = PageCacher.getPage(Integer.toString(id));
 				return (BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id), page, iwc));
 			}
-			else
-			{
+			else {
 				return (page);
 			}
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace();
 			Page theReturn = new Page();
 			theReturn.add("Page invalid");
 			return (theReturn);
 		}
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc)
-	{
+	public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc) {
 		List list = page.getChildren();
-		if (list != null)
-		{
+		if (list != null) {
 			ListIterator iter = list.listIterator();
 			PresentationObjectContainer parent = page;
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()) {
 				int index = iter.nextIndex();
 				PresentationObject item = (PresentationObject) iter.next();
 				transformObject(pageKey, item, index, parent, "-1", iwc);
 			}
 		}
-		
-		
+
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		boolean clipboardEmpty = true;
-		if (pasted != null){
+		if (pasted != null) {
 			clipboardEmpty = false;
 		}
 		//"-1" is identified as the top page object (parent)
-		if (page.getIsExtendingTemplate())
-		{
-			if (!page.isLocked())
-			{
+		if (page.getIsExtendingTemplate()) {
+			if (!page.isLocked()) {
 				page.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, null));
 				if (!clipboardEmpty)
 					page.add(getPasteIcon(Integer.toString(-1), iwc));
 				//page.add(layer);
 			}
 		}
-		else
-		{
+		else {
 			page.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, null));
 			if (!clipboardEmpty)
 				page.add(getPasteIcon(Integer.toString(-1), iwc));
@@ -202,85 +185,59 @@ public class BuilderLogic
 		}
 		return (page);
 	}
-	public Page getPermissionTransformed(int groupId, String pageKey, Page page, IWContext iwc)
-	{
+
+	public Page getPermissionTransformed(int groupId, String pageKey, Page page, IWContext iwc) {
 		List groupIds = new Vector();
 		groupIds.add(Integer.toString(groupId));
-		try
-		{
-			List groups =
-				AccessControl.getPermissionGroups(
-					(
-						(com.idega.core.data.GenericGroupHome) com.idega.data.IDOLookup.getHomeLegacy(
-							GenericGroup.class)).findByPrimaryKeyLegacy(
-						groupId));
-			if (groups != null)
-			{
+		try {
+			List groups = AccessControl.getPermissionGroups(((com.idega.core.data.GenericGroupHome) com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId));
+			if (groups != null) {
 				Iterator iter = groups.iterator();
-				while (iter.hasNext())
-				{
+				while (iter.hasNext()) {
 					com.idega.core.data.GenericGroup item = (GenericGroup) iter.next();
 					groupIds.add(Integer.toString(item.getID()));
 				}
 			}
 		}
-		catch (Exception ex)
-		{}
-		
-		
+		catch (Exception ex) {
+		}
+
 		List list = page.getChildren();
-		if (list != null)
-		{
+		if (list != null) {
 			ListIterator iter = list.listIterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()) {
 				int index = iter.nextIndex();
 				Object item = iter.next();
-				if (item instanceof PresentationObject)
-				{
+				if (item instanceof PresentationObject) {
 					filterForPermission(groupIds, (PresentationObject) item, page, index, iwc);
 				}
 			}
 		}
 		return page;
 	}
-	private void filterForPermission(
-		List groupIds,
-		PresentationObject obj,
-		PresentationObjectContainer parentObject,
-		int index,
-		IWContext iwc)
-	{
-		if (!iwc.hasViewPermission(groupIds, obj))
-		{
+
+	private void filterForPermission(List groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc) {
+		if (!iwc.hasViewPermission(groupIds, obj)) {
 			System.err.println(obj + ": removed");
 			parentObject.getChildren().remove(index);
 			parentObject.getChildren().add(index, PresentationObject.NULL_CLONE_OBJECT);
 		}
-		else if (obj instanceof PresentationObjectContainer)
-		{
-			if (obj instanceof Table)
-			{
+		else if (obj instanceof PresentationObjectContainer) {
+			if (obj instanceof Table) {
 				Table tab = (Table) obj;
 				int cols = tab.getColumns();
 				int rows = tab.getRows();
-				for (int x = 1; x <= cols; x++)
-				{
-					for (int y = 1; y <= rows; y++)
-					{
+				for (int x = 1; x <= cols; x++) {
+					for (int y = 1; y <= rows; y++) {
 						PresentationObjectContainer moc = tab.containerAt(x, y);
-						if (moc != null)
-						{
+						if (moc != null) {
 							List l = moc.getChildren();
-							if (l != null)
-							{
+							if (l != null) {
 								ListIterator iterT = l.listIterator();
-								while (iterT.hasNext())
-								{
+								while (iterT.hasNext()) {
 									int index2 = iterT.nextIndex();
 									Object itemT = iterT.next();
-									if (itemT instanceof PresentationObject)
-									{
+									if (itemT instanceof PresentationObject) {
 										filterForPermission(groupIds, (PresentationObject) itemT, moc, index2, iwc);
 									}
 								}
@@ -289,14 +246,11 @@ public class BuilderLogic
 					}
 				}
 			}
-			else
-			{
+			else {
 				List list = ((PresentationObjectContainer) obj).getChildren();
-				if (list != null)
-				{
+				if (list != null) {
 					ListIterator iter = list.listIterator();
-					while (iter.hasNext())
-					{
+					while (iter.hasNext()) {
 						int index2 = iter.nextIndex();
 						PresentationObject item = (PresentationObject) iter.next();
 						filterForPermission(groupIds, item, (PresentationObjectContainer) obj, index2, iwc);
@@ -305,36 +259,28 @@ public class BuilderLogic
 			}
 		}
 	}
-	private void processImageSet(String pageKey, int ICObjectInstanceID, int imageID, IWMainApplication iwma)
-	{
+
+	private void processImageSet(String pageKey, int ICObjectInstanceID, int imageID, IWMainApplication iwma) {
 		setProperty(pageKey, ICObjectInstanceID, "image_id", Integer.toString(imageID), iwma);
 	}
-	private void transformObject(
-		String pageKey,
-		PresentationObject obj,
-		int index,
-		PresentationObjectContainer parent,
-		String parentKey,
-		IWContext iwc)
-	{
+
+	private void transformObject(String pageKey, PresentationObject obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		boolean clipboardEmpty = true;
 		if (pasted != null)
 			clipboardEmpty = false;
-		if (obj instanceof Image)
-		{
+		if (obj instanceof Image) {
 			Image imageObj = (Image) obj;
 			boolean useBuilderObjectControl = obj.getUseBuilderObjectControl();
 			com.idega.block.media.presentation.ImageInserter inserter = null;
 			int ICObjectIntanceID = imageObj.getICObjectInstanceID();
 			String sessionID = "ic_" + ICObjectIntanceID;
 			String session_image_id = (String) iwc.getSessionAttribute(sessionID);
-			if (session_image_id != null)
-			{
+			if (session_image_id != null) {
 				int image_id = Integer.parseInt(session_image_id);
 				/**
-				 * @todo
-				 * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
+				 * @todo Change this so that id is done in a more appropriate place,
+				 * i.e. set the image_id permanently on the image
 				 */
 				processImageSet(pageKey, ICObjectIntanceID, image_id, iwc.getIWMainApplication());
 				iwc.removeSessionAttribute(sessionID);
@@ -342,24 +288,20 @@ public class BuilderLogic
 			}
 			inserter = new com.idega.block.media.presentation.ImageInserter();
 			inserter.setHasUseBox(false);
-			
-			
+
 			String width = imageObj.getWidth();
 			String height = imageObj.getHeight();
 			inserter.limitImageWidth(false);
-			
-			if(width!=null){
+
+			if (width != null) {
 				inserter.setWidth(width);
 			}
-			if(height!=null){
+			if (height != null) {
 				inserter.setHeight(height);
 			}
-			
-			
-			
+
 			int image_id = imageObj.getImageID(iwc);
-			if (image_id != -1)
-			{
+			if (image_id != -1) {
 				inserter.setImageId(image_id);
 			}
 			inserter.setImSessionImageName(sessionID);
@@ -369,45 +311,36 @@ public class BuilderLogic
 			obj.setICObjectInstanceID(ICObjectIntanceID);
 			obj.setUseBuilderObjectControl(useBuilderObjectControl);
 		}
-		else if (obj instanceof Block)
-		{}
-		else if (obj instanceof PresentationObjectContainer)
-		{
-			if (obj instanceof Table)
-			{
+		//else if (obj instanceof Block) {
+		//}
+		//else if (obj instanceof PresentationObjectContainer) {
+		else if (obj.isContainer()) {
+			if (obj instanceof Table) {
 				Table tab = (Table) obj;
 				tab.setBorder(1);
 				int cols = tab.getColumns();
 				int rows = tab.getRows();
-				for (int x = 1; x <= cols; x++)
-				{
-					for (int y = 1; y <= rows; y++)
-					{
+				for (int x = 1; x <= cols; x++) {
+					for (int y = 1; y <= rows; y++) {
 						PresentationObjectContainer moc = tab.containerAt(x, y);
 						String newParentKey = obj.getICObjectInstanceID() + "." + x + "." + y;
-						if (moc != null)
-						{
+						if (moc != null) {
 							transformObject(pageKey, moc, -1, tab, newParentKey, iwc);
 						}
 						Page curr = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
-						if (curr.getIsExtendingTemplate())
-						{
-							if (tab.getBelongsToParent())
-							{
-								if (!tab.isLocked(x, y))
-								{
+						if (curr.getIsExtendingTemplate()) {
+							if (tab.getBelongsToParent()) {
+								if (!tab.isLocked(x, y)) {
 									tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 									if (!clipboardEmpty)
 										tab.add(getPasteIcon(newParentKey, iwc), x, y);
 								}
 							}
-							else
-							{
+							else {
 								tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 								if (!clipboardEmpty)
 									tab.add(getPasteIcon(newParentKey, iwc), x, y);
-								if (curr.getIsTemplate())
-								{
+								if (curr.getIsTemplate()) {
 									tab.add(IBObjectControl.getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 									if (tab.isLocked(x, y))
 										tab.add(IBLockRegionWindow.getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
@@ -416,13 +349,11 @@ public class BuilderLogic
 								}
 							}
 						}
-						else
-						{
+						else {
 							tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 							if (!clipboardEmpty)
 								tab.add(getPasteIcon(newParentKey, iwc), x, y);
-							if (curr.getIsTemplate())
-							{
+							if (curr.getIsTemplate()) {
 								tab.add(IBObjectControl.getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 								if (tab.isLocked(x, y))
 									tab.add(IBLockRegionWindow.getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
@@ -433,403 +364,291 @@ public class BuilderLogic
 					}
 				}
 			}
-			else
-			{
+			else {
 				List list = ((PresentationObjectContainer) obj).getChildren();
-				if (list != null)
-				{
+				if (list != null) {
 					ListIterator iter = list.listIterator();
-					while (iter.hasNext())
-					{
+					while (iter.hasNext()) {
 						int index2 = iter.nextIndex();
 						PresentationObject item = (PresentationObject) iter.next();
 						/**
 						 * If parent is Table
 						 */
-						if (index == -1)
-						{
+						if (index == -1) {
 							transformObject(pageKey, item, index2, (PresentationObjectContainer) obj, parentKey, iwc);
 						}
-						else
-						{
+						else {
 							String newParentKey = Integer.toString(obj.getICObjectInstanceID());
-							transformObject(
-								pageKey,
-								item,
-								index2,
-								(PresentationObjectContainer) obj,
-								newParentKey,
-								iwc);
+							transformObject(pageKey, item, index2, (PresentationObjectContainer) obj, newParentKey, iwc);
 						}
 					}
 				}
-				if (index != -1)
-				{
+				if (index != -1) {
 					Page curr = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
-					if (curr.getIsExtendingTemplate())
-					{
-						if (obj.getBelongsToParent())
-						{
-							if (!((PresentationObjectContainer) obj).isLocked())
-							{
-								((PresentationObjectContainer) obj).add(
-									IBAddModuleWindow.getAddIcon(
-										Integer.toString(obj.getICObjectInstanceID()),
-										iwc,
-										((PresentationObjectContainer) obj).getLabel()));
+					if (curr.getIsExtendingTemplate()) {
+						if (obj.getBelongsToParent()) {
+							if (!((PresentationObjectContainer) obj).isLocked()) {
+								((PresentationObjectContainer) obj).add(IBAddModuleWindow.getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 								if (!clipboardEmpty)
-									((PresentationObjectContainer) obj).add(
-										getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+									((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 							}
 						}
-						else
-						{
-							((PresentationObjectContainer) obj).add(
-								IBAddModuleWindow.getAddIcon(
-									Integer.toString(obj.getICObjectInstanceID()),
-									iwc,
-									((PresentationObjectContainer) obj).getLabel()));
+						else {
+							((PresentationObjectContainer) obj).add(IBAddModuleWindow.getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 							if (!clipboardEmpty)
-								((PresentationObjectContainer) obj).add(
-									getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
-							if (curr.getIsTemplate())
-							{
-								((PresentationObjectContainer) obj).add(
-									IBObjectControl.getLabelIcon(
-										Integer.toString(obj.getICObjectInstanceID()),
-										iwc,
-										((PresentationObjectContainer) obj).getLabel()));
+								((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+							if (curr.getIsTemplate()) {
+								((PresentationObjectContainer) obj).add(IBObjectControl.getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 								if (!((PresentationObjectContainer) obj).isLocked())
-									((PresentationObjectContainer) obj).add(
-										IBLockRegionWindow.getLockedIcon(
-											Integer.toString(obj.getICObjectInstanceID()),
-											iwc,
-											((PresentationObjectContainer) obj).getLabel()));
+									((PresentationObjectContainer) obj).add(IBLockRegionWindow.getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 								else
-									((PresentationObjectContainer) obj).add(
-										IBLockRegionWindow.getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+									((PresentationObjectContainer) obj).add(IBLockRegionWindow.getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 							}
 						}
 					}
-					else
-					{
-						((PresentationObjectContainer) obj).add(
-							IBAddModuleWindow.getAddIcon(
-								Integer.toString(obj.getICObjectInstanceID()),
-								iwc,
-								((PresentationObjectContainer) obj).getLabel()));
+					else {
+						((PresentationObjectContainer) obj).add(IBAddModuleWindow.getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 						if (!clipboardEmpty)
-							((PresentationObjectContainer) obj).add(
-								getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
-						if (curr.getIsTemplate())
-						{
-							((PresentationObjectContainer) obj).add(
-								IBObjectControl.getLabelIcon(
-									Integer.toString(obj.getICObjectInstanceID()),
-									iwc,
-									((PresentationObjectContainer) obj).getLabel()));
+							((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+						if (curr.getIsTemplate()) {
+							((PresentationObjectContainer) obj).add(IBObjectControl.getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 							if (!((PresentationObjectContainer) obj).isLocked())
-								((PresentationObjectContainer) obj).add(
-									IBLockRegionWindow.getLockedIcon(
-										Integer.toString(obj.getICObjectInstanceID()),
-										iwc,
-										((PresentationObjectContainer) obj).getLabel()));
+								((PresentationObjectContainer) obj).add(IBLockRegionWindow.getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 							else
-								((PresentationObjectContainer) obj).add(
-									IBLockRegionWindow.getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+								((PresentationObjectContainer) obj).add(IBLockRegionWindow.getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 						}
 					}
 				}
 			}
 		}
-		if (obj.getUseBuilderObjectControl())
-		{
-			if (index != -1)
-			{
+		if (obj.getUseBuilderObjectControl()) {
+			if (index != -1) {
 				//parent.remove(obj);
 				//parent.add(new BuilderObjectControl(obj,parent));
 				parent.set(index, new IBObjectControl(obj, parent, parentKey, iwc, index));
 			}
 		}
 	}
-	public ICPage getCurrentIBPageEntity(IWContext iwc) throws Exception
-	{
+
+	public ICPage getCurrentIBPageEntity(IWContext iwc) throws Exception {
 		String sID = getCurrentIBPage(iwc);
 		//if(sID!=null){
-		return (
-			(com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(
-				ICPage.class)).findByPrimaryKeyLegacy(
-			Integer.parseInt(sID));
+		return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(sID));
 		//}
 	}
-	
-	public void setCurrentPriorityPageID(IWContext iwc , String pageId){
-		iwc.setSessionAttribute(SESSION_PRIORITY_PAGE_KEY,pageId);
+
+	public void setCurrentPriorityPageID(IWContext iwc, String pageId) {
+		iwc.setSessionAttribute(SESSION_PRIORITY_PAGE_KEY, pageId);
 	}
-	
+
 	/**
 	 * Returns the current IBPageID that the user has requested
 	 */
-	public static int getCurrentIBPageID(IWContext iwc)
-	{
+	public static int getCurrentIBPageID(IWContext iwc) {
 		String theReturn = getCurrentIBPage(iwc);
 		return Integer.parseInt(theReturn);
 	}
-	public static String getCurrentIBPage(IWContext iwc)
-	{
+
+	public static String getCurrentIBPage(IWContext iwc) {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
-		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderServletURI()))
-		{
+		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderServletURI())) {
 			int indexOfPage = requestURI.indexOf("/page/");
-			if (indexOfPage != -1)
-			{
+			if (indexOfPage != -1) {
 				boolean pageISNumber = true;
 				String pageID = null;
-				try
-				{
+				try {
 					String subString = requestURI.substring(indexOfPage + 6);
 					int lastSlash = subString.indexOf("/");
-					if (lastSlash == -1)
-					{
+					if (lastSlash == -1) {
 						pageID = subString;
 					}
-					else
-					{
+					else {
 						pageID = subString.substring(0, lastSlash);
 					}
 					Integer.parseInt(pageID);
 				}
-				catch (NumberFormatException e)
-				{
+				catch (NumberFormatException e) {
 					pageISNumber = false;
 				}
-				if (pageISNumber)
-				{
+				if (pageISNumber) {
 					return pageID;
 				}
 			}
 		}
-		
+
 		// priority session page check
-		if (iwc.getSessionAttribute(SESSION_PRIORITY_PAGE_KEY) != null){
+		if (iwc.getSessionAttribute(SESSION_PRIORITY_PAGE_KEY) != null) {
 			//System.err.println("someone is ordering a priority page");
 			theReturn = (String) iwc.getSessionAttribute(SESSION_PRIORITY_PAGE_KEY);
 			iwc.removeSessionAttribute(SESSION_PRIORITY_PAGE_KEY);
 		}
 		// normal page check
-		else if (iwc.isParameterSet(IB_PAGE_PARAMETER)){
+		else if (iwc.isParameterSet(IB_PAGE_PARAMETER)) {
 			theReturn = iwc.getParameter(IB_PAGE_PARAMETER);
 		}
 		// session page check
-		else if (iwc.getSessionAttribute(SESSION_PAGE_KEY) != null){
+		else if (iwc.getSessionAttribute(SESSION_PAGE_KEY) != null) {
 			theReturn = (String) iwc.getSessionAttribute(SESSION_PAGE_KEY);
 		}
 		// otherwise use startpage
 		else
 			theReturn = String.valueOf(getStartPageId(iwc));
-		if (theReturn == null)
-		{
+		if (theReturn == null) {
 			return Integer.toString(getCurrentDomain(iwc).getStartPageID());
 		}
 		else
 			return theReturn;
 	}
-	public IBXMLPage getCurrentIBXMLPage(IWContext iwc)
-	{
+
+	public IBXMLPage getCurrentIBXMLPage(IWContext iwc) {
 		String key = getCurrentIBPage(iwc);
-		if (key != null)
-		{
+		if (key != null) {
 			return (getIBXMLPage(key));
 		}
 		return null;
 	}
-	public static ICDomain getCurrentDomain(IWApplicationContext iwac)
-	{
-		try
-		{
+
+	public static ICDomain getCurrentDomain(IWApplicationContext iwac) {
+		try {
 			return iwac.getDomain();
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
 		}
 	}
+
 	/**
-	 * Returns the real properties set for the property if the property is set with the specified keys
-	 * Returns the selectedValues[] if nothing found
+	 * Returns the real properties set for the property if the property is set
+	 * with the specified keys Returns the selectedValues[] if nothing found
 	 */
-	public String[] getPropertyValues(
-		IWMainApplication iwma,
-		String pageKey,
-		int ObjectInstanceId,
-		String propertyName,
-		String[] selectedValues,
-		boolean returnSelectedValueIfNothingFound)
-	{
+	public String[] getPropertyValues(IWMainApplication iwma, String pageKey, int ObjectInstanceId, String propertyName, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		return IBPropertyHandler.getInstance().getPropertyValues(
-			iwma,
-			xml,
-			ObjectInstanceId,
-			propertyName,
-			selectedValues,
-			returnSelectedValueIfNothingFound);
+		return IBPropertyHandler.getInstance().getPropertyValues(iwma, xml, ObjectInstanceId, propertyName, selectedValues, returnSelectedValueIfNothingFound);
 		//return XMLWriter.getPropertyValues(xml,ObjectInstanceId,propertyName);
 	}
-	public boolean removeProperty(
-		IWMainApplication iwma,
-		String pageKey,
-		int ObjectInstanceId,
-		String propertyName,
-		String[] values)
-	{
+
+	public boolean removeProperty(IWMainApplication iwma, String pageKey, int ObjectInstanceId, String propertyName, String[] values) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.removeProperty(iwma, xml, ObjectInstanceId, propertyName, values))
-		{
+		if (XMLWriter.removeProperty(iwma, xml, ObjectInstanceId, propertyName, values)) {
 			xml.update();
 			return true;
 		}
-		else
-		{
+		else {
 			return false;
 		}
 	}
+
 	/**
 	 * Returns the first property if there is an array of properties set
 	 */
-	public String getProperty(String pageKey, int ObjectInstanceId, String propertyName)
-	{
+	public String getProperty(String pageKey, int ObjectInstanceId, String propertyName) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		return XMLWriter.getProperty(xml, ObjectInstanceId, propertyName);
 	}
+
 	/**
 	 * Returns true if properties changed, or error, else false
 	 */
-	public boolean setProperty(
-		String pageKey,
-		int ObjectInstanceId,
-		String propertyName,
-		String propertyValue,
-		IWMainApplication iwma)
-	{
-		String[] values = { propertyValue };
+	public boolean setProperty(String pageKey, int ObjectInstanceId, String propertyName, String propertyValue, IWMainApplication iwma) {
+		String[] values = {propertyValue};
 		return setProperty(pageKey, ObjectInstanceId, propertyName, values, iwma);
 	}
+
 	/**
 	 * Returns true if properties changed, or error, else false
 	 */
-	public boolean setProperty(
-		String pageKey,
-		int ObjectInstanceId,
-		String propertyName,
-		String[] propertyValues,
-		IWMainApplication iwma)
-	{
-		try
-		{
+	public boolean setProperty(String pageKey, int ObjectInstanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
+		try {
 			IBXMLPage xml = getIBXMLPage(pageKey);
 			boolean allowMultivalued = isPropertyMultivalued(propertyName, ObjectInstanceId, iwma);
-			if (XMLWriter.setProperty(iwma, xml, ObjectInstanceId, propertyName, propertyValues, allowMultivalued))
-			{
+			if (XMLWriter.setProperty(iwma, xml, ObjectInstanceId, propertyName, propertyValues, allowMultivalued)) {
 				xml.update();
 				return (true);
 			}
-			else
-			{
+			else {
 				return (false);
 			}
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace(System.err);
 			return (false);
 		}
 	}
+
 	/**
 	 * Returns true if properties changed, or error, else false
 	 */
-	public boolean isPropertySet(String pageKey, int ObjectInstanceId, String propertyName, IWMainApplication iwma)
-	{
-		try
-		{
+	public boolean isPropertySet(String pageKey, int ObjectInstanceId, String propertyName, IWMainApplication iwma) {
+		try {
 			IBXMLPage xml = getIBXMLPage(pageKey);
 			return XMLWriter.isPropertySet(iwma, xml, ObjectInstanceId, propertyName);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace(System.err);
 			return (false);
 		}
 	}
+
 	// add by Aron 20.sept 2001 01:49
-	public boolean deleteModule(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID)
-	{
+	public boolean deleteModule(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		try
-		{
+		try {
 			PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(ICObjectInstanceID);
-			if (Block != null)
-			{
-				if (Block instanceof Builderaware)
-				{
+			if (Block != null) {
+				if (Block instanceof Builderaware) {
 					((Builderaware) Block).deleteBlock(ICObjectInstanceID);
 				}
 			}
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		if (XMLWriter.deleteModule(xml, parentObjectInstanceID, ICObjectInstanceID))
-		{
+		if (XMLWriter.deleteModule(xml, parentObjectInstanceID, ICObjectInstanceID)) {
 			xml.update();
 			return (true);
 		}
-		else
-		{
+		else {
 			return (false);
 		}
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public boolean copyModule(IWContext iwc, String pageKey, int ICObjectInstanceID)
-	{
+	public boolean copyModule(IWContext iwc, String pageKey, int ICObjectInstanceID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		XMLElement element = xml.copyModule(pageKey, ICObjectInstanceID);
 		if (element == null)
 			return (false);
-		else
-		{
+		else {
 			XMLElement el = (XMLElement) element.clone();
 			iwc.setSessionAttribute(CLIPBOARD, el);
 		}
 		return (true);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public boolean pasteModule(IWContext iwc, String pageKey, String parentID)
-	{
+	public boolean pasteModule(IWContext iwc, String pageKey, String parentID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		if (element == null)
 			return (false);
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (XMLWriter.pasteElement(xml, pageKey, parentID, toPaste))
-		{
+		if (XMLWriter.pasteElement(xml, pageKey, parentID, toPaste)) {
 			xml.update();
 			return (true);
 		}
 		return (false);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public boolean pasteModule(IWContext iwc, String pageKey, String parentID, String objectID)
-	{
+	public boolean pasteModule(IWContext iwc, String pageKey, String parentID, String objectID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		System.out.println("pageKey = " + pageKey);
 		System.out.println("parentID = " + parentID);
@@ -838,26 +657,21 @@ public class BuilderLogic
 		if (element == null)
 			return (false);
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (XMLWriter.pasteElementAbove(xml, pageKey, parentID, objectID, toPaste))
-		{
+		if (XMLWriter.pasteElementAbove(xml, pageKey, parentID, objectID, toPaste)) {
 			xml.update();
 			return (true);
 		}
 		return (false);
 	}
-	public boolean lockRegion(String pageKey, String parentObjectInstanceID)
-	{
+
+	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.lockRegion(xml, parentObjectInstanceID))
-		{
+		if (XMLWriter.lockRegion(xml, parentObjectInstanceID)) {
 			xml.update();
-			if (parentObjectInstanceID.equals("-1"))
-			{
-				if (xml.getType().equals(xml.TYPE_TEMPLATE))
-				{
+			if (parentObjectInstanceID.equals("-1")) {
+				if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
 					List extend = xml.getUsingTemplate();
-					if (extend != null)
-					{
+					if (extend != null) {
 						Iterator i = extend.iterator();
 						while (i.hasNext())
 							lockRegion((String) i.next(), parentObjectInstanceID);
@@ -868,22 +682,17 @@ public class BuilderLogic
 		}
 		return (false);
 	}
-	public boolean unlockRegion(String pageKey, String parentObjectInstanceID, String label)
-	{
+
+	public boolean unlockRegion(String pageKey, String parentObjectInstanceID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.unlockRegion(xml, parentObjectInstanceID))
-		{
+		if (XMLWriter.unlockRegion(xml, parentObjectInstanceID)) {
 			xml.update();
-			if (parentObjectInstanceID.equals("-1"))
-			{
-				if (xml.getType().equals(xml.TYPE_TEMPLATE))
-				{
+			if (parentObjectInstanceID.equals("-1")) {
+				if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
 					List extend = xml.getUsingTemplate();
-					if (extend != null)
-					{
+					if (extend != null) {
 						Iterator i = extend.iterator();
-						while (i.hasNext())
-						{
+						while (i.hasNext()) {
 							String child = (String) i.next();
 							unlockRegion(child, parentObjectInstanceID, null);
 						}
@@ -895,74 +704,56 @@ public class BuilderLogic
 		}
 		return (false);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public boolean addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label)
-	{
+	public boolean addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label))
-		{
+		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label)) {
 			xml.update();
 			return (true);
 		}
-		else
-		{
+		else {
 			return (false);
 		}
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label)
-	{
+	public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label))
-		{
+		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label)) {
 			xml.update();
 			return true;
 		}
-		else
-		{
+		else {
 			return false;
 		}
 	}
-	public Class getObjectClass(int icObjectInstanceID)
-	{
-		try
-		{
-			ICObjectInstance instance =
-				(
-					(com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
-						ICObjectInstance.class)).findByPrimaryKeyLegacy(
-					icObjectInstanceID);
+
+	public Class getObjectClass(int icObjectInstanceID) {
+		try {
+			ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceID);
 			return instance.getObject().getObjectClass();
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	private boolean isPropertyMultivalued(String propertyName, int icObjecctInstanceID, IWMainApplication iwma)
-		throws Exception
-	{
-		try
-		{
+
+	private boolean isPropertyMultivalued(String propertyName, int icObjecctInstanceID, IWMainApplication iwma) throws Exception {
+		try {
 			Class c = null;
 			IWBundle iwb = null;
-			if (icObjecctInstanceID == -1)
-			{
+			if (icObjecctInstanceID == -1) {
 				c = com.idega.presentation.Page.class;
 				iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
 			}
-			else
-			{
-				ICObjectInstance instance =
-					(
-						(com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
-							ICObjectInstance.class)).findByPrimaryKeyLegacy(
-						icObjecctInstanceID);
+			else {
+				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjecctInstanceID);
 				c = instance.getObject().getObjectClass();
 				iwb = instance.getObject().getBundle(iwma);
 			}
@@ -975,35 +766,32 @@ public class BuilderLogic
 			if (method == null)
 				return (false);
 			IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
-			if (prop != null)
-			{
+			if (prop != null) {
 				boolean value = prop.getBooleanValue();
 				return value;
 			}
 			else
 				return false;
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			//e.printStackTrace(System.err);
 			return false;
 		}
 	}
-	public boolean setTemplateId(String pageKey, String id)
-	{
+
+	public boolean setTemplateId(String pageKey, String id) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.setAttribute(xml, "-1", XMLConstants.TEMPLATE_STRING, id))
-		{
+		if (XMLWriter.setAttribute(xml, "-1", XMLConstants.TEMPLATE_STRING, id)) {
 			xml.update();
 			return true;
 		}
 		return (false);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public PresentationObject getPasteIcon(String parentKey, IWContext iwc)
-	{
+	public PresentationObject getPasteIcon(String parentKey, IWContext iwc) {
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		Image pasteImage = bundle.getImage("paste.gif", "Paste component");
 		Link link = new Link(pasteImage);
@@ -1013,24 +801,23 @@ public class BuilderLogic
 		link.addParameter(IB_PARENT_PARAMETER, parentKey);
 		return (link);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public boolean labelRegion(String pageKey, String parentObjectInstanceID, String label)
-	{
+	public boolean labelRegion(String pageKey, String parentObjectInstanceID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.labelRegion(xml, parentObjectInstanceID, label))
-		{
+		if (XMLWriter.labelRegion(xml, parentObjectInstanceID, label)) {
 			xml.update();
 			return true;
 		}
 		return (false);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public String getIBPageURL(IWApplicationContext iwc, int ib_page_id)
-	{
+	public String getIBPageURL(IWApplicationContext iwc, int ib_page_id) {
 		//    return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
 		StringBuffer url = new StringBuffer();
 		url.append(iwc.getIWMainApplication().getBuilderServletURI());
@@ -1040,48 +827,39 @@ public class BuilderLogic
 		url.append(ib_page_id);
 		return url.toString();
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId)
-	{
-		String src =
-			iwc.getIWMainApplication().getIFrameContentURI()
-				+ "?"
-				+ IC_OBJECT_INSTANCE_ID_PARAMETER
-				+ "="
-				+ ICObjectInstanceId;
+	public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId) {
+		String src = iwc.getIWMainApplication().getIFrameContentURI() + "?" + IC_OBJECT_INSTANCE_ID_PARAMETER + "=" + ICObjectInstanceId;
 		String query = iwc.getQueryString();
-		if (query != null && !query.equals(""))
-		{
+		if (query != null && !query.equals("")) {
 			src += ("&" + query);
 		}
 		return src;
 	}
+
 	/**
 	 * Changes the name of the current page.
-	 *
-	 * @param name The new name for the page
-	 * @param iwc The IdegeWeb Context object
+	 * 
+	 * @param name
+	 *          The new name for the page
+	 * @param iwc
+	 *          The IdegeWeb Context object
 	 */
-	public void changeName(String name, IWContext iwc)
-	{
+	public void changeName(String name, IWContext iwc) {
 		IBXMLPage xml = getCurrentIBXMLPage(iwc);
-		if (xml != null)
-		{
-			if (!xml.getName().equals(name))
-			{
+		if (xml != null) {
+			if (!xml.getName().equals(name)) {
 				xml.setName(name);
 				java.util.Map tree = PageTreeNode.getTree(iwc);
-				if (tree != null)
-				{
+				if (tree != null) {
 					String currentId = getCurrentIBPage(iwc);
-					if (currentId != null)
-					{
+					if (currentId != null) {
 						Integer id = new Integer(currentId);
 						PageTreeNode node = (PageTreeNode) tree.get(id);
-						if (node != null)
-						{
+						if (node != null) {
 							node.setNodeName(name);
 						}
 					}
@@ -1089,25 +867,22 @@ public class BuilderLogic
 			}
 		}
 	}
+
 	/**
 	 * Changes the template id for the current page.
-	 *
-	 * @param templateId The new template id for the current page.
-	 * @param iwc The IdegeWeb Context object
-	 *
-	 * @todo make this work for templates!
+	 * 
+	 * @param templateId
+	 *          The new template id for the current page.
+	 * @param iwc
+	 *          The IdegeWeb Context object @todo make this work for templates!
 	 */
-	public void changeTemplateId(String templateId, IWContext iwc)
-	{
+	public void changeTemplateId(String templateId, IWContext iwc) {
 		IBXMLPage xml = getCurrentIBXMLPage(iwc);
-		if (xml != null)
-		{
-			if (xml.getType().equals(IBXMLPage.TYPE_PAGE))
-			{
+		if (xml != null) {
+			if (xml.getType().equals(IBXMLPage.TYPE_PAGE)) {
 				int newId = Integer.parseInt(templateId);
 				int oldId = xml.getTemplateId();
-				if (newId != oldId)
-				{
+				if (newId != oldId) {
 					xml.setTemplateId(newId);
 					String currentPageId = getCurrentIBPage(iwc);
 					setTemplateId(currentPageId, Integer.toString(newId));
@@ -1119,47 +894,44 @@ public class BuilderLogic
 			}
 		}
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public void startBuilderSession(IWUserContext iwuc)
-	{
+	public void startBuilderSession(IWUserContext iwuc) {
 		iwuc.setSessionAttribute(IB_APPLICATION_RUNNING_SESSION, Boolean.TRUE);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public void endBuilderSession(IWUserContext iwuc)
-	{
+	public void endBuilderSession(IWUserContext iwuc) {
 		iwuc.removeSessionAttribute(IB_APPLICATION_RUNNING_SESSION);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public boolean isBuilderApplicationRunning(IWUserContext iwuc)
-	{
+	public boolean isBuilderApplicationRunning(IWUserContext iwuc) {
 		return !(iwuc.getSessionAttribute(IB_APPLICATION_RUNNING_SESSION) == null);
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public PresentationObject getIFrameContent(int ibPageId, int instanceId, IWContext iwc)
-	{
+	public PresentationObject getIFrameContent(int ibPageId, int instanceId, IWContext iwc) {
 		PresentationObject obj = EventLogic.getPopulatedObjectInstance(instanceId, iwc);
 		PresentationObject iframeContent = null;
-		if (obj instanceof IFrameContainer && obj != null)
-		{
+		if (obj instanceof IFrameContainer && obj != null) {
 			iframeContent = ((IFrameContainer) obj).getIFrameContent();
 		}
 		return iframeContent;
 	}
 
-
 	/**
-	 *
+	 *  	 *
 	 */
-	public void changeLinkPageId(Link link, String linkParentPageId, String newPageId)
-	{
+	public void changeLinkPageId(Link link, String linkParentPageId, String newPageId) {
 		int moduleId = link.getICObjectInstanceID();
 		//int pageId = link.getParentPageID();
 		//IBXMLPage page = getIBXMLPage(pageId);
@@ -1175,18 +947,17 @@ public class BuilderLogic
 	}
 
 	/**
-	 *
+	 *  	 *
 	 */
-	public static int getStartPageId(IWApplicationContext iwac)
-	{
+	public static int getStartPageId(IWApplicationContext iwac) {
 		ICDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwac);
 		return domain.getStartPageID();
 	}
+
 	/**
-	 *
+	 *  	 *
 	 */
-	public String getCurrentPageHtml(IWContext iwc)
-	{
+	public String getCurrentPageHtml(IWContext iwc) {
 		String ibpage = getCurrentIBPage(iwc);
 		ICDomain domain = getCurrentDomain(iwc);
 		StringBuffer url = new StringBuffer(domain.getURL());
@@ -1196,15 +967,15 @@ public class BuilderLogic
 		//    url.append(IB_PAGE_PARAMETER);
 		//    url.append("=");
 		url.append(this.getIBPageURL(iwc, Integer.parseInt(ibpage)));
-		
-		if (url.toString().indexOf("http") == -1) 
-			url.insert(0,"http://");
-		
+
+		if (url.toString().indexOf("http") == -1)
+			url.insert(0, "http://");
+
 		String html = FileUtil.getStringFromURL(url.toString());
 		return (html);
 	}
-	public void clearAllCachedPages()
-	{
+
+	public void clearAllCachedPages() {
 		PageCacher.flagAllPagesInvalid();
 	}
 }
