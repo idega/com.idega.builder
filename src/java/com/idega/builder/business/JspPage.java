@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.1 2004/12/20 08:55:06 tryggvil Exp $
+ * $Id: JspPage.java,v 1.2 2004/12/21 09:46:19 tryggvil Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,17 +21,16 @@ import com.idega.idegaweb.IWMainApplication;
 /**
  *  The instance of this class wrapps a Builder page of format JSP.<br>
  * 
- *  Last modified: $Date: 2004/12/20 08:55:06 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2004/12/21 09:46:19 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class JspPage extends CachedBuilderPage {
 	
 	private static Logger log = Logger.getLogger(JspPage.class.getName());
 	
 		private boolean isLoadedToDisk=false;
-		private String getJSPURI;
 		private static File jspTmpDir;
 		private String resourceURI;
 	
@@ -114,20 +113,6 @@ public class JspPage extends CachedBuilderPage {
 			catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-	
-		
-		/**
-		 * @return Returns the getJSPURI.
-		 */
-		public String getGetJSPURI() {
-			return getJSPURI;
-		}
-		/**
-		 * @param getJSPURI The getJSPURI to set.
-		 */
-		public void setGetJSPURI(String getJSPURI) {
-			this.getJSPURI = getJSPURI;
 		}
 		/**
 		 * @return Returns the isLoadedToDisk.
