@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.21 2001/10/20 17:42:41 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.22 2001/10/26 14:23:41 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -175,6 +175,7 @@ public class IBXMLPage {
       OutputStream stream = ibpage.getPageValueForWrite();
       store(stream);
       ibpage.update();
+      System.out.println("[iwBuilder] : Updating page "+ibpage.getName()+" with id="+ibpage.getID());
     }
     catch(NumberFormatException ne) {
       try {
@@ -186,7 +187,7 @@ public class IBXMLPage {
       }
     }
     catch(Exception e) {
-      e.printStackTrace();
+      e.printStackTrace(System.err);
     }
     setPopulatedPage(XMLReader.getPopulatedPage(this));
     if (_type == TYPE_TEMPLATE)

@@ -339,7 +339,7 @@ public class IBPropertyHandler{
         obj = getHandlerInstance(iwc,ICObjectInstanceID,methodIdentifier,parameterIndex,name,stringValue);
       }
       catch(Exception e){
-        e.printStackTrace();
+        //e.printStackTrace();
       }
 
       if(obj!=null){
@@ -380,6 +380,11 @@ public class IBPropertyHandler{
       else if(parameterClass.equals(com.idega.presentation.Image.class)){
           //obj = new com.idega.jmodule.image.presentation.ImageInserter(name,false);
           obj = new ImageInserter(name,false);
+          try{
+            ((ImageInserter)obj).setImageId(Integer.parseInt(stringValue));
+          }
+          catch(NumberFormatException e){
+          }
       }
       /**@todo : handle page,template,file if the inputs already hava a value
        *

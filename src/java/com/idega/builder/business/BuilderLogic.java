@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.54 2001/10/24 08:29:08 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.55 2001/10/26 14:23:41 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -625,7 +625,7 @@ public class BuilderLogic {
       }
     }
     catch(Exception e) {
-      e.printStackTrace();
+      e.printStackTrace(System.err);
       return(false);
     }
   }
