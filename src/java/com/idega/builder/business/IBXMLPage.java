@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.19 2001/10/19 12:50:13 palli Exp $
+ * $Id: IBXMLPage.java,v 1.20 2001/10/20 12:52:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ public class IBXMLPage {
   private Element _rootElement = null;
   private Page _populatedPage = null;
   private String _key;
+  private IBPage _ibPage;
 
   private String _type = TYPE_PAGE;
 
@@ -233,6 +234,22 @@ public class IBXMLPage {
     }
   }
 
+  public String getName(){
+    try{
+      return getIBPage().getName();
+    }
+    catch(Exception e){
+      return "";
+    }
+  }
+
+
+  IBPage getIBPage()throws Exception{
+    if(_ibPage==null){
+      _ibPage=new IBPage(Integer.parseInt(_key));
+    }
+    return _ibPage;
+  }
 
 
   /**
