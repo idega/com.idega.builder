@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.107 2002/03/02 18:11:46 eiki Exp $
+ * $Id: BuilderLogic.java,v 1.108 2002/03/06 15:56:22 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -880,6 +880,23 @@ public class BuilderLogic {
       return(false);
     }
   }
+
+  /**
+   * Returns true if properties changed, or error, else false
+   */
+  public boolean isPropertySet(String pageKey,int ObjectInstanceId,String propertyName,IWMainApplication iwma){
+    try {
+      IBXMLPage xml = getIBXMLPage(pageKey);
+      return XMLWriter.isPropertySet(iwma,xml,ObjectInstanceId,propertyName);
+    }
+    catch(Exception e) {
+      e.printStackTrace(System.err);
+      return(false);
+    }
+  }
+
+
+
 
    // add by Aron 20.sept 2001 01:49
   public boolean deleteModule(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {

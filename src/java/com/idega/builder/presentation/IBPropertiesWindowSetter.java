@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.12 2002/02/25 11:53:23 laddi Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.13 2002/03/06 15:56:09 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,7 +46,7 @@ public class IBPropertiesWindowSetter extends Page {
   public final static String MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME = "multivalueChange";
 
   public IBPropertiesWindowSetter() {
-    setBackgroundColor("#E4E0D8");
+    setBackgroundColor("#FFFFFF");
   }
 
   public String getUsedICObjectInstanceID(IWContext iwc) {

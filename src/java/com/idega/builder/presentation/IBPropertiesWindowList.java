@@ -40,12 +40,13 @@ public class IBPropertiesWindowList extends Page{
   static final String LIST_FRAME = "ib_prop_list_frame";
   static final String PROPERTY_FRAME = "ib_prop_frame";
   final static String STYLE_NAME = "properties";
-  private Image button;
+  Image button;
+  Image hoverButton;
   JButton jButton1 = new JButton();
 
   public IBPropertiesWindowList() {
     setAllMargins(0);
-    setBackgroundColor("#B0B29D");
+    setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
     try {
       jbInit();
     }
@@ -56,6 +57,7 @@ public class IBPropertiesWindowList extends Page{
 
   public void main(IWContext iwc)throws Exception{
     button = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
+    hoverButton = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button_hvr.gif");
     String ic_object_id = getUsedICObjectInstanceID(iwc);
     setStyles();
     if(ic_object_id!=null){
@@ -77,6 +79,7 @@ public class IBPropertiesWindowList extends Page{
       table.setCellspacing(0);
       table.setWidth("100%");
 
+    String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
     //int icObjectInstanceID = Integer.parseInt(ic_object_instance_id);
     //List methodList = IBPropertyHandler.getInstance().getMethodsListOrdered(icObjectInstanceID,iwc);
     try{
@@ -84,22 +87,18 @@ public class IBPropertiesWindowList extends Page{
       Iterator iter = methodList.iterator();
       int counter=1;
       while (iter.hasNext()) {
-	if ( counter > 15 )
-	  table.setRows(counter);
-	//IWProperty methodProp = (IWProperty)iter.next();
 	IBPropertyDescription desc = (IBPropertyDescription)iter.next();
 	String methodIdentifier = desc.getMethodIdentifier();
 	String methodDescr = desc.getMethodDescription();
 
 	Link link = new Link(methodDescr);
 	  link.setStyle(STYLE_NAME);
-	/*link.setTarget(PROPERTY_FRAME);
-	link.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
-	link.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
-	link.maintainParameter(IB_PAGE_PARAMETER,iwc);
-	link.addParameter(METHOD_ID_PARAMETER,methodIdentifier);*/
+
 	link.setURL("javascript:parent."+PROPERTY_FRAME+"."+IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME+"('"+methodIdentifier+"')");
-	table.add(button,1,counter);
+	if ( BuilderLogic.getInstance().isPropertySet(pageKey,Integer.parseInt(ic_object_instance_id),methodIdentifier,iwc.getApplication()) )
+	  table.add(hoverButton,1,counter);
+	else
+	  table.add(button,1,counter);
 	table.add(link,2,counter);
 	counter++;
       }
@@ -135,12 +134,12 @@ public class IBPropertiesWindowList extends Page{
   }
 
   private void setStyles() {
-    String _linkStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000; text-decoration: none;";
-    String _linkHoverStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #000000; text-decoration: underline;";
+    String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
+    String _linkHoverStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#FF8008;text-decoration:none;";
     if ( getParentPage() != null ) {
-      getParentPage().setStyleDefinition("A."+STYLE_NAME+":link",_linkStyle);
-      getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
-      getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
+      getParentPage().setStyleDefinition("A."+STYLE_NAME,_linkStyle);
+      //getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
+      //getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
       getParentPage().setStyleDefinition("A."+STYLE_NAME+":hover",_linkHoverStyle);
     }
   }

@@ -128,7 +128,7 @@ public IBPropertiesWindow() {
       setAllMargins(0);
       Script script = this.getAssociatedScript();
       script.addFunction("doClose","function doClose(){doUpdate();parent.opener.location.reload();parent.close();}");
-      script.addFunction("doUpdate","function doUpdate(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();}");
+      script.addFunction("doUpdate","function doUpdate(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();top.ib_prop_win_middle.ib_prop_list_frame.location.reload();}");
 
     }
 
@@ -160,7 +160,7 @@ public IBPropertiesWindow() {
       //add(t);
       String title = iwc.getParameter(HEADER_TEXT_PARAMETER);
       if(title!=null){
-	super.addTitle(title,"font-family:Verdana,Arial,Helvetica,sans-serif;font-size:11pt;font-weight:bold;color:#FFFFFF;");
+	super.addTitle(title,"font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;");
       }
       else{
 	IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.27 2002/01/16 14:28:25 palli Exp $
+ * $Id: XMLWriter.java,v 1.28 2002/03/06 15:56:22 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -87,11 +87,11 @@ public class XMLWriter {
     boolean nameIsNull;
     if (id != null) {
       try {
-        int theID = Integer.parseInt(id);
-        //Hardcoded -1 for the top Page element
-        if (theID == -1) {
-          return getPageRootElement(xml);
-        }
+	int theID = Integer.parseInt(id);
+	//Hardcoded -1 for the top Page element
+	if (theID == -1) {
+	  return getPageRootElement(xml);
+	}
       }
       catch(NumberFormatException e){
 
@@ -108,31 +108,31 @@ public class XMLWriter {
     if(list !=null){
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
-        XMLElement element = (XMLElement)iter.next();
-        //if(element.getName().equals(name)||nameIsNull){
-          //List attributes = element.getAttributes();
-          //if(attributes!=null){
-          //Iterator iter2 = attributes.iterator();
-          //while (iter2.hasNext()){
-            XMLAttribute attr = element.getAttribute(XMLConstants.ID_STRING);
-            //XMLAttribute attr = (XMLAttribute)iter2.next();
-            //if(item2.getName().equals(ID_STRING)){
-              if(attr!=null){
-                if(attr.getValue().equals(id)){
-                  return element;
-                }
-              }
-            //}
-          //}
+	XMLElement element = (XMLElement)iter.next();
+	//if(element.getName().equals(name)||nameIsNull){
+	  //List attributes = element.getAttributes();
+	  //if(attributes!=null){
+	  //Iterator iter2 = attributes.iterator();
+	  //while (iter2.hasNext()){
+	    XMLAttribute attr = element.getAttribute(XMLConstants.ID_STRING);
+	    //XMLAttribute attr = (XMLAttribute)iter2.next();
+	    //if(item2.getName().equals(ID_STRING)){
+	      if(attr!=null){
+		if(attr.getValue().equals(id)){
+		  return element;
+		}
+	      }
+	    //}
+	  //}
 
-          //}
-        //}
-        //else{
-          XMLElement el = findXMLElementInside(xml,id,null,element);
-          if(el!=null){
-            return el;
-          }
-        //}
+	  //}
+	//}
+	//else{
+	  XMLElement el = findXMLElementInside(xml,id,null,element);
+	  if(el!=null){
+	    return el;
+	  }
+	//}
       }
     }
     return null;
@@ -154,11 +154,28 @@ public class XMLWriter {
     if(elementList!=null){
       Iterator iter = elementList.iterator();
       while (iter.hasNext()) {
-        XMLElement item = (XMLElement)iter.next();
-        if(hasPropertyElementSpecifiedValues(iwma,ICObjectInstanceID,item,values,true)) return item;
+	XMLElement item = (XMLElement)iter.next();
+	if(hasPropertyElementSpecifiedValues(iwma,ICObjectInstanceID,item,values,true)) return item;
       }
     }
     return null;
+  }
+
+
+
+  /**
+   * Returns true if properties changed, else false
+   */
+  static boolean isPropertySet(IWMainApplication iwma,IBXMLAble xml,int ICObjectInstanceId,String propertyName){
+    XMLElement module = findModule(xml,ICObjectInstanceId);
+    return isPropertySet(module,propertyName);
+  }
+
+  public static boolean isPropertySet(XMLElement parentElement,String propertyName) {
+    XMLElement element = findProperty(parentElement,propertyName);
+    if ( element != null )
+      return true;
+    return false;
   }
 
   /**
@@ -171,20 +188,20 @@ public class XMLWriter {
     Iterator iter = valueList.iterator();
     while(check && counter < values.length ){
       try{
-        String methodIdentifier = getPropertyNameForElement(propertyElement);
-        boolean isPrimaryKey = IBPropertyHandler.getInstance().isMethodParameterPrimaryKey(iwma,ICObjectInstanceID,methodIdentifier,counter);
-        XMLElement eValue = (XMLElement)iter.next();
-        if(withPrimaryKeyCheck){
-          if(isPrimaryKey){
-            if( ! eValue.getText().equals(values[counter])) check = false;
-          }
-        }
-        else{
-          if( ! eValue.getText().equals(values[counter])) check = false;
-        }
+	String methodIdentifier = getPropertyNameForElement(propertyElement);
+	boolean isPrimaryKey = IBPropertyHandler.getInstance().isMethodParameterPrimaryKey(iwma,ICObjectInstanceID,methodIdentifier,counter);
+	XMLElement eValue = (XMLElement)iter.next();
+	if(withPrimaryKeyCheck){
+	  if(isPrimaryKey){
+	    if( ! eValue.getText().equals(values[counter])) check = false;
+	  }
+	}
+	else{
+	  if( ! eValue.getText().equals(values[counter])) check = false;
+	}
       }
       catch(Exception e){
-        return false;
+	return false;
       }
       counter++;
     }
@@ -211,23 +228,23 @@ public class XMLWriter {
     if(elem != null){
       List properties = elem.getChildren();
       if(properties != null){
-        Iterator iter = properties.iterator();
-        while (iter.hasNext()) {
-          XMLElement pElement = (XMLElement)iter.next();
-          if(pElement!=null){
-            if(pElement.getName().equals(XMLConstants.PROPERTY_STRING)){
-              XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
-              if(name!=null){
-                if(name.getText().equals(propertyName)){
-                  if(theReturn==null){
-                    theReturn = new Vector();
-                  }
-                  theReturn.add(pElement);
-                }
-              }
-            }
-          }
-        }
+	Iterator iter = properties.iterator();
+	while (iter.hasNext()) {
+	  XMLElement pElement = (XMLElement)iter.next();
+	  if(pElement!=null){
+	    if(pElement.getName().equals(XMLConstants.PROPERTY_STRING)){
+	      XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
+	      if(name!=null){
+		if(name.getText().equals(propertyName)){
+		  if(theReturn==null){
+		    theReturn = new Vector();
+		  }
+		  theReturn.add(pElement);
+		}
+	      }
+	    }
+	  }
+	}
       }
     }
     return theReturn;
@@ -242,20 +259,20 @@ public class XMLWriter {
     if(elem != null){
       List properties = elem.getChildren();
       if(properties != null){
-        Iterator iter = properties.iterator();
-        while (iter.hasNext()) {
-          XMLElement pElement = (XMLElement)iter.next();
-          if(pElement!=null){
-            if(pElement.getName().equals(XMLConstants.PROPERTY_STRING)){
-              XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
-              if(name!=null){
-                if(name.getText().equals(propertyName)){
-                  return pElement;
-                }
-              }
-            }
-          }
-        }
+	Iterator iter = properties.iterator();
+	while (iter.hasNext()) {
+	  XMLElement pElement = (XMLElement)iter.next();
+	  if(pElement!=null){
+	    if(pElement.getName().equals(XMLConstants.PROPERTY_STRING)){
+	      XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
+	      if(name!=null){
+		if(name.getText().equals(propertyName)){
+		  return pElement;
+		}
+	      }
+	    }
+	  }
+	}
       }
     }
     return null;
@@ -272,20 +289,20 @@ public class XMLWriter {
       theReturn = new Vector();
       Iterator iter = propertyList.iterator();
       while (iter.hasNext()) {
-        XMLElement property = (XMLElement)iter.next();
-        if(property!=null){
-          List list = property.getChildren(XMLConstants.VALUE_STRING);
-          String[] array = new String[list.size()];
-          Iterator iter2 = list.iterator();
-          int counter = 0;
-          while (iter2.hasNext()) {
-            XMLElement el = (XMLElement)iter2.next();
-            String theString = el.getText();
-            array[counter]=theString;
-            counter++;
-          }
-          theReturn.add(array);
-        }
+	XMLElement property = (XMLElement)iter.next();
+	if(property!=null){
+	  List list = property.getChildren(XMLConstants.VALUE_STRING);
+	  String[] array = new String[list.size()];
+	  Iterator iter2 = list.iterator();
+	  int counter = 0;
+	  while (iter2.hasNext()) {
+	    XMLElement el = (XMLElement)iter2.next();
+	    String theString = el.getText();
+	    array[counter]=theString;
+	    counter++;
+	  }
+	  theReturn.add(array);
+	}
       }
     }
     return theReturn;
@@ -310,16 +327,16 @@ public class XMLWriter {
   public static boolean removeProperty(IWMainApplication iwma,IBXMLAble xml,int ICObjectInstanceId,String propertyName,String[] values){
       XMLElement module = findModule(xml,ICObjectInstanceId);
       if(module!=null){
-        XMLElement property = findProperty(iwma,ICObjectInstanceId,module,propertyName,values);
-        if(property!=null){
-          return module.removeContent(property);
-        }
-        else{
-          return false;
-        }
+	XMLElement property = findProperty(iwma,ICObjectInstanceId,module,propertyName,values);
+	if(property!=null){
+	  return module.removeContent(property);
+	}
+	else{
+	  return false;
+	}
       }
       else{
-        return false;
+	return false;
       }
   }
 
@@ -340,11 +357,11 @@ public class XMLWriter {
     for (int i = 0; i < propertyValues.length; i++) {
       String s = propertyValues[i];
       if(s==null){
-        return false;
+	return false;
       }
       else{
-        if(s.equals(EMPTY_STRING))
-          return false;
+	if(s.equals(EMPTY_STRING))
+	  return false;
       }
     }
     return true;
@@ -378,28 +395,28 @@ public class XMLWriter {
     else{
       List values = property.getChildren(XMLConstants.VALUE_STRING);
       if(values!=null){
-        Iterator iter = values.iterator();
-        int index = 0;
-        while (iter.hasNext()) {
+	Iterator iter = values.iterator();
+	int index = 0;
+	while (iter.hasNext()) {
 
-          String propertyValue = propertyValues[index];
-          XMLElement value = (XMLElement)iter.next();
-          String currentValue = value.getText();
-          if(!currentValue.equals(propertyValue)){
-            value.setText(propertyValue);
-            changed=true;
-          }
-          index++;
-        }
+	  String propertyValue = propertyValues[index];
+	  XMLElement value = (XMLElement)iter.next();
+	  String currentValue = value.getText();
+	  if(!currentValue.equals(propertyValue)){
+	    value.setText(propertyValue);
+	    changed=true;
+	  }
+	  index++;
+	}
       }
       else{
-        for (int index = 0; index < propertyValues.length; index++) {
-            String propertyValue = propertyValues[index];
-            XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
-            value.addContent(propertyValue);
-            property.addContent(value);
-            changed=true;
-        }
+	for (int index = 0; index < propertyValues.length; index++) {
+	    String propertyValue = propertyValues[index];
+	    XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
+	    value.addContent(propertyValue);
+	    property.addContent(value);
+	    changed=true;
+	}
 
       }
     }
@@ -418,8 +435,8 @@ public class XMLWriter {
       XMLElement type = new XMLElement(XMLConstants.TYPE_STRING);
       Object propertyValue = propertyValues[i];
       if(i==0){
-        element.addContent(name);
-        name.addContent(propertyName);
+	element.addContent(name);
+	name.addContent(propertyName);
       }
       element.addContent(value);
       element.addContent(type);
@@ -436,31 +453,31 @@ public class XMLWriter {
     //XMLElement parent = findModule(parentObjectInstanceID);
     if(parent!=null){
       try{
-        ICObjectInstance instance = new ICObjectInstance();
-        instance.setICObjectID(newICObjectTypeID);
-        instance.insert();
+	ICObjectInstance instance = new ICObjectInstance();
+	instance.setICObjectID(newICObjectTypeID);
+	instance.insert();
 
-        ICObject obj = new ICObject(newICObjectTypeID);
-        Class theClass = obj.getObjectClass();
+	ICObject obj = new ICObject(newICObjectTypeID);
+	Class theClass = obj.getObjectClass();
 
-        XMLElement newElement = new XMLElement(XMLConstants.MODULE_STRING);
-        XMLAttribute aId = new XMLAttribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
-        XMLAttribute aIcObjectId = new XMLAttribute(XMLConstants.IC_OBJECT_ID_STRING,Integer.toString(newICObjectTypeID));
-        XMLAttribute aClass = new XMLAttribute(XMLConstants.CLASS_STRING,theClass.getName());
+	XMLElement newElement = new XMLElement(XMLConstants.MODULE_STRING);
+	XMLAttribute aId = new XMLAttribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
+	XMLAttribute aIcObjectId = new XMLAttribute(XMLConstants.IC_OBJECT_ID_STRING,Integer.toString(newICObjectTypeID));
+	XMLAttribute aClass = new XMLAttribute(XMLConstants.CLASS_STRING,theClass.getName());
 
 //        newElement.addAttribute(aId);
 //        newElement.addAttribute(aIcObjectId);
 //        newElement.addAttribute(aClass);
-        newElement.setAttribute(aId);
-        newElement.setAttribute(aIcObjectId);
-        newElement.setAttribute(aClass);
+	newElement.setAttribute(aId);
+	newElement.setAttribute(aIcObjectId);
+	newElement.setAttribute(aClass);
 
-        parent.addContent(newElement);
+	parent.addContent(newElement);
 
       }
       catch(Exception e){
-        e.printStackTrace();
-        return false;
+	e.printStackTrace();
+	return false;
       }
 
       return true;
@@ -491,14 +508,14 @@ public class XMLWriter {
       addNewModule(region,newICObjectID);
       XMLElement parent = findModule(xml,parentObjectInstanceID);
       if (parent != null)
-        parent.addContent(region);
+	parent.addContent(region);
       else { //Þetta er í síðu sem extendar template
-        if (label != null) {
-          XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING,label);
+	if (label != null) {
+	  XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING,label);
 //          region.addAttribute(labelAttribute);
-          region.setAttribute(labelAttribute);
-        }
-        xml.getPageRootElement().addContent(region);
+	  region.setAttribute(labelAttribute);
+	}
+	xml.getPageRootElement().addContent(region);
       }
     }
     else{
@@ -548,12 +565,12 @@ public class XMLWriter {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if(parent!=null){
       try{
-        XMLElement module = findModule(xml,ICObjectInstanceID,parent);
-        return deleteModule(parent,module);
+	XMLElement module = findModule(xml,ICObjectInstanceID,parent);
+	return deleteModule(parent,module);
       }
       catch(Exception e){
-        e.printStackTrace();
-        return false;
+	e.printStackTrace();
+	return false;
       }
     }
     return false;
@@ -575,21 +592,21 @@ public class XMLWriter {
     else {
       int index = parentObjectInstanceID.indexOf(".");
       if (index != -1) {
-        XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
-        XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+	XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+	XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
 //        region.addAttribute(id);
-        region.setAttribute(id);
+	region.setAttribute(id);
 
-        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
-        XMLElement regionParent = findModule(xml,parentID);
-        if (regionParent != null)
-          regionParent.addContent(region);
+	int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+	XMLElement regionParent = findModule(xml,parentID);
+	if (regionParent != null)
+	  regionParent.addContent(region);
 
-        XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED,"true");
+	XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED,"true");
 //        region.addAttribute(lock);
-        region.setAttribute(lock);
+	region.setAttribute(lock);
 
-        return(true);
+	return(true);
       }
     }
 
@@ -629,21 +646,21 @@ public class XMLWriter {
     else {
       int index = parentObjectInstanceID.indexOf(".");
       if (index != -1) {
-        XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
-        XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+	XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+	XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
 //        region.addAttribute(id);
-        region.setAttribute(id);
+	region.setAttribute(id);
 
-        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
-        XMLElement regionParent = findModule(xml,parentID);
-        if (regionParent != null)
-          regionParent.addContent(region);
+	int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+	XMLElement regionParent = findModule(xml,parentID);
+	if (regionParent != null)
+	  regionParent.addContent(region);
 
-        XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED,"false");
+	XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED,"false");
 //        region.addAttribute(lock);
-        region.setAttribute(lock);
+	region.setAttribute(lock);
 
-        return(true);
+	return(true);
       }
     }
 
@@ -655,26 +672,26 @@ public class XMLWriter {
    *
    */
   private static boolean deleteModule(XMLElement parent,XMLElement child)throws Exception{
-        List children = getChildElements(child);
-        if(children!=null){
-          Iterator iter = children.iterator();
-          while (iter.hasNext()) {
-            XMLElement childchild = (XMLElement)iter.next();
-            deleteModule(child,childchild);
-          }
-          XMLAttribute attribute = child.getAttribute(XMLConstants.ID_STRING);
-          if(attribute!=null){
-            String ICObjectInstanceID = attribute.getValue();
-            try{
-              ICObjectInstance instance = new ICObjectInstance(Integer.parseInt(ICObjectInstanceID));
-              instance.delete();
-            }
-            catch(NumberFormatException e){
-            }
-          }
-        }
-        parent.removeContent(child);
-        return true;
+	List children = getChildElements(child);
+	if(children!=null){
+	  Iterator iter = children.iterator();
+	  while (iter.hasNext()) {
+	    XMLElement childchild = (XMLElement)iter.next();
+	    deleteModule(child,childchild);
+	  }
+	  XMLAttribute attribute = child.getAttribute(XMLConstants.ID_STRING);
+	  if(attribute!=null){
+	    String ICObjectInstanceID = attribute.getValue();
+	    try{
+	      ICObjectInstance instance = new ICObjectInstance(Integer.parseInt(ICObjectInstanceID));
+	      instance.delete();
+	    }
+	    catch(NumberFormatException e){
+	    }
+	  }
+	}
+	parent.removeContent(child);
+	return true;
   }
 
   /**
@@ -693,10 +710,10 @@ public class XMLWriter {
     while (iter.hasNext()) {
       XMLElement item = (XMLElement)iter.next();
       if(item.getName().equals(XMLConstants.REGION_STRING)){
-        children.addAll(getChildModules((XMLElement)item));
+	children.addAll(getChildModules((XMLElement)item));
       }
       else if(!item.getName().equals(XMLConstants.MODULE_STRING)){
-        iter.remove();
+	iter.remove();
       }
     }
     return children;
@@ -709,15 +726,15 @@ public class XMLWriter {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       if (label != null && !label.equals("")) {
-        XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING,label);
+	XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING,label);
 //        if (parent.getAttribute(XMLConstants.LABEL_STRING) != null)
 //          parent.removeAttribute(XMLConstants.LABEL_STRING);
 //        parent.addAttribute(labelAttribute);
-        parent.setAttribute(labelAttribute);
+	parent.setAttribute(labelAttribute);
       }
       else {
-        if (parent.getAttribute(XMLConstants.LABEL_STRING) != null)
-          parent.removeAttribute(XMLConstants.LABEL_STRING);
+	if (parent.getAttribute(XMLConstants.LABEL_STRING) != null)
+	  parent.removeAttribute(XMLConstants.LABEL_STRING);
       }
 
       return(true);
@@ -725,23 +742,23 @@ public class XMLWriter {
     else {
       int index = parentObjectInstanceID.indexOf(".");
       if (index != -1) {
-        if (label != null && !label.equals("")) {
-          XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
-          XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+	if (label != null && !label.equals("")) {
+	  XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+	  XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
 //          region.addAttribute(id);
-          region.setAttribute(id);
+	  region.setAttribute(id);
 
-          int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
-          XMLElement regionParent = findModule(xml,parentID);
-          if (regionParent != null)
-            regionParent.addContent(region);
+	  int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+	  XMLElement regionParent = findModule(xml,parentID);
+	  if (regionParent != null)
+	    regionParent.addContent(region);
 
-          XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING,label);
+	  XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING,label);
 //          region.addAttribute(labelAttribute);
-          region.setAttribute(labelAttribute);
+	  region.setAttribute(labelAttribute);
 
-          return(true);
-        }
+	  return(true);
+	}
       }
     }
 
@@ -755,12 +772,12 @@ public class XMLWriter {
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       try {
-        XMLElement module = findModule(xml,ICObjectInstanceID,parent);
-        return(copyModule(parent,module));
+	XMLElement module = findModule(xml,ICObjectInstanceID,parent);
+	return(copyModule(parent,module));
       }
       catch(Exception e) {
-        e.printStackTrace();
-        return(false);
+	e.printStackTrace();
+	return(false);
       }
     }
 
@@ -775,18 +792,18 @@ public class XMLWriter {
     if (children != null) {
       Iterator iter = children.iterator();
       while (iter.hasNext()) {
-        XMLElement childchild = (XMLElement)iter.next();
-        copyModule(child,childchild);
+	XMLElement childchild = (XMLElement)iter.next();
+	copyModule(child,childchild);
       }
       XMLAttribute attribute = child.getAttribute(XMLConstants.ID_STRING);
       if (attribute != null) {
-        String ICObjectInstanceID = attribute.getValue();
-        try {
-          ICObjectInstance instance = new ICObjectInstance(Integer.parseInt(ICObjectInstanceID));
-          instance.delete();
-        }
-        catch(NumberFormatException e){
-        }
+	String ICObjectInstanceID = attribute.getValue();
+	try {
+	  ICObjectInstance instance = new ICObjectInstance(Integer.parseInt(ICObjectInstanceID));
+	  instance.delete();
+	}
+	catch(NumberFormatException e){
+	}
       }
     }
 
@@ -818,20 +835,20 @@ public class XMLWriter {
     else {
       int index = parentObjectInstanceID.indexOf(".");
       if (index != -1) {
-        XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
-        XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
-        region.setAttribute(id);
+	XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+	XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+	region.setAttribute(id);
 
-        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
-        XMLElement regionParent = findModule(xml,parentID);
-        if (regionParent != null)
-          regionParent.addContent(region);
-        else
-          xml.getPageRootElement().addContent(region);
+	int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+	XMLElement regionParent = findModule(xml,parentID);
+	if (regionParent != null)
+	  regionParent.addContent(region);
+	else
+	  xml.getPageRootElement().addContent(region);
 
-        region.addContent(element);
+	region.addContent(element);
 
-        return(true);
+	return(true);
       }
     }
 
@@ -849,52 +866,52 @@ public class XMLWriter {
       List li = parent.getChildren();
       int index = -1;
       if (li != null) {
-        Iterator it = li.iterator();
-        while (it.hasNext()) {
-          XMLElement el = (XMLElement)it.next();
-          index++;
-          if (el.getName().equals(XMLConstants.MODULE_STRING)) {
-            XMLAttribute id = el.getAttribute(XMLConstants.ID_STRING);
-            if (id != null) {
-              if (id.getValue().equals(objectId))
-                break;
-            }
-          }
-        }
+	Iterator it = li.iterator();
+	while (it.hasNext()) {
+	  XMLElement el = (XMLElement)it.next();
+	  index++;
+	  if (el.getName().equals(XMLConstants.MODULE_STRING)) {
+	    XMLAttribute id = el.getAttribute(XMLConstants.ID_STRING);
+	    if (id != null) {
+	      if (id.getValue().equals(objectId))
+		break;
+	    }
+	  }
+	}
 
-        if (index != -1) {
-          parent.removeChildren();
-          it = li.iterator();
-          int counter = -1;
-          while (it.hasNext()) {
-            counter++;
-            if (counter == index)
-              parent.addContent(element);
-            XMLElement el = (XMLElement)it.next();
-            parent.addContent(el);
-          }
-        }
+	if (index != -1) {
+	  parent.removeChildren();
+	  it = li.iterator();
+	  int counter = -1;
+	  while (it.hasNext()) {
+	    counter++;
+	    if (counter == index)
+	      parent.addContent(element);
+	    XMLElement el = (XMLElement)it.next();
+	    parent.addContent(el);
+	  }
+	}
       }
       else
-        parent.addContent(element); //hmmmm
+	parent.addContent(element); //hmmmm
 
       return(true);
     }
 /*    else {
       int index = parentObjectInstanceID.indexOf(".");
       if (index != -1) {
-        XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
-        XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
-        region.setAttribute(id);
+	XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+	XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+	region.setAttribute(id);
 
-        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
-        XMLElement regionParent = findModule(xml,parentID);
-        if (regionParent != null)
-          regionParent.addContent(region);
+	int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+	XMLElement regionParent = findModule(xml,parentID);
+	if (regionParent != null)
+	  regionParent.addContent(region);
 
-        region.addContent(element);
+	region.addContent(element);
 
-        return(true);
+	return(true);
       }
     }*/
 
@@ -919,40 +936,40 @@ public class XMLWriter {
 
       List childs = element.getChildren(XMLConstants.MODULE_STRING);
       if (childs != null) {
-        Iterator it = childs.iterator();
-        while (it.hasNext()) {
-          XMLElement child = (XMLElement)it.next();
-          if (!changeModuleIds(child))
-            return(false);
-        }
+	Iterator it = childs.iterator();
+	while (it.hasNext()) {
+	  XMLElement child = (XMLElement)it.next();
+	  if (!changeModuleIds(child))
+	    return(false);
+	}
       }
 
       childs = element.getChildren(XMLConstants.REGION_STRING);
       if (childs != null) {
-        Iterator it = childs.iterator();
-        while (it.hasNext()) {
-          XMLElement el = (XMLElement)it.next();
-          XMLAttribute regionId = el.getAttribute(XMLConstants.ID_STRING);
-          if (regionId != null) {
-            String regId = regionId.getValue();
-            int index = regId.indexOf(".");
-            if (index > -1) {
-              String sub = regId.substring(index);
-              sub = moduleId + sub;
-              regionId = new XMLAttribute(XMLConstants.ID_STRING,sub);
-              el.setAttribute(regionId);
-            }
-          }
-          List childs2 = el.getChildren(XMLConstants.MODULE_STRING);
-          if (childs2 != null) {
-            Iterator it2 = childs2.iterator();
-            while (it2.hasNext()) {
-              XMLElement child = (XMLElement)it2.next();
-              if (!changeModuleIds(child))
-                return(false);
-            }
-          }
-        }
+	Iterator it = childs.iterator();
+	while (it.hasNext()) {
+	  XMLElement el = (XMLElement)it.next();
+	  XMLAttribute regionId = el.getAttribute(XMLConstants.ID_STRING);
+	  if (regionId != null) {
+	    String regId = regionId.getValue();
+	    int index = regId.indexOf(".");
+	    if (index > -1) {
+	      String sub = regId.substring(index);
+	      sub = moduleId + sub;
+	      regionId = new XMLAttribute(XMLConstants.ID_STRING,sub);
+	      el.setAttribute(regionId);
+	    }
+	  }
+	  List childs2 = el.getChildren(XMLConstants.MODULE_STRING);
+	  if (childs2 != null) {
+	    Iterator it2 = childs2.iterator();
+	    while (it2.hasNext()) {
+	      XMLElement child = (XMLElement)it2.next();
+	      if (!changeModuleIds(child))
+		return(false);
+	    }
+	  }
+	}
       }
 
       return(true);
