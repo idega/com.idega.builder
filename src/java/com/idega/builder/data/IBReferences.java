@@ -57,8 +57,9 @@ public class IBReferences {
 			return null;
 		}
 		String name = metaDataFileElement.getTextTrim(XMLConstants.FILE_NAME);
+		String parameterId = metaDataFileElement.getTextTrim(XMLConstants.FILE_PARAMETER_ID);
 		String value = metaDataFileElement.getTextTrim(XMLConstants.FILE_VALUE);
-		IBReference.Entry entry = reference.getReferenceByName(name);
+		IBReference.Entry entry = reference.getReferenceByName(name, parameterId);
 		return entry.createSource(value);
 	}
 		

@@ -1,11 +1,8 @@
 package com.idega.builder.data;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -18,6 +15,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.io.export.Storable;
 import com.idega.io.export.StorableProvider;
 import com.idega.presentation.IWContext;
+import com.idega.util.datastructures.HashMatrix;
 import com.idega.xml.XMLElement;
 
 /**
@@ -32,7 +30,7 @@ import com.idega.xml.XMLElement;
 public class IBReference {
 	
 	protected IWContext iwc = null;
-	private Map nameEntries = null;
+	private HashMatrix nameParameterEntries = null;
 	protected String moduleClass = null;
 
 	public IBReference(XMLElement moduleElement, IWContext iwc) {
@@ -40,12 +38,12 @@ public class IBReference {
 		initialize(moduleElement);
 	}
 	
-	public Collection getEntries() {
-		return (nameEntries == null) ? null : nameEntries.values();
+	public List getEntries() {
+		return (nameParameterEntries == null) ? null : nameParameterEntries.getCopiedListOfValues();
 	}
 	
-	public IBReference.Entry getReferenceByName(String name) {
-		return (IBReference.Entry) ((nameEntries == null) ? null : nameEntries.get(name));
+	public IBReference.Entry getReferenceByName(String name, String parameterId) {
+		return (IBReference.Entry) ((nameParameterEntries == null) ? null : nameParameterEntries.get(name, parameterId));
 	}
 	
 	public String getModuleClass() {
@@ -54,15 +52,21 @@ public class IBReference {
 
 	
 	private void initialize(XMLElement moduleElement) {
-		nameEntries = new HashMap();
+		nameParameterEntries = new HashMatrix();
 		moduleClass = moduleElement.getAttributeValue(XMLConstants.EXPORT_MODULE_CLASS);
 		List properties = moduleElement.getChildren(XMLConstants.EXPORT_PROPERTY);
 		Iterator propertiesIterator = properties.iterator(); 
 		while (propertiesIterator.hasNext()) {
 			XMLElement propertyElement = (XMLElement) propertiesIterator.next();
-			IBReference.Entry entry = new IBReference.Entry();
-			entry.initialize(propertyElement);
-			nameEntries.put(entry.getValueName(), entry);
+			String propertyName =  propertyElement.getTextTrim(XMLConstants.EXPORT_PROPERTY_NAME);
+			List parameters = propertyElement.getChildren(XMLConstants.EXPORT_PROPERTY_PARAMETER);
+			Iterator parameterIterator = parameters.iterator();
+			while (parameterIterator.hasNext()) {
+				XMLElement parameterElement = (XMLElement) parameterIterator.next();
+				IBReference.Entry entry = new IBReference.Entry();
+				entry.initialize(propertyName, parameterElement);
+				nameParameterEntries.put(entry.getValueName(), entry.getParameterId(), entry);
+			}
 		}
 	}
 	
@@ -70,21 +74,27 @@ public class IBReference {
 		
 	public class Entry {	
 		
+		private String parameterId = null;
 		private String valueName = null;
 		private String sourceClassName = null;
 		private String providerClassName = null;
 		private boolean isEjb = false;
 		
-		public void initialize(XMLElement propertyElement) {
-			valueName = propertyElement.getTextTrim(XMLConstants.EXPORT_PROPERTY_NAME);
-			sourceClassName = propertyElement.getTextTrim(XMLConstants.EXPORT_SOURCE);
-			XMLElement providerElement = propertyElement.getChild(XMLConstants.EXPORT_PROVIDER);
+		public void initialize(String propertyName, XMLElement parameterElement) {
+			valueName = propertyName;
+			parameterId = parameterElement.getAttributeValue(XMLConstants.EXPORT_PROPERTY_PARAMETER_ID);
+			sourceClassName = parameterElement.getTextTrim(XMLConstants.EXPORT_SOURCE);
+			XMLElement providerElement = parameterElement.getChild(XMLConstants.EXPORT_PROVIDER);
 			isEjb = (new Boolean(providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_EJB))).booleanValue();
 			providerClassName = providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_CLASS);
 		}
 		
 		public String getModuleClass() {
 			return moduleClass;
+		}
+		
+		public String getParameterId() {
+			return parameterId;
 		}
 		
 		public void addSource(XMLElement moduleElement, IBExportImportData metadata) throws IOException {
@@ -94,8 +104,12 @@ public class IBReference {
 				XMLElement propertyElement = (XMLElement) iterator.next();
 				String valueName = propertyElement.getTextTrim(XMLConstants.NAME_STRING);
 				if (this.valueName.equalsIgnoreCase(valueName)) {
-					// right propertyElement has been found
-					String value = propertyElement.getTextTrim(XMLConstants.VALUE_STRING);
+					// right propertyElement has been found, now get the right value (properties can have more than one value)
+					List valueElements = propertyElement.getChildren(XMLConstants.VALUE_STRING);
+					// index starts at zero 
+					int index = Integer.parseInt(parameterId);
+					XMLElement valueElement = (XMLElement) valueElements.get(--index);
+					String value = valueElement.getTextTrim();
 					Storable storable = null;
 					if (isEjb) {
 						storable = getSourceFromPropertyElementUsingEjb(value);

@@ -56,6 +56,7 @@ public class IBExportImportData implements Storable {
 	protected List pageIds = null;
 
 	private static String PAGE_PRIMARY_KEY = "page_primary_key";
+	private static String PAGE_PARAMETER_ID = "1";
 	private static String SOURCE_CLASS_FOR_PAGE;
 	
 	static {
@@ -164,6 +165,7 @@ public class IBExportImportData implements Storable {
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
 		fileElement.addContent(XMLConstants.FILE_MODULE, entry.getModuleClass());
 		fileElement.addContent(XMLConstants.FILE_NAME, entry.getValueName());
+		fileElement.addContent(XMLConstants.FILE_PARAMETER_ID, entry.getParameterId());
 		fileElement.addContent(XMLConstants.FILE_SOURCE, entry.getSourceClass());
 		fileElement.addContent(XMLConstants.FILE_VALUE, value);
 		fileElements.add(fileElement);
@@ -174,6 +176,7 @@ public class IBExportImportData implements Storable {
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
 		fileElement.addContent(XMLConstants.FILE_MODULE, SOURCE_CLASS_FOR_PAGE);
 		fileElement.addContent(XMLConstants.FILE_NAME, PAGE_PRIMARY_KEY);
+		fileElement.addContent(XMLConstants.FILE_PARAMETER_ID, PAGE_PARAMETER_ID);
 		fileElement.addContent(XMLConstants.FILE_SOURCE, SOURCE_CLASS_FOR_PAGE);
 		fileElement.addContent(XMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
 		fileElements.add(fileElement);
