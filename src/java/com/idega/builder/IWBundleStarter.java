@@ -11,7 +11,6 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewManager;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
@@ -54,7 +53,7 @@ public class IWBundleStarter implements IWBundleStartable {
 			IWMainApplication iwma = starterBundle.getApplication();
 			//IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			ViewManager viewManager = ViewManager.getInstance(iwma);
-			DefaultViewNode pagesViewNode = new BuilderRootViewNode("pages",viewManager.getApplicationRoot());
+			/*DefaultViewNode pagesViewNode = */new BuilderRootViewNode("pages",viewManager.getApplicationRoot());
 		}
 		
 	}
