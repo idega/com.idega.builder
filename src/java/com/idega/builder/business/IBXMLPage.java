@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.26 2001/11/02 17:51:40 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.27 2001/11/03 13:05:50 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -239,8 +239,28 @@ public class IBXMLPage {
     try{
       return getIBPage().getName();
     }
-    catch(Exception e){
+    catch(Exception e) {
       return "";
+    }
+  }
+
+  public int getTemplateId() {
+    try {
+      return(getIBPage().getTemplateId());
+    }
+    catch(Exception e){
+      return -1;
+    }
+  }
+
+  public void setTemplateId(int id) {
+    try {
+      IBPage page = getIBPage();
+      page.setTemplateId(id);
+      page.update();
+    }
+    catch(Exception e) {
+      e.printStackTrace();
     }
   }
 

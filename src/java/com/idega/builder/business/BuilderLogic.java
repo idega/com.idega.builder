@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.74 2001/11/02 11:35:44 palli Exp $
+ * $Id: BuilderLogic.java,v 1.75 2001/11/03 13:05:50 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -172,13 +172,13 @@ public class BuilderLogic {
     if (page.getIsExtendingTemplate()) {
       if (!page.isLocked()) {
         page.add(getAddIcon(Integer.toString(-1),iwc,null));
-        page.add(getPasteIcon(Integer.toString(-1),iwc));
+//        page.add(getPasteIcon(Integer.toString(-1),iwc));
         //page.add(layer);
       }
     }
     else {
       page.add(getAddIcon(Integer.toString(-1),iwc,null));
-      page.add(getPasteIcon(Integer.toString(-1),iwc));
+//      page.add(getPasteIcon(Integer.toString(-1),iwc));
       if (page.getIsTemplate())
         if (page.isLocked())
           page.add(getLockedIcon(Integer.toString(-1),iwc,null));
@@ -325,12 +325,12 @@ public class BuilderLogic {
               if (tab.getBelongsToParent()) {
                 if (!tab.isLocked(x,y)) {
                   tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                  tab.add(getPasteIcon(newParentKey,iwc),x,y);
+//                  tab.add(getPasteIcon(newParentKey,iwc),x,y);
                 }
               }
               else {
                 tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                tab.add(getPasteIcon(newParentKey,iwc),x,y);
+//                tab.add(getPasteIcon(newParentKey,iwc),x,y);
                 if (curr.getIsTemplate()) {
                   tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                   if (tab.isLocked(x,y))
@@ -342,7 +342,7 @@ public class BuilderLogic {
             }
             else {
               tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-              tab.add(getPasteIcon(newParentKey,iwc),x,y);
+//              tab.add(getPasteIcon(newParentKey,iwc),x,y);
               if (curr.getIsTemplate()) {
                 tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                 if (tab.isLocked(x,y))
@@ -380,12 +380,12 @@ public class BuilderLogic {
             if (obj.getBelongsToParent()) {
               if (!((PresentationObjectContainer)obj).isLocked()) {
                 ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-                ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+//                ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               }
             }
             else {
               ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-              ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+//              ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (curr.getIsTemplate()) {
                 ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
                 if (!((PresentationObjectContainer)obj).isLocked())
@@ -397,7 +397,7 @@ public class BuilderLogic {
           }
           else {
             ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-            ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+//            ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             if (curr.getIsTemplate()) {
               ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
               if (!((PresentationObjectContainer)obj).isLocked())
@@ -662,15 +662,15 @@ public class BuilderLogic {
           separator.setWidth("100%");
           separator.setHeight(2);
 
-        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",null,2,1);
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
-        table.add(separator,2,3);
-        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
-        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
+//        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+//        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",null,2,1);
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,1);
+        table.add(separator,2,2);
+        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,3);
+        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,3);
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,4);
 
         table.setColumnColor(1,"#D8D8D1");
         table.setColumnColor(2,"#F9F8F7");
@@ -1003,7 +1003,7 @@ public class BuilderLogic {
     return IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id;
   }
 
-  public void updateName(String name, IWContext iwc) {
+  public void changeName(String name, IWContext iwc) {
     IBXMLPage xml = getCurrentIBXMLPage(iwc);
     if (xml != null) {
       if (!xml.getName().equals(name)) {
@@ -1030,8 +1030,25 @@ public class BuilderLogic {
     }
   }
 
-  public void updateTemplate(String templateId, IWContext iwc) {
+  /**
+   * @todo make this work for templates!
+   */
+  public void changeTemplateId(String templateId, IWContext iwc) {
+    IBXMLPage xml = getCurrentIBXMLPage(iwc);
+    if (xml != null) {
+      if (xml.getType().equals(IBXMLPage.TYPE_PAGE)) {
+        int newId = Integer.parseInt(templateId);
+        int oldId = xml.getTemplateId();
+        if (newId != oldId) {
+          xml.setTemplateId(newId);
 
+          String currentPageId = getCurrentIBPage(iwc);
+          setTemplateId(currentPageId,Integer.toString(newId));
+          getIBXMLPage(newId).addUsingTemplate(currentPageId);
+          getIBXMLPage(oldId).removeUsingTemplate(currentPageId);
+        }
+      }
+    }
   }
 
 }
