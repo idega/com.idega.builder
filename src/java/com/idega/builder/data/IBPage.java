@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.37 2002/04/03 12:29:16 gummi Exp $
+ * $Id: IBPage.java,v 1.38 2002/04/03 12:44:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -462,6 +462,13 @@ public class IBPage extends TreeableEntity {
   /**
    *
    */
+  public void setIsFolder() {
+    setType(FOLDER);
+  }
+
+  /**
+   *
+   */
   public boolean isPage() {
     String type = getType();
     if (type.equals(PAGE))
@@ -495,6 +502,17 @@ public class IBPage extends TreeableEntity {
   /**
    *
    */
+  public boolean isFolder() {
+    String type = getType();
+    if (type.equals(FOLDER))
+      return(true);
+    else
+      return(false);
+  }
+
+  /**
+   *
+   */
   public boolean isDynamicTriggeredPage() {
     String type = getType();
     if (type.equals(DPT_PAGE))
@@ -514,9 +532,14 @@ public class IBPage extends TreeableEntity {
       return(false);
   }
 
-
+  /**
+   *
+   */
   public boolean isLeaf(){
-    return true;
+    if (getType().equals(FOLDER))
+      return false;
+    else
+      return true;
   }
 
   public void setOwner(IWUserContext iwuc){
