@@ -181,8 +181,15 @@ public class DPTTriggerBusiness {
     BuilderLogic instance = BuilderLogic.getInstance();
 
     Map tree = PageTreeNode.getTree(iwc);
-    IBPage page = IBPageHelper.createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree);
+    int id = IBPageHelper.createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree);
 
+    IBPage page = null;
+    try {
+      page = new IBPage(id);
+    }
+    catch(SQLException e) {
+
+    }
 /*    IBPage page = new IBPage();
     if (name == null){
       name = "Untitled";
@@ -200,10 +207,10 @@ public class DPTTriggerBusiness {
       return(-1);
     }
 */
-    copyPagePermissions(Integer.toString(dptTemplateId), Integer.toString(page.getID()));
+    copyPagePermissions(Integer.toString(dptTemplateId), Integer.toString(id));
 
 
-    createdPages.put(Integer.toString(dptTemplateId),Integer.toString(page.getID()));
+    createdPages.put(Integer.toString(dptTemplateId),Integer.toString(id));
 /*
     instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
     IBXMLPage ibxmlPage =  instance.getIBXMLPage(dptTemplateId);
@@ -211,7 +218,7 @@ public class DPTTriggerBusiness {
 
 */
 
-    IBXMLPage currentXMLPage = instance.getIBXMLPage(page.getID());
+    IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
     Page current = currentXMLPage.getPopulatedPage();
     List children = current.getAllContainedObjectsRecursive();
 
@@ -239,7 +246,7 @@ public class DPTTriggerBusiness {
           }
         }
       }
-      String pageIDString = Integer.toString(page.getID());
+      String pageIDString = Integer.toString(id);
       iter = children.iterator();
       while(iter.hasNext()){
         Link item = (Link)iter.next();
@@ -251,7 +258,7 @@ public class DPTTriggerBusiness {
           if(subpageName == null){
             subpageName = "Untitled";
           }
-          int newID = this.createPage(iwc,templateId, page.getID(), subpageName,createdPages);
+          int newID = this.createPage(iwc,templateId, id, subpageName,createdPages);
           instance.changeLinkPageId(item,pageIDString,Integer.toString(newID));
         } else {
           instance.changeLinkPageId(item,pageIDString,createdPage);
@@ -259,7 +266,7 @@ public class DPTTriggerBusiness {
       }
     }
 
-    return page.getID();
+    return id;
   }
 
 
