@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.100 2002/02/14 16:51:42 palli Exp $
+ * $Id: BuilderLogic.java,v 1.101 2002/02/22 12:39:01 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -140,29 +140,29 @@ public class BuilderLogic {
     try {
       boolean permissionview = false;
       if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
-        permissionview = true;
+	permissionview = true;
       }
 
       Page page = PageCacher.getPage(Integer.toString(id),iwc);
       if (builderview && iwc.hasEditPermission(page)) {
-        return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,iwc));
+	return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,iwc));
       }
       else if(permissionview) {
-        int groupId = -1906;
-        String bla = iwc.getParameter("ic_pm");
-        if (bla != null) {
-          try {
-            groupId = Integer.parseInt(bla);
-          }
-          catch (NumberFormatException ex) {
+	int groupId = -1906;
+	String bla = iwc.getParameter("ic_pm");
+	if (bla != null) {
+	  try {
+	    groupId = Integer.parseInt(bla);
+	  }
+	  catch (NumberFormatException ex) {
 
-          }
-        }
-        page = PageCacher.getPage(Integer.toString(id));
-        return(BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id),page,iwc));
+	  }
+	}
+	page = PageCacher.getPage(Integer.toString(id));
+	return(BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id),page,iwc));
       }
       else {
-        return(page);
+	return(page);
       }
     }
     catch(Exception e) {
@@ -182,9 +182,9 @@ public class BuilderLogic {
       ListIterator iter = list.listIterator();
       PresentationObjectContainer parent = page;
       while (iter.hasNext()) {
-        int index = iter.nextIndex();
-        PresentationObject item = (PresentationObject)iter.next();
-        transformObject(pageKey,item,index,parent,"-1",iwc);
+	int index = iter.nextIndex();
+	PresentationObject item = (PresentationObject)iter.next();
+	transformObject(pageKey,item,index,parent,"-1",iwc);
       }
     }
 
@@ -196,21 +196,21 @@ public class BuilderLogic {
     //"-1" is identified as the top page object (parent)
     if (page.getIsExtendingTemplate()) {
       if (!page.isLocked()) {
-        page.add(getAddIcon(Integer.toString(-1),iwc,null));
-        if (!clipboardEmpty)
-          page.add(getPasteIcon(Integer.toString(-1),iwc));
-        //page.add(layer);
+	page.add(getAddIcon(Integer.toString(-1),iwc,null));
+	if (!clipboardEmpty)
+	  page.add(getPasteIcon(Integer.toString(-1),iwc));
+	//page.add(layer);
       }
     }
     else {
       page.add(getAddIcon(Integer.toString(-1),iwc,null));
       if (!clipboardEmpty)
-        page.add(getPasteIcon(Integer.toString(-1),iwc));
+	page.add(getPasteIcon(Integer.toString(-1),iwc));
       if (page.getIsTemplate())
-        if (page.isLocked())
-          page.add(getLockedIcon(Integer.toString(-1),iwc,null));
-        else
-          page.add(getUnlockedIcon(Integer.toString(-1),iwc));
+	if (page.isLocked())
+	  page.add(getLockedIcon(Integer.toString(-1),iwc,null));
+	else
+	  page.add(getUnlockedIcon(Integer.toString(-1),iwc));
       //page.add(layer);
     }
 
@@ -221,28 +221,28 @@ public class BuilderLogic {
       List groupIds = new Vector();
       groupIds.add(Integer.toString(groupId));
       try {
-        List groups = AccessControl.getPermissionGroups(new GenericGroup(groupId));
-        if(groups != null){
-          Iterator iter = groups.iterator();
-          while (iter.hasNext()) {
-            com.idega.core.data.GenericGroup item = (GenericGroup)iter.next();
-            groupIds.add(Integer.toString(item.getID()));
-          }
-        }
+	List groups = AccessControl.getPermissionGroups(new GenericGroup(groupId));
+	if(groups != null){
+	  Iterator iter = groups.iterator();
+	  while (iter.hasNext()) {
+	    com.idega.core.data.GenericGroup item = (GenericGroup)iter.next();
+	    groupIds.add(Integer.toString(item.getID()));
+	  }
+	}
       }
       catch (Exception ex) {
       }
 
       List list = page.getAllContainingObjects();
       if(list != null){
-        ListIterator iter = list.listIterator();
-        while (iter.hasNext()) {
-          int index = iter.nextIndex();
-          Object item = iter.next();
-          if(item instanceof PresentationObject){
-            filterForPermission(groupIds,(PresentationObject)item,page,index,iwc);
-          }
-        }
+	ListIterator iter = list.listIterator();
+	while (iter.hasNext()) {
+	  int index = iter.nextIndex();
+	  Object item = iter.next();
+	  if(item instanceof PresentationObject){
+	    filterForPermission(groupIds,(PresentationObject)item,page,index,iwc);
+	  }
+	}
       }
 
       return page;
@@ -255,37 +255,37 @@ public class BuilderLogic {
       parentObject.getAllContainingObjects().add(index,PresentationObject.NULL_CLONE_OBJECT);
     }else if(obj instanceof PresentationObjectContainer){
       if(obj instanceof Table){
-        Table tab = (Table)obj;
-        int cols = tab.getColumns();
-        int rows = tab.getRows();
-        for (int x=1;x<=cols ;x++ ) {
-          for (int y=1;y<=rows ;y++ ) {
-            PresentationObjectContainer moc = tab.containerAt(x,y);
-            if(moc!=null){
-              List l = moc.getAllContainingObjects();
-              if(l != null){
-                ListIterator iterT = l.listIterator();
-                while (iterT.hasNext()) {
-                  int index2 = iterT.nextIndex();
-                  Object itemT = iterT.next();
-                  if(itemT instanceof PresentationObject){
-                    filterForPermission(groupIds,(PresentationObject)itemT,moc,index2,iwc);
-                  }
-                }
-              }
-            }
-          }
-        }
+	Table tab = (Table)obj;
+	int cols = tab.getColumns();
+	int rows = tab.getRows();
+	for (int x=1;x<=cols ;x++ ) {
+	  for (int y=1;y<=rows ;y++ ) {
+	    PresentationObjectContainer moc = tab.containerAt(x,y);
+	    if(moc!=null){
+	      List l = moc.getAllContainingObjects();
+	      if(l != null){
+		ListIterator iterT = l.listIterator();
+		while (iterT.hasNext()) {
+		  int index2 = iterT.nextIndex();
+		  Object itemT = iterT.next();
+		  if(itemT instanceof PresentationObject){
+		    filterForPermission(groupIds,(PresentationObject)itemT,moc,index2,iwc);
+		  }
+		}
+	      }
+	    }
+	  }
+	}
       } else{
-        List list = ((PresentationObjectContainer)obj).getAllContainingObjects();
-        if(list!=null){
-          ListIterator iter = list.listIterator();
-          while (iter.hasNext()) {
-            int index2 = iter.nextIndex();
-            PresentationObject item = (PresentationObject)iter.next();
-            filterForPermission(groupIds,item,(PresentationObjectContainer)obj,index2,iwc);
-          }
-        }
+	List list = ((PresentationObjectContainer)obj).getAllContainingObjects();
+	if(list!=null){
+	  ListIterator iter = list.listIterator();
+	  while (iter.hasNext()) {
+	    int index2 = iter.nextIndex();
+	    PresentationObject item = (PresentationObject)iter.next();
+	    filterForPermission(groupIds,item,(PresentationObjectContainer)obj,index2,iwc);
+	  }
+	}
       }
     }
   }
@@ -308,21 +308,21 @@ public class BuilderLogic {
       String sessionID="ic_"+ICObjectIntanceID;
       String session_image_id = (String)iwc.getSessionAttribute(sessionID);
       if(session_image_id!=null){
-        int image_id = Integer.parseInt(session_image_id);
-        /**
-         * @todo
-         * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
-         */
-        processImageSet(pageKey,ICObjectIntanceID,image_id,iwc.getApplication());
-        iwc.removeSessionAttribute(sessionID);
-        imageObj.setImageID(image_id);
+	int image_id = Integer.parseInt(session_image_id);
+	/**
+	 * @todo
+	 * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
+	 */
+	processImageSet(pageKey,ICObjectIntanceID,image_id,iwc.getApplication());
+	iwc.removeSessionAttribute(sessionID);
+	imageObj.setImageID(image_id);
       }
       inserter = new com.idega.block.media.presentation.ImageInserter();
       inserter.setHasUseBox(false);
       inserter.limitImageWidth(false);
       int image_id=imageObj.getImageID(iwc);
       if(image_id!=-1){
-        inserter.setImageId(image_id);
+	inserter.setImageId(image_id);
       }
 
       inserter.setImSessionImageName(sessionID);
@@ -340,119 +340,119 @@ public class BuilderLogic {
     }
     else if(obj instanceof PresentationObjectContainer){
       if(obj instanceof Table){
-        Table tab = (Table)obj;
-        tab.setBorder(1);
-        int cols = tab.getColumns();
-        int rows = tab.getRows();
-        for (int x=1;x<=cols ;x++ ) {
-          for (int y=1;y<=rows ;y++ ) {
-            PresentationObjectContainer moc = tab.containerAt(x,y);
-            String newParentKey = obj.getICObjectInstanceID()+"."+x+"."+y;
-            if(moc!=null){
-              transformObject(pageKey,moc,-1,tab,newParentKey,iwc);
-            }
+	Table tab = (Table)obj;
+	tab.setBorder(1);
+	int cols = tab.getColumns();
+	int rows = tab.getRows();
+	for (int x=1;x<=cols ;x++ ) {
+	  for (int y=1;y<=rows ;y++ ) {
+	    PresentationObjectContainer moc = tab.containerAt(x,y);
+	    String newParentKey = obj.getICObjectInstanceID()+"."+x+"."+y;
+	    if(moc!=null){
+	      transformObject(pageKey,moc,-1,tab,newParentKey,iwc);
+	    }
 
-            Page curr = PageCacher.getPage(getCurrentIBPage(iwc),iwc);
-            if (curr.getIsExtendingTemplate()) {
-              if (tab.getBelongsToParent()) {
-                if (!tab.isLocked(x,y)) {
-                  tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                  if (!clipboardEmpty)
-                    tab.add(getPasteIcon(newParentKey,iwc),x,y);
-                }
-              }
-              else {
-                tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                if (!clipboardEmpty)
-                  tab.add(getPasteIcon(newParentKey,iwc),x,y);
-                if (curr.getIsTemplate()) {
-                  tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                  if (tab.isLocked(x,y))
-                    tab.add(getLockedIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                  else
-                    tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
-                }
-              }
-            }
-            else {
-              tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-              if (!clipboardEmpty)
-                tab.add(getPasteIcon(newParentKey,iwc),x,y);
-              if (curr.getIsTemplate()) {
-                tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                if (tab.isLocked(x,y))
-                  tab.add(getLockedIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                else
-                  tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
-              }
-            }
-          }
-        }
+	    Page curr = PageCacher.getPage(getCurrentIBPage(iwc),iwc);
+	    if (curr.getIsExtendingTemplate()) {
+	      if (tab.getBelongsToParent()) {
+		if (!tab.isLocked(x,y)) {
+		  tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
+		  if (!clipboardEmpty)
+		    tab.add(getPasteIcon(newParentKey,iwc),x,y);
+		}
+	      }
+	      else {
+		tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
+		if (!clipboardEmpty)
+		  tab.add(getPasteIcon(newParentKey,iwc),x,y);
+		if (curr.getIsTemplate()) {
+		  tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
+		  if (tab.isLocked(x,y))
+		    tab.add(getLockedIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
+		  else
+		    tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
+		}
+	      }
+	    }
+	    else {
+	      tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
+	      if (!clipboardEmpty)
+		tab.add(getPasteIcon(newParentKey,iwc),x,y);
+	      if (curr.getIsTemplate()) {
+		tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
+		if (tab.isLocked(x,y))
+		  tab.add(getLockedIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
+		else
+		  tab.add(getUnlockedIcon(newParentKey,iwc),x,y);
+	      }
+	    }
+	  }
+	}
       }
       else{
-        List list = ((PresentationObjectContainer)obj).getAllContainingObjects();
-        if(list!=null){
-          ListIterator iter = list.listIterator();
-          while (iter.hasNext()) {
-            int index2 = iter.nextIndex();
-            PresentationObject item = (PresentationObject)iter.next();
-            /**
-             * If parent is Table
-             */
-            if(index==-1){
-                transformObject(pageKey,item,index2,(PresentationObjectContainer)obj,parentKey,iwc);
-            }
-            else{
-              String newParentKey = Integer.toString(obj.getICObjectInstanceID());
-              transformObject(pageKey,item,index2,(PresentationObjectContainer)obj,newParentKey,iwc);
-            }
-          }
-        }
+	List list = ((PresentationObjectContainer)obj).getAllContainingObjects();
+	if(list!=null){
+	  ListIterator iter = list.listIterator();
+	  while (iter.hasNext()) {
+	    int index2 = iter.nextIndex();
+	    PresentationObject item = (PresentationObject)iter.next();
+	    /**
+	     * If parent is Table
+	     */
+	    if(index==-1){
+		transformObject(pageKey,item,index2,(PresentationObjectContainer)obj,parentKey,iwc);
+	    }
+	    else{
+	      String newParentKey = Integer.toString(obj.getICObjectInstanceID());
+	      transformObject(pageKey,item,index2,(PresentationObjectContainer)obj,newParentKey,iwc);
+	    }
+	  }
+	}
 
-        if (index != -1) {
-          Page curr = PageCacher.getPage(getCurrentIBPage(iwc),iwc);
-          if (curr.getIsExtendingTemplate()) {
-            if (obj.getBelongsToParent()) {
-              if (!((PresentationObjectContainer)obj).isLocked()) {
-                ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-                if (!clipboardEmpty)
-                  ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
-              }
-            }
-            else {
-              ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-              if (!clipboardEmpty)
-                ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
-              if (curr.getIsTemplate()) {
-                ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-                if (!((PresentationObjectContainer)obj).isLocked())
-                  ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-                else
-                  ((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
-              }
-            }
-          }
-          else {
-            ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-            if (!clipboardEmpty)
-              ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
-            if (curr.getIsTemplate()) {
-              ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-              if (!((PresentationObjectContainer)obj).isLocked())
-                ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-              else
-                ((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
-            }
-          }
-        }
+	if (index != -1) {
+	  Page curr = PageCacher.getPage(getCurrentIBPage(iwc),iwc);
+	  if (curr.getIsExtendingTemplate()) {
+	    if (obj.getBelongsToParent()) {
+	      if (!((PresentationObjectContainer)obj).isLocked()) {
+		((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
+		if (!clipboardEmpty)
+		  ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+	      }
+	    }
+	    else {
+	      ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
+	      if (!clipboardEmpty)
+		((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+	      if (curr.getIsTemplate()) {
+		((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
+		if (!((PresentationObjectContainer)obj).isLocked())
+		  ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
+		else
+		  ((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+	      }
+	    }
+	  }
+	  else {
+	    ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
+	    if (!clipboardEmpty)
+	      ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+	    if (curr.getIsTemplate()) {
+	      ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
+	      if (!((PresentationObjectContainer)obj).isLocked())
+		((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
+	      else
+		((PresentationObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+	    }
+	  }
+	}
       }
     }
 
     if (obj.getUseBuilderObjectControl()) {
       if(index != -1){
-        //parent.remove(obj);
-        //parent.add(new BuilderObjectControl(obj,parent));
-        parent.set(index,new BuilderObjectControl(obj,parent,parentKey,iwc,index));
+	//parent.remove(obj);
+	//parent.add(new BuilderObjectControl(obj,parent));
+	parent.set(index,new BuilderObjectControl(obj,parent,parentKey,iwc,index));
       }
     }
   }
@@ -488,12 +488,12 @@ public class BuilderLogic {
        * @todo: Change from hardcoded DomainID:
        */
        try{
-         int domainID=1;
-         return IBDomain.getDomain(domainID);
+	 int domainID=1;
+	 return IBDomain.getDomain(domainID);
        }
        catch(Exception e){
-        e.printStackTrace();
-        throw new RuntimeException(e.getMessage());
+	e.printStackTrace();
+	throw new RuntimeException(e.getMessage());
        }
   }
 
@@ -617,13 +617,13 @@ public class BuilderLogic {
 
     public void main(IWContext iwc){
       try{
-        Script script = getParentPage().getAssociatedScript();
-        script.addFunction("findObj(n, d)","function findObj(n, d) { \n\t var p,i,x;  if(!d) d=document; \n\t if((p=n.indexOf(\"?\"))>0&&parent.frames.length) { \n\t     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p); \n\t } \n\t  if(!(x=d[n])&&d.all) x=d.all[n]; \n\t for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n]; \n\t  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); \n\t if(!x && document.getElementById) x=document.getElementById(n); return x; \n }");
-        script.addFunction("showHideLayers()","function showHideLayers() { \n\t var i,p,v,obj,args=showHideLayers.arguments; \n\t for (i=0; i<(args.length-2); i+=3) \n\t if ((obj=findObj(args[i]))!=null) { \n\t v=args[i+2]; \n\t   if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v='hide')?'hidden':v; \n\t }    obj.visibility=v; \n\t }\n}");
-        getParentPage().setAssociatedScript(script);
+	Script script = getParentPage().getAssociatedScript();
+	script.addFunction("findObj(n, d)","function findObj(n, d) { \n\t var p,i,x;  if(!d) d=document; \n\t if((p=n.indexOf(\"?\"))>0&&parent.frames.length) { \n\t     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p); \n\t } \n\t  if(!(x=d[n])&&d.all) x=d.all[n]; \n\t for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n]; \n\t  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); \n\t if(!x && document.getElementById) x=document.getElementById(n); return x; \n }");
+	script.addFunction("showHideLayers()","function showHideLayers() { \n\t var i,p,v,obj,args=showHideLayers.arguments; \n\t for (i=0; i<(args.length-2); i+=3) \n\t if ((obj=findObj(args[i]))!=null) { \n\t v=args[i+2]; \n\t   if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v='hide')?'hidden':v; \n\t }    obj.visibility=v; \n\t }\n}");
+	getParentPage().setAssociatedScript(script);
       }
       catch(NullPointerException e){
-        System.out.println("getParentPage() returns null in BuilderObjectControl for Object "+_theObject.getClass().getName()+" and ICObjectInstanceID="+_theObject.getICObjectInstanceID());
+	System.out.println("getParentPage() returns null in BuilderObjectControl for Object "+_theObject.getClass().getName()+" and ICObjectInstanceID="+_theObject.getICObjectInstanceID());
       }
     }
 
@@ -641,27 +641,27 @@ public class BuilderLogic {
 
       /** @todo Make a plug-in presentation/interface object which all plug-ins inherit */
       if ( _theObject instanceof com.idega.block.messenger.presentation.Messenger )
-        hideLayer = true;
+	hideLayer = true;
       if ( _theObject instanceof com.idega.presentation.Applet )
-        hideLayer = true;
+	hideLayer = true;
       if ( _theObject instanceof com.idega.presentation.GenericPlugin )
-        hideLayer = true;
+	hideLayer = true;
 
       Layer controlLayer = new Layer(Layer.DIV);
-        controlLayer.setPositionType(Layer.RELATIVE);
-        controlLayer.setWidth(1);
-        controlLayer.setHeight(1);
+	controlLayer.setPositionType(Layer.RELATIVE);
+	controlLayer.setWidth(1);
+	controlLayer.setHeight(1);
 
       Layer layer = new Layer(Layer.DIV);
-        layer.setID(_layer.getID()+"a");
-        layer.setPositionType(Layer.ABSOLUTE);
-        layer.setTopPosition(-1);
-        layer.setLeftPosition(-1);
-        layer.setBackgroundColor("#CCCCCC");
-        layer.setVisibility("hidden");
-        layer.setZIndex(37999);
-        layer.setWidth(0);
-        layer.setHeight(0);
+	layer.setID(_layer.getID()+"a");
+	layer.setPositionType(Layer.ABSOLUTE);
+	layer.setTopPosition(-1);
+	layer.setLeftPosition(-1);
+	layer.setBackgroundColor("#CCCCCC");
+	layer.setVisibility("hidden");
+	layer.setZIndex(37999);
+	layer.setWidth(0);
+	layer.setHeight(0);
 
       hideLayers = "showHideLayers('"+layer.getID()+"','','hide');";
       if ( hideLayer ) hideLayers += " showHideLayers('"+_tableLayer.getID()+"','','show');";
@@ -696,69 +696,75 @@ public class BuilderLogic {
 
       _table.setHeight(1,1,"11");
 
-      Image image = getBundle(iwc).getImage("menuicon.gif");
+      Image image = getBundle(iwc).getImage("menuicon.gif","Component menu");
       image.setHorizontalSpacing(1);
+      image.setAlignment("absmiddle");
       image.setOnClick(showLayers);
+
+      Text text = new Text("");
+	text.setFontStyle("font-size:5pt;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;text-transform:uppercase;");
 
 
       if(_theObject!=null){
-        //table.add(theObject.getClassName());
-        _table.add(image);
+	//table.add(theObject.getClassName());
+	text.setText(Text.NON_BREAKING_SPACE+_theObject.getBuilderName(iwc));
+	_table.add(image);
+	_table.add(text);
 
-        RaisedTable rTable = new RaisedTable();
-          rTable.setWidth(80);
-          rTable.setHeight(50);
-          rTable.setLightShadowColor("#000000");
-          rTable.setDarkShadowColor("#000000");
+	RaisedTable rTable = new RaisedTable();
+	  rTable.setWidth(80);
+	  rTable.setHeight(50);
+	  rTable.setLightShadowColor("#000000");
+	  rTable.setDarkShadowColor("#000000");
 
-        table = new Table();
-          table.setCellpadding(3);
-          table.setCellspacing(0);
-          table.setWidth("100%");
-          table.setHeight("100%");
-          table.setColor("#CCCCCC");
-          table.setAttribute("onMouseOver",showLayers);
-          table.setAttribute("onClick",hideLayers);
-        rTable.add(table);
+	table = new Table();
+	  table.setCellpadding(3);
+	  table.setCellspacing(0);
+	  table.setWidth("100%");
+	  table.setHeight("100%");
+	  table.setColor("#CCCCCC");
+	  table.setAttribute("onMouseOver",showLayers);
+	  table.setAttribute("onClick",hideLayers);
+	rTable.add(table);
 
-        Image separator = getBundle(iwc).getImage("shared/menu/menu_separator.gif");
-          separator.setWidth("100%");
-          separator.setHeight(2);
+	Image separator = getBundle(iwc).getImage("shared/menu/menu_separator.gif");
+	  separator.setWidth("100%");
+	  separator.setHeight(2);
 
-        XMLElement pasted = (XMLElement)iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
-        if (pasted == null) {
-          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
-          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
-          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
-          table.add(separator,2,3);
-          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
-          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
-          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
-          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
-        }
-        else {
-          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
-          addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
-          addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Paste above",IBPasteModuleWindow.class,2,2);
-          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,3);
-          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,3);
-          table.add(separator,2,4);
-          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
-          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,5);
-          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,6);
-          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,6);
-        }
+	XMLElement pasted = (XMLElement)iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
+	if (pasted == null) {
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
+	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
+	  table.add(separator,2,3);
+	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
+	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
+	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
+	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
+	}
+	else {
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+	  addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
+	  addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+	  addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Paste above",IBPasteModuleWindow.class,2,2);
+	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,3);
+	  addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,3);
+	  table.add(separator,2,4);
+	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
+	  addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,5);
+	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,6);
+	  addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,6);
+	}
 
-        table.setColumnColor(1,"#D8D8D1");
-        table.setColumnColor(2,"#F9F8F7");
-        table.setColumnAlignment(1,"center");
-        layer.add(rTable);
+	table.setColumnColor(1,"#D8D8D1");
+	table.setColumnColor(2,"#F9F8F7");
+	table.setColumnAlignment(1,"center");
+	layer.add(rTable);
       }
       else {
-        _table.add(getDeleteIcon(0,_parentKey,iwc));
-        _table.add(getEditIcon(0,iwc));
+	_table.add(getDeleteIcon(0,_parentKey,iwc));
+	_table.add(getEditIcon(0,iwc));
       }
     }
 
@@ -769,7 +775,7 @@ public class BuilderLogic {
 
     private void addToTable(PresentationObject obj,String textString,Class className,int col,int row) {
       Text text = new Text(textString);
-        text.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 8pt; text-decoration: none;");
+	text.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 8pt; text-decoration: none;");
       Link link = (Link) obj;
       link.setObject(text);
       if ( className != null ) link.setWindowToOpen(className);
@@ -778,18 +784,18 @@ public class BuilderLogic {
 
     public void add(PresentationObject obj){
       if(obj instanceof Table){
-        String width=((Table)obj).getWidth();
-        if(width!=null){
-          _table.setWidth(width);
-          ((Table)obj).setWidth("100%");
-        }
+	String width=((Table)obj).getWidth();
+	if(width!=null){
+	  _table.setWidth(width);
+	  ((Table)obj).setWidth("100%");
+	}
 
-        String height=((Table)obj).getHeight();
-        if(height!=null){
-          _table.setHeight(height);
-          ((Table)obj).setHeight("100%");
+	String height=((Table)obj).getHeight();
+	if(height!=null){
+	  _table.setHeight(height);
+	  ((Table)obj).setHeight("100%");
 
-        }
+	}
 
       }
       _tableLayer.add(obj);
@@ -811,11 +817,11 @@ public class BuilderLogic {
   public boolean removeProperty(IWMainApplication iwma,String pageKey,int ObjectInstanceId,String propertyName,String[] values){
       IBXMLPage xml = getIBXMLPage(pageKey);
       if(XMLWriter.removeProperty(iwma,xml,ObjectInstanceId,propertyName,values)){
-        xml.update();
-        return true;
+	xml.update();
+	return true;
       }
       else{
-        return false;
+	return false;
       }
   }
 
@@ -843,11 +849,11 @@ public class BuilderLogic {
       IBXMLPage xml = getIBXMLPage(pageKey);
       boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
       if (XMLWriter.setProperty(iwma,xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)) {
-        xml.update();
-        return(true);
+	xml.update();
+	return(true);
       }
       else {
-        return(false);
+	return(false);
       }
     }
     catch(Exception e) {
@@ -863,12 +869,12 @@ public class BuilderLogic {
     try {
       PresentationObject Block = ICObjectBusiness.getNewObjectInstance(ICObjectInstanceID);
       if (Block != null) {
-        if (Block instanceof IWBlock) {
-          blockDeleted = ((IWBlock)Block).deleteBlock(ICObjectInstanceID);
-        }
+	if (Block instanceof IWBlock) {
+	  blockDeleted = ((IWBlock)Block).deleteBlock(ICObjectInstanceID);
+	}
       }
       else {
-        blockDeleted = true;
+	blockDeleted = true;
       }
     }
     catch(Exception ex) {
@@ -954,14 +960,14 @@ public class BuilderLogic {
       xml.update();
 
       if (parentObjectInstanceID.equals("-1")) {
-        if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
-          List extend = xml.getUsingTemplate();
-          if (extend != null) {
-            Iterator i = extend.iterator();
-            while (i.hasNext())
-              lockRegion((String)i.next(),parentObjectInstanceID);
-          }
-        }
+	if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
+	  List extend = xml.getUsingTemplate();
+	  if (extend != null) {
+	    Iterator i = extend.iterator();
+	    while (i.hasNext())
+	      lockRegion((String)i.next(),parentObjectInstanceID);
+	  }
+	}
       }
       return true;
     }
@@ -975,16 +981,16 @@ public class BuilderLogic {
       xml.update();
 
       if (parentObjectInstanceID.equals("-1")) {
-        if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
-          List extend = xml.getUsingTemplate();
-          if (extend != null) {
-            Iterator i = extend.iterator();
-            while (i.hasNext()) {
-              String child = (String)i.next();
-              unlockRegion(child,parentObjectInstanceID,null);
-            }
-          }
-        }
+	if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
+	  List extend = xml.getUsingTemplate();
+	  if (extend != null) {
+	    Iterator i = extend.iterator();
+	    while (i.hasNext()) {
+	      String child = (String)i.next();
+	      unlockRegion(child,parentObjectInstanceID,null);
+	    }
+	  }
+	}
       }
 
       labelRegion(pageKey,parentObjectInstanceID,label);
@@ -1025,46 +1031,46 @@ public class BuilderLogic {
 
     public Class getObjectClass(int icObjectInstanceID){
       try{
-        ICObjectInstance instance = new ICObjectInstance(icObjectInstanceID);
-        return instance.getObject().getObjectClass();
+	ICObjectInstance instance = new ICObjectInstance(icObjectInstanceID);
+	return instance.getObject().getObjectClass();
       }
       catch(Exception e){
-        e.printStackTrace();
+	e.printStackTrace();
       }
       return null;
     }
 
     private boolean isPropertyMultivalued(String propertyName,int icObjecctInstanceID,IWMainApplication iwma)throws Exception{
       try{
-        Class c = null;
-        IWBundle iwb = null;
-        if(icObjecctInstanceID==-1){
-          c = com.idega.presentation.Page.class;
-          iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
-        }
-        else{
-          ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
-          c = instance.getObject().getObjectClass();
-          iwb = instance.getObject().getBundle(iwma);
-        }
-        IWPropertyList complist = iwb.getComponentList();
-        IWPropertyList component = complist.getPropertyList(c.getName());
-        IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHODS_KEY);
-        if (methodlist == null)
-          return(false);
-        IWPropertyList method = methodlist.getPropertyList(propertyName);
-        if (method == null)
-          return(false);
-        IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
-        if(prop!=null){
-          boolean value = prop.getBooleanValue();
-          return value;
-        }
-        else return false;
+	Class c = null;
+	IWBundle iwb = null;
+	if(icObjecctInstanceID==-1){
+	  c = com.idega.presentation.Page.class;
+	  iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
+	}
+	else{
+	  ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
+	  c = instance.getObject().getObjectClass();
+	  iwb = instance.getObject().getBundle(iwma);
+	}
+	IWPropertyList complist = iwb.getComponentList();
+	IWPropertyList component = complist.getPropertyList(c.getName());
+	IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHODS_KEY);
+	if (methodlist == null)
+	  return(false);
+	IWPropertyList method = methodlist.getPropertyList(propertyName);
+	if (method == null)
+	  return(false);
+	IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
+	if(prop!=null){
+	  boolean value = prop.getBooleanValue();
+	  return value;
+	}
+	else return false;
       }
       catch(Exception e){
-        //e.printStackTrace(System.err);
-        return false;
+	//e.printStackTrace(System.err);
+	return false;
       }
     }
 
@@ -1186,19 +1192,19 @@ public class BuilderLogic {
     IBXMLPage xml = getCurrentIBXMLPage(iwc);
     if (xml != null) {
       if (!xml.getName().equals(name)) {
-        xml.setName(name);
-        java.util.Map tree = PageTreeNode.getTree(iwc);
+	xml.setName(name);
+	java.util.Map tree = PageTreeNode.getTree(iwc);
 
-        if (tree != null) {
-          String currentId = getCurrentIBPage(iwc);
-          if (currentId != null) {
-            Integer id = new Integer(currentId);
-            PageTreeNode node = (PageTreeNode)tree.get(id);
-            if (node != null) {
-              node.setNodeName(name);
-            }
-          }
-        }
+	if (tree != null) {
+	  String currentId = getCurrentIBPage(iwc);
+	  if (currentId != null) {
+	    Integer id = new Integer(currentId);
+	    PageTreeNode node = (PageTreeNode)tree.get(id);
+	    if (node != null) {
+	      node.setNodeName(name);
+	    }
+	  }
+	}
       }
     }
   }
@@ -1215,18 +1221,18 @@ public class BuilderLogic {
     IBXMLPage xml = getCurrentIBXMLPage(iwc);
     if (xml != null) {
       if (xml.getType().equals(IBXMLPage.TYPE_PAGE)) {
-        int newId = Integer.parseInt(templateId);
-        int oldId = xml.getTemplateId();
-        if (newId != oldId) {
-          xml.setTemplateId(newId);
+	int newId = Integer.parseInt(templateId);
+	int oldId = xml.getTemplateId();
+	if (newId != oldId) {
+	  xml.setTemplateId(newId);
 
-          String currentPageId = getCurrentIBPage(iwc);
-          setTemplateId(currentPageId,Integer.toString(newId));
-          if (newId > 0)
-            getIBXMLPage(newId).addUsingTemplate(currentPageId);
-          if (oldId > 0)
-            getIBXMLPage(oldId).removeUsingTemplate(currentPageId);
-        }
+	  String currentPageId = getCurrentIBPage(iwc);
+	  setTemplateId(currentPageId,Integer.toString(newId));
+	  if (newId > 0)
+	    getIBXMLPage(newId).addUsingTemplate(currentPageId);
+	  if (oldId > 0)
+	    getIBXMLPage(oldId).removeUsingTemplate(currentPageId);
+	}
       }
     }
   }
@@ -1276,39 +1282,39 @@ public class BuilderLogic {
       coordinates = new String[tokens.countTokens()];
       int index = 0;
       while (tokens.hasMoreTokens()) {
-        coordinates[index++] = tokens.nextToken();
+	coordinates[index++] = tokens.nextToken();
       }
     }
 
     if(coordinates != null && coordinates.length > 0){
       List l = new Vector();
       for (int i = 0; i < coordinates.length; i++) {
-        String crdnts = coordinates[i];
-        int index = crdnts.indexOf('_');
-        String page = crdnts.substring(0,index);
-        String inst = crdnts.substring(index+1,crdnts.length());
-        if(!"".equals(page) && !"".equals(inst)){
-          //Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
-          //PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
-          PresentationObject obj = getPopulatedObjectInstance(inst,iwc);
-          if(obj != null && !obj.equals(PresentationObject.NULL_CLONE_OBJECT)){
-            l.add(obj);
-          }
-        }
+	String crdnts = coordinates[i];
+	int index = crdnts.indexOf('_');
+	String page = crdnts.substring(0,index);
+	String inst = crdnts.substring(index+1,crdnts.length());
+	if(!"".equals(page) && !"".equals(inst)){
+	  //Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
+	  //PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
+	  PresentationObject obj = getPopulatedObjectInstance(inst,iwc);
+	  if(obj != null && !obj.equals(PresentationObject.NULL_CLONE_OBJECT)){
+	    l.add(obj);
+	  }
+	}
       }
       PresentationObject[] toReturn = (PresentationObject[])l.toArray(new PresentationObject[0]);
 
       if(toReturn.length > 0){
-        /*
-        System.err.println("BuilderLogic Listeners");
-        for (int i = 0; i < toReturn.length; i++) {
-          System.err.println(" - "+toReturn[i].getParentPageID()+"_"+toReturn[i].getICObjectInstanceID());
-        }*/
+	/*
+	System.err.println("BuilderLogic Listeners");
+	for (int i = 0; i < toReturn.length; i++) {
+	  System.err.println(" - "+toReturn[i].getParentPageID()+"_"+toReturn[i].getICObjectInstanceID());
+	}*/
 
-        return toReturn;
+	return toReturn;
       }else{
-        //System.err.println("BuilderLogic Listeners are null");
-        return null;
+	//System.err.println("BuilderLogic Listeners are null");
+	return null;
       }
     } else{
       //System.err.println("BuilderLogic Listeners are null");
@@ -1327,10 +1333,10 @@ public class BuilderLogic {
       String page = crdnts.substring(0,index);
       String inst = crdnts.substring(index+1,crdnts.length());
       if(!"".equals(page) && !"".equals(inst)){
-        /*Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
-        PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
-        return obj;*/
-        return getPopulatedObjectInstance(inst,iwc);
+	/*Page parentPage = BuilderLogic.getInstance().getIBXMLPage(page).getPopulatedPage();
+	PresentationObject obj = parentPage.getContainedICObjectInstance(Integer.parseInt(inst));
+	return obj;*/
+	return getPopulatedObjectInstance(inst,iwc);
       }
     }
     return null;
@@ -1343,7 +1349,7 @@ public class BuilderLogic {
     String prm = "";
     for (int i = 0; i < ibPageId.length; i++) {
       if(i != 0){
-        prm += ",";
+	prm += ",";
       }
       prm += ibPageId[i]+"_"+instanceId[i];
     }
