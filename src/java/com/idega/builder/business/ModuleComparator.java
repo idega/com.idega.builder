@@ -30,12 +30,27 @@ public class ModuleComparator implements Comparator {
     ICObject obj1 = (ICObject) o1;
     ICObject obj2 = (ICObject) o2;
 
-    String one = obj1.getBundle(iwma).getComponentName(obj1.getClassName(),locale);
-    if ( one == null )
-      one = obj1.getName();
-    String two = obj2.getBundle(iwma).getComponentName(obj2.getClassName(),locale);
+    String one = obj1.getName();
+		try {
+			one = obj1.getBundle(iwma).getComponentName(obj1.getClassName(), locale);
+		}
+		catch (NullPointerException e) {
+			one = obj1.getName();
+		}
+
+		String two = obj2.getName();
+		try {
+    	two = obj2.getBundle(iwma).getComponentName(obj2.getClassName(),locale);
+		}
+		catch (NullPointerException e) {
+			two = obj2.getName();
+		}
+
+		if ( one == null )
+			one = obj1.getName();
     if ( two == null )
       two = obj2.getName();
+      
     int result = IsCollator.getIsCollator().compare(one,two);
 
     return result;
