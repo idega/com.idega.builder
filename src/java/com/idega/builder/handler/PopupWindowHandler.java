@@ -1,5 +1,5 @@
 /*
- * $Id: PopupWindowHandler.java,v 1.3 2003/04/03 09:10:10 laddi Exp $
+ * $Id: PopupWindowHandler.java,v 1.4 2004/06/28 11:18:12 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.idega.builder.presentation.PopupWindowChooser;
 import com.idega.builder.presentation.PopupWindowChooserWindow;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextSoap;
@@ -21,7 +22,7 @@ import com.idega.util.text.TextSoap;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class PopupWindowHandler implements PropertyHandler {
+public class PopupWindowHandler implements ICPropertyHandler {
   /**
    *
    */

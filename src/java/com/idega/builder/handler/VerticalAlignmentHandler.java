@@ -1,5 +1,5 @@
 /*
- * $Id: VerticalAlignmentHandler.java,v 1.4 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: VerticalAlignmentHandler.java,v 1.5 2004/06/28 11:17:09 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.handler;
 
 import java.util.List;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
@@ -18,7 +19,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class VerticalAlignmentHandler implements PropertyHandler {
+public class VerticalAlignmentHandler implements ICPropertyHandler {
   public final static String TOP = "top";
   public final static String MIDDLE = "middle";
   public final static String BOTTOM = "bottom";

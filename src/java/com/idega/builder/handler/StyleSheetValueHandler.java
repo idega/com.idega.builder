@@ -13,6 +13,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import com.idega.builder.presentation.IBStyleChooser;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.idegaweb.IWStyleManager;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -21,7 +22,7 @@ import com.idega.presentation.PresentationObject;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class StyleSheetValueHandler implements PropertyHandler {
+public class StyleSheetValueHandler implements ICPropertyHandler {
   /**
    *
    */

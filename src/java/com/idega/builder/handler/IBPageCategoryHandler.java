@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageUpdater;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.BooleanInput;
@@ -14,17 +15,17 @@ import com.idega.presentation.ui.BooleanInput;
 /**
  * @author laddi
  */
-public class IBPageCategoryHandler implements PropertyHandler {
+public class IBPageCategoryHandler implements ICPropertyHandler {
 
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#getDefaultHandlerTypes()
+	 * @see com.idega.builder.handler.ICPropertyHandler#getDefaultHandlerTypes()
 	 */
 	public List getDefaultHandlerTypes() {
 		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
+	 * @see com.idega.builder.handler.ICPropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
 		BooleanInput input = new BooleanInput(name);

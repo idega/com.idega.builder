@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateHandler.java,v 1.7 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: IBTemplateHandler.java,v 1.8 2004/06/28 11:18:12 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,13 +17,14 @@ import com.idega.builder.presentation.IBTemplateChooser;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageUpdater;
+import com.idega.core.builder.data.ICPropertyHandler;
 import java.util.Map;
 
 /**
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class IBTemplateHandler implements PropertyHandler {
+public class IBTemplateHandler implements ICPropertyHandler {
   /**
    *
    */

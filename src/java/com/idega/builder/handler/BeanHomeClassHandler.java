@@ -10,6 +10,7 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.builder.presentation.IBObjectChooser;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.component.data.ICObjectHome;
@@ -25,15 +26,15 @@ import com.idega.presentation.PresentationObject;
  * @author aron 
  * @version 1.0
  */
-public class BeanHomeClassHandler implements PropertyHandler {
+public class BeanHomeClassHandler implements ICPropertyHandler {
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#getDefaultHandlerTypes()
+	 * @see com.idega.builder.handler.ICPropertyHandler#getDefaultHandlerTypes()
 	 */
 	public List getDefaultHandlerTypes() {
 		return null;
 	}
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
+	 * @see com.idega.builder.handler.ICPropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
 		IBObjectChooser chooser = new IBObjectChooser(name);
@@ -59,7 +60,7 @@ public class BeanHomeClassHandler implements PropertyHandler {
 		return chooser;
 	}
 	/* (non-Javadoc)
-	 * @see com.idega.builder.handler.PropertyHandler#onUpdate(java.lang.String[], com.idega.presentation.IWContext)
+	 * @see com.idega.builder.handler.ICPropertyHandler#onUpdate(java.lang.String[], com.idega.presentation.IWContext)
 	 */
 	public void onUpdate(String[] values, IWContext iwc) {
 		

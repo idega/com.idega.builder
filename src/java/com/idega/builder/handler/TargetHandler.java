@@ -1,5 +1,5 @@
 /*
- * $Id: TargetHandler.java,v 1.2 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: TargetHandler.java,v 1.3 2004/06/28 11:17:09 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.handler;
 
 import java.util.List;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
@@ -19,7 +20,7 @@ import com.idega.presentation.text.LinkContainer;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class TargetHandler implements PropertyHandler {
+public class TargetHandler implements ICPropertyHandler {
   /**
    *
    */

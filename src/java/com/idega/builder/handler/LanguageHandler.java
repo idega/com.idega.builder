@@ -1,5 +1,5 @@
 /*
- * $Id: LanguageHandler.java,v 1.5 2004/02/20 16:37:44 tryggvil Exp $
+ * $Id: LanguageHandler.java,v 1.6 2004/06/28 11:18:12 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.builder.handler;
 
 import java.util.List;
 
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.core.localisation.presentation.LocalePresentationUtil;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -23,7 +24,7 @@ import com.idega.presentation.ui.DropdownMenu;
  * This handler is to display a selection with the available Locales.
  * In the selection the keys (values) are the locale-stringrepresentations e.g. "en_US" for English/US
  */
-public class LanguageHandler implements PropertyHandler {
+public class LanguageHandler implements ICPropertyHandler {
   /**
    *
    */

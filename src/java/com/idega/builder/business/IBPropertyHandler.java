@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.42 2004/06/15 18:26:25 thomas Exp $
+ * $Id: IBPropertyHandler.java,v 1.43 2004/06/28 11:18:35 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,12 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
-import com.idega.builder.handler.PropertyHandler;
 import com.idega.builder.handler.SpecifiedChoiceProvider;
 import com.idega.builder.handler.TableColumnsHandler;
 import com.idega.builder.handler.TableRowsHandler;
 import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
@@ -275,7 +275,7 @@ public class IBPropertyHandler {
 		if (handlerClass.equals("")) {
 			return (null);
 		}
-		PropertyHandler handler = getPropertyHandler(handlerClass);
+		ICPropertyHandler handler = getPropertyHandler(handlerClass);
 		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc);
 
     /* 
@@ -626,12 +626,12 @@ public class IBPropertyHandler {
 		return (propertyHandlers);
 	}
 
-	public PropertyHandler getPropertyHandler(String handlerClassName) {
-		PropertyHandler theReturn = (PropertyHandler) getPropertyHandlersMap().get(handlerClassName);
+	public ICPropertyHandler getPropertyHandler(String handlerClassName) {
+		ICPropertyHandler theReturn = (ICPropertyHandler) getPropertyHandlersMap().get(handlerClassName);
 		if (theReturn == null) {
 			try {
 				Class theClass = Class.forName(handlerClassName);
-				theReturn = (PropertyHandler) theClass.newInstance();
+				theReturn = (ICPropertyHandler) theClass.newInstance();
 				putPropertyHandler(handlerClassName, theReturn);
 			}
 			catch (Exception e) {

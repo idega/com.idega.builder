@@ -1,5 +1,5 @@
 /*
- * $Id: ImageHandler.java,v 1.6 2004/06/15 18:25:32 thomas Exp $
+ * $Id: ImageHandler.java,v 1.7 2004/06/28 11:18:12 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.builder.handler;
 import java.util.List;
 import com.idega.builder.business.IBImageInserter;
 import com.idega.builder.business.IBClassesFactory;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 
@@ -19,7 +20,7 @@ import com.idega.presentation.PresentationObject;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class ImageHandler implements PropertyHandler {
+public class ImageHandler implements ICPropertyHandler {
   /**
    *
    */

@@ -1,5 +1,5 @@
 /*
- * $Id: FontStyleHandler.java,v 1.6 2003/04/03 09:10:10 laddi Exp $
+ * $Id: FontStyleHandler.java,v 1.7 2004/06/28 11:18:12 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.builder.handler;
 import java.util.List;
 
 import com.idega.builder.presentation.IBStyleChooser;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 
@@ -19,7 +20,7 @@ import com.idega.presentation.PresentationObject;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class FontStyleHandler implements PropertyHandler {
+public class FontStyleHandler implements ICPropertyHandler {
   /**
    *
    */

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.27 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.28 2004/06/28 11:18:12 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.core.builder.data.ICPropertyHandler;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
@@ -144,7 +144,7 @@ public class IBPropertiesWindowSetter extends Page {
 				else {
 					if (doSave) {
 						propertyChange = setProperty(propertyID, values, ic_object_id, pageKey, iwc.getIWMainApplication());
-						PropertyHandler handler = (PropertyHandler) iwc.getSessionAttribute(HANDLER_PARAMETER);
+						ICPropertyHandler handler = (ICPropertyHandler) iwc.getSessionAttribute(HANDLER_PARAMETER);
 
 						if (handler != null) {
 							handler.onUpdate(values, iwc);
@@ -273,7 +273,7 @@ public class IBPropertiesWindowSetter extends Page {
 			
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc, icObjectInstanceID, methodIdentifier, i, parameterClass, sName, sValue);
 
-			PropertyHandler handler = null;
+			ICPropertyHandler handler = null;
 			if (handlerClass != null && !handlerClass.equals("")) {
 				handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
 
