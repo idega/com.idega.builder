@@ -160,4 +160,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	public void unload(){
 		BuilderLogic.unload();
 	}
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.business.BuilderService#getPageKeyByRequestURI(java.lang.String)
+	 */
+	public String getPageKeyByRequestURIAndServerName(String pageRequestUri,String serverName) {
+		return getBuilderLogic().getPageKeyByURIAndServerName(pageRequestUri,serverName);
+	}
+	
 }

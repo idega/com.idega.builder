@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderRootViewNode.java,v 1.1 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: BuilderRootViewNode.java,v 1.2 2005/02/24 00:11:13 tryggvil Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.presentation.IWContext;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/02/24 00:11:13 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BuilderRootViewNode extends DefaultViewNode {
 
@@ -66,7 +66,11 @@ public class BuilderRootViewNode extends DefaultViewNode {
 	 */
 	protected ViewNode loadChild(String childId) {
 		//return super.loadChild(childId);
-		return getPageCacher().getCachedBuilderPage(childId);
+		ViewNode node =  getPageCacher().getCachedBuilderPage(childId);
+		if(node==null){
+			throw new RuntimeException("Page with id="+childId+" not found");
+		}
+		return node;
 	}
 	
 	protected BuilderLogic getBuilderLogic(){

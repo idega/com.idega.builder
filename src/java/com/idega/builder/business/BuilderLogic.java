@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.168 2005/02/22 23:03:08 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.169 2005/02/24 00:11:13 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -514,6 +514,59 @@ public class BuilderLogic implements Singleton {
 		String theReturn = getCurrentIBPage(iwc);
 		return Integer.parseInt(theReturn);
 	}
+	
+	
+	public String getPageKeyByURIAndServerName(String requestURI,String serverName){
+		try{
+			return getPageKeyByURI(requestURI);
+		}
+		catch(NumberFormatException nfe){
+			//nothing printed out here
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		String theReturn = String.valueOf(getStartPageIdByServerName(serverName));
+		if (theReturn == null) {
+			return Integer.toString(getCurrentDomain().getStartPageID());
+		}
+		else{
+			return theReturn;
+		}
+		
+	}
+	
+	public String getPageKeyByURI(String requestURI){
+		//String requestURI = iwc.getRequestURI();
+		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
+			int indexOfPage = requestURI.indexOf("/pages/");
+			if (indexOfPage != -1) {
+				boolean pageISNumber = true;
+				String pageID = null;
+				//try {
+					String subString = requestURI.substring(indexOfPage + 7);
+					int lastSlash = subString.indexOf("/");
+					if (lastSlash == -1) {
+						pageID = subString;
+					}
+					else {
+						pageID = subString.substring(0, lastSlash);
+					}
+					Integer.parseInt(pageID);
+					return pageID;
+				//}
+				//catch (NumberFormatException e) {
+				//	pageISNumber = false;
+				//}
+				//if (pageISNumber) {
+				//	return pageID;
+				//}
+			}
+		//}
+		throw new RuntimeException("Page Key Can not be found from URI");
+	}
+	
+	
 	/**
 	 * Returns the key for the ICPage that the user has requested
 	 */
@@ -521,7 +574,7 @@ public class BuilderLogic implements Singleton {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
 		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
-			int indexOfPage = requestURI.indexOf("/pages/");
+			/*int indexOfPage = requestURI.indexOf("/pages/");
 			if (indexOfPage != -1) {
 				boolean pageISNumber = true;
 				String pageID = null;
@@ -542,6 +595,15 @@ public class BuilderLogic implements Singleton {
 				if (pageISNumber) {
 					return pageID;
 				}
+			}*/
+			try{
+				return getPageKeyByURI(requestURI);
+			}
+			catch(NumberFormatException nfe){
+				//nothing printed out
+			}
+			catch(Exception e){
+				e.printStackTrace();
 			}
 		}
 
@@ -636,6 +698,11 @@ public class BuilderLogic implements Singleton {
 		return (IBXMLPage)getCurrentCachedBuilderPage(iwc);
 	}
 
+	public ICDomain getCurrentDomain(){
+		IWApplicationContext iwac = IWMainApplication.getDefaultIWApplicationContext();
+		return getCurrentDomain(iwac);
+	}
+	
 	public ICDomain getCurrentDomain(IWApplicationContext iwac) {
 		try {
 			return iwac.getDomain();
@@ -644,6 +711,11 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			throw new RuntimeException(e.getMessage());
 		}
+	}
+
+	public ICDomain getCurrentDomainByServerName(String serverName){
+		IWApplicationContext iwac = IWMainApplication.getDefaultIWApplicationContext();
+		return getCurrentDomainByServerName(iwac,serverName);
 	}
 	
 	public ICDomain getCurrentDomainByServerName(IWApplicationContext iwac,String serverName) {
@@ -1107,6 +1179,15 @@ public class BuilderLogic implements Singleton {
 	public String getStartPageKey(IWApplicationContext iwac) {
 		int id = getStartPageId(iwac);
 		return Integer.toString(id);
+	}
+	
+	
+	/**
+	 *  	 *
+	 */
+	public int getStartPageIdByServerName(String serverName) {
+		ICDomain domain = getCurrentDomainByServerName(serverName);
+		return domain.getStartPageID();
 	}
 	
 	/**
