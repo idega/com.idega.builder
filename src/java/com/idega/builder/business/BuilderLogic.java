@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.173 2005/03/03 15:31:45 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.174 2005/03/03 16:20:57 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -63,6 +63,11 @@ import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 
 /**
+ * <p>
+ * This class is the main "buisiness logic" class for the Builder.<br>
+ * All interface actions are sent to this class and this class manages other helper classes such as PageCacher,IBXMLReader,IBXMLWriter etc.
+ * </p>
+ * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * @version 1.0
  */
@@ -541,6 +546,26 @@ public class BuilderLogic implements Singleton {
 		
 	}
 	
+	
+	/**
+	 * Tries to find the uri in the cache of builder pages
+	 * @param requestURI
+	 * @return
+	 */
+	public String getPageKeyByURICached(String pageUri){
+		Iterator iter = getPageCacher().getPageCacheMap().values().iterator();
+		while(iter.hasNext()){
+			CachedBuilderPage page = (CachedBuilderPage)iter.next();
+			String cachedPageUri = page.getURI();
+			if(cachedPageUri!=null){
+				if(cachedPageUri.equals(pageUri)){
+					return page.getPageKey();
+				}
+			}
+		}
+		return null;
+	}
+	
 	public String getPageKeyByURI(String requestURI){
 		//String requestURI = iwc.getRequestURI();
 		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
@@ -570,6 +595,14 @@ public class BuilderLogic implements Singleton {
 					}
 					catch(NumberFormatException nfe){
 						//the string is not a number:
+						
+						//try to find the page in the cache first:
+						String pageKey = getPageKeyByURICached(uriWithoutPages);
+						if(pageKey!=null){
+							return pageKey;
+						}
+						
+						//if it isn't found in the cache try the database:
 						try {
 							ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
 							//TODO: change - here domainId is hardcoded to -1
@@ -602,7 +635,9 @@ public class BuilderLogic implements Singleton {
 	public String getCurrentIBPage(IWContext iwc) {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
-		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
+		
+		if(IWMainApplication.useNewURLScheme){
+		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
 			/*int indexOfPage = requestURI.indexOf("/pages/");
 			if (indexOfPage != -1) {
 				boolean pageISNumber = true;
