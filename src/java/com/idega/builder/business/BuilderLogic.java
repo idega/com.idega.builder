@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.78 2001/11/14 16:16:32 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.79 2001/11/23 16:55:03 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -643,11 +643,20 @@ public class BuilderLogic {
       _layer.setZIndex(number);
       super.add(_layer);
       _table.setBorder(0);
+      //_table.setWidth(1,"3");
+      _table.setHeight(2,"1");
       _table.setCellpadding(0);
-      _table.setCellspacing(1);
-      _table.setColor("#000000");
-      _table.setColor(1,2,"white");
+      _table.setCellspacing(0);
+      //_table.setCellspacing(1);
+      //_table.setColor("#000000");
+      //_table.setColor(1,2,"white");
       _table.setColor(1,1,"#CCCCCC");
+      _table.setLineFrame(true);
+      _table.setLineAfterRow(1);
+      _table.setLineWidth("2");
+      _table.setLineHeight("2");
+      _table.setLineColor("#000000");
+
       _table.setHeight(1,1,"11");
 
       Image image = getBundle(iwc).getImage("menuicon.gif");
