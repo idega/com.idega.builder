@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.27 2004/03/31 18:10:59 eiki Exp $
+ * $Id: IBMainServlet.java,v 1.28 2004/03/31 23:08:52 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,7 +10,6 @@
 package com.idega.builder.servlet;
 
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,13 +85,33 @@ public class IBMainServlet extends IWJSPPresentationServlet {
 	            return true;
 	        }
 	        
-        } catch (RemoteException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
         
         //if all else failes, use the default
         return super.getIfSyncronizeAccess(_req, _res);
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see com.idega.servlet.IWCoreServlet#getObjectToSynchronizeOn(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    protected Object getObjectToSynchronizeOn(HttpServletRequest request,HttpServletResponse response) {
+        try {
+	        IWContext iwc = getIWContext();
+	        IWApplicationContext iwac = this.getApplication().getIWApplicationContext();
+	        BuilderService bs = BuilderServiceFactory.getBuilderService(iwac);
+	        
+	        Integer pageID = new Integer(bs.getCurrentPageId(iwc));
+	        
+	        return pageID;
+	        
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+     //all else failes use default impl
+        return super.getObjectToSynchronizeOn(request,response);
     }
 }
