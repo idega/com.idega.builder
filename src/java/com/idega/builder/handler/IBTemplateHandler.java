@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateHandler.java,v 1.4 2001/12/13 12:13:37 palli Exp $
+ * $Id: IBTemplateHandler.java,v 1.5 2001/12/14 11:28:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,13 +42,18 @@ public class IBTemplateHandler implements PropertyHandler {
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
     IBTemplateChooser chooser = new IBTemplateChooser(name);
 
-    if (value != null && !value.equals("")) {
-      Map tree = PageTreeNode.getTree(iwc);
-      if (tree != null) {
-        PageTreeNode node = (PageTreeNode)tree.get(new Integer(value));
-        if (node != null)
-          chooser.setSelectedPage(node.getNodeID(),node.getNodeName());
+    try {
+      if (value != null && !value.equals("")) {
+        Map tree = PageTreeNode.getTree(iwc);
+        if (tree != null) {
+          PageTreeNode node = (PageTreeNode)tree.get(Integer.valueOf(value));
+          if (node != null)
+            chooser.setSelectedPage(node.getNodeID(),node.getNodeName());
+        }
       }
+    }
+    catch(NumberFormatException e) {
+      e.printStackTrace();
     }
     return(chooser);
   }
@@ -57,23 +62,25 @@ public class IBTemplateHandler implements PropertyHandler {
    *
    */
   public void onUpdate(String values[], IWContext iwc) {
-    if (values != null) {
-      for (int j = 0; j < values.length; j++)
-        System.out.println("values["+j+"] = " + values[j]);
+    try {
+      if (values != null) {
+        String value = values[0];
 
+        if (value != null && !value.equals("")) {
+          BuilderLogic instance = BuilderLogic.getInstance();
+          String currPage = instance.getCurrentIBPage(iwc);
+          if (currPage != null) {
+            int p = Integer.parseInt(currPage);
+            int v = Integer.parseInt(value);
+            instance.changeTemplateId(value,iwc);
+            IBPageUpdater.updateTemplateId(p,v);
+          }
 
-      String value = values[0];
-
-      if (value != null && !value.equals("")) {
-        BuilderLogic instance = BuilderLogic.getInstance();
-        instance.changeTemplateId(value,iwc);
-        String currPage = instance.getCurrentIBPage(iwc);
-
-        if (currPage != null) {
-          Integer i = new Integer(currPage);
-          IBPageUpdater.updateTemplateId(i.intValue(),Integer.parseInt(value));
         }
       }
+    }
+    catch(NumberFormatException e) {
+      e.printStackTrace();
     }
   }
 }
