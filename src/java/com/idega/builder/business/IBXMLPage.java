@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.24 2001/11/01 18:51:12 palli Exp $
+ * $Id: IBXMLPage.java,v 1.25 2001/11/01 20:49:10 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -169,7 +169,7 @@ public class IBXMLPage {
     }
   }
 
-  public boolean update() {
+  public synchronized boolean update() {
     try {
       IBPage ibpage = new IBPage(Integer.parseInt(_key));
       OutputStream stream = ibpage.getPageValueForWrite();
