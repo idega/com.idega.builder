@@ -11,7 +11,7 @@
       </action>              
     </release>
 
-    <release version="1.3" date="2005-01-14">
+    <release version="1.3.0" date="2005-01-14">
       <action dev="tryggvil" type="update">
         Declaration of version for use in old style systems before a 3.0 release is declared.
       </action>              
