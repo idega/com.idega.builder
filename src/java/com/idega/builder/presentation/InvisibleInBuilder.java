@@ -3,7 +3,7 @@ package com.idega.builder.presentation;
 /**
  * <p>Title: idegaWeb</p>
  * <p>Description: 
- * This a special interface that indicates that  the Builder has to use
+ * This is a special interface that indicates that  the Builder has to use
  * a hidden layer.
  * </p>
  * <p>Copyright: Copyright (c) 2003</p>
