@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.9 2003/11/28 11:10:28 sigtryggur Exp $
+ * $Id: IBPageBMPBean.java,v 1.10 2003/11/28 15:49:13 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,18 +29,18 @@ import com.idega.util.IWTimestamp;
  * @version 1.3
  */
 public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.core.builder.data.ICPage {
-	private final static String ENTITY_NAME = "ib_page";
-	private final static String FILE_COLUMN = "file_id";
+	private final static String ENTITY_NAME = "IB_PAGE";
+	private final static String FILE_COLUMN = "FILE_ID";
 	private final static String NAME_COLUMN = "NAME";
-	private final static String TEMPLATE_ID_COLUMN = "template_id";
+	private final static String TEMPLATE_ID_COLUMN = "TEMPLATE_ID";
 	private final static String TYPE_COLUMN = "PAGE_TYPE";
-	private final static String SUBTYPE_COLUMN = "page_sub_type";
-	private final static String LOCKED_COLUMN = "locked_by";
-	private final static String DELETED_COLUMN = "deleted";
-	private final static String DELETED_BY_COLUMN = "deleted_by";
-	private final static String DELETED_WHEN_COLUMN = "deleted_when";
-	private final static String TREE_ORDER = "tree_order";
-	private final static String IS_CATEGORY = "is_category";
+	private final static String SUBTYPE_COLUMN = "PAGE_SUB_TYPE";
+	private final static String LOCKED_COLUMN = "LOCKED_BY";
+	private final static String DELETED_COLUMN = "DELETED";
+	private final static String DELETED_BY_COLUMN = "DELETED_BY";
+	private final static String DELETED_WHEN_COLUMN = "DELETED_WHEN";
+	private final static String TREE_ORDER = "TREE_ORDER";
+	private final static String IS_CATEGORY = "IS_CATEGORY";
 	private ICFile _file;
 
 	public final static String PAGE = "P";

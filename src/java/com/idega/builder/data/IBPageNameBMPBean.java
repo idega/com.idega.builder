@@ -25,10 +25,10 @@ import javax.ejb.FinderException;
  * @version 1.0
  */
 public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
-	private static final String TABLE_NAME = "ib_page_name";
-	private static final String PAGE_ID = "ib_page_id";
-	private static final String LOCALE_ID = "ic_locale_id";
-	private static final String PAGE_NAME = "page_name";
+	private static final String TABLE_NAME = "IB_PAGE_NAME";
+	private static final String PAGE_ID = "IB_PAGE_ID";
+	private static final String LOCALE_ID = "IC_LOCALE_ID";
+	private static final String PAGE_NAME = "PAGE_NAME";
 
 	public IBPageNameBMPBean() {
 		super();
