@@ -19,7 +19,7 @@ import com.idega.block.IWBlock;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.GenericGroup;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.IBPageFinder;
@@ -386,7 +386,7 @@ public class DPTTriggerBusiness {
     try {
       l.setDeleted(true);
       l.setDeletedBy(userId);
-      l.setDeletedWhen(idegaTimestamp.getTimestampRightNow());
+      l.setDeletedWhen(IWTimeStamp.getTimestampRightNow());
       l.update();
 
 

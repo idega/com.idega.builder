@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.1 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: IBPageBMPBean.java,v 1.2 2002/08/12 12:15:24 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,7 @@ import com.idega.core.data.ICMimeType;
 import com.idega.core.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.IWTimeStamp;
 //import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWUserContext;
 
@@ -178,7 +178,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
   public void setDeleted(boolean deleted) {
     if (deleted) {
       setColumn(getColumnDeleted(),DELETED);
-      setDeletedWhen(idegaTimestamp.getTimestampRightNow());
+      setDeletedWhen(IWTimeStamp.getTimestampRightNow());
 //      setDeletedBy(iwc.getUserId());
     }
     else {
@@ -432,7 +432,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
    */
   public void delete(int userId) throws SQLException {
     setColumn(getColumnDeleted(),DELETED);
-    setDeletedWhen(idegaTimestamp.getTimestampRightNow());
+    setDeletedWhen(IWTimeStamp.getTimestampRightNow());
     setDeletedBy(userId);
 
     super.update();
