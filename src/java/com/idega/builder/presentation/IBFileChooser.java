@@ -14,10 +14,17 @@ import com.idega.jmodule.object.Image;
  */
 
 public class IBFileChooser extends AbstractChooser {
+  private String style;
+
   public IBFileChooser(String chooserName) {
     addForm(false);
-    setChooseButtonImage(new Image("/common/pics/arachnea/toolbar_open_1.gif","Choose"));
+    setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
     setChooserParameter(chooserName);
+  }
+
+  public IBFileChooser(String chooserName,String style) {
+    this(chooserName);
+    setInputStyle(style);
   }
 
   public Class getChooserWindowClass() {
