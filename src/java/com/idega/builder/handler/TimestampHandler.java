@@ -4,12 +4,10 @@
  */
 package com.idega.builder.handler;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.TimeInput;
 import com.idega.presentation.ui.TimestampInput;
 
 /**
