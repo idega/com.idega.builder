@@ -14,7 +14,7 @@ import com.idega.util.reflect.*;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 
-import com.idega.jmodule.image.presentation.ImageInserter;
+import com.idega.block.media.presentation.ImageInserter;
 
 import java.util.Map;
 import java.util.List;
@@ -188,6 +188,7 @@ public class IBPropertyHandler{
           }
       }
       else if(parameterClass.equals(com.idega.presentation.Image.class)){
+          //obj = new com.idega.jmodule.image.presentation.ImageInserter(name,false);
           obj = new ImageInserter(name,false);
       }
       /**@todo : handle page,template,file if the inputs already hava a value
