@@ -127,4 +127,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	{
 		return getPageTree(startNodeId,-1);
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.business.BuilderService#setPriorityPageId(com.idega.presentation.IWContext, java.lang.String)
+	 */
+	public void setPriorityPageId(IWContext iwc, String pageId) throws RemoteException {
+		iwc.setSessionAttribute(BuilderLogic.SESSION_PRIORITY_PAGE_KEY, pageId);
+	}
 }
