@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.27 2001/10/31 20:27:26 laddi Exp $
+ * $Id: IBApplication.java,v 1.28 2001/11/01 16:09:46 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,6 +32,9 @@ import com.idega.presentation.ui.IFrame;
 import com.idega.idegaweb.IWBundle;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.business.PageTreeNode;
+
+import java.util.Vector;
+import java.util.List;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -68,7 +71,33 @@ public class IBApplication extends IWApplication {
     super.setHeight(700);
   }
 
+  static boolean startupInProgress(IWContext iwc){
+    List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
+    if(l==null)
+      return false;
+    return true;
+  }
+
+  static void endStartup(IWContext iwc,Class c){
+    List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
+    if(l!=null){
+      l.remove(c);
+      if(l.size()==0){
+        iwc.removeSessionAttribute("ib_startup_class_list");
+      }
+    }
+  }
+
+  static void startStartup(IWContext iwc){
+    List l = new Vector();
+    iwc.setSessionAttribute("ib_startup_class_list",l);
+    l.add(IBToolBar.class);
+    l.add(PageTree.class);
+    l.add(PageTree.class);
+  }
+
   public void main(IWContext iwc) {
+    startStartup(iwc);
     add(IBBanner.class);
     if ( iwc.getParameter("toolbar") != null ) {
       iwc.setSessionAttribute("toolbar",iwc.getParameter("toolbar"));
@@ -184,13 +213,18 @@ public class IBApplication extends IWApplication {
     }
 
     public void main(IWContext iwc){
-      if ( noCurtain ) {
-        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
-      }
-      else {
-        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+
+      boolean startupInProgress = startupInProgress(iwc);
+
+      if(!startupInProgress){
+        if ( noCurtain ) {
+          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+        }
+        else {
+          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+        }
       }
       getParentPage().setAllMargins(2);
       int i_page_id = 1;
@@ -215,6 +249,7 @@ public class IBApplication extends IWApplication {
       catch (Exception e) {
         e.printStackTrace(System.err);
       }
+      endStartup(iwc,PageTree.class);
     }
   }
 
@@ -223,13 +258,17 @@ public class IBApplication extends IWApplication {
     }
 
     public void main(IWContext iwc){
-      if ( noCurtain ) {
-        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-        getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
-      }
-      else {
-        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-        getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+      boolean startupInProgress = startupInProgress(iwc);
+
+      if(!startupInProgress){
+        if ( noCurtain ) {
+          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+        }
+        else {
+          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
+        }
       }
       getParentPage().setAllMargins(2);
 
@@ -255,6 +294,7 @@ public class IBApplication extends IWApplication {
       catch (Exception e) {
         e.printStackTrace(System.err);
       }
+      endStartup(iwc,TemplateTree.class);
     }
   }
 
@@ -332,7 +372,11 @@ public class IBApplication extends IWApplication {
      *
      */
     public void main(IWContext iwc) {
-      super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+
+      boolean startupInProgress = startupInProgress(iwc);
+      if(!startupInProgress){
+        super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+      }
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
       setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
@@ -453,6 +497,8 @@ public class IBApplication extends IWApplication {
 
         add(toolbarTable);
       }
+
+      endStartup(iwc,IBToolBar.class);
     }
 
     /**
@@ -571,4 +617,5 @@ public class IBApplication extends IWApplication {
       return(IW_BUNDLE_IDENTIFIER);
     }
   }
+
 }
