@@ -58,17 +58,18 @@ public class ComponentPropertyHandler {
      void setReflectionProperty(PresentationObject instance,Method method,Vector stringValues){
         //Object[] args = getObjectArguments(stringValues);
         //method.invoke(instance,args);
-        Object[] args = new Object[stringValues.size()];
-        Class[] parameterTypes = method.getParameterTypes();
-        for (int i = 0; i < parameterTypes.length; i++) {
-          if(parameterTypes[i]!=null){
-            args[i] = handleParameter(parameterTypes[i],(String)stringValues.get(i));
-          }
-        }
         try{
+          Object[] args = new Object[stringValues.size()];
+          Class[] parameterTypes = method.getParameterTypes();
+          for (int i = 0; i < parameterTypes.length; i++) {
+            if(parameterTypes[i]!=null){
+              args[i] = handleParameter(parameterTypes[i],(String)stringValues.get(i));
+            }
+          }
           method.invoke(instance,args);
         }
         catch(Exception e){
+          System.err.println("Error in property '"+method.toString()+"' for ICObjectInstance="+instance.getICObjectInstanceID());
           e.printStackTrace();
         }
     }
@@ -92,15 +93,15 @@ public class ComponentPropertyHandler {
       return theReturn;
     }
 
-    static Object handleParameter(Class parameterType,String stringValue){
+    static Object handleParameter(Class parameterType,String stringValue)throws Exception{
         Object argument=null;
         if(parameterType.equals(Integer.class) || parameterType.equals(Integer.TYPE)){
-          try{
+          //try{
             argument = new Integer(stringValue);
-          }
-          catch(NumberFormatException e){
-            e.printStackTrace(System.out);
-          }
+          //}
+          //catch(NumberFormatException e){
+          //  e.printStackTrace(System.out);
+          //}
         }
         else if(parameterType.equals(String.class)){
             argument =  stringValue;
@@ -120,12 +121,12 @@ public class ComponentPropertyHandler {
           argument = new Float(stringValue);
         }
         else if(parameterType.equals(IBPage.class)){
-          try {
+          //try {
             argument = new IBPage(Integer.parseInt(stringValue));
-          }
-          catch (Exception ex) {
-            ex.printStackTrace(System.err);
-          }
+          //}
+          //catch (Exception ex) {
+          //  ex.printStackTrace(System.err);
+          //}
         }
         else if(parameterType.equals(ICFile.class)){
           try {
@@ -144,12 +145,12 @@ public class ComponentPropertyHandler {
           }
         }*/
         else if(parameterType.equals(Image.class)){
-          try {
+          //try {
             argument = new Image(Integer.parseInt(stringValue));
-          }
-          catch (Exception ex) {
-            ex.printStackTrace(System.err);
-          }
+          //}
+          //catch (Exception ex) {
+          //  ex.printStackTrace(System.err);
+          //}
         }
         return argument;
     }
