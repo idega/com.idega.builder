@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.26 2002/01/15 16:08:30 gummi Exp $
+ * $Id: XMLWriter.java,v 1.27 2002/01/16 14:28:25 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -913,7 +913,8 @@ public class XMLWriter {
       instance.setICObjectID(object_id.getIntValue());
       instance.insert();
 
-      attribute = new XMLAttribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
+      String moduleId = Integer.toString(instance.getID());
+      attribute = new XMLAttribute(XMLConstants.ID_STRING,moduleId);
       element.setAttribute(attribute);
 
       List childs = element.getChildren(XMLConstants.MODULE_STRING);
@@ -931,6 +932,17 @@ public class XMLWriter {
         Iterator it = childs.iterator();
         while (it.hasNext()) {
           XMLElement el = (XMLElement)it.next();
+          XMLAttribute regionId = el.getAttribute(XMLConstants.ID_STRING);
+          if (regionId != null) {
+            String regId = regionId.getValue();
+            int index = regId.indexOf(".");
+            if (index > -1) {
+              String sub = regId.substring(index);
+              sub = moduleId + sub;
+              regionId = new XMLAttribute(XMLConstants.ID_STRING,sub);
+              el.setAttribute(regionId);
+            }
+          }
           List childs2 = el.getChildren(XMLConstants.MODULE_STRING);
           if (childs2 != null) {
             Iterator it2 = childs2.iterator();
