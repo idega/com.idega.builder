@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.2 2004/12/21 09:46:19 tryggvil Exp $
+ * $Id: JspPage.java,v 1.3 2005/03/04 18:17:26 tryggvil Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,13 +21,21 @@ import com.idega.idegaweb.IWMainApplication;
 /**
  *  The instance of this class wrapps a Builder page of format JSP.<br>
  * 
- *  Last modified: $Date: 2004/12/21 09:46:19 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/03/04 18:17:26 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class JspPage extends CachedBuilderPage {
 	
+	public String getURI() {
+		String parentUri = getParent().getURI();
+		String pageUri = getPageUri();
+		
+		String newUri = parentUri+pageUri;
+		return newUri;
+		
+	}
 	private static Logger log = Logger.getLogger(JspPage.class.getName());
 	
 		private boolean isLoadedToDisk=false;
