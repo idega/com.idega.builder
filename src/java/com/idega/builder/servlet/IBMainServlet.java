@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.23 2003/08/05 19:45:36 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.24 2003/08/06 09:45:09 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,6 @@ package com.idega.builder.servlet;
 
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.business.IBOLookup;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.idegaweb.IWApplicationContext;
