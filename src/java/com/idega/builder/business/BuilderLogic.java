@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.144 2004/02/26 09:08:48 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.145 2004/02/26 09:39:13 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -222,7 +222,7 @@ public class BuilderLogic {
 			parentObject.getChildren().remove(index);
 			parentObject.getChildren().add(index, PresentationObject.NULL_CLONE_OBJECT);
 		}
-		else if (obj instanceof PresentationObjectContainer) {
+		else if (obj.isContainer()) {
 			if (obj instanceof Table) {
 				Table tab = (Table) obj;
 				int cols = tab.getColumns();
