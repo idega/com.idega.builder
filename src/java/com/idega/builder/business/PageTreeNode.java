@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.19 2004/10/29 09:26:59 laddi Exp $
+ * $Id: PageTreeNode.java,v 1.20 2004/12/20 14:03:38 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -229,6 +229,9 @@ public class PageTreeNode implements ICTreeNode {
 	 *
 	 */
 	public Iterator getChildrenIterator() {
+	    if (_children == null) {
+	        return null;
+	    }
 		return _children.iterator();
 	}
 
