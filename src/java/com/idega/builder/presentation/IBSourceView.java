@@ -95,7 +95,7 @@ public class IBSourceView extends Window {
       table.add(templateGrabButton,1,5);
       
       String templateGrabString = "Warning: This will get the template from URL and write over the template and set type to HTML";
-      PreformattedText templateGrapHelpText = new PreformattedText(templateGrabString);
+      //PreformattedText templateGrapHelpText = new PreformattedText(templateGrabString);
       table.add(templateGrabString,1,6);
       
   }
@@ -111,7 +111,7 @@ public class IBSourceView extends Window {
     //IBXMLPage page = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc);
     //page.setSourceFromString(sourceString);
   	String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
-  	HtmlTemplateGrabber grabber = new HtmlTemplateGrabber(url,pageKey);
+  new HtmlTemplateGrabber(url,pageKey);
   }
 
   public void setSource(TextArea area,IWContext iwc){
