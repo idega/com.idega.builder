@@ -22,6 +22,7 @@ import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.util.text.TextStyler;
 import com.idega.xml.XMLElement;
 
@@ -97,7 +98,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		//_layer.setPositionType(Layer.RELATIVE);
 		/** To work around layer stacking in Opera browser version 5, revise for newer versions */
 		boolean hideLayer = iwc.isOpera();
-		if (_theObject instanceof InvisibleInBuilder) {
+		if (ImplementorRepository.getInstance().isTypeOf(InvisibleInBuilder.class, _theObject.getClass())) {
 			hideLayer = true;
 		}
 		/*Layer controlLayer = new Layer(Layer.DIV);
