@@ -47,7 +47,7 @@ public class GroupHandler implements PropertyHandler {
     try {
       if (value != null && !value.equals("")) {
       	Group group = getGroupHome().findByPrimaryKey(new Integer(value));
-		 		GroupTreeNode node = new GroupTreeNode(group);
+		 		GroupTreeNode node = new GroupTreeNode(group,iwc.getApplicationContext());
 			  if (node != null)
 			    chooser.setSelectedNode(node);
       }
