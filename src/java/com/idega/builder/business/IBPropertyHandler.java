@@ -283,15 +283,19 @@ public class IBPropertyHandler{
      */
     public String getMethodParameterProperty(IWContext iwc,String ICObjectInstanceID,String methodIdentifier,int parameterIndex,String paramKey){
       try{
-        IWBundle iwb = ICObjectBusiness.getBundleForInstance(ICObjectInstanceID,iwc.getApplication());
-        Class objectClass = ICObjectBusiness.getClassForInstance(ICObjectInstanceID);
-        IWPropertyList component = iwb.getComponentList().getIWPropertyList(objectClass.getName());
-        IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
-        IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
+        if (!ICObjectInstanceID.equals("-1")) {
+          IWBundle iwb = ICObjectBusiness.getBundleForInstance(ICObjectInstanceID,iwc.getApplication());
+          Class objectClass = ICObjectBusiness.getClassForInstance(ICObjectInstanceID);
+          IWPropertyList component = iwb.getComponentList().getIWPropertyList(objectClass.getName());
+          IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
+          IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
 
-        IWPropertyList parameterOptions = method.getPropertyList(this.METHOD_PARAMETERS_KEY);
-        IWPropertyList parameter = parameterOptions.getIWPropertyList(Integer.toString(parameterIndex));
-        return parameter.getProperty(paramKey);
+          IWPropertyList parameterOptions = method.getPropertyList(this.METHOD_PARAMETERS_KEY);
+          IWPropertyList parameter = parameterOptions.getIWPropertyList(Integer.toString(parameterIndex));
+          return parameter.getProperty(paramKey);
+        }
+        else
+          return(null);
       }
       catch(Exception e){
         return null;
