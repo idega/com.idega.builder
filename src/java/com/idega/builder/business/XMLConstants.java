@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.15 2004/03/12 18:43:23 thomas Exp $
+ * $Id: XMLConstants.java,v 1.16 2004/03/24 18:43:33 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,6 +50,22 @@ public abstract class XMLConstants {
   public static final String FRAGMENT_TYPE_LIBRARY = "library";
   public static final String FRAGMENT_TYPE_CLIPBOARD = "clipboard";
   
-  // for export
-  public static final String PAGES = "pages";
+  // for exporting
+  public static final String EXPORT_MODULE = "module";
+  public static final String EXPORT_MODULE_CLASS = "class";
+  public static final String EXPORT_PROPERTY = "property";
+  public static final String EXPORT_PROPERTY_NAME = "name";
+  public static final String EXPORT_SOURCE = "source";
+  public static final String EXPORT_PROVIDER = "provider";
+  public static final String EXPORT_PROVIDER_EJB = "ejb";
+  public static final String EXPORT_PROVIDER_CLASS = "class";
+  public static final String EXPORT_PROVIDER_METHOD = "method";
+  
+  // for file metadata
+  public static final String FILE = "file";
+  public static final String FILE_SOURCE = "source";
+  public static final String FILE_NAME = "name";
+  public static final String FILE_VALUE = "value";
+  public static final String FILE_USED_ID = "identifier";
+  public static final String FILE_ORIGINAL_NAME = "original_name";
 }
