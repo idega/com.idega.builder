@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.9 2001/10/05 08:04:05 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.10 2001/10/10 12:08:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,8 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.IBPropertyHandler;
+import com.idega.builder.business.IBXMLPage;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
@@ -114,6 +116,11 @@ public class IBCreatePageWindow extends IWAdminWindow {
         IBPage ibPageParent = new IBPage(Integer.parseInt(pageId));
         ibPageParent.addChild(ibPage);
 
+        if ((templateId != null) && (!templateId.equals(""))) {
+          IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
+          xml.addUsingTemplate(Integer.toString(ibPage.getID()));
+        }
+
         iwc.setSessionAttribute("ib_page_id",Integer.toString(ibPage.getID()));
         setParentToReload();
         close();
@@ -130,19 +137,6 @@ public class IBCreatePageWindow extends IWAdminWindow {
 
       if (type != null)
         mnu.setSelectedElement(type);
-
-
-/*      System.out.println("id = " + templateId);
-      System.out.println("name = " + templateName);*/
-
-      java.util.Enumeration e = iwc.getParameterNames();
-
-      while (e.hasMoreElements()) {
-        String param = (String)e.nextElement();
-        String value = iwc.getParameter(param);
-        System.out.println(param + " = " + value);
-      }
-
     }
   }
 

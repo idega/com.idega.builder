@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.13 2001/10/10 10:37:58 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.14 2001/10/10 12:08:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,8 +17,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Hashtable;
-import java.util.Enumeration;
+import java.util.Vector;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
@@ -50,10 +49,7 @@ public class IBXMLPage {
 
   private String _type = TYPE_PAGE;
 
-  /**
-   * @todo Verð að gera þetta öðru vísi
-   */
-  private Hashtable _children = null;
+  private List _usingTemplate = null;
 
   /*
    *
@@ -117,50 +113,50 @@ public class IBXMLPage {
   /**
    *
    */
-  public void addChild(String id) {
-    if (_children == null)
-      _children = new java.util.Hashtable();
+  public void addUsingTemplate(String id) {
+    if (_usingTemplate == null)
+      _usingTemplate = new Vector();
 
-    _children.put(id,EMPTY);
+    if (!_usingTemplate.contains(id)) {
+    System.out.println("Adding page " + id + " as using template " + _key);
+      _usingTemplate.add(id);
+    }
   }
 
   /**
    *
    */
-  public java.util.Map getChildren() {
-    //Skítamix
-    _children = null;
-    if (_children == null)
-      findAllChildren();
-    return(_children);
+  public List getUsingTemplate() {
+    if (_usingTemplate == null)
+      findAllUsingTemplate();
+    return(_usingTemplate);
   }
 
-  private void findAllChildren() {
-    _children = new java.util.Hashtable();
+  private void findAllUsingTemplate() {
+    _usingTemplate = new Vector();
     try {
-      String templateId = _key;
-      java.util.List l = com.idega.data.EntityFinder.findAllByColumn(new com.idega.builder.data.IBPage(),com.idega.builder.data.IBPage.getColumnTemplateID(),Integer.parseInt(templateId));
+      List l = com.idega.data.EntityFinder.findAllByColumn(new com.idega.builder.data.IBPage(),com.idega.builder.data.IBPage.getColumnTemplateID(),Integer.parseInt(_key));
       if (l == null)
         return;
-      java.util.Iterator i = l.iterator();
+      Iterator i = l.iterator();
       while (i.hasNext()) {
         com.idega.builder.data.IBPage p = (com.idega.builder.data.IBPage)i.next();
-        _children.put(Integer.toString(p.getID()),EMPTY);
+        addUsingTemplate(Integer.toString(p.getID()));
       }
     }
     catch(java.sql.SQLException e) {}
   }
 
-  private void invalidateChildren() {
-    Hashtable h = (Hashtable)getChildren();
-    if (h != null) {
-      Enumeration e = h.keys();
-      while (e.hasMoreElements()) {
-        String invalid = (String)e.nextElement();
+  private void invalidateUsingTemplate() {
+    List l = getUsingTemplate();
+    if (l != null) {
+      Iterator i = l.iterator();
+      while (i.hasNext()) {
+        String invalid = (String)i.next();
         PageCacher.flagPageInvalid(invalid);
         IBXMLPage child = PageCacher.getXML(invalid);
         if (child.getType() == TYPE_TEMPLATE)
-          child.invalidateChildren();
+          child.invalidateUsingTemplate();
       }
     }
   }
@@ -186,7 +182,7 @@ public class IBXMLPage {
     }
     setPopulatedPage(XMLReader.getPopulatedPage(this));
     if (_type == TYPE_TEMPLATE)
-      invalidateChildren();
+      invalidateUsingTemplate();
 
     return true;
   }

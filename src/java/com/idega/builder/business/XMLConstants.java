@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.3 2001/09/28 15:39:45 palli Exp $
+ * $Id: XMLConstants.java,v 1.4 2001/10/10 12:08:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,10 @@
  */
 package com.idega.builder.business;
 
+/**
+ * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * @version 1.0
+ */
 public abstract class XMLConstants {
   static final String ROOT_STRING = "xml";
   static final String PAGE_STRING = "page";

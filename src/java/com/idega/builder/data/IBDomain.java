@@ -60,6 +60,7 @@ public class IBDomain extends GenericEntity {
   }
 
   public void insertStartData() throws Exception {
+    BuilderLogic instance = BuilderLogic.getInstance();
     IBDomain domain = new IBDomain();
     domain.setName("Default Site");
 
@@ -68,7 +69,7 @@ public class IBDomain extends GenericEntity {
     page.setType(IBPage.PAGE);
     page.insert();
 
-    BuilderLogic.getInstance().unlockRegion(Integer.toString(page.getID()),"-1");
+    instance.unlockRegion(Integer.toString(page.getID()),"-1");
 
     domain.setIBPage(page);
     domain.insert();
@@ -81,7 +82,8 @@ public class IBDomain extends GenericEntity {
     page.setTemplateId(page2.getID());
     page.update();
 
-    BuilderLogic.getInstance().setTemplateId(Integer.toString(page.getID()),Integer.toString(page2.getID()));
+    instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(page2.getID()));
+    instance.getIBXMLPage(page2.getID()).addUsingTemplate(Integer.toString(page.getID()));
   }
 
   public String getEntityName(){
@@ -128,6 +130,4 @@ public class IBDomain extends GenericEntity {
   public void setName(String name){
     this.setColumn(getColumnDomainName(),name);
   }
-
-
 }

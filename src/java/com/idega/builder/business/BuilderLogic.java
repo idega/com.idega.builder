@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.40 2001/10/10 10:37:58 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.41 2001/10/10 12:08:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,6 +47,7 @@ import com.idega.core.data.GenericGroup;
 import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
+
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -164,8 +165,6 @@ public class BuilderLogic {
       if (page.getIsExtendingTemplate()) {
         if (!page.isLocked()) {
           page.add(getAddIcon(Integer.toString(-1),iwc));
-//          if (page.getIsTemplate())
-//            page.add(getUnlockedIcon(Integer.toString(-1),iwc));
         }
       }
       else {
@@ -657,11 +656,11 @@ public class BuilderLogic {
 
       if (parentObjectInstanceID.equals("-1")) {
         if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
-          Hashtable extend = (Hashtable)xml.getChildren();
+          List extend = xml.getUsingTemplate();
           if (extend != null) {
-            Enumeration en = extend.keys();
-            while (en.hasMoreElements())
-              lockRegion((String)en.nextElement(),parentObjectInstanceID);
+            Iterator i = extend.iterator();
+            while (i.hasNext())
+              lockRegion((String)i.next(),parentObjectInstanceID);
           }
         }
       }
@@ -678,11 +677,11 @@ public class BuilderLogic {
 
       if (parentObjectInstanceID.equals("-1")) {
         if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
-          Hashtable extend = (Hashtable)xml.getChildren();
+          List extend = xml.getUsingTemplate();
           if (extend != null) {
-            Enumeration en = extend.keys();
-            while (en.hasMoreElements())
-              unlockRegion((String)en.nextElement(),parentObjectInstanceID);
+            Iterator i = extend.iterator();
+            while (i.hasNext())
+              unlockRegion((String)i.next(),parentObjectInstanceID);
           }
         }
       }

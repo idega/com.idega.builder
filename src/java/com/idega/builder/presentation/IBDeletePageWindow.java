@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.3 2001/10/08 16:34:00 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.4 2001/10/10 12:08:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,7 +21,8 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.data.IBPage;
 import com.idega.presentation.Page;
-import java.util.Map;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -44,36 +45,55 @@ public class IBDeletePageWindow extends IWAdminWindow {
 
     BuilderLogic instance = BuilderLogic.getInstance();
     String pageId = instance.getCurrentIBPage(iwc);
-    IBXMLPage xml = instance.getIBXMLPage(pageId);
-//    IBPage ibpage = new IBPage(pageId);
-//    ibpage.delete();
-//    Page page = xml.getPopulatedPage();
-//    page.
 
     String submit = iwc.getParameter("ok");
     String quit = iwc.getParameter("cancel");
-    if (submit != null) {
+    String deleteAll = iwc.getParameter("deletechildren");
 
+    if (submit != null) {
+      IBPage ibpage = new IBPage(Integer.parseInt(pageId));
+      IBPage parent = (IBPage)ibpage.getParentNode();
+
+      parent.removeChild(ibpage);
+      ibpage.setDeleted(true,iwc);
+      ibpage.update();
+
+      if ((deleteAll != null) && (deleteAll.equals("true"))) {
+        deleteAllChildren(ibpage,iwc);
+      }
+      else {
+        parent.moveChildrenFrom(ibpage);
+      }
+
+      setParentToReload();
+      close();
     }
     else if (quit != null) {
       close();
     }
 
+    IBXMLPage xml = instance.getIBXMLPage(pageId);
+
     if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
-      Map map = xml.getChildren();
+      List map = xml.getUsingTemplate();
+
       if ((map == null) || (map.isEmpty()))
         okToDelete = true;
       else
         okToDelete = false;
+
+      //Temporary
+      okToDelete = false;
     }
-    else
+    else {
       okToDelete = true;
+    }
 
 
     if (okToDelete) {
       SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("yes","Yes"));
       SubmitButton cancel = new SubmitButton("cancel",iwrb.getLocalizedString("no","No"));
-      CheckBox deleteChildren = new CheckBox("deletechildren");
+      CheckBox deleteChildren = new CheckBox("deletechildren","true");
       deleteChildren.setChecked(false);
       Text deleteChildrenText = new Text(iwrb.getLocalizedString("childrentext","Delete children of page"));
       Text sureText = new Text(iwrb.getLocalizedString("suredelete","Are you sure you want to delete this page"));
@@ -97,7 +117,25 @@ public class IBDeletePageWindow extends IWAdminWindow {
       form.add(notAllowed);
       form.add(cancel);
     }
+  }
 
+  private void deleteAllChildren(IBPage page, IWContext iwc) throws java.sql.SQLException {
+System.out.println("deleting children of page " + page.getID());
+    Iterator it = page.getChildren();
+
+    if (it != null) {
+      while (it.hasNext()) {
+        IBPage child = (IBPage)it.next();
+System.out.println("child id " + child.getID());
+
+        if (child.getChildCount() != 0)
+          deleteAllChildren(child,iwc);
+
+        child.setDeleted(true,iwc);
+        child.update();
+        page.removeChild(child);
+      }
+    }
   }
 }
 

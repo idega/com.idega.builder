@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.22 2001/09/28 15:39:45 palli Exp $
+ * $Id: IBPage.java,v 1.23 2001/10/10 12:08:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,11 +11,14 @@ package com.idega.builder.data;
 
 import com.idega.data.BlobWrapper;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.io.InputStream;
 import java.io.OutputStream;
 import com.idega.core.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
+import com.idega.util.idegaTimestamp;
+import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -29,6 +32,9 @@ public class IBPage extends TreeableEntity {
   private final static String TYPE_COLUMN = "page_type";
   private final static String LOCKED_COLUMN = "locked_by";
 //  private static String DOMAIN_COLUMN = "ib_domain_id";
+  private final static String DELETED_COLUMN = "deleted";
+  private final static String DELETED_BY_COLUMN = "deleted_by";
+  private final static String DELETED_WHEN_COLUMN = "deleted_when";
   private ICFile _file;
   private BlobWrapper _wrapper;
 
@@ -36,6 +42,8 @@ public class IBPage extends TreeableEntity {
   public final static String TEMPLATE = "T";
   public final static String DRAFT = "D";
 
+  private final static String DELETED = "Y";
+  private final static String NOT_DELETED = "N";
 
   /**
    *
@@ -62,6 +70,9 @@ public class IBPage extends TreeableEntity {
     addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
     addAttribute(getColumnType(),"Type",true,true,String.class,1);
     addAttribute(getColumnLockedBy(),"Locked by",true,true,Integer.class,"many-to-one",User.class);
+    addAttribute(getColumnDeleted(),"Deleted",true,true,String.class,1);
+    addAttribute(getColumnDeletedBy(),"Deleted by",true,true,Integer.class,"many-to-one",User.class);
+    addAttribute(getColumnDeletedWhen(),"Deleted when",true,true,Timestamp.class);
 //    addAttribute(getColumnDomain(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
 	}
 
@@ -132,6 +143,67 @@ public class IBPage extends TreeableEntity {
    */
   public void setLockedBy(int id) {
     setColumn(getColumnLockedBy(),id);
+  }
+
+  /**
+   *
+   */
+  public boolean getDeleted() {
+    String deleted = getStringColumnValue(getColumnDeleted());
+
+    if ((deleted == null) || (deleted.equals(NOT_DELETED)))
+      return(false);
+    else if (deleted.equals(DELETED))
+      return(true);
+    else
+      return(false);
+  }
+
+  /**
+   *
+   */
+  public void setDeleted(boolean deleted, IWContext iwc) {
+    if (deleted) {
+      setColumn(getColumnDeleted(),DELETED);
+      setDeletedWhen(idegaTimestamp.getTimestampRightNow());
+      setDeletedBy(iwc.getUserId());
+    }
+    else {
+      setColumn(getColumnDeleted(),NOT_DELETED);
+//      setDeletedBy(-1);
+//      setDeletedWhen(null);
+    }
+  }
+
+  /**
+   *
+   */
+  public int getDeletedBy() {
+    return(getIntColumnValue(getColumnDeletedBy()));
+  }
+
+  /**
+   *
+   */
+  private void setDeletedBy(int id) {
+//    if (id == -1)
+//      setColumn(getColumnDeletedBy(),(Object)null);
+//    else
+      setColumn(getColumnDeletedBy(),id);
+  }
+
+  /**
+   *
+   */
+  public Timestamp getDeletedWhen() {
+    return((Timestamp)getColumnValue(getColumnDeletedWhen()));
+  }
+
+  /**
+   *
+   */
+  private void setDeletedWhen(Timestamp when) {
+    setColumn(getColumnDeletedWhen(),when);
   }
 
   /**
@@ -244,6 +316,27 @@ public class IBPage extends TreeableEntity {
    */
   public static String getColumnLockedBy() {
     return(LOCKED_COLUMN);
+  }
+
+  /**
+   *
+   */
+  public static String getColumnDeleted() {
+    return(DELETED_COLUMN);
+  }
+
+  /**
+   *
+   */
+  public static String getColumnDeletedBy() {
+    return(DELETED_BY_COLUMN);
+  }
+
+  /**
+   *
+   */
+  public static String getColumnDeletedWhen() {
+    return(DELETED_WHEN_COLUMN);
   }
 
   /**
