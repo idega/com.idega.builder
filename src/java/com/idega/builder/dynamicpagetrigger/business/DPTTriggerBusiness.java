@@ -241,7 +241,7 @@ public class DPTTriggerBusiness {
         int templateId = item.getDPTTemplateId();
         String createdPage = (String)createdPages.get(Integer.toString(templateId));
         if(createdPage == null){
-          String subpageName = item.getName();
+          String subpageName = item.getText();
           if(subpageName == null){
             subpageName = "Untitled";
           }
@@ -364,7 +364,7 @@ public class DPTTriggerBusiness {
       l.update();
 
 
-      // invalidatePage
+      //com.idega.builder.business.IBPageHelper.deletePages()
 
       return true;
     }
