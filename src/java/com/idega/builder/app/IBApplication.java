@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.73 2003/04/03 19:54:57 laddi Exp $
+ *  $Id: IBApplication.java,v 1.74 2003/05/27 20:32:20 eiki Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,6 +79,10 @@ public class IBApplication extends IWApplication {
 	}
 	protected static String getContentPreviewURL(IWContext iwc) {
 		return iwc.getApplication().getBuilderServletURI() + "?view=preview";
+	}
+	
+	protected static String getContentPDFPreviewURL(IWContext iwc) {
+			return iwc.getApplication().getTranslatedURIWithContext("/servlet/IWPDFServlet?view=pdfpreview");
 	}
 	/**
 	 * Description of the Method
@@ -725,10 +729,11 @@ public class IBApplication extends IWApplication {
 				 *  text1.setFontSize(1);
 				 *  text1.setFontColor("Black");
 				 */
-				Table toolTable = new Table(3, 1);
+				Table toolTable = new Table(4, 1);
 				toolTable.setWidth("100%");
 				toolTable.setCellpadding(0);
 				toolTable.setCellspacing(0);
+				
 				Image editImage = _iwrb.getImage("shared/status/edit1.gif", "Edit", 64, 17);
 				editImage.setOnClickImage(_iwrb.getImage("shared/status/edit.gif"));
 				Link editLink = new Link(editImage);
@@ -736,12 +741,23 @@ public class IBApplication extends IWApplication {
 				editLink.setURL(getContentEditURL(iwc));
 				toolTable.add(editLink, 1, 1);
 				getParentPage().setOnLoad("javascript: swapImage('" + editImage.getName() + "','','" + _iwrb.getImage("shared/status/edit.gif").getURL() + "',1)");
+				
 				Image previewImage = _iwrb.getImage("shared/status/preview1.gif", "Preview", 64, 17);
 				previewImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
 				Link previewLink = new Link(previewImage);
 				previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
 				previewLink.setURL(getContentPreviewURL(iwc));
 				toolTable.add(previewLink, 2, 1);
+				
+				/*
+				Image previewPDFImage = _iwrb.getImage("shared/status/preview1.gif", "Preview PDF", 64, 17);
+				previewPDFImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
+				Link previewPDFLink = new Link(previewImage);
+				previewPDFLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+				previewPDFLink.setURL(getContentPDFPreviewURL(iwc));
+				toolTable.add(previewPDFLink, 3, 1);
+				*/
+				
 				boolean isSuperUser = false;
 				isSuperUser = iwc.isSuperAdmin();
 				//Display the source tab only if the current user is the SuperUser
@@ -750,8 +766,9 @@ public class IBApplication extends IWApplication {
 					sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
 					Link sourceLink = new Link(sourceImage, IBSourceView.class);
 					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-					toolTable.add(sourceLink, 3, 1);
+					toolTable.add(sourceLink, 4, 1);
 				}
+				
 				String id = (String) iwc.getSessionAttribute("ib_page_id");
 				if (id == null) {
 					int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();

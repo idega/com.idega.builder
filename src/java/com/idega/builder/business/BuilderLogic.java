@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.137 2003/05/03 00:36:25 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.138 2003/05/27 20:31:27 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -349,7 +349,21 @@ public class BuilderLogic
 			}
 			inserter = new com.idega.block.media.presentation.ImageInserter();
 			inserter.setHasUseBox(false);
+			
+			
+			String width = imageObj.getWidth();
+			String height = imageObj.getHeight();
 			inserter.limitImageWidth(false);
+			
+			if(width!=null){
+				inserter.setWidth(width);
+			}
+			if(height!=null){
+				inserter.setHeight(height);
+			}
+			
+			
+			
 			int image_id = imageObj.getImageID(iwc);
 			if (image_id != -1)
 			{
