@@ -17,16 +17,14 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Map;
 import java.util.Hashtable;
-
-import org.jdom.Element;
-import org.jdom.Attribute;
-
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLAttribute;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.*;
-
+import com.idega.presentation.ui.IntegerInput;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.BooleanInput;
 import com.idega.core.data.ICFile;
 import com.idega.builder.data.IBPage;
-//import com.idega.builder.data.IBTemplatePage;
 import com.idega.presentation.Image;
 
 public class ComponentPropertyHandler {
@@ -75,7 +73,7 @@ public class ComponentPropertyHandler {
         }
     }
 
-    private  Object[] getObjectArguments(Element value){
+    private  Object[] getObjectArguments(XMLElement value){
       List children = value.getChildren();
       Object[] theReturn;
       if(children!=null){
@@ -83,7 +81,7 @@ public class ComponentPropertyHandler {
         Iterator iter = children.iterator();
         int counter = 0;
         while (iter.hasNext()) {
-          Element item = (Element)iter.next();
+          XMLElement item = (XMLElement)iter.next();
           theReturn[counter]=handleElementProperty(item);
           counter++;
         }
@@ -156,9 +154,9 @@ public class ComponentPropertyHandler {
         return argument;
     }
 
-    public Object handleElementProperty(Element el){
-      Element typeEl = el.getChild(XML_TYPE_TAG);
-      Element valueEl = el.getChild(XML_VALUE_TAG);
+    public Object handleElementProperty(XMLElement el){
+      XMLElement typeEl = el.getChild(XML_TYPE_TAG);
+      XMLElement valueEl = el.getChild(XML_VALUE_TAG);
       String className = typeEl.getText();
       String valueString = valueEl.getText();
       if(className.equals("int")){

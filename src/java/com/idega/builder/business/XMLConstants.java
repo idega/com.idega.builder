@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.7 2001/11/01 17:21:07 palli Exp $
+ * $Id: XMLConstants.java,v 1.8 2001/12/03 16:17:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ package com.idega.builder.business;
 public abstract class XMLConstants {
   static final String ROOT_STRING = "xml";
   static final String PAGE_STRING = "page";
+  static final String FRAGMENT_STRING = "fragment";
   static final String ID_STRING = "id";
   static final String IC_OBJECT_ID_STRING = "ic_object_id";
   static final String METHOD_STRING = ":method";
@@ -33,6 +34,9 @@ public abstract class XMLConstants {
   static final String PAGE_TYPE = "type";
   static final String REGION_LOCKED = "locked";
   static final String LABEL_STRING = "label";
+  static final String CHANGE_IC_OBJECT_ID = "changeid";
+  static final String IC_OBJECT_ID_FROM = "from";
+  static final String IC_OBJECT_ID_to = "to";
 
   static final String PAGE_TYPE_PAGE = "page";
   static final String PAGE_TYPE_DRAFT = "draft";

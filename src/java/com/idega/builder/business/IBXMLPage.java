@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.30 2001/11/15 19:39:27 gummi Exp $
+ * $Id: IBXMLPage.java,v 1.31 2001/12/03 16:18:30 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,6 @@
  */
 package com.idega.builder.business;
 
-import org.jdom.JDOMException;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Attribute;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
@@ -28,22 +22,28 @@ import java.io.StringReader;
 import com.idega.builder.data.IBPage;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.Page;
+import com.idega.xml.XMLParser;
+import com.idega.xml.XMLDocument;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLAttribute;
+import com.idega.xml.XMLException;
+import com.idega.xml.XMLOutput;
 
 /**
  * A class that reads XML page descriptions from the database and returns
  * the elements/modules/applications it contains.
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>, <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
- * @version 1.0alpha
+ * @version 1.0
  */
-public class IBXMLPage {
+public class IBXMLPage implements IBXMLAble {
   public final static String TYPE_PAGE = XMLConstants.PAGE_TYPE_PAGE;
   public final static String TYPE_TEMPLATE = XMLConstants.PAGE_TYPE_TEMPLATE;
   public final static String TYPE_DRAFT = XMLConstants.PAGE_TYPE_DRAFT;
-  private final static String EMPTY = "";
-  private SAXBuilder _builder = null;
-  private Document _xmlDocument = null;
-  private Element _rootElement = null;
+//  private final static String EMPTY = "";
+  private XMLParser _parser = null;
+  private XMLDocument _xmlDocument = null;
+  private XMLElement _rootElement = null;
   private Page _populatedPage = null;
   private String _key;
   private IBPage _ibPage;
@@ -56,7 +56,7 @@ public class IBXMLPage {
    *
    */
   private IBXMLPage(boolean verify) {
-    _builder = new SAXBuilder(verify);
+    _parser = new XMLParser(verify);
   }
 
   /**
@@ -72,9 +72,9 @@ public class IBXMLPage {
       setXMLPageDescriptionFile(ibpage.getPageValue());
       if (ibpage.getType().equals(ibpage.PAGE))
         setType(TYPE_PAGE);
-      if (ibpage.getType().equals(ibpage.DRAFT))
+      else if (ibpage.getType().equals(ibpage.DRAFT))
         setType(TYPE_DRAFT);
-      if (ibpage.getType().equals(ibpage.TEMPLATE))
+      else if (ibpage.getType().equals(ibpage.TEMPLATE))
         setType(TYPE_TEMPLATE);
       else
         setType(TYPE_PAGE);
@@ -112,7 +112,7 @@ public class IBXMLPage {
   }
 
   public String getKey(){
-    return this._key;
+    return(_key);
   }
 
   /**
@@ -147,6 +147,9 @@ public class IBXMLPage {
     return(_usingTemplate);
   }
 
+  /**
+   *
+   */
   private void findAllUsingTemplate() {
     _usingTemplate = new Vector();
     List l = IBPageFinder.getAllPagesExtendingTemplate(Integer.parseInt(_key));
@@ -159,6 +162,9 @@ public class IBXMLPage {
     }
   }
 
+  /**
+   *
+   */
   private void invalidateUsingTemplate() {
     List l = getUsingTemplate();
     if (l != null) {
@@ -167,19 +173,22 @@ public class IBXMLPage {
         String invalid = (String)i.next();
         PageCacher.flagPageInvalid(invalid);
         IBXMLPage child = PageCacher.getXML(invalid);
-        if (child.getType() == TYPE_TEMPLATE)
+        if (child.getType().equals(TYPE_TEMPLATE))
           child.invalidateUsingTemplate();
       }
     }
   }
 
+  /**
+   *
+   */
   public synchronized boolean update() {
     try {
       IBPage ibpage = new IBPage(Integer.parseInt(_key));
       OutputStream stream = ibpage.getPageValueForWrite();
       store(stream);
       ibpage.update();
-      System.out.println("[iwBuilder] : Updating page "+ibpage.getName()+" with id="+ibpage.getID());
+//      System.out.println("[iwBuilder] : Updating page "+ibpage.getName()+" with id="+ibpage.getID());
     }
     catch(NumberFormatException ne) {
       try {
@@ -194,18 +203,21 @@ public class IBXMLPage {
       e.printStackTrace(System.err);
     }
     setPopulatedPage(XMLReader.getPopulatedPage(this));
-    if (_type == TYPE_TEMPLATE)
+    if (_type.equals(TYPE_TEMPLATE))
       invalidateUsingTemplate();
 
     return true;
   }
 
+  /**
+   *
+   */
   private synchronized void store(OutputStream stream) {
     try {
-      XMLOutputter outputter = new XMLOutputter("  ",true);
-      outputter.setLineSeparator(System.getProperty("line.separator"));
-      outputter.setTrimText(true);
-      outputter.output(_xmlDocument,stream);
+      XMLOutput output = new XMLOutput("  ",true);
+      output.setLineSeparator(System.getProperty("line.separator"));
+      output.setTextNormalize(true);
+      output.output(_xmlDocument,stream);
       stream.close();
     }
     catch(IOException e) {
@@ -213,12 +225,18 @@ public class IBXMLPage {
     }
   }
 
-  public void setPopulatedPage(Page page){
-    _populatedPage=page;
+  /**
+   *
+   */
+  public void setPopulatedPage(Page page) {
+    _populatedPage = page;
   }
 
-  public Page getPopulatedPage(){
-    return _populatedPage;
+  /**
+   *
+   */
+  public Page getPopulatedPage() {
+    return(_populatedPage);
   }
 
   /**
@@ -230,33 +248,41 @@ public class IBXMLPage {
    */
   public void setXMLPageDescriptionFile(String URI) throws PageDoesNotExist {
     try {
-      _xmlDocument = _builder.build(URI);
+      _xmlDocument = _parser.parse(URI);
       _rootElement = _xmlDocument.getRootElement();
     }
-    catch(org.jdom.JDOMException e) {
-      //System.err.println("JDOM Exception: " + e.getMessage());
+    catch(XMLException e) {
       throw new PageDoesNotExist();
     }
   }
 
-  public String getName(){
-    try{
-      return getIBPage().getName();
+  /**
+   *
+   */
+  public String getName() {
+    try {
+      return(getIBPage().getName());
     }
     catch(Exception e) {
-      return "";
+      return("");
     }
   }
 
+  /**
+   *
+   */
   public int getTemplateId() {
     try {
       return(getIBPage().getTemplateId());
     }
     catch(Exception e){
-      return -1;
+      return(-1);
     }
   }
 
+  /**
+   *
+   */
   public void setTemplateId(int id) {
     try {
       IBPage page = getIBPage();
@@ -268,6 +294,9 @@ public class IBXMLPage {
     }
   }
 
+  /**
+   *
+   */
   public void setName(String name) {
     try {
       IBPage page = getIBPage();
@@ -277,7 +306,6 @@ public class IBXMLPage {
     catch(Exception e) {
       e.printStackTrace();
     }
-
   }
 
 
@@ -298,15 +326,14 @@ public class IBXMLPage {
    * @throws com.idega.exception.PageDescriptionDoesNotExists The given XML file does not exists.
    */
   public void setXMLPageDescriptionFile(InputStream stream) throws PageDoesNotExist {
-    boolean streamopen=true;
+    boolean streamopen = true;
     try {
-      _xmlDocument = _builder.build(stream);
+      _xmlDocument = _parser.parse(stream);
       stream.close();
       _rootElement = _xmlDocument.getRootElement();
       streamopen=false;
     }
-    catch(org.jdom.JDOMException e) {
-      //System.err.println("JDOM Exception: " + e.getMessage());
+    catch(XMLException e) {
       throw new PageDoesNotExist();
     }
     catch(java.io.IOException ioe) {
@@ -327,8 +354,8 @@ public class IBXMLPage {
   }
 
   public void setPageAsEmptyPage(String type, String template) {
-    _rootElement = new Element(XMLConstants.ROOT_STRING);
-    Element pageElement = new Element(XMLConstants.PAGE_STRING);
+    _rootElement = new XMLElement(XMLConstants.ROOT_STRING);
+    XMLElement pageElement = new XMLElement(XMLConstants.PAGE_STRING);
 
     if (type == null)
       type = XMLConstants.PAGE_TYPE_PAGE;
@@ -336,19 +363,22 @@ public class IBXMLPage {
     if ((type.equals(TYPE_DRAFT)) ||
         (type.equals(TYPE_PAGE)) ||
         (type.equals(TYPE_TEMPLATE))) {
-      pageElement.addAttribute(XMLConstants.PAGE_TYPE,type);
+//      pageElement.addAttribute(XMLConstants.PAGE_TYPE,type);
+      pageElement.setAttribute(XMLConstants.PAGE_TYPE,type);
       setType(type);
     }
     else {
-      pageElement.addAttribute(XMLConstants.PAGE_TYPE,TYPE_PAGE);
+//      pageElement.addAttribute(XMLConstants.PAGE_TYPE,TYPE_PAGE);
+      pageElement.setAttribute(XMLConstants.PAGE_TYPE,TYPE_PAGE);
       setType(type);
     }
 
     if (template != null)
-      pageElement.addAttribute(XMLConstants.TEMPLATE_STRING,template);
+//      pageElement.addAttribute(XMLConstants.TEMPLATE_STRING,template);
+      pageElement.setAttribute(XMLConstants.TEMPLATE_STRING,template);
 
     _rootElement.addContent(pageElement);
-    _xmlDocument = new Document(_rootElement);
+    _xmlDocument = new XMLDocument(_rootElement);
     setPopulatedPage(XMLReader.getPopulatedPage(this));
   }
 
@@ -358,11 +388,11 @@ public class IBXMLPage {
    * @return The root element. Null if the page description file is not set.
    * @todo Wrap the Element class to hide all implementation of the XML parser.
    */
-  Element getRootElement() {
+  public XMLElement getRootElement() {
     return(_rootElement);
   }
 
-  Element getPageRootElement(){
+  public XMLElement getPageRootElement(){
     if(_rootElement!=null){
       return _rootElement.getChild(XMLConstants.PAGE_STRING);
     }
@@ -376,7 +406,7 @@ public class IBXMLPage {
    * @return A List of elements. Null if the element has no children or is null.
    * @todo Wrap the Element class to hide all implementation of the XML parser.
    */
-  List getChildren(Element element) {
+  List getChildren(XMLElement element) {
     if (element == null)
       return(null);
 
@@ -388,7 +418,7 @@ public class IBXMLPage {
     return(li);
   }
 
-  List getAttributes(Element element) {
+  public List getAttributes(XMLElement element) {
     if (element == null)
       return(null);
 
@@ -416,28 +446,33 @@ public class IBXMLPage {
     return(_type);
   }
 
-
-  public void setSourceFromString(String xmlRepresentation)throws Exception{
+  /**
+   *
+   */
+  public void setSourceFromString(String xmlRepresentation) throws Exception {
     StringReader reader = new StringReader(xmlRepresentation);
-    SAXBuilder builder = new SAXBuilder();
-    Document doc = builder.build(reader);
-    this._rootElement = doc.getRootElement();
-    this._xmlDocument.setRootElement(_rootElement);
+    XMLParser parser = new XMLParser();
+    XMLDocument doc = parser.parse(reader);
+    _rootElement = doc.getRootElement();
+    _xmlDocument.setRootElement(_rootElement);
     update();
   }
 
-  public String toString(){
-    Element root = getRootElement();
-    if(root!=null){
-      try{
-        XMLOutputter outputter = new XMLOutputter();
-        return outputter.outputString(root);
+  /**
+   *
+   */
+  public String toString() {
+    XMLElement root = getRootElement();
+    if (root != null) {
+      try {
+        XMLOutput output = new XMLOutput();
+        return(output.outputString(root));
       }
-      catch(Exception e){
+      catch(Exception e) {
         e.printStackTrace();
-        return super.toString();
+        return(super.toString());
       }
     }
-    return super.toString();
+    return(super.toString());
   }
 }

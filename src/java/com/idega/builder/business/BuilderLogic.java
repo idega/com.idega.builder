@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.79 2001/11/23 16:55:03 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.80 2001/12/03 16:18:15 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
+import com.idega.builder.presentation.IBCopyModuleWindow;
 import com.idega.core.data.ICObject;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICObjectInstance;
@@ -74,6 +75,7 @@ public class BuilderLogic {
   public static final String ACTION_LABEL = "ACTION_LABEL";
   public static final String ACTION_COPY = "ACTION_COPY";
   public static final String ACTION_PASTE = "ACTION_PASTE";
+  public static final String ACTION_LIBRARY = "ACTION_LIBRARY";
 
   public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
 
@@ -688,24 +690,24 @@ public class BuilderLogic {
           separator.setWidth("100%");
           separator.setHeight(2);
 
-//        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-//        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",null,2,1);
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,1);
-        table.add(separator,2,2);
-        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,3);
-        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,3);
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,4);
+        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",null,2,1);
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
+        table.add(separator,2,3);
+        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
+        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
 
         table.setColumnColor(1,"#D8D8D1");
         table.setColumnColor(2,"#F9F8F7");
         table.setColumnAlignment(1,"center");
         layer.add(rTable);
       }
-      else{
-          _table.add(getDeleteIcon(0,_parentKey,iwc));
-          _table.add(getEditIcon(0,iwc));
+      else {
+        _table.add(getDeleteIcon(0,_parentKey,iwc));
+        _table.add(getEditIcon(0,iwc));
       }
     }
 
@@ -831,6 +833,25 @@ public class BuilderLogic {
     else {
       return false;
     }
+  }
+
+  /**
+   *
+   */
+  public boolean copyModule(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID, int userId, String name) {
+    IBXMLPage xml = getIBXMLPage(pageKey);
+
+//    xml.
+
+/*    if (XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)) {
+      xml.update();
+      return(true);
+    }
+    else {
+      return(false);
+    }*/
+
+    return(true);
   }
 
   public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
@@ -986,7 +1007,7 @@ public class BuilderLogic {
     Image copyImage = bundle.getImage("shared/menu/copy.gif","Copy component");
     //copyImage.setAttribute("style","z-index: 0;");
     Link link = new Link(copyImage);
-//    link.setWindowToOpen(IBDeleteModuleWindow.class);
+    link.setWindowToOpen(IBCopyModuleWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_COPY);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
@@ -1002,6 +1023,7 @@ public class BuilderLogic {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image pasteImage = bundle.getImage("paste.gif","Paste component");
     Link link = new Link(pasteImage);
+//    link.setWindowToOpen(IBPasteModuleWindow.class);
 //    link.setWindowToOpen(IBAddRegionLabelWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_PASTE);

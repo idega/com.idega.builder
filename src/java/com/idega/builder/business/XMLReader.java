@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.24 2001/11/15 19:39:27 gummi Exp $
+ * $Id: XMLReader.java,v 1.25 2001/12/03 16:17:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,8 +17,9 @@ import com.idega.presentation.Table;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
-import org.jdom.Element;
-import org.jdom.Attribute;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLAttribute;
+import com.idega.xml.XMLException;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>,<a href="palli@idega.is">Pall Helgason</a>
@@ -49,8 +50,8 @@ public class XMLReader {
   static Page getPopulatedPage(IBXMLPage ibxml) {
     Page parentContainer = null;
     String pageKey = null;
-    Element root = ibxml.getRootElement();
-    Element pageXML = root.getChild(XMLConstants.PAGE_STRING);
+    XMLElement root = ibxml.getRootElement();
+    XMLElement pageXML = root.getChild(XMLConstants.PAGE_STRING);
     List pageAttr = pageXML.getAttributes();
     Iterator attr = pageAttr.iterator();
 
@@ -60,7 +61,7 @@ public class XMLReader {
 
     // Parse the page attributes
     while(attr.hasNext()) {
-      Attribute at = (Attribute)attr.next();
+      XMLAttribute at = (XMLAttribute)attr.next();
       if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
         hasTemplate = true;
         parentContainer = PageCacher.getPage(at.getValue());
@@ -117,7 +118,7 @@ public class XMLReader {
       Iterator it = children.iterator();
 
       while (it.hasNext()) {
-        Element child = (Element)it.next();
+        XMLElement child = (XMLElement)it.next();
 
         if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
           setProperties(child,parentContainer);
@@ -142,7 +143,7 @@ public class XMLReader {
       parentContainer.setPageID(Integer.parseInt(ibxml.getKey()));
     }
     catch (NumberFormatException ex) {
-      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
+//      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
     }
 
 
@@ -153,7 +154,7 @@ public class XMLReader {
   /**
    *
    */
-  static void parseRegion(Element reg, PresentationObjectContainer regionParent) {
+  static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent) {
     List regionAttrList = reg.getAttributes();
     PresentationObjectContainer newRegionParent = regionParent;
     if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
@@ -165,7 +166,7 @@ public class XMLReader {
     int y = 1;
     boolean isLocked = true;
 
-    Attribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
+    XMLAttribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
     if (locked != null) {
       if (locked.getValue().equalsIgnoreCase("true"))
         isLocked = true;
@@ -173,30 +174,30 @@ public class XMLReader {
         isLocked = false;
     }
 
-    Attribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
+    XMLAttribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
 
-    Attribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
+    XMLAttribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
     String regionID = null;
     if (regionIDattr != null) {
       regionID = regionIDattr.getValue();
       try {
         int region_id_int = Integer.parseInt(regionID);
-        Attribute regionAttrX = reg.getAttribute(XMLConstants.X_REGION_STRING);
+        XMLAttribute regionAttrX = reg.getAttribute(XMLConstants.X_REGION_STRING);
         if (regionAttrX != null) {
           try {
             x = regionAttrX.getIntValue();
           }
-          catch(org.jdom.DataConversionException e) {
+          catch(XMLException e) {
             System.err.println("Unable to convert x region attribute to integer");
             x = 1;
           }
         }
-        Attribute regionAttrY = reg.getAttribute(XMLConstants.Y_REGION_STRING);
+        XMLAttribute regionAttrY = reg.getAttribute(XMLConstants.Y_REGION_STRING);
         if (regionAttrY != null) {
           try {
             y = regionAttrY.getIntValue();
           }
-          catch(org.jdom.DataConversionException e) {
+          catch(XMLException e) {
             System.err.println("Unable to convert y region attribute to integer");
             y = 1;
           }
@@ -260,7 +261,7 @@ public class XMLReader {
         Iterator childrenIt = children.iterator();
 
         while (childrenIt.hasNext())
-          parseElement((Element)childrenIt.next(),newRegionParent);
+          parseElement((XMLElement)childrenIt.next(),newRegionParent);
       }
     }
   }
@@ -268,7 +269,7 @@ public class XMLReader {
   /**
    *
    */
-  static void setProperties(Element properties, PresentationObject object) {
+  static void setProperties(XMLElement properties, PresentationObject object) {
     String key = null;
     Vector values = new Vector(1);
     String vals[] = null;
@@ -277,7 +278,7 @@ public class XMLReader {
     Iterator it = li.iterator();
 
     while (it.hasNext()) {
-      Element e = (Element)it.next();
+      XMLElement e = (XMLElement)it.next();
 
       if (e.getName().equalsIgnoreCase(XMLConstants.NAME_STRING)) {
         if (key != null) {
@@ -322,7 +323,7 @@ public class XMLReader {
   /**
    *
    */
-  static void parseElement(Element el, PresentationObjectContainer parent) {
+  static void parseElement(XMLElement el, PresentationObjectContainer parent) {
     PresentationObject inst = null;
     List at = el.getAttributes();
     boolean isLocked = true;
@@ -336,7 +337,7 @@ public class XMLReader {
     String ic_object_id = null;
     Iterator it = at.iterator();
     while (it.hasNext()) {
-      Attribute attr = (Attribute)it.next();
+      XMLAttribute attr = (XMLAttribute)it.next();
       if (attr.getName().equalsIgnoreCase(XMLConstants.CLASS_STRING)) {
         className = attr.getValue();
       }
@@ -392,7 +393,7 @@ public class XMLReader {
           Iterator itr = children.iterator();
 
           while (itr.hasNext()) {
-            Element child = (Element)itr.next();
+            XMLElement child = (XMLElement)itr.next();
             if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
               setProperties(child,table);
             }
@@ -414,7 +415,7 @@ public class XMLReader {
           Iterator itr = children.iterator();
 
           while (itr.hasNext()) {
-            Element child = (Element)itr.next();
+            XMLElement child = (XMLElement)itr.next();
             if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
               setProperties(child,inst);
             }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLFragment.java,v 1.2 2001/11/01 17:21:07 palli Exp $
+ * $Id: IBXMLFragment.java,v 1.3 2001/12/03 16:18:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,47 +9,39 @@
  */
 package com.idega.builder.business;
 
-//import org.jdom.JDOMException;
-import org.jdom.Document;
-import org.jdom.Element;
-//import org.jdom.Attribute;
-import org.jdom.input.SAXBuilder;
-//import org.jdom.output.XMLOutputter;
-//import java.util.List;
-//import java.util.Iterator;
-//import java.util.Vector;
+import com.idega.xml.XMLException;
+import com.idega.xml.XMLDocument;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLParser;
+import java.util.List;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
-//import java.io.FileOutputStream;
-//import java.io.OutputStream;
 import java.io.IOException;
-//import java.io.StringReader;
+import java.io.StringReader;
 import com.idega.builder.data.IBObjectLibrary;
-//import com.idega.presentation.PresentationObjectContainer;
 import com.idega.exception.LibraryDoesNotExist;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class IBXMLFragment {
-  public final static String FRAGMENT_TYPE_LIBRARY = XMLConstants.FRAGMENT_TYPE_LIBRARY;
+public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAble {
   public final static String FRAGMENT_TYPE_CLIPBOARD = XMLConstants.FRAGMENT_TYPE_CLIPBOARD;
-  private String _key;
+  public final static String FRAGMENT_TYPE_LIBRARY = XMLConstants.FRAGMENT_TYPE_LIBRARY;
+  private final static String EMPTY = "";
+
+/*  private String _key;
   private String _type = FRAGMENT_TYPE_LIBRARY;
-  private SAXBuilder _builder = null;
-  private Document _xmlDocument = null;
-  private Element _rootElement = null;
+  private XMLParser _parser = null;
+  private XMLDocument _xmlDocument = null;
+  private XMLElement _rootElement = null;*/
 
-/*  public final static String TYPE_DRAFT = XMLConstants.PAGE_TYPE_DRAFT;
-  private final static String EMPTY = ""; */
-
-  /*
+  /**
    *
    */
-  private IBXMLFragment(boolean verify) {
-    _builder = new SAXBuilder(verify);
+  protected IBXMLFragment(boolean verify) {
+    _parser = new XMLParser(verify);
   }
 
   /**
@@ -63,17 +55,14 @@ public class IBXMLFragment {
     try {
       lib = new IBObjectLibrary(Integer.parseInt(key));
       setXMLLibraryDescriptionFile(lib.getPageValue());
-/*      if (ibpage.getType().equals(ibpage.PAGE))
-        setType(TYPE_PAGE);
-      if (ibpage.getType().equals(ibpage.DRAFT))
-        setType(TYPE_DRAFT);
-      if (ibpage.getType().equals(ibpage.TEMPLATE))
-        setType(TYPE_TEMPLATE);
+      if (lib.getType().equals(lib.LIBRARY))
+        setType(FRAGMENT_TYPE_LIBRARY);
+      else if (lib.getType().equals(lib.CLIPBOARD))
+        setType(FRAGMENT_TYPE_CLIPBOARD);
       else
-        setType(TYPE_PAGE);*/
+        setType(FRAGMENT_TYPE_LIBRARY);
     }
     catch(LibraryDoesNotExist ldne) {
-
     }
     catch(NumberFormatException ne) {
       try {
@@ -81,7 +70,6 @@ public class IBXMLFragment {
         setXMLLibraryDescriptionFile(stream);
       }
       catch(LibraryDoesNotExist ldne) {
-
       }
       catch(FileNotFoundException fnfe) {
         fnfe.printStackTrace();
@@ -90,7 +78,6 @@ public class IBXMLFragment {
     catch(Exception e) {
       e.printStackTrace();
     }
-//    setPopulatedPage(XMLReader.getPopulatedPage(this));  */
   }
 
   /**
@@ -100,10 +87,10 @@ public class IBXMLFragment {
    */
   public void setXMLLibraryDescriptionFile(String URI) throws LibraryDoesNotExist {
     try {
-      _xmlDocument = _builder.build(URI);
+      _xmlDocument = _parser.parse(URI);
       _rootElement = _xmlDocument.getRootElement();
     }
-    catch(org.jdom.JDOMException e) {
+    catch(XMLException e) {
       throw new LibraryDoesNotExist();
     }
   }
@@ -116,12 +103,12 @@ public class IBXMLFragment {
   public void setXMLLibraryDescriptionFile(InputStream stream) throws LibraryDoesNotExist {
     boolean streamopen = true;
     try {
-      _xmlDocument = _builder.build(stream);
+      _xmlDocument = _parser.parse(stream);
       stream.close();
       _rootElement = _xmlDocument.getRootElement();
       streamopen = false;
     }
-    catch(org.jdom.JDOMException e) {
+    catch(XMLException e) {
       throw new LibraryDoesNotExist();
     }
     catch(java.io.IOException ioe) {
@@ -139,5 +126,59 @@ public class IBXMLFragment {
         }
       }
     }
+  }
+
+  /**
+   *
+   */
+  public void setType(String type) {
+    _type = type;
+  }
+
+  /**
+   *
+   */
+  public XMLElement getRootElement() {
+    return(_rootElement);
+  }
+
+  /**
+   *
+   */
+  public XMLElement getPageRootElement() {
+    if (_rootElement != null)
+      return(_rootElement.getChild(XMLConstants.PAGE_STRING));
+    else
+      return(null);
+  }
+
+  /**
+   *
+   */
+  public List getAttributes(XMLElement element) {
+    if (element != null)
+      return(element.getAttributes());
+    else
+      return(null);
+  }
+
+  /**
+   *
+   */
+  public void setSourceFromString(String xmlRepresentation) throws Exception {
+    StringReader reader = new StringReader(xmlRepresentation);
+    XMLParser parser = new XMLParser();
+    XMLDocument doc = parser.parse(reader);
+    _rootElement = doc.getRootElement();
+    _xmlDocument.setRootElement(_rootElement);
+    update();
+  }
+
+  public synchronized boolean update() {
+    return(true);
+  }
+
+  public String toString() {
+    return(null);
   }
 }
