@@ -224,6 +224,7 @@ public class IBPermissionWindow extends IBAdminWindow{
       boolean submit = iwc.isParameterSet("submit");
       boolean cancel = iwc.isParameterSet("cancel");
       Form myForm = new Form();
+      myForm.setToShowLoadingOnSubmit(false);
       myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
       myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
       iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
