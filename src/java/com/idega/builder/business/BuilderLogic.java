@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.112 2002/03/13 11:56:45 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.113 2002/03/13 14:01:29 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1235,7 +1235,14 @@ public class BuilderLogic {
    *
    */
   public String getIBPageURL(IWApplicationContext iwc, int ib_page_id){
-    return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
+//    return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
+    StringBuffer url = new StringBuffer();
+    url.append(iwc.getApplication().getBuilderServletURL());
+    url.append("?");
+    url.append(IB_PAGE_PARAMETER);
+    url.append("=");
+    url.append(ib_page_id);
+    return url.toString();
   }
 
   /**
@@ -1528,11 +1535,12 @@ public class BuilderLogic {
     IBDomain domain = getCurrentDomain(iwc);
 
     StringBuffer url = new StringBuffer(domain.getURL());
-    url.append(IWMainApplication.BUILDER_SERVLET_URL);
-    url.append("?");
-    url.append(IB_PAGE_PARAMETER);
-    url.append("=");
-    url.append(ibpage);
+//    url.append(IWMainApplication.BUILDER_SERVLET_URL);
+//    url.append(iwc.getApplication().getBuilderServletURL());
+//    url.append("?");
+//    url.append(IB_PAGE_PARAMETER);
+//    url.append("=");
+    url.append(this.getIBPageURL(iwc,Integer.parseInt(ibpage)));
 
     String html = FileUtil.getStringFromURL(url.toString());
 
