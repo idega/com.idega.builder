@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.25 2001/11/01 20:49:10 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.26 2001/11/02 17:51:40 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -196,7 +196,7 @@ public class IBXMLPage {
     return true;
   }
 
-  private void store(OutputStream stream) {
+  private synchronized void store(OutputStream stream) {
     try {
       XMLOutputter outputter = new XMLOutputter("  ",true);
       outputter.setLineSeparator(System.getProperty("line.separator"));

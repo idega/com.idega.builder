@@ -588,11 +588,20 @@ public class IBPropertyHandler{
       return theReturn;
     }
 
-  public void saveNewProperty(IWBundle iwb,String componentIdentifier,String methodIdentifier,String description,boolean isMultivalued,String[] handlers, String[] descriptions,boolean[] primaryKeys)throws Exception{
+  /**
+   * Return false if property already set
+   */
+  public boolean saveNewProperty(IWBundle iwb,String componentIdentifier,String methodIdentifier,String description,boolean isMultivalued,String[] handlers, String[] descriptions,boolean[] primaryKeys)throws Exception{
       IWPropertyList complist = iwb.getComponentList();
       IWPropertyList component = complist.getIWPropertyList(componentIdentifier);
       IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
-      IWPropertyList method = methodList.getNewPropertyList(methodIdentifier);
+      IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
+
+      if(method==null){
+        return false;
+      }
+
+      method = methodList.getNewPropertyList(methodIdentifier);
 
       Map options = new Hashtable();
       options.put(this.METHOD_PROPERTY_DESCRIPTION,description);
@@ -613,6 +622,7 @@ public class IBPropertyHandler{
         }
       }
       method.setProperties(options);
+      return true;
   }
 
 
