@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.9 2001/10/05 08:04:07 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.10 2001/10/15 17:35:57 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,7 +10,7 @@
 package com.idega.builder.servlet;
 
 
-import com.idega.jmodule.JSPModule;
+import com.idega.servlet.IWJSPPresentationServlet;
 import com.idega.presentation.IWContext;
 
 import com.idega.builder.business.BuilderLogic;
@@ -21,7 +21,7 @@ import com.idega.builder.data.*;
 *@version 1.0 alpha
 */
 
-public class IBMainServlet extends JSPModule {
+public class IBMainServlet extends IWJSPPresentationServlet {
 
 
 

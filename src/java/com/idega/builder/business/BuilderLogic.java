@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.43 2001/10/11 16:55:48 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.44 2001/10/15 17:35:57 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,7 +61,7 @@ public class BuilderLogic {
 
 
   public static final String IB_PARENT_PARAMETER = "ib_parent_par";
-  public static final String IB_PAGE_PARAMETER ="ib_page_par";
+  public static final String IB_PAGE_PARAMETER ="ib_page";
 
   public static final String IB_CONTROL_PARAMETER = "ib_control_par";
   public static final String ACTION_DELETE ="ACTION_DELETE";
@@ -282,7 +282,7 @@ public class BuilderLogic {
       }
 
       inserter.setImSessionImageName(sessionID);
-      inserter.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
+      //inserter.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
       //inserter.setWindowClassToOpen(ImageEditorWindow.class);
 
       obj = inserter;

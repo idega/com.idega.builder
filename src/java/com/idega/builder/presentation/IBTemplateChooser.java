@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.3 2001/10/05 08:04:05 tryggvil Exp $
+ * $Id: IBTemplateChooser.java,v 1.4 2001/10/15 17:35:57 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,9 @@ package com.idega.builder.presentation;
 
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Image;
+import com.idega.presentation.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.builder.business.BuilderLogic;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -22,8 +25,14 @@ public class IBTemplateChooser extends AbstractChooser {
    */
   public IBTemplateChooser(String name) {
     addForm(false);
-    setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
+    //setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
     setChooserParameter(name);
+  }
+
+
+  public void main(IWContext iwc){
+    IWBundle iwb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+    setChooseButtonImage(iwb.getImage("open.gif","Choose"));
   }
 
   /**
