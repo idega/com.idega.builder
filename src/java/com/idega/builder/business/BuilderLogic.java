@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.113 2002/03/13 14:01:29 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.114 2002/03/15 13:59:47 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -480,25 +480,25 @@ public class BuilderLogic {
     if(requestURI.startsWith(iwc.getApplication().getBuilderServletURL())){
       int indexOfPage = requestURI.indexOf("/page/");
       if( indexOfPage != -1 ){
-        boolean pageISNumber= true;
-        String pageID=null;
-        try{
-          String subString = requestURI.substring(indexOfPage+6);
-          int lastSlash = subString.indexOf("/");
-          if(lastSlash==-1){
-            pageID=subString;
-          }
-          else{
-            pageID = subString.substring(0,lastSlash);
-          }
-          Integer.parseInt(pageID);
-        }
-        catch(NumberFormatException e){
-          pageISNumber=false;
-        }
-        if(pageISNumber){
-          return pageID;
-        }
+	boolean pageISNumber= true;
+	String pageID=null;
+	try{
+	  String subString = requestURI.substring(indexOfPage+6);
+	  int lastSlash = subString.indexOf("/");
+	  if(lastSlash==-1){
+	    pageID=subString;
+	  }
+	  else{
+	    pageID = subString.substring(0,lastSlash);
+	  }
+	  Integer.parseInt(pageID);
+	}
+	catch(NumberFormatException e){
+	  pageISNumber=false;
+	}
+	if(pageISNumber){
+	  return pageID;
+	}
       }
     }
 
@@ -826,7 +826,7 @@ public class BuilderLogic {
 
     private void addToTable(PresentationObject obj,String textString,Class className,int col,int row) {
       Text text = new Text(textString);
-	text.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 8pt; text-decoration: none; color: #000000");
+	text.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-style: normal; font-size: 8pt; text-decoration: none; color: #000000");
       Link link = (Link) obj;
       link.setObject(text);
       if ( className != null ) link.setWindowToOpen(className);
