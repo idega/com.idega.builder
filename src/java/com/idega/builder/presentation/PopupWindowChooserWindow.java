@@ -194,7 +194,7 @@ public static final String replaceMentCommon = "+";
     }catch (NumberFormatException n){}
 
 
-    _windowString = Window.getWindowCallingScript( BuilderLogic.getInstance().getIBPageURL(iPage), name, bToolbar, bLocation, bDirectories, bStatusbar, bMenubar, bTitlebar, bScrollbars, bResizable, bFullscreen, iWidth, iHeight);
+    _windowString = Window.getWindowCallingScript( BuilderLogic.getInstance().getIBPageURL(iwc,iPage), name, bToolbar, bLocation, bDirectories, bStatusbar, bMenubar, bTitlebar, bScrollbars, bResizable, bFullscreen, iWidth, iHeight);
   }
 
 
