@@ -7,11 +7,6 @@
       <value>com.idega.builder</value>
     </key>
     <key>
-      <name />
-      <type>java.lang.String</type>
-      <value />
-    </key>
-    <key>
       <name>iw_components</name>
       <value>
         <map>
@@ -41,74 +36,877 @@
             <type>map</type>
           </key>
           <key>
-            <name>com.idega.builder.data.IBDomain</name>
+            <name>com.idega.builder.handler.ColorHandler</name>
             <value>
               <map>
                 <key>
                   <name>component_name</name>
                   <type>java.lang.String</type>
-                  <value>IBDomain</value>
+                  <value>ColorHandler</value>
                 </key>
                 <key>
                   <name>component_type</name>
                   <type>java.lang.String</type>
-                  <value>iw.data</value>
+                  <value>iw.propertyhandler</value>
                 </key>
               </map>
             </value>
             <type>map</type>
           </key>
           <key>
-            <name>com.idega.builder.data.IBPage</name>
+            <name>com.idega.builder.handler.FileHandler</name>
             <value>
               <map>
                 <key>
                   <name>component_name</name>
                   <type>java.lang.String</type>
-                  <value>IBPage</value>
+                  <value>FileHandler</value>
                 </key>
                 <key>
                   <name>component_type</name>
                   <type>java.lang.String</type>
-                  <value>iw.data</value>
+                  <value>iw.propertyhandler</value>
                 </key>
               </map>
             </value>
             <type>map</type>
           </key>
           <key>
-            <name>com.idega.builder.data.IBTemplatePage</name>
+            <name>com.idega.builder.handler.FontHandler</name>
             <value>
               <map>
                 <key>
                   <name>component_name</name>
                   <type>java.lang.String</type>
-                  <value>IBTemplatePage</value>
+                  <value>FontHandler</value>
                 </key>
                 <key>
                   <name>component_type</name>
                   <type>java.lang.String</type>
-                  <value>iw.data</value>
+                  <value>iw.propertyhandler</value>
                 </key>
               </map>
             </value>
             <type>map</type>
           </key>
           <key>
-            <name>com.idega.core.data.ICFile</name>
+            <name>com.idega.builder.handler.HeightAndWidthHandler</name>
             <value>
               <map>
                 <key>
                   <name>component_name</name>
                   <type>java.lang.String</type>
-                  <value>ICFile</value>
+                  <value>HeightAndWidthHandler</value>
                 </key>
                 <key>
                   <name>component_type</name>
                   <type>java.lang.String</type>
-                  <value>iw.data</value>
+                  <value>iw.propertyhandler</value>
                 </key>
               </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.HorizontalAlignmentHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>HorizontalAlignmentHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.IBPageHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>IBPageHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.ImageHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>ImageHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.TableColumnsHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>TableColumnsHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.TableRowsHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>TableRowsHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.URLHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>URLHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.VerticalAlignmentHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>VerticalAlignmentHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.FontSizeHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>FontSizeHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.FontStyleHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>FontStyleHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.HorizontalVerticalViewHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>HorizontalVerticalViewHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.LocaleHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>LocaleHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.IBTemplateHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>IBTemplateHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.PageNameHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>PageNameHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.JavaTypesHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>JavaTypesHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.form.presentation.FormEmailer</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>FormEmailer</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.block</value>
+                </key>
+                <key>
+                  <name>iw_component_methods</name>
+                  <value>
+                    <map>
+                      <key>
+                        <name>:method:1:implied:void:setToAddRecievedParameter:java.lang.String:java.lang.String:java.lang.String:</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_params</name>
+                              <value>
+                                <map>
+                                  <key>
+                                    <name>2</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value>com.idega.builder.handler.JavaTypesHandler</value>
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Type</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                  <key>
+                                    <name>1</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value />
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Description text</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                  <key>
+                                    <name>0</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value />
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_prim_key</name>
+                                          <type>java.lang.Boolean</type>
+                                          <value>true</value>
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Parameter name</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                </map>
+                              </value>
+                              <type>map</type>
+                            </key>
+                            <key>
+                              <name>iw_method_option_multiv</name>
+                              <type>java.lang.Boolean</type>
+                              <value>true</value>
+                            </key>
+                            <key>
+                              <name>iw_method_description</name>
+                              <type>java.lang.String</type>
+                              <value>Recieved Form Parameters</value>
+                            </key>
+                            <key>
+                              <name>iw_method_identifier</name>
+                              <type>java.lang.String</type>
+                              <value>:method:1:implied:void:setToAddRecievedParameter:java.lang.String:java.lang.String:java.lang.String:</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                      <key>
+                        <name>:method:1:implied:void:setMailServer:java.lang.String:</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_params</name>
+                              <value>
+                                <map>
+                                  <key>
+                                    <name>0</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value />
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Mail Server</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                </map>
+                              </value>
+                              <type>map</type>
+                            </key>
+                            <key>
+                              <name>iw_method_option_multiv</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_description</name>
+                              <type>java.lang.String</type>
+                              <value>Mail Server</value>
+                            </key>
+                            <key>
+                              <name>iw_method_identifier</name>
+                              <type>java.lang.String</type>
+                              <value>:method:1:implied:void:setMailServer:java.lang.String:</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                      <key>
+                        <name>:method:1:implied:void:setSubjectOfMail:java.lang.String:</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_params</name>
+                              <value>
+                                <map>
+                                  <key>
+                                    <name>0</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value />
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Mail subject</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                </map>
+                              </value>
+                              <type>map</type>
+                            </key>
+                            <key>
+                              <name>iw_method_option_multiv</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_description</name>
+                              <type>java.lang.String</type>
+                              <value>Mail subject</value>
+                            </key>
+                            <key>
+                              <name>iw_method_identifier</name>
+                              <type>java.lang.String</type>
+                              <value>:method:1:implied:void:setSubjectOfMail:java.lang.String:</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                      <key>
+                        <name>:method:1:implied:void:setSendToAddress:java.lang.String:</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_params</name>
+                              <value>
+                                <map>
+                                  <key>
+                                    <name>0</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value />
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Email address (to send to)</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                </map>
+                              </value>
+                              <type>map</type>
+                            </key>
+                            <key>
+                              <name>iw_method_option_multiv</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_description</name>
+                              <type>java.lang.String</type>
+                              <value>Email address (to send to)</value>
+                            </key>
+                            <key>
+                              <name>iw_method_identifier</name>
+                              <type>java.lang.String</type>
+                              <value>:method:1:implied:void:setSendToAddress:java.lang.String:</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                      <key>
+                        <name>:method:1:implied:void:setTextInBeginningOfMail:java.lang.String:</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_params</name>
+                              <value>
+                                <map>
+                                  <key>
+                                    <name>0</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value />
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Text in beginning of mail</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                </map>
+                              </value>
+                              <type>map</type>
+                            </key>
+                            <key>
+                              <name>iw_method_option_multiv</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_description</name>
+                              <type>java.lang.String</type>
+                              <value>Text in beginning of mail</value>
+                            </key>
+                            <key>
+                              <name>iw_method_identifier</name>
+                              <type>java.lang.String</type>
+                              <value>:method:1:implied:void:setTextInBeginningOfMail:java.lang.String:</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                      <key>
+                        <name>:method:1:implied:void:setToDisplayConfirmation:boolean:</name>
+                        <value>
+                          <map>
+                            <key>
+                              <name>iw_method_params</name>
+                              <value>
+                                <map>
+                                  <key>
+                                    <name>0</name>
+                                    <value>
+                                      <map>
+                                        <key>
+                                          <name>iw_method_param_handler</name>
+                                          <type>java.lang.String</type>
+                                          <value />
+                                        </key>
+                                        <key>
+                                          <name>iw_method_param_desc</name>
+                                          <type>java.lang.String</type>
+                                          <value>Display Confirmation</value>
+                                        </key>
+                                      </map>
+                                    </value>
+                                    <type>map</type>
+                                  </key>
+                                </map>
+                              </value>
+                              <type>map</type>
+                            </key>
+                            <key>
+                              <name>iw_method_option_multiv</name>
+                              <type>java.lang.Boolean</type>
+                              <value>false</value>
+                            </key>
+                            <key>
+                              <name>iw_method_description</name>
+                              <type>java.lang.String</type>
+                              <value>Display Confirmation</value>
+                            </key>
+                            <key>
+                              <name>iw_method_identifier</name>
+                              <type>java.lang.String</type>
+                              <value>:method:1:implied:void:setToDisplayConfirmation:boolean:</value>
+                            </key>
+                          </map>
+                        </value>
+                        <type>map</type>
+                      </key>
+                    </map>
+                  </value>
+                  <type>map</type>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.ParagraphAlignmentHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>ParagraphAlignmentHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.ListTypeHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>ListTypeHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.PopupWindowHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>PopupWindowHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.TargetHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>TargetHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.LanguageHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>LanguageHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.ImageAlignmentHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>ImageAlignmentHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.StyleClassHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>StyleClassHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.LocalizedPageNameHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>LocalizedPageNameHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.builder.handler.IBPageCategoryHandler</name>
+            <value>
+              <map>
+                <key>
+                  <name>component_name</name>
+                  <type>java.lang.String</type>
+                  <value>IBPageCategoryHandler</value>
+                </key>
+                <key>
+                  <name>component_type</name>
+                  <type>java.lang.String</type>
+                  <value>iw.propertyhandler</value>
+                </key>
+              </map>
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.core.file.data.ICFileTypeHandler</name>
+            <value>
+              <map />
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.core.file.data.ICFileType</name>
+            <value>
+              <map />
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.core.file.data.ICMimeType</name>
+            <value>
+              <map />
+            </value>
+            <type>map</type>
+          </key>
+          <key>
+            <name>com.idega.core.file.data.ICFile</name>
+            <value>
+              <map />
             </value>
             <type>map</type>
           </key>
