@@ -1,6 +1,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.HtmlTemplateGrabber;
 import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -9,6 +10,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
 
 /**
@@ -25,6 +27,7 @@ public class IBSourceView extends Window {
   private static final String SOURCE_PARAMETER = "ib_page_source";
   private static final String IB_SOURCE_ACTION = "ib_page_source_action";
   private static final String IB_PAGE_FORMAT="ib_page_fomat";
+  private static final String PARAM_TEMPLATEURL="templateurl";
   
   public IBSourceView() {
     setWidth(700);
@@ -41,21 +44,34 @@ public class IBSourceView extends Window {
             String stringRep = iwc.getParameter(SOURCE_PARAMETER);
             if(stringRep!=null){
 				String format = iwc.getParameter(IB_PAGE_FORMAT);  
-				doUpdate(stringRep,format,iwc);
+				doPageSourceUpdate(stringRep,format,iwc);
 				this.setParentToReload();
             }
           }
           catch(Exception e){
-            add("Error: "+e.getMessage());
+            add("Error when saving: "+e.getMessage());
             e.printStackTrace();
           }
+        }
+        else if(action.equals("grab")){
+            try{
+                String sUrl = iwc.getParameter(PARAM_TEMPLATEURL);
+                if(sUrl!=null && !"".equals(sUrl)){
+                		doPageTemplateGrab(sUrl,iwc);
+                		this.setParentToReload();
+                }
+              }
+              catch(Exception e){
+                add("Error when grabbing: "+e.getMessage());
+                e.printStackTrace();
+              }
         }
       }
 
       Form form = new Form();
-      Table table = new Table(1,4);
+      Table table = new Table(1,6);
       form.add(table);
-      form.addParameter(IB_SOURCE_ACTION,"update");
+      //form.addParameter(IB_SOURCE_ACTION,"update");
       add(form);
       TextArea area = new TextArea(SOURCE_PARAMETER);
       area.setWidth("600");
@@ -65,20 +81,37 @@ public class IBSourceView extends Window {
       table.add(area,1,1);
       DropdownMenu menu = getFormatDropdown(iwc);
       table.add(menu,1,2);
-      SubmitButton button = new SubmitButton("Save");
+      SubmitButton button = new SubmitButton("Save",IB_SOURCE_ACTION,"update");
       table.add(button,1,3);
       String templateString = "Note: Template regions in HTML templates are defined like this:\n<code>&lt;!-- TemplateBeginEditable name=\"MyUniqueRegionId1\" --&gt;MyUniqueRegionId1&lt;!-- TemplateEndEditable --&gt;</code>";
       PreformattedText helpText = new PreformattedText(templateString);
       table.add(helpText,1,4);
  
-
+      
+      TextInput templateGrabInput = new TextInput(PARAM_TEMPLATEURL);
+      templateGrabInput.setLength(60);
+      table.add(templateGrabInput,1,5);
+      SubmitButton templateGrabButton = new SubmitButton("Grab template from URL",IB_SOURCE_ACTION,"grab");
+      table.add(templateGrabButton,1,5);
+      
+      String templateGrabString = "Warning: This will get the template from URL and write over the template and set type to HTML";
+      PreformattedText templateGrapHelpText = new PreformattedText(templateGrabString);
+      table.add(templateGrabString,1,6);
+      
   }
 
 
-  private void doUpdate(String sourceString,String pageFormat,IWContext iwc)throws Exception{
+  private void doPageSourceUpdate(String sourceString,String pageFormat,IWContext iwc)throws Exception{
     //IBXMLPage page = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc);
     //page.setSourceFromString(sourceString);
   	BuilderLogic.getInstance().setPageSource(iwc,pageFormat,sourceString);
+  }
+  
+  private void doPageTemplateGrab(String url,IWContext iwc)throws Exception{
+    //IBXMLPage page = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc);
+    //page.setSourceFromString(sourceString);
+  	String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+  	HtmlTemplateGrabber grabber = new HtmlTemplateGrabber(url,pageKey);
   }
 
   public void setSource(TextArea area,IWContext iwc){
