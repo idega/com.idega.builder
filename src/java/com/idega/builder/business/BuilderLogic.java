@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.92 2002/01/09 16:18:31 palli Exp $
+ * $Id: BuilderLogic.java,v 1.93 2002/01/09 16:29:36 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -703,7 +703,7 @@ public class BuilderLogic {
           separator.setHeight(2);
 
         addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",null,2,1);
+        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
         addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
         addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
         table.add(separator,2,3);
