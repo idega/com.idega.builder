@@ -33,7 +33,7 @@ import java.util.Hashtable;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
-*@version 1.0 alpha
+*@version 1.0 beta
 */
 
 public class IBPropertyHandler{
@@ -360,7 +360,7 @@ public class IBPropertyHandler{
        *
        */
       else if(parameterClass.equals(com.idega.core.data.ICFile.class)){
-          obj = new com.idega.builder.presentation.IBFileChooser(name);
+          obj = new com.idega.builder.presentation.IBFileChooser(name);//extends block.media.presentation.FileChooser
       }
       else if(parameterClass.equals(com.idega.builder.data.IBPage.class)){
           obj = new com.idega.builder.presentation.IBPageChooser(name);
