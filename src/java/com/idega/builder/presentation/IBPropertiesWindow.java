@@ -60,7 +60,7 @@ public class IBPropertiesWindow extends FrameSet{
       if(sICObjectInstanceID!=null){
         title += " : ";
         int iInstanceID = Integer.parseInt(sICObjectInstanceID);
-        ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getICObjectInstance(iInstanceID);
+        ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getInstance().getICObjectInstance(iInstanceID);
         ICObject ico = instance.getObject();
         String name = ico.getName();
         title += name;
