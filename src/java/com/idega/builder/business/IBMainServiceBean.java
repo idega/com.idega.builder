@@ -4,9 +4,7 @@
 package com.idega.builder.business;
 
 import java.rmi.RemoteException;
-
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDomain;
@@ -28,7 +26,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	 * @see com.idega.core.builder.business.BuilderService#getPage(java.lang.String)
 	 */
 	public Page getPage(String pageID) throws RemoteException {
-		return getBuilderLogic().getPageCacher().getPage(pageID);
+		return getBuilderLogic().getPageCacher().getComponentBasedPage(pageID).getNewPageCloned();
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getCurrentDomain()
@@ -40,9 +38,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getIBPageURL(int)
 	 */
-	public String getPageURI(int pageId)
+	public String getPageURI(int pageKey)
 	{
-		return getBuilderLogic().getIBPageURL(getIWApplicationContext(),pageId);
+		return getBuilderLogic().getIBPageURL(getIWApplicationContext(),pageKey);
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getIBPageURL(String)
@@ -78,6 +76,13 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 		return getBuilderLogic().getStartPageId(getIWApplicationContext());
 	}
 	/* (non-Javadoc)
+	 * @see com.idega.core.builder.business.BuilderService#getRootPageId()
+	 */
+	public String getRootPageKey()
+	{
+		return getBuilderLogic().getStartPageKey(getIWApplicationContext());
+	}
+	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getRootPage()
 	 */
 	public ICPage getRootPage()throws RemoteException
@@ -100,6 +105,15 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	{
 		return getBuilderLogic().getCurrentIBPageID(iwc);
 	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.business.BuilderService#getCurrentPageId(com.idega.presentation.IWContext)
+	 */
+	public String getCurrentPageKey(IWContext iwc)
+	{
+		return getBuilderLogic().getCurrentIBPage(iwc);
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getCurrentPage(com.idega.presentation.IWContext)
 	 */

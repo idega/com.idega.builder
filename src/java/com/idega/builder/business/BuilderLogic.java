@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.163 2004/12/06 15:33:53 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.164 2004/12/20 08:55:07 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -12,16 +12,25 @@ import java.util.Set;
 import java.util.Vector;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.presentation.IBAddModuleWindow;
+import com.idega.builder.presentation.IBAddRegionLabelWindow;
+import com.idega.builder.presentation.IBCopyModuleWindow;
+import com.idega.builder.presentation.IBCutModuleWindow;
+import com.idega.builder.presentation.IBDeleteModuleWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
+import com.idega.builder.presentation.IBPermissionWindow;
+import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.data.GenericGroup;
+import com.idega.core.view.ViewManager;
+import com.idega.core.view.ViewNode;
 import com.idega.event.EventLogic;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -83,6 +92,12 @@ public class BuilderLogic {
 	public static final String CLIPBOARD = "user_clipboard";
 	private static BuilderLogic _instance;
 
+	public String PAGE_FORMAT_IBXML="IBXML";
+	public String PAGE_FORMAT_HTML="HTML";
+	public String PAGE_FORMAT_JSP_1_2="JSP_1_2";
+	
+	private String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2};
+	
 	private BuilderLogic() {
 	}
 
@@ -95,23 +110,26 @@ public class BuilderLogic {
 
 	public boolean updatePage(int id) {
 		String theID = Integer.toString(id);
-		IBXMLPage xml = getPageCacher().getXML(theID);
+		CachedBuilderPage xml = getPageCacher().getCachedBuilderPage(theID);
 		xml.store();
 		getPageCacher().flagPageInvalid(theID);
 		return (true);
 	}
 
-	public IBXMLPage getIBXMLPage(String key) {
-		return getPageCacher().getXML(key);
+	public CachedBuilderPage getCachedBuilderPage(String key) {
+		return getPageCacher().getCachedBuilderPage(key);
 	}
 
-	public IBXMLPage getIBXMLPage(int id) {
-		return getPageCacher().getXML(Integer.toString(id));
+	public IBXMLPage getIBXMLPage(String pageKey) {
+		return getPageCacher().getIBXML(pageKey);
 	}
 
-	/**
-	 *  	 *
-	 */
+	
+	public Page getPage(String pageKey, IWContext iwc) {
+		return getPageCacher().getComponentBasedPage(pageKey).getPage(iwc);
+	}
+	
+	/*
 	public Page getPage(int id, boolean builderview, IWContext iwc) {
 		try {
 			boolean permissionview = false;
@@ -145,7 +163,7 @@ public class BuilderLogic {
 			theReturn.add("Page invalid");
 			return (theReturn);
 		}
-	}
+	}*/
 
 	/**
 	 *  	 *
@@ -173,7 +191,7 @@ public class BuilderLogic {
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
-				page.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, null));
+				page.add(getAddIcon(Integer.toString(-1), iwc, null));
 				if (!clipboardEmpty)
 					page.add(getPasteIcon(Integer.toString(-1), iwc));
 				//page.add(layer);
@@ -183,13 +201,13 @@ public class BuilderLogic {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					hPage.add(IBAddModuleWindow.getAddIcon(regionKey, iwc, regionKey),regionKey);
+					hPage.add(getAddIcon(regionKey, iwc, regionKey),regionKey);
 				}
 			}
 		}
 		else {
 			boolean mayAddButtonsInPage=true;
-			IBXMLPage iPage = this.getIBXMLPage(pageKey);
+			CachedBuilderPage iPage = this.getCachedBuilderPage(pageKey);
 			if(iPage.getPageFormat().equals("HTML")){
 				mayAddButtonsInPage=false;
 				if(page instanceof HtmlPage){
@@ -204,15 +222,15 @@ public class BuilderLogic {
 				}
 			}
 			if(mayAddButtonsInPage){
-				page.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, null));
+				page.add(getAddIcon(Integer.toString(-1), iwc, null));
 			}
 			if ((!clipboardEmpty)&&mayAddButtonsInPage)
 				page.add(getPasteIcon(Integer.toString(-1), iwc));
 			if (page.getIsTemplate())
 				if (page.isLocked())
-					page.add(IBLockRegionWindow.getLockedIcon(Integer.toString(-1), iwc, null));
+					page.add(getLockedIcon(Integer.toString(-1), iwc, null));
 				else
-					page.add(IBLockRegionWindow.getUnlockedIcon(Integer.toString(-1), iwc));
+					page.add(getUnlockedIcon(Integer.toString(-1), iwc));
 			//page.add(layer);
 		}
 		return (page);
@@ -362,34 +380,34 @@ public class BuilderLogic {
 						if (currentPage.getIsExtendingTemplate()) {
 							if (tab.getBelongsToParent()) {
 								if (!tab.isLocked(x, y)) {
-									tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+									tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 									if (!clipboardEmpty)
 										tab.add(getPasteIcon(newParentKey, iwc), x, y);
 								}
 							}
 							else {
-								tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+								tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 								if (!clipboardEmpty)
 									tab.add(getPasteIcon(newParentKey, iwc), x, y);
 								if (currentPage.getIsTemplate()) {
-									tab.add(IBObjectControl.getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+									tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 									if (tab.isLocked(x, y))
-										tab.add(IBLockRegionWindow.getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+										tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 									else
-										tab.add(IBLockRegionWindow.getUnlockedIcon(newParentKey, iwc), x, y);
+										tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
 								}
 							}
 						}
 						else {
-							tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+							tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 							if (!clipboardEmpty)
 								tab.add(getPasteIcon(newParentKey, iwc), x, y);
 							if (currentPage.getIsTemplate()) {
-								tab.add(IBObjectControl.getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+								tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 								if (tab.isLocked(x, y))
-									tab.add(IBLockRegionWindow.getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+									tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 								else
-									tab.add(IBLockRegionWindow.getUnlockedIcon(newParentKey, iwc), x, y);
+									tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
 							}
 						}
 					}
@@ -427,38 +445,39 @@ public class BuilderLogic {
 					}
 				}
 				if (index != -1) {
-					Page curr = getPageCacher().getPage(getCurrentIBPage(iwc), iwc);
+					//Page curr = getPageCacher().getPage(getCurrentIBPage(iwc), iwc);
+					Page curr = getPageCacher().getComponentBasedPage(getCurrentIBPage(iwc)).getNewPage(iwc);
 					if (curr.getIsExtendingTemplate()) {
 						if (obj.getBelongsToParent()) {
 							if (!((PresentationObjectContainer) obj).isLocked()) {
-								((PresentationObjectContainer) obj).add(IBAddModuleWindow.getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+								((PresentationObjectContainer) obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 								if (!clipboardEmpty)
 									((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 							}
 						}
 						else {
-							((PresentationObjectContainer) obj).add(IBAddModuleWindow.getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+							((PresentationObjectContainer) obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 							if (!clipboardEmpty)
 								((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 							if (curr.getIsTemplate()) {
-								((PresentationObjectContainer) obj).add(IBObjectControl.getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+								((PresentationObjectContainer) obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 								if (!((PresentationObjectContainer) obj).isLocked())
-									((PresentationObjectContainer) obj).add(IBLockRegionWindow.getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+									((PresentationObjectContainer) obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 								else
-									((PresentationObjectContainer) obj).add(IBLockRegionWindow.getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+									((PresentationObjectContainer) obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 							}
 						}
 					}
 					else {
-						((PresentationObjectContainer) obj).add(IBAddModuleWindow.getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+						((PresentationObjectContainer) obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 						if (!clipboardEmpty)
 							((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 						if (curr.getIsTemplate()) {
-							((PresentationObjectContainer) obj).add(IBObjectControl.getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+							((PresentationObjectContainer) obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 							if (!((PresentationObjectContainer) obj).isLocked())
-								((PresentationObjectContainer) obj).add(IBLockRegionWindow.getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+								((PresentationObjectContainer) obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 							else
-								((PresentationObjectContainer) obj).add(IBLockRegionWindow.getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+								((PresentationObjectContainer) obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 						}
 					}
 				}
@@ -483,12 +502,14 @@ public class BuilderLogic {
 	/**
 	 * Returns the current IBPageID that the user has requested
 	 */
-	public static int getCurrentIBPageID(IWContext iwc) {
+	public int getCurrentIBPageID(IWContext iwc) {
 		String theReturn = getCurrentIBPage(iwc);
 		return Integer.parseInt(theReturn);
 	}
-
-	public static String getCurrentIBPage(IWContext iwc) {
+	/**
+	 * Returns the key for the ICPage that the user has requested
+	 */
+	public String getCurrentIBPage(IWContext iwc) {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
 		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
@@ -592,18 +613,22 @@ public class BuilderLogic {
 	 * @param stringSourceMarkup
 	 */
 	public String getPageSource(String pageKey){
-		return getIBXMLPage(pageKey).toString();
+		return getCachedBuilderPage(pageKey).toString();
 	}	
 	
-	IBXMLPage getCurrentIBXMLPage(IWContext iwc) {
+	CachedBuilderPage getCurrentCachedBuilderPage(IWContext iwc) {
 		String key = getCurrentIBPage(iwc);
 		if (key != null) {
-			return (getIBXMLPage(key));
+			return (getCachedBuilderPage(key));
 		}
 		return null;
 	}
+	
+	IBXMLPage getCurrentIBXMLPage(IWContext iwc) {
+		return (IBXMLPage)getCurrentCachedBuilderPage(iwc);
+	}
 
-	public static ICDomain getCurrentDomain(IWApplicationContext iwac) {
+	public ICDomain getCurrentDomain(IWApplicationContext iwac) {
 		try {
 			return iwac.getDomain();
 		}
@@ -613,7 +638,7 @@ public class BuilderLogic {
 		}
 	}
 	
-	public static ICDomain getCurrentDomainByServerName(IWApplicationContext iwac,String serverName) {
+	public ICDomain getCurrentDomainByServerName(IWApplicationContext iwac,String serverName) {
 		try {
 			return iwac.getDomainByServerName(serverName);
 		}
@@ -773,7 +798,7 @@ public class BuilderLogic {
 		if (XMLWriter.lockRegion(xml, parentObjectInstanceID)) {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
-				if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
+				if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
 					List extend = xml.getUsingTemplate();
 					if (extend != null) {
 						Iterator i = extend.iterator();
@@ -792,7 +817,7 @@ public class BuilderLogic {
 		if (XMLWriter.unlockRegion(xml, parentObjectInstanceID)) {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
-				if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
+				if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
 					List extend = xml.getUsingTemplate();
 					if (extend != null) {
 						Iterator i = extend.iterator();
@@ -948,7 +973,7 @@ public class BuilderLogic {
 	/**
 	 *  	 *
 	 */
-	public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId) {
+	public String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId) {
 		String src = iwc.getIWMainApplication().getIFrameContentURI() + "?" + IC_OBJECT_INSTANCE_ID_PARAMETER + "=" + ICObjectInstanceId;
 		String query = iwc.getQueryString();
 		if (query != null && !query.equals("")) {
@@ -966,7 +991,7 @@ public class BuilderLogic {
 	 *          The IdegeWeb Context object
 	 */
 	public void changeName(String name, IWContext iwc) {
-		IBXMLPage xml = getCurrentIBXMLPage(iwc);
+		CachedBuilderPage xml = getCurrentCachedBuilderPage(iwc);
 		if (xml != null) {
 			if (!xml.getName().equals(name)) {
 				xml.setName(name);
@@ -988,25 +1013,25 @@ public class BuilderLogic {
 	/**
 	 * Changes the template id for the current page.
 	 * 
-	 * @param templateId
+	 * @param newTemplateId
 	 *          The new template id for the current page.
 	 * @param iwc
 	 *          The IdegeWeb Context object @todo make this work for templates!
 	 */
-	public void changeTemplateId(String templateId, IWContext iwc) {
+	public void changeTemplateId(String newTemplateId, IWContext iwc) {
 		IBXMLPage xml = getCurrentIBXMLPage(iwc);
 		if (xml != null) {
-			if (xml.getType().equals(IBXMLPage.TYPE_PAGE)) {
-				int newId = Integer.parseInt(templateId);
-				int oldId = xml.getTemplateId();
-				if (newId != oldId) {
-					xml.setTemplateId(newId);
+			if (xml.getType().equals(CachedBuilderPage.TYPE_PAGE)) {
+				//int newId = Integer.parseInt(templateId);
+				String oldId = xml.getTemplateKey();
+				if (!newTemplateId.equals(oldId)) {
+					xml.setTemplateKey(newTemplateId);
 					String currentPageId = getCurrentIBPage(iwc);
-					setTemplateId(currentPageId, Integer.toString(newId));
-					if (newId > 0)
-						getIBXMLPage(newId).addUsingTemplate(currentPageId);
-					if (oldId > 0)
-						getIBXMLPage(oldId).removeUsingTemplate(currentPageId);
+					setTemplateId(currentPageId, newTemplateId);
+					//if (newId > 0)
+						getIBXMLPage(newTemplateId).addPageUsingThisTemplate(currentPageId);
+					//if (oldId > 0)
+						getIBXMLPage(oldId).removePageAsUsingThisTemplate(currentPageId);
 				}
 			}
 		}
@@ -1066,6 +1091,14 @@ public class BuilderLogic {
 	public int getStartPageId(IWApplicationContext iwac) {
 		ICDomain domain = getCurrentDomain(iwac);
 		return domain.getStartPageID();
+	}
+	
+	/**
+	 *  	 *
+	 */
+	public String getStartPageKey(IWApplicationContext iwac) {
+		int id = getStartPageId(iwac);
+		return Integer.toString(id);
 	}
 	
 	/**
@@ -1148,4 +1181,180 @@ public class BuilderLogic {
 		ibPageHelper=null;
 		_instance=null;
 	}
+	
+	/**
+	 * Return an array of the document formats that the Builder supports.
+	 * ('IBXML','HTML','JSP_1_2')
+	 * @return
+	 */
+	public String[] getPageFormatsSupported(){
+		return pageFormats;
+	}
+	
+	/**
+	 * gets the default page format:
+	 * @return
+	 */
+	public String getDefaultPageFormat(){
+		return PAGE_FORMAT_IBXML;
+	}
+
+	/**
+	 *
+	 */
+	public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image addImage = bundle.getImage("add.gif", "Add new component");
+		//addImage.setAttribute("style","z-index: 0;");
+		Link link = new Link(addImage);
+		link.setWindowToOpen(IBAddModuleWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
+		return (link);
+	}
+	
+
+	/**
+	 *
+	 */
+	public PresentationObject getLockedIcon(String parentKey, IWContext iwc, String label)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image lockImage = bundle.getImage("las_close.gif", "Unlock region");
+		Link link = new Link(lockImage);
+		link.setWindowToOpen(IBLockRegionWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_UNLOCK_REGION);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
+		return (link);
+	}
+
+	/**
+	 *
+	 */
+	public PresentationObject getUnlockedIcon(String parentKey, IWContext iwc)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image lockImage = bundle.getImage("las_open.gif", "Lock region");
+		Link link = new Link(lockImage);
+		link.setWindowToOpen(IBLockRegionWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LOCK_REGION);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		return (link);
+	}
+	
+	/**
+	 *
+	 */
+	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image labelImage = bundle.getImage("label.gif", "Put label on region");
+		Link link = new Link(labelImage);
+		link.setWindowToOpen(IBAddRegionLabelWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
+		return (link);
+	}
+
+	public PresentationObject getCutIcon(int key, String parentKey, IWContext iwc)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image cutImage = bundle.getImage("shared/menu/cut.gif", "Cut component");
+		Link link = new Link(cutImage);
+		link.setWindowToOpen(IBCutModuleWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		return link;
+	}
+
+	/**
+	 *
+	 */
+	public PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image copyImage = bundle.getImage("shared/menu/copy.gif", "Copy component");
+		//copyImage.setAttribute("style","z-index: 0;");
+		Link link = new Link(copyImage);
+		link.setWindowToOpen(IBCopyModuleWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		return (link);
+	}
+
+	public PresentationObject getDeleteIcon(int key, String parentKey, IWContext iwc)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image deleteImage = bundle.getImage("shared/menu/delete.gif", "Delete component");
+		Link link = new Link(deleteImage);
+		link.setWindowToOpen(IBDeleteModuleWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_DELETE);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		return link;
+	}
+
+	public PresentationObject getPermissionIcon(int key, IWContext iwc)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image editImage = bundle.getImage("shared/menu/permission.gif", "Set permissions");
+		Link link = new Link(editImage);
+		link.setWindowToOpen(IBPermissionWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PERMISSION);
+		link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, key);
+		link.addParameter(
+			IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,
+			AccessController.CATEGORY_OBJECT_INSTANCE);
+		return link;
+	}
+
+	public PresentationObject getEditIcon(int key, IWContext iwc)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image editImage = bundle.getImage("shared/menu/edit.gif", "Properties");
+		Link link = new Link(editImage);
+		link.setWindowToOpen(IBPropertiesWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
+		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		return link;
+	}
+
+	/**
+	 *
+	 */
+	public PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc)
+	{
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		Image pasteImage = bundle.getImage("shared/menu/paste.gif", "Paste above component");
+		//copyImage.setAttribute("style","z-index: 0;");
+		Link link = new Link(pasteImage);
+		link.setWindowToOpen(IBPasteModuleWindow.class);
+		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
+		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PASTE_ABOVE);
+		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
+		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		return (link);
+	}	
+	
+	
+	public ViewNode getBuilderPageRootViewNode(){
+		String BUILDER_PAGE_VIEW_ID="pages";
+		return ViewManager.getInstance(IWMainApplication.getDefaultIWMainApplication()).getApplicationRoot().getChild(BUILDER_PAGE_VIEW_ID);
+	}
+	
 }

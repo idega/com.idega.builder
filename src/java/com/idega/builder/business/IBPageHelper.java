@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.44 2004/12/06 15:33:53 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.45 2004/12/20 08:55:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -95,7 +95,7 @@ public class IBPageHelper {
 		int domainId = -1;
 		if (parentId == null) {
 			// that means top level
-			domainId = ((Integer) BuilderLogic.getCurrentDomain(creatorContext).getPrimaryKey()).intValue();
+			domainId = ((Integer) getBuilderLogic().getCurrentDomain(creatorContext).getPrimaryKey()).intValue();
 		}
 		if (type.equals(TEMPLATE)) {
 			// templates don't use templates
@@ -265,7 +265,7 @@ public class IBPageHelper {
 		
 		if (tid != -1) {
 //			System.out.println("Creating page = " + ibPage.getName());
-			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
+			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
 			Page current = currentXMLPage.getPopulatedPage();
 			List children = current.getChildrenRecursive();
 //			System.out.println("children size = " + children.size());
@@ -303,7 +303,7 @@ public class IBPageHelper {
 		}
 		if ((templateId != null) && (!templateId.equals(""))) {
 			IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
-			xml.addUsingTemplate(Integer.toString(id));
+			xml.addPageUsingThisTemplate(Integer.toString(id));
 			Page templateParent = xml.getPopulatedPage();
 			if (!templateParent.isLocked()) {
 				BuilderLogic.getInstance().unlockRegion(Integer.toString(id), "-1", null);
@@ -314,7 +314,7 @@ public class IBPageHelper {
 	public boolean addElementToPage(ICPage ibPage, int[] templateObjInstID, IWUserContext iwuc) {
 		System.out.println("addElementToPage begins");
 		if (templateObjInstID != null) {
-			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
+			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
 			Page current = currentXMLPage.getPopulatedPage();
 			List children = current.getChildrenRecursive();
 			if (children != null) {
@@ -376,7 +376,7 @@ public class IBPageHelper {
 							instance.setParentInstanceID(inst.getID());
 						}
 						instance.setIBPageByKey(xmlpage.getPageKey());
-						instance.insert();
+						instance.store();
 						instancePK = instance.getPrimaryKey();
 						cSession.setNewValue(ICObjectInstance.class,instanceKey,instancePK);
 						if (copyPermissions) {
@@ -424,8 +424,8 @@ public class IBPageHelper {
 		if (pageIdInt == domainStartPageId || pageIdInt == domainStartTemplateId) {
 			return false;
 		}
-		IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageId);
-		if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
+		CachedBuilderPage xml = BuilderLogic.getInstance().getCachedBuilderPage(pageId);
+		if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
 			List map = xml.getUsingTemplate();
 			return ((map == null) || (map.isEmpty()));
 		}
@@ -448,14 +448,14 @@ public class IBPageHelper {
 				if (it != null) {
 					while (it.hasNext()) {
 						ICPage child = (ICPage) it.next();
-						IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getID());
+						IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getPageKey());
 						List map = xml.getUsingTemplate();
 						if ((map != null) || (!map.isEmpty())) {
 							return false;
 						}
 						boolean check = true;
 						if (child.getChildCount() != 0)
-							check = checkDeleteChildrenOfPage(Integer.toString(child.getID()));
+							check = checkDeleteChildrenOfPage((child.getPageKey()));
 						if (!check)
 							return false;
 					}
@@ -496,9 +496,9 @@ public class IBPageHelper {
 			parent.removeChild(ibpage);
 			newParent.addChild(ibpage);
 			if (pageTreeCacheMap != null) {
-				PageTreeNode parentNode = (PageTreeNode) pageTreeCacheMap.get(parent.getIDInteger());
-				PageTreeNode childNode = (PageTreeNode) pageTreeCacheMap.get(ibpage.getIDInteger());
-				PageTreeNode newParentNode = (PageTreeNode) pageTreeCacheMap.get(newParent.getIDInteger());
+				PageTreeNode parentNode = (PageTreeNode) pageTreeCacheMap.get(new Integer(parent.getPageKey()));
+				PageTreeNode childNode = (PageTreeNode) pageTreeCacheMap.get((new Integer(ibpage.getPageKey())));
+				PageTreeNode newParentNode = (PageTreeNode) pageTreeCacheMap.get((new Integer(newParent.getPageKey())));
 				parentNode.removeChild(childNode);
 				newParentNode.addChild(childNode);
 			}
@@ -582,9 +582,9 @@ public class IBPageHelper {
 				}
 			}
 			ibpage.delete(userId);
-			int templateId = ibpage.getTemplateId();
-			if (templateId > 0) {
-				BuilderLogic.getInstance().getIBXMLPage(templateId).removeUsingTemplate(pageId);
+			String templateId = ibpage.getTemplateKey();
+			if (templateId != null ) {
+				BuilderLogic.getInstance().getIBXMLPage(templateId).removePageAsUsingThisTemplate(pageId);
 			}
 			if (deleteChildren) {
 				deleteAllChildren(ibpage, tree, userId);
@@ -644,13 +644,13 @@ public class IBPageHelper {
 				if (child.getChildCount() != 0)
 					deleteAllChildren(child, tree, userId);
 				child.delete(userId);
-				int templateId = child.getTemplateId();
-				if (templateId > 0) {
-					BuilderLogic.getInstance().getIBXMLPage(templateId).removeUsingTemplate(Integer.toString(child.getID()));
+				String templateId = child.getTemplateKey();
+				if (templateId != null) {
+					BuilderLogic.getInstance().getIBXMLPage(templateId).removePageAsUsingThisTemplate(child.getPageKey());
 				}
 				page.removeChild(child);
 				if (tree != null)
-					tree.remove(child.getIDInteger());
+					tree.remove(new Integer(child.getPageKey()));
 			}
 		}
 	}
@@ -661,7 +661,7 @@ public class IBPageHelper {
 		return getTreeViewer(iwc, TEMPLATEVIEWER);
 	}
 	private TreeViewer getTreeViewer(IWContext iwc, int type) {
-		com.idega.core.builder.data.ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
+		com.idega.core.builder.data.ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
 		int id = -1;
 		if (type == PAGEVIEWER) {
 			id = domain.getStartPageID();
@@ -713,7 +713,7 @@ public class IBPageHelper {
 	}
 
 	private List getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(IWContext iwc, int type) throws IDOLookupException, FinderException {
-		ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
+		ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
 		int domainStartPageId = (PAGEVIEWER == type) ? domain.getStartPageID() : domain.getStartTemplateID();
 		Collection startPages = (PAGEVIEWER == type) ? getStartPages(domain) : getTemplateStartPages(domain);
 		List pages = new ArrayList(1 +  startPages.size());

@@ -1,5 +1,5 @@
 /*
- * $Id: PageTag.java,v 1.1 2004/12/15 22:00:38 tryggvil Exp $
+ * $Id: BuilderPageTag.java,v 1.1 2004/12/20 08:55:07 tryggvil Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,12 +14,12 @@ import javax.faces.webapp.UIComponentTag;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/15 22:00:38 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
  * @version $Revision: 1.1 $
  */
-public class PageTag extends UIComponentTag {
+public class BuilderPageTag extends UIComponentTag {
 
 	private static String pageComponentId="BuilderPage_";
 	
@@ -66,7 +66,7 @@ public class PageTag extends UIComponentTag {
 	/**
 	 * 
 	 */
-	public PageTag() {
+	public BuilderPageTag() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

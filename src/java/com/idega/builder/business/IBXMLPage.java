@@ -1,32 +1,24 @@
 /*
- * $Id: IBXMLPage.java,v 1.55 2004/12/06 15:33:53 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.56 2004/12/20 08:55:06 tryggvil Exp $
+ * Created in 2001 by Tryggvi Larusson
  *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
- *
  */
 package com.idega.builder.business;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.FinderException;
-
-import com.idega.core.builder.data.ICPage;
-import com.idega.core.builder.data.ICPageHome;
-import com.idega.data.IDOLookupException;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import com.idega.exception.PageDoesNotExist;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -34,83 +26,74 @@ import com.idega.xml.XMLException;
 import com.idega.xml.XMLOutput;
 import com.idega.xml.XMLParser;
 
+
 /**
- * A class that reads XML page descriptions from the database and returns
+ * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>, 
- * <a href="mailto:palli@idega.is">Pall Helgason</a>
+ *  Last modified: $Date: 2004/12/20 08:55:06 $ by $Author: tryggvil $
  * 
- * @version 1.0
+ * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
+ * @version $Revision: 1.56 $
  */
-public class IBXMLPage implements IBXMLAble {
-	public final static String TYPE_PAGE = XMLConstants.PAGE_TYPE_PAGE;
-	public final static String TYPE_TEMPLATE = XMLConstants.PAGE_TYPE_TEMPLATE;
-	public final static String TYPE_DRAFT = XMLConstants.PAGE_TYPE_DRAFT;
-	public final static String TYPE_DPT_TEMPLATE = XMLConstants.PAGE_TYPE_DPT_TEMPLATE;
-	public final static String TYPE_DPT_PAGE = XMLConstants.PAGE_TYPE_DPT_PAGE;
+public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
+
+
 	private XMLParser parser = null;
 	private XMLDocument xmlDocument = null;
 	private XMLElement rootElement = null;
 	protected Page _populatedPage = null;
-	private String _key;
-	private ICPage _ibPage;
-	private String _type = TYPE_PAGE;
-	private List _usingTemplate = null;
-	private String pageFormat;
 	private boolean verifyXML=false;
-	protected String stringSourceXML;
 	
 	/**
-	 * Default constructor.
-	 * Does nothing but set default values.
+	 * @param key
 	 */
-	public IBXMLPage(){
-		//Default constructor
+	public IBXMLPage(String key) {
+		this(false,key);
 	}
 
-	
-	private IBXMLPage(boolean verify) {
-		setVerifyXML(verify);
-		//_parser = new XMLParser(verify);
+	/**
+	 * @param verifyXML
+	 * @param key
+	 */
+	public IBXMLPage(boolean verifyXML, String key) {
+		super(key);
+		setVerifyXML(verifyXML);
+		setComponentBased(true);
 	}
 
-	public IBXMLPage(boolean verify, String key) {
-		this(verify);
-		setPageKey(key);
-	}
 
 	/**
 	 * Sets the key for the page for this instance to represent.
 	 * This is typically an id to a ICPage or ib_page.
 	 */
 	public void setPageKey(String key){
-		_key = key;
-		ICPage ibpage = null;
+		super.setPageKey(key);
+/*		ICPage ibpage = null;
 		try {
 			ICPageHome pHome = (ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class);
 			int pageId = Integer.parseInt(key);
 			ibpage = pHome.findByPrimaryKey(pageId);
 			setICPage(ibpage);
 		}
-		/*catch (PageDoesNotExist pe) {
-			int template = ibpage.getTemplateId();
-			String templateString = null;
-			if (template != -1)
-				templateString = Integer.toString(template);
-			if (ibpage.isPage())
-				setPageAsEmptyPage(TYPE_PAGE, templateString);
-			else if (ibpage.isDraft())
-				setPageAsEmptyPage(TYPE_DRAFT, templateString);
-			else if (ibpage.isTemplate())
-				setPageAsEmptyPage(TYPE_TEMPLATE, templateString);
-			else if (ibpage.isDynamicTriggeredTemplate())
-				setPageAsEmptyPage(TYPE_DPT_TEMPLATE, templateString);
-			else if (ibpage.isDynamicTriggeredPage())
-				setPageAsEmptyPage(TYPE_DPT_PAGE, templateString);
-			else
-				setPageAsEmptyPage(TYPE_PAGE, templateString);
-		}*/
+//		catch (PageDoesNotExist pe) {
+//			int template = ibpage.getTemplateId();
+//			String templateString = null;
+//			if (template != -1)
+//				templateString = Integer.toString(template);
+//			if (ibpage.isPage())
+//				setPageAsEmptyPage(TYPE_PAGE, templateString);
+//			else if (ibpage.isDraft())
+//				setPageAsEmptyPage(TYPE_DRAFT, templateString);
+//			else if (ibpage.isTemplate())
+//				setPageAsEmptyPage(TYPE_TEMPLATE, templateString);
+//			else if (ibpage.isDynamicTriggeredTemplate())
+//				setPageAsEmptyPage(TYPE_DPT_TEMPLATE, templateString);
+//			else if (ibpage.isDynamicTriggeredPage())
+//				setPageAsEmptyPage(TYPE_DPT_PAGE, templateString);
+//			else
+//				setPageAsEmptyPage(TYPE_PAGE, templateString);
+//		}
 		catch (NumberFormatException ne) {
 			try {
 				InputStream stream = new FileInputStream(key);
@@ -126,57 +109,17 @@ public class IBXMLPage implements IBXMLAble {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-/*		String tmp = ibpage.getType();
-		String tmp2 = IBPageBMPBean.PAGE;
-		if (ibpage.getType().equals(IBPageBMPBean.PAGE)) {
-			Page p = getPopulatedPage();
-			if (p.getTitle() == null || p.getTitle().trim().equals("")) {
-				p.setTitle(ibpage.getName());
-			}
-		}*/
+//		String tmp = ibpage.getType();
+//		String tmp2 = IBPageBMPBean.PAGE;
+//		if (ibpage.getType().equals(IBPageBMPBean.PAGE)) {
+//			Page p = getPopulatedPage();
+//			if (p.getTitle() == null || p.getTitle().trim().equals("")) {
+//				p.setTitle(ibpage.getName());
+//			}
+//		}
+ 	*/
 	}
 	
-	/** 
-	 * This method is called from setPageKey to initialize the page document.
-	 * @return
-	 * @throws PageDoesNotExist
-	 */
-	protected void setICPage(ICPage ibpage){
-		try{
-			setPageFormat(ibpage.getFormat());
-			readPageStream(ibpage.getPageValue());
-			if (ibpage.isPage())
-				setType(TYPE_PAGE);
-			else if (ibpage.isDraft())
-				setType(TYPE_DRAFT);
-			else if (ibpage.isTemplate())
-				setType(TYPE_TEMPLATE);
-			else if (ibpage.isDynamicTriggeredTemplate())
-				setType(TYPE_DPT_TEMPLATE);
-			else if (ibpage.isDynamicTriggeredPage())
-				setType(TYPE_DPT_PAGE);
-			else
-				setType(TYPE_PAGE);
-		}
-		catch (PageDoesNotExist pe) {
-			int template = ibpage.getTemplateId();
-			String templateString = null;
-			if (template != -1)
-				templateString = Integer.toString(template);
-			if (ibpage.isPage())
-				setPageAsEmptyPage(TYPE_PAGE, templateString);
-			else if (ibpage.isDraft())
-				setPageAsEmptyPage(TYPE_DRAFT, templateString);
-			else if (ibpage.isTemplate())
-				setPageAsEmptyPage(TYPE_TEMPLATE, templateString);
-			else if (ibpage.isDynamicTriggeredTemplate())
-				setPageAsEmptyPage(TYPE_DPT_TEMPLATE, templateString);
-			else if (ibpage.isDynamicTriggeredPage())
-				setPageAsEmptyPage(TYPE_DPT_PAGE, templateString);
-			else
-				setPageAsEmptyPage(TYPE_PAGE, templateString);
-		}
-	}
 	
 	/** 
 	 * This method is called from setICPage to read into this page 
@@ -185,94 +128,32 @@ public class IBXMLPage implements IBXMLAble {
 	 * @throws PageDoesNotExist
 	 */
 	protected void readPageStream(InputStream stream) throws PageDoesNotExist{
-		readXMLDocument(stream);
+		readIBXMLDocument(stream);
 	}
 	
-	/**
-	 * Gets the key for the page that this instance represents.
-	 * This is typically an id to a ICPage or ib_page.
-	 */
-	public String getPageKey() {
-		return _key;
-	}
-
-	public void addUsingTemplate(String id) {
-		if (_usingTemplate == null)
-			_usingTemplate = new Vector();
-
-		if (!_usingTemplate.contains(id)) {
-			_usingTemplate.add(id);
-		}
-	}
-
-	public void removeUsingTemplate(String id) {
-		if (_usingTemplate == null)
-			return;
-
-		if (_usingTemplate.contains(id))
-			_usingTemplate.remove(id);
-	}
-
-	public List getUsingTemplate() {
-		if (_usingTemplate == null)
-			findAllUsingTemplate();
-		return _usingTemplate;
-	}
-
-	private void findAllUsingTemplate() {
-		_usingTemplate = new Vector();
-		List l = IBPageFinder.getAllPagesExtendingTemplate(Integer.parseInt(_key));
-		if (l == null)
-			return;
-		Iterator i = l.iterator();
-		while (i.hasNext()) {
-			ICPage p = (ICPage) i.next();
-			addUsingTemplate(p.getPrimaryKey().toString());
-		}
-	}
-
-	private void invalidateUsingTemplate() {
-		List l = getUsingTemplate();
-		if (l != null) {
-			Iterator i = l.iterator();
-			while (i.hasNext()) {
-				String invalid = (String) i.next();
-				IBXMLPage child = getBuilderLogic().getPageCacher().getXMLIfInCache(invalid);
-				if (child != null) {
-					if (child.getType().equals(TYPE_TEMPLATE))
-						child.invalidateUsingTemplate();
-					getBuilderLogic().getPageCacher().flagPageInvalid(invalid);
-				}
-			}
-		}
-	}
 
 	public synchronized boolean store() {
-		try {
-			ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(new Integer(_key));
+		/*try {
+			ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(new Integer(getPageKey()));
 			ibpage.setFormat(this.getPageFormat());
 			OutputStream stream = ibpage.getPageValueForWrite();
 			storeStream(stream);
 			ibpage.store();
 		}
 		catch (NumberFormatException ne) {
-			/*try {
-				OutputStream stream = new FileOutputStream(_key);
-				store(stream);
-			}
-			catch (FileNotFoundException fnfe) {
-				fnfe.printStackTrace();
-			}*/
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 		//setPopulatedPage(XMLReader.getPopulatedPage(this));
 		setPopulatedPage(null);
-		if (_type.equals(TYPE_TEMPLATE))
-			invalidateUsingTemplate();
+		if (getType().equals(TYPE_TEMPLATE))
+			invalidateAllPagesUsingThisTemplate();
 		
-		return true;
+		return true;*/
+		boolean theReturn = super.store();
+		setPopulatedPage(null);
+		return theReturn;
 	}
 
 	/**
@@ -283,7 +164,7 @@ public class IBXMLPage implements IBXMLAble {
 	protected synchronized void storeStream(OutputStream stream) {
 	try {
 		
-		if(this.getPageFormat().equals("IBXML")){
+		//if(this.getPageFormat().equals("IBXML")){
 				
 				XMLOutput output = new XMLOutput("  ", true);
 				output.setLineSeparator(System.getProperty("line.separator"));
@@ -291,7 +172,7 @@ public class IBXMLPage implements IBXMLAble {
 				output.setEncoding("UTF-8");
 				output.output(getXMLDocument(), stream);
 				stream.close();
-			}
+		/*	}
 			else if(this.getPageFormat().equals("HTML")){
 				//convert the string to utf-8
 				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
@@ -312,7 +193,7 @@ public class IBXMLPage implements IBXMLAble {
 				sr.close();
 				out.close();
 				stream.close();
-			}
+			}*/
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.err);
@@ -367,49 +248,7 @@ public class IBXMLPage implements IBXMLAble {
 		this.rootElement = document.getRootElement();
 	}
 
-	public String getName() {
-		try {
-			return getIBPage().getName();
-		}
-		catch (Exception e) {
-			return "";
-		}
-	}
 
-	public int getTemplateId() {
-		try {
-			return getIBPage().getTemplateId();
-		}
-		catch (Exception e) {
-			return -1;
-		}
-	}
-
-	public void setTemplateId(int id) {
-		try {
-			ICPage page = getIBPage();
-			page.setTemplateId(id);
-			page.store();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void setName(String name) {
-		try {
-			ICPage page = getIBPage();
-			page.setName(name);
-			page.store();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	ICPage getIBPage() throws IDOLookupException, NumberFormatException, FinderException{
-		return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(Integer.parseInt(_key));
-	}
 
 	/**
 	 * Sets the InputStream to read the 
@@ -418,7 +257,7 @@ public class IBXMLPage implements IBXMLAble {
 	 *
 	 * @throws com.idega.exception.PageDescriptionDoesNotExists The given XML file does not exists.
 	 */
-	public void readXMLDocument(InputStream stream) throws PageDoesNotExist {
+	protected void readIBXMLDocument(InputStream stream) throws PageDoesNotExist {
 	
 		boolean streamopen = true;
 		try {
@@ -535,21 +374,13 @@ public class IBXMLPage implements IBXMLAble {
 
 	public void setType(String type) {
 		if ((type.equals(TYPE_PAGE)) || (type.equals(TYPE_TEMPLATE)) || (type.equals(TYPE_DRAFT)) || (type.equals(TYPE_DPT_TEMPLATE)) || (type.equals(TYPE_DPT_PAGE)))
-			_type = type;
+			super.setType(type);
 		else
-			_type = TYPE_PAGE;
-	}
-
-	public String getType() {
-		return _type;
-	}
-
-	public String getSourceAsString(){
-		return stringSourceXML;
+			super.setType(TYPE_PAGE);
 	}
 	
 	public void setSourceFromString(String xmlRepresentation) throws Exception {
-		stringSourceXML=xmlRepresentation;
+		super.setSourceFromString(xmlRepresentation);
 		try{
 			StringReader reader = new StringReader(xmlRepresentation);
 			XMLParser parser = new XMLParser();
@@ -583,18 +414,7 @@ public class IBXMLPage implements IBXMLAble {
 	public XMLElement copyModule(String pageKey, int ICObjectInstanceID) {
 		return XMLWriter.copyModule(this, ICObjectInstanceID);
 	}
-	/**
-	 * @return Returns the pageFormat.
-	 */
-	public String getPageFormat() {
-		return pageFormat;
-	}
-	/**
-	 * @param pageFormat The pageFormat to set.
-	 */
-	public void setPageFormat(String pageFormat) {
-		this.pageFormat = pageFormat;
-	}
+
 	/**
 	 * Gets if the XML parser should verify the XML source.
 	 * Default is false.
@@ -619,9 +439,83 @@ public class IBXMLPage implements IBXMLAble {
 		}
 		return parser;
 	}
+
 	
-	protected BuilderLogic getBuilderLogic(){
-		return BuilderLogic.getInstance();
+	//Moved from BuilderLogic:
+	
+	/**
+	 * Gets a new Page instance with all Builder and Access control checks:
+	 */
+	public Page getPage(IWContext iwc) {
+	    boolean builderView = false;
+	    if (iwc.isParameterSet("view")) {
+	      if(getBuilderLogic().isBuilderApplicationRunning(iwc)){
+	        String view = iwc.getParameter("view");
+	        if(view.equals("builder"))
+	        		builderView=true;
+	      }
+	    }
+	    return getPage(builderView,iwc);
 	}
 	
+	/**
+	 *
+	 */
+	public Page getPage(boolean builderEditView,IWContext iwc) {
+		try {
+			boolean permissionview = false;
+			if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
+				permissionview = true;
+			}
+			//Page page = getPageCacher().getPage(Integer.toString(id), iwc);
+			Page page = getNewPage(iwc);
+			if (builderEditView && iwc.hasEditPermission(page)) {
+				return (getBuilderLogic().getBuilderTransformed(getPageKey(), page, iwc));
+			}
+			else if (permissionview) {
+				int groupId = -1906;
+				String bla = iwc.getParameter("ic_pm");
+				if (bla != null) {
+					try {
+						groupId = Integer.parseInt(bla);
+					}
+					catch (NumberFormatException ex) {
+					}
+				}
+				//page = getPageCacher().getPage(Integer.toString(id));
+				page = getNewPageCloned();
+				return (getBuilderLogic().getPermissionTransformed(groupId,getPageKey(), page, iwc));
+			}
+			else {
+				return (page);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			Page theReturn = new Page();
+			theReturn.add("Page invalid");
+			return (theReturn);
+		}
+	}
+	
+	public Page getNewPageCloned(){
+		return (Page) this.getPopulatedPage().clone();
+	}
+	
+	/**
+	 * Gets a new Page instanfce without any Builder checks. (not transformed for Builder Edit view)
+	 * @param iwc
+	 * @return
+	 */
+	public Page getNewPage(IWContext iwc){
+		return (Page) this.getPopulatedPage().clonePermissionChecked(iwc);
+	}
+	
+	
+	public UIComponent createComponent(FacesContext context){
+		IWContext iwc = IWContext.getIWContext(context);
+		return getPage(iwc);
+	}
+	
+
 }

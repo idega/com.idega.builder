@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.21 2004/12/06 15:33:53 tryggvil Exp $
+ * $Id: IBPageBMPBean.java,v 1.22 2004/12/20 08:55:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,9 +69,9 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public final static String DELETED = "Y";
 	public final static String NOT_DELETED = "N";
 	
-	public final static String FORMAT_IBXML="IBXML";
-	public final static String FORMAT_HTML="HTML";
-	
+	public final static String FORMAT_IBXML=BuilderLogic.getInstance().PAGE_FORMAT_IBXML;
+	public final static String FORMAT_HTML=BuilderLogic.getInstance().PAGE_FORMAT_HTML;
+	public final static String FORMAT_JSP_1_2=BuilderLogic.getInstance().PAGE_FORMAT_JSP_1_2;
 
 	/**
 	 *
@@ -620,7 +620,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		ICFile file = getFile();
 		if (file.isEmpty()) {
 			// file value is empty get a xml description of the page
-			IBXMLPage xmlPage = getBuilderLogic().getPageCacher().getXML(this.getPrimaryKey().toString());
+			IBXMLPage xmlPage = getBuilderLogic().getPageCacher().getIBXML(this.getPrimaryKey().toString());
 			XMLElement rootElement = xmlPage.getRootElement();
 			// remove connection to document
 			rootElement.detach();
@@ -668,7 +668,13 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		return false;
 	}
 	
-	
+	public boolean getIsFormattedInJSP(){
+		String format = getFormat();
+		if(format!=null){
+			return format.equals(FORMAT_JSP_1_2);
+		}
+		return false;
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityState()
@@ -695,5 +701,34 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
+	}
+
+	/**
+	 * Gets the id/key of the template of this page as a String.
+	 * Returns null if no template is set (templateId<=0)
+	 * @return
+	 */
+	public String getTemplateKey() {
+		if(getTemplateId()>0){
+			return Integer.toString(getTemplateId());
+		}
+		else{
+			return null;
+		}
+	}
+
+	/**
+	 * Sets the id/key of the template of this page as a String
+	 * @return
+	 */
+	public void setTemplateKey(String templateKey) {
+		setTemplateId(Integer.parseInt(templateKey));
+	}
+	/**
+	 * Gets the id/key of the page as a String
+	 * @return
+	 */
+	public String getPageKey(){
+		return getPrimaryKey().toString();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.15 2004/11/12 16:35:08 aron Exp $
+ * $Id: IBDomainBMPBean.java,v 1.16 2004/12/20 08:55:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -99,24 +99,24 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
     page.setName("Web root");
     page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
     page.store();
-    instance.unlockRegion(Integer.toString(page.getID()),"-1",null);
+    instance.unlockRegion(page.getPrimaryKey().toString(),"-1",null);
 
     ICPage page2 = pageHome.create();
     page2.setName("Default Template");
     page2.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
     page2.store();
 
-    instance.unlockRegion(Integer.toString(page2.getID()),"-1",null);
+    instance.unlockRegion(page2.getPageKey(),"-1",null);
 
-    page.setTemplateId(page2.getID());
+    page.setTemplateKey(page2.getPageKey());
     page.store();
 
     domain.setIBPage(page);
     domain.setStartTemplate(page2);
     domain.store();
 
-    instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(page2.getID()));
-    instance.getIBXMLPage(page2.getID()).addUsingTemplate(Integer.toString(page.getID()));
+    instance.setTemplateId(page.getPrimaryKey().toString(),page2.getPrimaryKey().toString());
+    instance.getIBXMLPage(page2.getPrimaryKey().toString()).addPageUsingThisTemplate(page.getPrimaryKey().toString());
   }
 
   public String getEntityName() {
@@ -215,7 +215,7 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
 
   public Collection ejbFindAllDomains() throws FinderException {
     String sql = "select * from " + getTableName();
-    return super.idoFindIDsBySQL(sql);
+    return super.idoFindPKsBySQL(sql);
   }
   
   public Collection ejbFindAllDomainsByServerName(String serverName) throws FinderException{

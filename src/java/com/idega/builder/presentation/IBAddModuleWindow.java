@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.39 2004/06/24 20:12:24 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.40 2004/12/20 08:55:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,9 +12,9 @@ package com.idega.builder.presentation;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
-import com.idega.builder.business.BuilderConstants;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
@@ -26,7 +26,6 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -338,20 +337,4 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		}
 	}
 
-	/**
-	 *
-	 */
-	public static PresentationObject getAddIcon(String parentKey, IWContext iwc, String label)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image addImage = bundle.getImage("add.gif", "Add new component");
-		//addImage.setAttribute("style","z-index: 0;");
-		Link link = new Link(addImage);
-		link.setWindowToOpen(IBAddModuleWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
-		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
-		return (link);
-	}
 }

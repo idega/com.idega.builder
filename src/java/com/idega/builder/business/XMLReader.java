@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.57 2004/12/12 22:57:19 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.58 2004/12/20 08:55:06 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,8 +12,8 @@ package com.idega.builder.business;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
+import com.idega.builder.tag.BuilderPage;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.event.ObjectInstanceCacher;
 import com.idega.presentation.Page;
@@ -82,7 +82,9 @@ public class XMLReader {
 			XMLAttribute at = (XMLAttribute) attr.next();
 			if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
 				hasTemplate = true;
-				parentContainer = getBuilderLogic().getPageCacher().getPage(at.getValue());
+				String pageId = at.getValue();
+				//parentContainer = getBuilderLogic().getPageCacher().getPage(at.getValue());
+				parentContainer = getBuilderLogic().getPageCacher().getComponentBasedPage(pageId).getNewPageCloned();
 				parentContainer.setIsExtendingTemplate();
 				parentContainer.setTemplateId(at.getValue());
 				setAllBuilderControls(parentContainer, false);
@@ -109,7 +111,7 @@ public class XMLReader {
 
 		//If the page does not extend a template it has no parent container
 		if (!hasTemplate) {
-			parentContainer = new Page();
+			parentContainer = new BuilderPage();
 		}
 		else {
 			setTemplateObjectsForPage(ibxml);
@@ -193,7 +195,7 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, IBXMLPage ibxml) {
+	static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, CachedBuilderPage ibxml) {
 		List regionAttrList = reg.getAttributes();
 		PresentationObjectContainer newRegionParent = regionParent;
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
@@ -375,7 +377,7 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void parseElement(XMLElement el, PresentationObjectContainer parent, IBXMLPage ibxml) {
+	static void parseElement(XMLElement el, PresentationObjectContainer parent, CachedBuilderPage ibxml) {
 		PresentationObject inst = null;
 		List at = el.getAttributes();
 		boolean isLocked = true;
@@ -583,17 +585,17 @@ public class XMLReader {
 	}
 	
 
-	public static void setTemplateObjectsForPage(IBXMLPage ibxml){
+	public static void setTemplateObjectsForPage(CachedBuilderPage ibxml){
 	  setObjectInstance(ibxml, null, null);
 	}
 
-	public static void setObjectInstance(IBXMLPage ibxml, String instanceKey, PresentationObject objectInstance){
+	public static void setObjectInstance(CachedBuilderPage ibxml, String instanceKey, PresentationObject objectInstance){
 	  if(instanceKey != null){
 		ObjectInstanceCacher.putObjectIntanceInCache(instanceKey,objectInstance);
 	  }
 	  //System.err.println("Cashing objectInstance: "+instanceKey);
 	  String pageKey = ibxml.getPageKey();
-	  String templatePageKey = Integer.toString(ibxml.getTemplateId());
+	  String templatePageKey = ibxml.getTemplateKey();
 	  
 	  ObjectInstanceCacher.copyInstancesFromPageToPage(templatePageKey,pageKey);
 

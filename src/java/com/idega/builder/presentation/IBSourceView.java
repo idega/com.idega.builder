@@ -94,19 +94,30 @@ public class IBSourceView extends Window {
 
   public DropdownMenu getFormatDropdown(IWContext iwc){
     ICPage page;
-    String pageFormat = "IBXML";
+    //The default format:
+    String pageFormat = getBuilderLogic().getDefaultPageFormat();
 	try {
-		page = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
+		page = getBuilderLogic().getCurrentIBPageEntity(iwc);
 		pageFormat = page.getFormat();
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
     DropdownMenu menu = new DropdownMenu(IB_PAGE_FORMAT);
-    menu.addMenuElement("IBXML");
-    menu.addMenuElement("HTML");
+    
+    String[] formats = getBuilderLogic().getPageFormatsSupported();
+    for (int i = 0; i < formats.length; i++) {
+		String formatKey = formats[i];
+		menu.addMenuElement(formatKey);
+	}
+    //menu.addMenuElement("IBXML");
+    //menu.addMenuElement("HTML");
     menu.setSelectedElement(pageFormat);
     return menu;
+  }
+  
+  protected BuilderLogic getBuilderLogic(){
+  	return BuilderLogic.getInstance();
   }
   
 }

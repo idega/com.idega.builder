@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.19 2004/08/24 14:04:25 thomas Exp $
+ * $Id: IBDeletePageWindow.java,v 1.20 2004/12/20 08:55:07 tryggvil Exp $
 
  *
 
@@ -30,11 +30,8 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 /**
-
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
-
  * @version 1.0
-
  */
 public class IBDeletePageWindow extends IWAdminWindow
 {
@@ -61,7 +58,7 @@ public class IBDeletePageWindow extends IWAdminWindow
 		boolean submit = iwc.isParameterSet("ok");
 		boolean quit = iwc.isParameterSet("cancel");
 		String deleteAll = iwc.getParameter("deletechildren");
-	    ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
+	    ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
 		if (submit)
 		{
 			if ((deleteAll != null) && (deleteAll.equals("true"))) {
@@ -129,5 +126,9 @@ public class IBDeletePageWindow extends IWAdminWindow
 	public String getBundleIdentifier()
 	{
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	protected BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
 	}
 }

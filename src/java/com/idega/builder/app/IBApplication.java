@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.83 2004/12/16 14:07:23 eiki Exp $
+ *  $Id: IBApplication.java,v 1.84 2004/12/20 08:55:07 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -702,7 +702,7 @@ public class IBApplication extends IWApplication {
 			image.setHorizontalSpacing(2);
 			Link link = new Link(image);
 			link.setWindowToOpen(IBPropertiesWindow.class);
-			link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
+			link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getInstance().getCurrentIBPage(iwc));
 			link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
 			//Hardcoded -1 for the top page
 			String pageICObjectInstanceID = "-1";
@@ -721,7 +721,7 @@ public class IBApplication extends IWApplication {
 			image.setHorizontalSpacing(2);
 			Link link = new Link(image);
 			link.setWindowToOpen(IBPermissionWindow.class);
-			link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, BuilderLogic.getCurrentIBPage(iwc));
+			link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, BuilderLogic.getInstance().getCurrentIBPage(iwc));
 			link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY, AccessController.CATEGORY_PAGE_INSTANCE);
 			return link;
 		}
@@ -819,7 +819,7 @@ public class IBApplication extends IWApplication {
                     e.printStackTrace();
                 }
                 if (id == null) {
-					int i_page_id = BuilderLogic.getCurrentDomain(iwc).getStartPageID();
+					int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
 					id = Integer.toString(i_page_id);
 				}
 				String name = null;

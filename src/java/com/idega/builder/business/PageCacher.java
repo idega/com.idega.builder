@@ -1,47 +1,50 @@
+/*
+ * $Id: PageCacher.java,v 1.17 2004/12/20 08:55:07 tryggvil Exp $
+ * Created in 2001 by Tryggvi Larusson
+ *
+ * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.builder.business;
 /**
- * Title:        idegaclasses
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
- * @author
- * @version 1.0
+ *  The instance of this class holds an manages a cache of Builder pages that are instances
+ * of CachedBuilderPage.<br>
+ * 
+ *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
+ * 
+ * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
+ * @version $Revision: 1.17 $
  */
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javax.ejb.FinderException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookupException;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Page;
 public class PageCacher
 {
 	//Instance variables:
 	private Map pageCache = new WeakHashMap();
-	private Map pagesValid = new HashMap();
+	//private Map pagesValid = new HashMap();
 	PageCacher()
 	{}
-	protected static PageCacher getInstance(){
-		return getBuilderLogic().getPageCacher();
-	}
-	
-	protected static BuilderLogic getBuilderLogic(){
-		return BuilderLogic.getInstance();
-	}
 	
 	protected boolean isPageValid(String key)
 	{
 		boolean theReturn = false;
-		Boolean fetched = (Boolean) getInstance().pagesValid.get(key);
-		if (fetched != null)
-		{
+		//Boolean fetched = (Boolean) pagesValid.get(key);
+		//if (fetched != null)
+		//{
 			if (getPageCacheMap().get(key) != null)
 			{
-				theReturn = fetched.booleanValue();
+				//theReturn = fetched.booleanValue();
+				theReturn=true;
 			}
-		}
+		//}
 		return theReturn;
 	}
 	protected boolean isPageInvalid(String key)
@@ -50,26 +53,28 @@ public class PageCacher
 	}
 	public void flagPageInvalid(String key)
 	{
-		flagPageValid(key, false);
+		//flagPageValid(key, false);
+		getPageCacheMap().remove(key);
 	}
-	public void flagPageValid(String key, boolean trueOrFalse)
+	/*public void flagPageValid(String key, boolean trueOrFalse)
 	{
 		if (trueOrFalse)
 		{
-			getInstance().pagesValid.put(key, Boolean.TRUE);
+			pagesValid.put(key, Boolean.TRUE);
 		}
 		else
 		{
-			getInstance().pagesValid.put(key, Boolean.FALSE);
+			pagesValid.put(key, Boolean.FALSE);
 		}
-	}
-	public Page getPage(String key, IWContext iwc)
+	}*/
+	/*public Page getPage(String key, IWContext iwc)
 	{
 		IBXMLPage xml = null;
 		xml = getXML(key);
 		if (xml != null)
 		{
-			return (Page) xml.getPopulatedPage().clonePermissionChecked(iwc);
+			return xml.getNewPage(iwc);
+			//return (Page) xml.getPopulatedPage().clonePermissionChecked(iwc);
 			//return (Page)xml.getPopulatedPage().clone();
 		}
 		return null;
@@ -84,7 +89,7 @@ public class PageCacher
 			//return (Page)xml.getPopulatedPage();
 		}
 		return null;
-	}
+	}*/
 	/*public static Page getPage(String key, InputStream streamWithXML)throws Exception{
 	  Page theReturn = null;
 	  IBXMLPage xml = null;
@@ -96,7 +101,7 @@ public class PageCacher
 	}*/
 	
 	public void storePage(String key,String format,String stringRepresentation)throws Exception{
-		IBXMLPage bPage = getXML(key);
+		CachedBuilderPage bPage = getCachedBuilderPage(key);
 		//flagPageInvalid(key);
 		bPage.setPageFormat(format);
 		bPage.setSourceFromString(stringRepresentation);
@@ -104,40 +109,49 @@ public class PageCacher
 		flagPageInvalid(key);
 	}
 	
-	
-	public IBXMLPage getXML(String key)
+	public ComponentBasedPage getComponentBasedPage(String key)
 	{
-		IBXMLPage bPage = null;
+		return (ComponentBasedPage)getCachedBuilderPage(key);
+	}
+
+	public IBXMLPage getIBXML(String key)
+	{
+		return (IBXMLPage)getCachedBuilderPage(key);
+	}
+	
+	public CachedBuilderPage getCachedBuilderPage(String key)
+	{
+		CachedBuilderPage bPage = null;
 		if (isPageInvalid(key))
 		{
 			ICPageHome pHome;
 			try {
 				pHome = (ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class);
 				int pageId = Integer.parseInt(key);
-				ICPage ibpage = pHome.findByPrimaryKey(pageId);
+				ICPage icPage = pHome.findByPrimaryKey(pageId);
 				
-				if(ibpage.getIsFormattedInIBXML()){
-					bPage = new IBXMLPage();
+				if(icPage.getIsFormattedInIBXML()){
+					bPage = new IBXMLPage(key);
 				}
-				else if (ibpage.getIsFormattedInHTML()){
-					bPage= new HtmlBasedPage();
+				else if (icPage.getIsFormattedInHTML()){
+					bPage= new HtmlBasedPage(key);
 				}
-				bPage.setPageKey(key);
+				else if (icPage.getIsFormattedInJSP()){
+					bPage= new JspPage(key);
+				}
+				bPage.setICPage(icPage);
+				//bPage.setPageKey(key);
 				setPage(key, bPage);
 				
 			} catch (IDOLookupException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (FinderException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			
 		}
 		else
 		{
-			bPage = getXMLPageCached(key);
+			bPage = getCachedBuilderPageFromMap(key);
 		}
 		return bPage;
 		/*
@@ -187,27 +201,27 @@ public class PageCacher
 	    return getXML(key);
 	  }
 	}*/
-	private Object setPage(String key, IBXMLPage page)
+	private Object setPage(String key, ViewNode page)
 	{
-		flagPageValid(key, true);
+		//flagPageValid(key, true);
 		return getPageCacheMap().put(key, page);
 	}
-	private Map getPageCacheMap()
+	public Map getPageCacheMap()
 	{
-		return getInstance().pageCache;
+		return pageCache;
 	}
-	public IBXMLPage getXMLPageCached(String key)
+	private CachedBuilderPage getCachedBuilderPageFromMap(String key)
 	{
-		return (IBXMLPage) getPageCacheMap().get(key);
+		return (CachedBuilderPage) getPageCacheMap().get(key);
 	}
 	/**
-	 * A function that gets the IBXMLPage if it exists in cache, otherwise it returns null.
+	 * A function that gets the CachedBuilderPage if it exists in cache, otherwise it returns null.
 	 *
-	 * @param key The id of the IBXMLPage to get from cache.
+	 * @param key The id of the CachedBuilderPage to get from cache.
 	 *
-	 * @return The IBXMLPage with id = key if it exists in cache, null otherwise.
+	 * @return The CachedBuilderPage with id = key if it exists in cache, null otherwise.
 	 */
-	public IBXMLPage getXMLIfInCache(String key)
+	public CachedBuilderPage getCachedBuilderPageIfInCache(String key)
 	{
 		if (isPageInvalid(key))
 		{
@@ -215,7 +229,7 @@ public class PageCacher
 		}
 		else
 		{
-			IBXMLPage xml = getXMLPageCached(key);
+			CachedBuilderPage xml = getCachedBuilderPageFromMap(key);
 			return xml;
 		}
 	}
@@ -224,7 +238,7 @@ public class PageCacher
 	 */
 	public synchronized void flagAllPagesInvalid()
 	{
-		getInstance().pagesValid.clear();
-		getInstance().pageCache.clear();
+		//pagesValid.clear();
+		pageCache.clear();
 	}
 }

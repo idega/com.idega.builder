@@ -38,7 +38,8 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
     String pageKey = null;
     try{
       pageKey = prefix+File.separator+fileName;
-      page = getBuilderLogic().getPageCacher().getPage(pageKey);
+      //page = getBuilderLogic().getPageCacher().getPage(pageKey);
+      page = getBuilderLogic().getPageCacher().getComponentBasedPage(pageKey).getNewPageCloned();
     }
     catch(RuntimeException e){
       e.printStackTrace();

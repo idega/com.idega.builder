@@ -12,6 +12,7 @@ import javax.ejb.FinderException;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageFinder;
 import com.idega.builder.business.IBPageHelper;
+import com.idega.builder.business.CachedBuilderPage;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
@@ -301,7 +302,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 
     cSession.setNewValue(ICPage.class,String.valueOf(dptTemplateId),String.valueOf(id));
     
-    IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
+    IBXMLPage currentXMLPage = instance.getIBXMLPage(Integer.toString(id));
 	currentXMLPage.getPageRootElement().setAttribute(XMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(((rootPageID!=-1)?rootPageID:id)));
 	currentXMLPage.store();
     Page current = currentXMLPage.getPopulatedPage();
@@ -391,15 +392,18 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 
   }
 
+  protected BuilderLogic getBuilderLogic(){
+  	return BuilderLogic.getInstance();
+  }
 
   public boolean invalidatePageLink(IWContext iwc, PageLink l, int userId){
     try {
       l.setDeleted(true);
       l.setDeletedBy(userId);
       l.setDeletedWhen(IWTimestamp.getTimestampRightNow());
-      l.update();
+      l.store();
 
-      ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
+      ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
       com.idega.builder.business.IBPageHelper.getInstance().deletePage(Integer.toString(l.getPageId()),true,PageTreeNode.getTree(iwc),userId, domain);
 
       return true;

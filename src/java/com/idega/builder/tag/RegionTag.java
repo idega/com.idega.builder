@@ -1,5 +1,5 @@
 /*
- * $Id: RegionTag.java,v 1.1 2004/12/15 22:00:38 tryggvil Exp $
+ * $Id: RegionTag.java,v 1.2 2004/12/20 08:55:07 tryggvil Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,19 +9,19 @@
  */
 package com.idega.builder.tag;
 
-import javax.faces.webapp.UIComponentTag;
+import javax.faces.webapp.FacetTag;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/12/15 22:00:38 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class RegionTag extends UIComponentTag {
+public class RegionTag extends FacetTag {
 
-	private static String componentId="BuilderRegion";
+	//private static String componentId="BuilderRegion";
 	
 	private String id;
 	private String label;
@@ -57,21 +57,36 @@ public class RegionTag extends UIComponentTag {
 		// TODO Auto-generated constructor stub
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.faces.webapp.UIComponentTag#getComponentType()
-	 */
+	
+	
+	/*
 	public String getComponentType() {
-		// TODO Auto-generated method stub
 		//String regionId = getId();
 		//return componentId+regionId;
 		return componentId;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.faces.webapp.UIComponentTag#getRendererType()
-	 */
 	public String getRendererType() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	*/
+	
+	/** 
+	 * Overrided from the super FacetTag to return the Label or Id attribute of the tag.
+	 * (this method is called from UIComponentTag).
+	 */
+	public String getName() {
+		String PREFIX="builder";
+		if(super.getName()==null){
+			if(getLabel()!=null){
+				return PREFIX+getLabel();
+			}
+			else{
+				return PREFIX+getId();
+			}
+		}
+		else{
+			return super.getName();
+		}
 	}
 }

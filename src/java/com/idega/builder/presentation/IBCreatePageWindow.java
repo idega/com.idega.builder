@@ -1,7 +1,7 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.43 2004/08/05 22:10:39 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.44 2004/12/20 08:55:07 tryggvil Exp $
  *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.business.IBXMLPage;
+import com.idega.builder.business.CachedBuilderPage;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
@@ -30,7 +30,10 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 /**
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
+ * The widow for creating a page.
+ * 
+ * @author <a href="mailto:palli@idega.is">Pall Helgason</a>,
+ * <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
 */
 public class IBCreatePageWindow extends IBPageWindow {
@@ -51,7 +54,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 
 		if (type == null) {
 			String currPageType = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc).getType();
-			if (currPageType.equals(IBXMLPage.TYPE_TEMPLATE))
+			if (currPageType.equals(CachedBuilderPage.TYPE_TEMPLATE))
 				type = IBPageHelper.TEMPLATE;
 			else
 				type = IBPageHelper.PAGE;

@@ -13,7 +13,7 @@
 
 	<tag>
 		<name>page</name>
-		<tag-class>com.idega.builder.tag.PageTag</tag-class>
+		<tag-class>com.idega.builder.tag.BuilderPageTag</tag-class>
 		<attribute>
 			<name>id</name>
 			<required>false</required>

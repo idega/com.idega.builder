@@ -10,9 +10,6 @@ package com.idega.builder.presentation;
 
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.core.accesscontrol.business.AccessController;
-import com.idega.builder.business.BuilderConstants;
-import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -361,104 +358,49 @@ public class IBObjectControl extends PresentationObjectContainer
 	/**
 	 *
 	 */
-	public static PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label)
+	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image labelImage = bundle.getImage("label.gif", "Put label on region");
-		Link link = new Link(labelImage);
-		link.setWindowToOpen(IBAddRegionLabelWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
-		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
-		return (link);
+		return getBuilderLogic().getLabelIcon(parentKey,iwc,label);
 	}
 
-	public static PresentationObject getCutIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getCutIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image cutImage = bundle.getImage("shared/menu/cut.gif", "Cut component");
-		Link link = new Link(cutImage);
-		link.setWindowToOpen(IBCutModuleWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
-		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
-		return link;
+		return getBuilderLogic().getCutIcon(key,parentKey,iwc);
 	}
 
 	/**
 	 *
 	 */
-	public static PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image copyImage = bundle.getImage("shared/menu/copy.gif", "Copy component");
-		//copyImage.setAttribute("style","z-index: 0;");
-		Link link = new Link(copyImage);
-		link.setWindowToOpen(IBCopyModuleWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
-		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
-		return (link);
+		return getBuilderLogic().getCopyIcon(key,parentKey,iwc);
 	}
 
-	public static PresentationObject getDeleteIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getDeleteIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image deleteImage = bundle.getImage("shared/menu/delete.gif", "Delete component");
-		Link link = new Link(deleteImage);
-		link.setWindowToOpen(IBDeleteModuleWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_DELETE);
-		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
-		return link;
+		return getBuilderLogic().getDeleteIcon(key,parentKey,iwc);
 	}
 
-	public static PresentationObject getPermissionIcon(int key, IWContext iwc)
+	public PresentationObject getPermissionIcon(int key, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image editImage = bundle.getImage("shared/menu/permission.gif", "Set permissions");
-		Link link = new Link(editImage);
-		link.setWindowToOpen(IBPermissionWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PERMISSION);
-		link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, key);
-		link.addParameter(
-			IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,
-			AccessController.CATEGORY_OBJECT_INSTANCE);
-		return link;
+		return getBuilderLogic().getPermissionIcon(key,iwc);
 	}
 
-	public static PresentationObject getEditIcon(int key, IWContext iwc)
+	public PresentationObject getEditIcon(int key, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image editImage = bundle.getImage("shared/menu/edit.gif", "Properties");
-		Link link = new Link(editImage);
-		link.setWindowToOpen(IBPropertiesWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
-		return link;
+		return getBuilderLogic().getEditIcon(key,iwc);
 	}
 
 	/**
 	 *
 	 */
-	public static PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image pasteImage = bundle.getImage("shared/menu/paste.gif", "Paste above component");
-		//copyImage.setAttribute("style","z-index: 0;");
-		Link link = new Link(pasteImage);
-		link.setWindowToOpen(IBPasteModuleWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PASTE_ABOVE);
-		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
-		return (link);
+		return getBuilderLogic().getPasteAboveIcon(key,parentKey,iwc);
 	}
 
+	
+	protected BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
+	}
 }
