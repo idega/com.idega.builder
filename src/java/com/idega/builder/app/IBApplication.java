@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.20 2001/10/12 18:10:38 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.21 2001/10/16 14:19:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -444,10 +444,10 @@ public class IBApplication extends IWApplication {
         previewLink.setURL(com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL);
         toolTable.add(previewLink,2,1);
 
-        //Link sourceLink = new Link(_iwrb.getImage("editorwindow/source.gif"));
-        Link sourceLink = new Link("Source");
+        Link sourceLink = new Link(_iwrb.getImage("editorwindow/source.gif"));
+        //Link sourceLink = new Link("Source");
         sourceLink.setWindowToOpen(IBSourceView.class);
-        toolTable.add(sourceLink,10,1);
+        toolTable.add(sourceLink,3,1);
 
 
 
