@@ -221,7 +221,7 @@ public class DPTTriggerBusiness {
     IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
     Page current = currentXMLPage.getPopulatedPage();
     List children = current.getAllContainedObjectsRecursive();
-
+/*
     if (children != null) {
       Iterator it = children.iterator();
       while (it.hasNext()) {
@@ -232,7 +232,7 @@ public class DPTTriggerBusiness {
         }
       }
     }
-
+*/
     if(children != null){
       Iterator iter = children.iterator();
       while (iter.hasNext()) {
@@ -311,7 +311,7 @@ public class DPTTriggerBusiness {
 
   /**
    *
-   */
+   *//*
   private static boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
     if (obj.getChangeInstanceIDOnInheritance()) {
       int object_id = obj.getICObjectID();
@@ -350,7 +350,7 @@ public class DPTTriggerBusiness {
 
     return(true);
   }
-
+*/
 
   public static List getDPTPermissionGroups(PageTriggerInfo pti) throws SQLException{
     return EntityFinder.findRelated(pti, GenericGroup.getStaticInstance());

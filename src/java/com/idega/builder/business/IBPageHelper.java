@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.6 2002/02/12 15:52:18 palli Exp $
+ * $Id: IBPageHelper.java,v 1.7 2002/02/18 00:16:44 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,8 @@ import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
+import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.IWBlock;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
@@ -99,7 +101,7 @@ public class IBPageHelper {
         Iterator it = children.iterator();
         while (it.hasNext()) {
           PresentationObject obj = (PresentationObject)it.next();
-          boolean ok = changeInstanceId(obj,currentXMLPage);
+          boolean ok = changeInstanceId(obj,currentXMLPage, true);
           if (!ok)
             return(-1);
         }
@@ -129,9 +131,50 @@ public class IBPageHelper {
     return(id);
   }
 
+
+
+  private static boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
+    if (obj.getChangeInstanceIDOnInheritance()) {
+      int object_id = obj.getICObjectID();
+      int ic_instance_id = obj.getICObjectInstanceID();
+      ICObjectInstance instance = null;
+
+      try {
+        instance = new ICObjectInstance();
+        instance.setICObjectID(object_id);
+        instance.insert();
+        if(copyPermissions){
+          AccessControl.copyObjectInstancePermissions(Integer.toString(ic_instance_id),Integer.toString(instance.getID()));
+        }
+      }
+      catch(SQLException e) {
+        //System.err.println("DPTTriggerBusiness: "+e.getMessage());
+        //e.printStackTrace();
+        return(false);
+      }
+
+      if(obj instanceof IWBlock){
+        boolean ok = ((IWBlock)obj).copyBlock(instance.getID());
+        if (!ok){
+          return(false);
+        }
+      }
+
+      XMLElement element = new XMLElement(XMLConstants.CHANGE_IC_INSTANCE_ID);
+      XMLAttribute from = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_FROM,Integer.toString(ic_instance_id));
+      XMLAttribute to = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_TO,Integer.toString(instance.getID()));
+      element.setAttribute(from);
+      element.setAttribute(to);
+
+      XMLWriter.addNewElement(xmlpage,-1,element);
+    }
+
+    return(true);
+  }
+
   /**
    *
-   */
+   *//*
   private static boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage) {
     if (obj.getChangeInstanceIDOnInheritance()) {
       int object_id = obj.getICObjectID();
@@ -158,7 +201,7 @@ public class IBPageHelper {
 
     return(true);
   }
-
+*/
   /**
    *
    */
