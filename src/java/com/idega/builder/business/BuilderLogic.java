@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.126 2002/07/22 13:45:42 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.127 2002/07/31 17:15:19 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -81,6 +81,7 @@ public class BuilderLogic
 	public static final String ACTION_LIBRARY = "ACTION_LIBRARY";
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 	public static final String SESSION_PAGE_KEY = "ib_page_id";
+	public static final String SESSION_PRIORITY_PAGE_KEY = "ib_priority_page_id";
 	public static final String SESSION_OBJECT_STATE = "obj_inst_state";
 	public static final String PRM_HISTORY_ID = "ib_history";
 	public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
@@ -551,6 +552,11 @@ public class BuilderLogic
 			Integer.parseInt(sID));
 		//}
 	}
+	
+	public void setCurrentPriorityPageID(IWContext iwc , String pageId){
+		iwc.setSessionAttribute(SESSION_PRIORITY_PAGE_KEY,pageId);
+	}
+	
 	/**
 	 * Returns the current IBPageID that the user has requested
 	 */
@@ -594,10 +600,22 @@ public class BuilderLogic
 				}
 			}
 		}
-		if (iwc.isParameterSet(IB_PAGE_PARAMETER))
+		
+		// priority session page check
+		if (iwc.getSessionAttribute(SESSION_PRIORITY_PAGE_KEY) != null){
+			//System.err.println("someone is ordering a priority page");
+			theReturn = (String) iwc.getSessionAttribute(SESSION_PRIORITY_PAGE_KEY);
+			iwc.removeSessionAttribute(SESSION_PRIORITY_PAGE_KEY);
+		}
+		// normal page check
+		else if (iwc.isParameterSet(IB_PAGE_PARAMETER)){
 			theReturn = iwc.getParameter(IB_PAGE_PARAMETER);
-		else if (iwc.getSessionAttribute(SESSION_PAGE_KEY) != null)
+		}
+		// session page check
+		else if (iwc.getSessionAttribute(SESSION_PAGE_KEY) != null){
 			theReturn = (String) iwc.getSessionAttribute(SESSION_PAGE_KEY);
+		}
+		// otherwise use startpage
 		else
 			theReturn = String.valueOf(getStartPageId(iwc));
 		if (theReturn == null)
