@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.27 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.28 2003/10/13 08:52:07 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -515,8 +515,8 @@ public class IBPageHelper {
 				e.printStackTrace();
 				return false;
 			}
-			return true;
 		}
+		return true;
 	}
 	/**
 	 *
