@@ -48,7 +48,7 @@ public class IBReferences {
 	}
 
 	
-	public void checkElementForReferences(XMLElement element, List files, IBExportMetadata metadata) throws IOException {
+	public void checkElementForReferences(XMLElement element,IBExportImportData metadata) throws IOException {
 		String nameOfElement = element.getName();
 		// is it a module?
 		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement)) {
@@ -60,7 +60,7 @@ public class IBReferences {
 				Iterator iterator = entries.iterator();
 				while (iterator.hasNext()) {
 					IBReference.Entry entry = (IBReference.Entry) iterator.next();
-					entry.addSource(element, files, metadata);
+					entry.addSource(element, metadata);
 				}
 			}
 		}
@@ -68,7 +68,7 @@ public class IBReferences {
 		Iterator childrenIterator = children.iterator();
 		while (childrenIterator.hasNext()) {
 			XMLElement childElement = (XMLElement) childrenIterator.next();
-			checkElementForReferences(childElement, files, metadata);
+			checkElementForReferences(childElement, metadata);
 		}
 	}
 	

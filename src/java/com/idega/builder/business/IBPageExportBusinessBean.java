@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
-import com.idega.builder.data.IBExportMetadata;
+import com.idega.builder.data.IBExportImportData;
 import com.idega.builder.data.IBReferences;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -46,7 +46,7 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 			return "";
 		}
 		
-		IBExportMetadata metadata = new IBExportMetadata();
+		IBExportImportData metadata = new IBExportImportData();
 		if (pageIdsExists) {
 			metadata.addPageTree(iwc);
 			ids = new ArrayList(pageIds);
@@ -64,12 +64,7 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 		return exportPages(ids, metadata);
 	}
 		
-	private String exportPages(List pageIds,IBExportMetadata metadata) throws IOException, FinderException  {
-		List files = new ArrayList();
-//  	XMLData exportXML = XMLData.getInstanceWithoutExistingFile("export");
-//  	XMLDocument exportDocument = exportXML.getDocument();
-//  	XMLElement exportRoot = exportDocument.getRootElement();
-//  	exportRoot.setName(XMLConstants.PAGES);
+	private String exportPages(List pageIds,IBExportImportData metadata) throws IOException, FinderException  {
   	Iterator pageIterator = pageIds.iterator();
   	while (pageIterator.hasNext()) {
   		Integer pageId = (Integer) pageIterator.next();
@@ -79,13 +74,11 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
   		XMLData xmlData = XMLData.getInstanceForFile(file);
   		XMLDocument pageXML = xmlData.getDocument();
   		XMLElement pageRoot = pageXML.getRootElement().getChild(XMLConstants.PAGE_STRING);
-  		getReferences().checkElementForReferences(pageRoot, files, metadata);
-  		files.add(page);
+  		getReferences().checkElementForReferences(pageRoot, metadata);
   		metadata.addFileEntry(page);
   	}
   	FileBusiness fileBusiness = getFileBusiness();
-  	return fileBusiness.getURLForOfferingDownload("export", files, metadata);
-  	//return fileBusiness.getURLForOfferingDownload(exportXML);
+  	return fileBusiness.getURLForOfferingDownload(metadata);
   }
 	
 	private IBReferences getReferences() throws IOException {

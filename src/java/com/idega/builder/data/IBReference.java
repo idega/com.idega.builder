@@ -75,7 +75,7 @@ public class IBReference {
 		}
 		
 		
-		public void addSource(XMLElement moduleElement, List files, IBExportMetadata metadata) throws IOException {
+		public void addSource(XMLElement moduleElement, IBExportImportData metadata) throws IOException {
 			List properties = moduleElement.getChildren(XMLConstants.PROPERTY_STRING);
 			Iterator iterator = properties.iterator();
 			while (iterator.hasNext()) {
@@ -86,8 +86,7 @@ public class IBReference {
 					if (isEjb) {
 						String value = propertyElement.getTextTrim(XMLConstants.VALUE_STRING);
 						Storable storable = getSourceFromPropertyElementUsingEjb(value);
-						files.add(storable);
-						metadata.addFileEntry(this, value);
+						metadata.addFileEntry(this, storable, value);
 						return;
 					}
 					else {
