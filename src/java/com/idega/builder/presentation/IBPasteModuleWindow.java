@@ -1,5 +1,5 @@
 /*
- * $Id: IBPasteModuleWindow.java,v 1.1 2002/01/09 16:18:32 palli Exp $
+ * $Id: IBPasteModuleWindow.java,v 1.2 2002/01/09 17:49:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ public class IBPasteModuleWindow extends IBAdminWindow {
   private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String ACTION_PASTE = BuilderLogic.ACTION_PASTE;
+  private static final String ACTION_PASTE_ABOVE = BuilderLogic.ACTION_PASTE_ABOVE;
 
   /**
    *
@@ -47,6 +48,7 @@ public class IBPasteModuleWindow extends IBAdminWindow {
     String control = iwc.getParameter(IB_CONTROL_PARAMETER);
     String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
     String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
+    String ic_object_id = iwc.getParameter(IC_OBJECT_ID_PARAMETER);
 
     if (control == null)
       close();
@@ -55,6 +57,9 @@ public class IBPasteModuleWindow extends IBAdminWindow {
 
     if (control.equals(ACTION_PASTE)) {
       pasteObject(iwc,ib_page_id,ib_parent_id);
+    }
+    else if (control.equals(ACTION_PASTE_ABOVE)) {
+      pasteObject(iwc,ib_page_id,ib_parent_id,ic_object_id);
     }
 
     close();
@@ -65,5 +70,12 @@ public class IBPasteModuleWindow extends IBAdminWindow {
    */
   public void pasteObject(IWContext iwc, String pageKey, String parentID) {
     BuilderLogic.getInstance().pasteModule(iwc,pageKey,parentID);
+  }
+
+  /**
+   *
+   */
+  public void pasteObject(IWContext iwc, String pageKey, String parentID, String objectID) {
+    BuilderLogic.getInstance().pasteModule(iwc,pageKey,parentID,objectID);
   }
 }

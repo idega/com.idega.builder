@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.93 2002/01/09 16:29:36 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.94 2002/01/09 17:49:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -83,6 +83,7 @@ public class BuilderLogic {
   public static final String ACTION_LABEL = "ACTION_LABEL";
   public static final String ACTION_COPY = "ACTION_COPY";
   public static final String ACTION_PASTE = "ACTION_PASTE";
+  public static final String ACTION_PASTE_ABOVE = "ACTION_PASTE_ABOVE";
   public static final String ACTION_LIBRARY = "ACTION_LIBRARY";
 
   public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
@@ -183,17 +184,25 @@ public class BuilderLogic {
         transformObject(pageKey,item,index,parent,"-1",iwc);
       }
     }
+
+    XMLElement pasted = (XMLElement)iwc.getSessionAttribute(CLIPBOARD);
+    boolean clipboardEmpty = true;
+    if (pasted != null)
+      clipboardEmpty = false;
+
     //"-1" is identified as the top page object (parent)
     if (page.getIsExtendingTemplate()) {
       if (!page.isLocked()) {
         page.add(getAddIcon(Integer.toString(-1),iwc,null));
-        page.add(getPasteIcon(Integer.toString(-1),iwc));
+        if (!clipboardEmpty)
+          page.add(getPasteIcon(Integer.toString(-1),iwc));
         //page.add(layer);
       }
     }
     else {
       page.add(getAddIcon(Integer.toString(-1),iwc,null));
-      page.add(getPasteIcon(Integer.toString(-1),iwc));
+      if (!clipboardEmpty)
+        page.add(getPasteIcon(Integer.toString(-1),iwc));
       if (page.getIsTemplate())
         if (page.isLocked())
           page.add(getLockedIcon(Integer.toString(-1),iwc,null));
@@ -283,6 +292,11 @@ public class BuilderLogic {
   }
 
   private void transformObject(String pageKey,PresentationObject obj,int index, PresentationObjectContainer parent,String parentKey,IWContext iwc){
+    XMLElement pasted = (XMLElement)iwc.getSessionAttribute(CLIPBOARD);
+    boolean clipboardEmpty = true;
+    if (pasted != null)
+      clipboardEmpty = false;
+
     if(obj instanceof Image){
       Image imageObj = (Image)obj;
       boolean useBuilderObjectControl = obj.getUseBuilderObjectControl();
@@ -340,12 +354,14 @@ public class BuilderLogic {
               if (tab.getBelongsToParent()) {
                 if (!tab.isLocked(x,y)) {
                   tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                  tab.add(getPasteIcon(newParentKey,iwc),x,y);
+                  if (!clipboardEmpty)
+                    tab.add(getPasteIcon(newParentKey,iwc),x,y);
                 }
               }
               else {
                 tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                tab.add(getPasteIcon(newParentKey,iwc),x,y);
+                if (!clipboardEmpty)
+                  tab.add(getPasteIcon(newParentKey,iwc),x,y);
                 if (curr.getIsTemplate()) {
                   tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                   if (tab.isLocked(x,y))
@@ -357,7 +373,8 @@ public class BuilderLogic {
             }
             else {
               tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-              tab.add(getPasteIcon(newParentKey,iwc),x,y);
+              if (!clipboardEmpty)
+                tab.add(getPasteIcon(newParentKey,iwc),x,y);
               if (curr.getIsTemplate()) {
                 tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                 if (tab.isLocked(x,y))
@@ -395,12 +412,14 @@ public class BuilderLogic {
             if (obj.getBelongsToParent()) {
               if (!((PresentationObjectContainer)obj).isLocked()) {
                 ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-                ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+                if (!clipboardEmpty)
+                  ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               }
             }
             else {
               ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-              ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+              if (!clipboardEmpty)
+                ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (curr.getIsTemplate()) {
                 ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
                 if (!((PresentationObjectContainer)obj).isLocked())
@@ -412,7 +431,8 @@ public class BuilderLogic {
           }
           else {
             ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-            ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+            if (!clipboardEmpty)
+              ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             if (curr.getIsTemplate()) {
               ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
               if (!((PresentationObjectContainer)obj).isLocked())
@@ -702,15 +722,31 @@ public class BuilderLogic {
           separator.setWidth("100%");
           separator.setHeight(2);
 
-        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
-        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
-        table.add(separator,2,3);
-        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
-        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
+        XMLElement pasted = (XMLElement)iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
+        if (pasted == null) {
+          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
+          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,2);
+          table.add(separator,2,3);
+          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,4);
+          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,4);
+          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
+          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,5);
+        }
+        else {
+          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1);
+          addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Copy",IBCopyModuleWindow.class,2,1);
+          addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2);
+          addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Paste above",IBPasteModuleWindow.class,2,2);
+          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,3);
+          addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),"Delete",IBDeleteModuleWindow.class,2,3);
+          table.add(separator,2,4);
+          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,5);
+          addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),"Permission",IBPermissionWindow.class,2,5);
+          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,6);
+          addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),"Properties",IBPropertiesWindow.class,2,6);
+        }
 
         table.setColumnColor(1,"#D8D8D1");
         table.setColumnColor(2,"#F9F8F7");
@@ -884,6 +920,31 @@ public class BuilderLogic {
     return(false);
   }
 
+  /**
+   *
+   */
+  public boolean pasteModule(IWContext iwc, String pageKey, String parentID, String objectID) {
+    IBXMLPage xml = getIBXMLPage(pageKey);
+
+    System.out.println("pageKey = " + pageKey);
+    System.out.println("parentID = " + parentID);
+    System.out.println("objectID = " + objectID);
+
+    XMLElement element = (XMLElement)iwc.getSessionAttribute(CLIPBOARD);
+    if (element == null)
+      return(false);
+
+    XMLElement toPaste = (XMLElement)element.clone();
+
+    if (XMLWriter.pasteElementAbove(xml,parentID,objectID,toPaste)) {
+      xml.update();
+      return(true);
+    }
+
+
+    return(false);
+  }
+
   public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
     IBXMLPage xml = getIBXMLPage(pageKey);
     if (XMLWriter.lockRegion(xml,parentObjectInstanceID)) {
@@ -1049,12 +1110,28 @@ public class BuilderLogic {
   /**
    *
    */
+  public PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc) {
+    IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image pasteImage = bundle.getImage("shared/menu/copy.gif","Paste above component");
+    //copyImage.setAttribute("style","z-index: 0;");
+    Link link = new Link(pasteImage);
+    link.setWindowToOpen(IBPasteModuleWindow.class);
+    link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
+    link.addParameter(IB_CONTROL_PARAMETER,ACTION_PASTE_ABOVE);
+    link.addParameter(IB_PARENT_PARAMETER,parentKey);
+    link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,key);
+
+    return(link);
+  }
+
+  /**
+   *
+   */
   public PresentationObject getPasteIcon(String parentKey, IWContext iwc) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image pasteImage = bundle.getImage("paste.gif","Paste component");
     Link link = new Link(pasteImage);
     link.setWindowToOpen(IBPasteModuleWindow.class);
-//    link.setWindowToOpen(IBAddRegionLabelWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_PASTE);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);

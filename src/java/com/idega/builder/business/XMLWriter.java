@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.21 2002/01/09 16:18:32 palli Exp $
+ * $Id: XMLWriter.java,v 1.22 2002/01/09 17:49:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -807,6 +807,69 @@ public class XMLWriter {
         return(true);
       }
     }
+
+    return(false);
+  }
+
+  /**
+   *
+   */
+  static boolean pasteElementAbove(IBXMLAble xml, String parentObjectInstanceID, String objectId, XMLElement element) {
+    changeModuleIds(element);
+    XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
+    if (parent != null) {
+//      parent.addContent(element);
+      List li = parent.getChildren();
+      int index = -1;
+      if (li != null) {
+        Iterator it = li.iterator();
+        while (it.hasNext()) {
+          XMLElement el = (XMLElement)it.next();
+          index++;
+          if (el.getName().equals(XMLConstants.MODULE_STRING)) {
+            XMLAttribute id = el.getAttribute(XMLConstants.ID_STRING);
+            if (id != null) {
+              if (id.getValue().equals(objectId))
+                break;
+            }
+          }
+        }
+
+        if (index != -1) {
+          parent.removeChildren();
+          it = li.iterator();
+          int counter = -1;
+          while (it.hasNext()) {
+            counter++;
+            if (counter == index)
+              parent.addContent(element);
+            XMLElement el = (XMLElement)it.next();
+            parent.addContent(el);
+          }
+        }
+      }
+      else
+        parent.addContent(element); //hmmmm
+
+      return(true);
+    }
+/*    else {
+      int index = parentObjectInstanceID.indexOf(".");
+      if (index != -1) {
+        XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+        XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+        region.setAttribute(id);
+
+        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+        XMLElement regionParent = findModule(xml,parentID);
+        if (regionParent != null)
+          regionParent.addContent(region);
+
+        region.addContent(element);
+
+        return(true);
+      }
+    }*/
 
     return(false);
   }
