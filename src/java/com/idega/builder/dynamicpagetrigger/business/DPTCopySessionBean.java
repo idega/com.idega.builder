@@ -30,6 +30,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	private boolean copyInstancePermissions = false;
 	private boolean copyPagePermissions=false;
 	private LinkedList subPageQueue = null;
+	private Object rootPagePrimaryKey = null;
 	
 	
 	/**
@@ -142,4 +143,16 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	}
 	
 	
+	/**
+	 * @return Returns the rootPagePrimaryKey.
+	 */
+	public Object getRootPagePrimaryKey() {
+		return rootPagePrimaryKey;
+	}
+	/**
+	 * @param rootPagePrimaryKey The rootPagePrimaryKey to set.
+	 */
+	public void setRootPagePrimaryKey(Object rootPagePrimaryKey) {
+		this.rootPagePrimaryKey = rootPagePrimaryKey;
+	}
 }

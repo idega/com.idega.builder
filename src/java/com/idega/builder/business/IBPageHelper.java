@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.34 2004/05/11 14:22:28 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.35 2004/05/24 13:46:39 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -349,7 +349,7 @@ public class IBPageHelper {
 						return false;
 					}
 					if (obj instanceof Builderaware) {
-							boolean ok = ((Builderaware) obj).copyBlock(instance.getID(),cSession);
+							boolean ok = ((Builderaware) obj).copyBlock(xmlpage.getKey(),instance.getID(),cSession);
 							if (!ok) {
 								System.err.println("changeInstanceId - copyBlock failed");
 								return false;

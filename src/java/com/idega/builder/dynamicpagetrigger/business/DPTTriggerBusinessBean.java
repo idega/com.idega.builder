@@ -273,6 +273,8 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 
     if(id == -1){
       return (-1);
+    } else if(rootPageID==-1) {
+		cSession.setRootPagePrimaryKey(new Integer(id));
     }
 
     try {
