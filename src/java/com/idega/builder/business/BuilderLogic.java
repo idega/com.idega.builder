@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.152 2004/06/16 15:42:20 palli Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.153 2004/06/24 13:57:01 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -17,7 +17,6 @@ import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.builder.business.BuilderConstants;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.business.ICObjectBusiness;
