@@ -18,6 +18,7 @@ public interface IBPage extends com.idega.data.TreeableEntity, IDOLegacyEntity
  public java.lang.String getSubType();
  public int getTemplateId();
  public java.lang.String getType();
+ public boolean isCategory();
  public boolean isDraft();
  public boolean isDynamicTriggeredPage();
  public boolean isDynamicTriggeredTemplate();
@@ -28,6 +29,7 @@ public interface IBPage extends com.idega.data.TreeableEntity, IDOLegacyEntity
  public void setDefaultValues();
  public void setDeleted(boolean p0);
  public void setFile(com.idega.core.data.ICFile p0);
+ public void setIsCategory(boolean p0);
  public void setIsDraft();
  public void setIsFolder();
  public void setIsPage();

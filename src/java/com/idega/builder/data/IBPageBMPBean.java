@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.6 2003/07/05 15:39:29 aron Exp $
+ * $Id: IBPageBMPBean.java,v 1.7 2003/09/18 11:43:00 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	private final static String DELETED_BY_COLUMN = "deleted_by";
 	private final static String DELETED_WHEN_COLUMN = "deleted_when";
 	private final static String TREE_ORDER = "tree_order";
+	private final static String IS_CATEGORY = "is_category";
 	private ICFile _file;
 
 	public final static String PAGE = "P";
@@ -80,6 +81,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		addAttribute(getColumnDeletedBy(), "Deleted by", true, true, Integer.class, "many-to-one", User.class);
 		addAttribute(getColumnDeletedWhen(), "Deleted when", true, true, Timestamp.class);
 		addAttribute(TREE_ORDER, "Ordering of pages in a level in the page tree", true, true, Integer.class);
+		addAttribute(IS_CATEGORY, "Is used as a page category", true, true, Boolean.class);
 		addManyToManyRelationShip(ICProtocol.class, "ib_page_ic_protocol");
 	}
 
@@ -172,7 +174,15 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		else
 			return (false);
 	}
+	
+	public boolean isCategory() {
+		return getBooleanColumnValue(IS_CATEGORY, false);
+	}
 
+	public void setIsCategory(boolean isCategory) {
+		setColumn(IS_CATEGORY, isCategory);
+	}
+	
 	/**
 	 *
 	 */
