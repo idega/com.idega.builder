@@ -135,6 +135,7 @@ public IBPropertiesWindow() {
       b3.setOnClick("javascript:doApply()");
       Table t = new Table(3,1);
       t.setHeight("100%");
+      table.setHeight("100%");
       table.setAlignment(1, 1, "right");
       table.add(t, 1, 1);
       t.add(b1,1,1);
