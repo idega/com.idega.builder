@@ -73,7 +73,7 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       // PermissionString
       Text permissionKeyText = new Text(iwrb.getLocalizedString("permission_key","Permission Key")+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-	permissionKeyText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+	    permissionKeyText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
       DropdownMenu permissionTypes = new DropdownMenu(permissionKeyParameterString);
       permissionTypes.keepStatusOnAction();
@@ -83,30 +83,45 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       String[] keys = null;
 
+      Class objectClass = null;
       switch (intPermissionCategory) {
-	case AccessControl._CATEGORY_OBJECT_INSTANCE :
-	  keys = iwc.getAccessController().getICObjectPermissionKeys(ICObjectBusiness.getInstance().getICObjectClassForInstance(Integer.parseInt(identifier)));
-	  break;
-	case AccessControl._CATEGORY_OBJECT :
-	  keys = iwc.getAccessController().getICObjectPermissionKeys(ICObjectBusiness.getInstance().getICObjectClass(Integer.parseInt(identifier)));
-	  break;
-	case AccessControl._CATEGORY_BUNDLE :
-	  keys = iwc.getAccessController().getBundlePermissionKeys(identifier);
-	  break;
-	case AccessControl._CATEGORY_PAGE_INSTANCE :
-	  keys = iwc.getAccessController().getPagePermissionKeys();
-	  break;
-	case AccessControl._CATEGORY_PAGE :
-	  keys = iwc.getAccessController().getPagePermissionKeys();
-	  break;
-	case AccessControl._CATEGORY_JSP_PAGE :
-	  keys = new String[0];
-	  break;
+        case AccessControl._CATEGORY_OBJECT_INSTANCE :
+          objectClass = ICObjectBusiness.getInstance().getICObjectClassForInstance(Integer.parseInt(identifier));
+          keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
+          break;
+        case AccessControl._CATEGORY_OBJECT :
+          objectClass = ICObjectBusiness.getInstance().getICObjectClass(Integer.parseInt(identifier));
+          keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
+          break;
+        case AccessControl._CATEGORY_BUNDLE :
+          keys = iwc.getAccessController().getBundlePermissionKeys(identifier);
+          break;
+        case AccessControl._CATEGORY_PAGE_INSTANCE :
+          keys = iwc.getAccessController().getPagePermissionKeys();
+          break;
+        case AccessControl._CATEGORY_PAGE :
+          keys = iwc.getAccessController().getPagePermissionKeys();
+          break;
+        case AccessControl._CATEGORY_JSP_PAGE :
+          keys = new String[0];
+          break;
       }
 
 
+
       for (int i = 0; i < keys.length; i++) {
-	permissionTypes.addMenuElement(keys[i],keys[i]);
+	      permissionTypes.addMenuElement(keys[i],keys[i]);
+      }
+
+      if(objectClass !=null){
+        Object o = objectClass.newInstance();
+        if(o instanceof Block){
+          String[] blockKeys = ( (Block) o ).getPermissionKeys();
+          for (int i = 0; i < blockKeys.length; i++) {
+            permissionTypes.addMenuElement(blockKeys[i],blockKeys[i]);
+          }
+        }
+
       }
 
       if(permissionType != null){
