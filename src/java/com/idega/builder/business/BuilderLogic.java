@@ -451,7 +451,7 @@ public class BuilderLogic{
     /** @todo  */
       ////////
       try {
-        Object Block = ICObjectBusiness.getICObjectClass(ICObjectInstanceID);
+        Object Block = ICObjectBusiness.getICObjectClass(ICObjectInstanceID).newInstance();
         if(Block != null){
           if(Block instanceof IWBlock){
             blockDeleted = ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
@@ -462,9 +462,10 @@ public class BuilderLogic{
       }
       catch (Exception ex) {
         blockDeleted = false;
+        ex.printStackTrace();
       }
 
-    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID) && blockDeleted){
+    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID) ){
       xml.update();
       return true;
     }
