@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.127 2002/07/31 17:15:19 aron Exp $
+ * $Id: BuilderLogic.java,v 1.128 2002/09/05 16:41:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1819,6 +1819,10 @@ public class BuilderLogic
 		//    url.append(IB_PAGE_PARAMETER);
 		//    url.append("=");
 		url.append(this.getIBPageURL(iwc, Integer.parseInt(ibpage)));
+		
+		if (url.toString().indexOf("http") == -1) 
+			url.insert(0,"http://");
+		
 		String html = FileUtil.getStringFromURL(url.toString());
 		return (html);
 	}
