@@ -1,19 +1,19 @@
 package com.idega.builder.data;
 
 
-public class IBStartPagesHomeImpl extends com.idega.data.IDOFactory implements IBStartPagesHome
+public class IBStartPageHomeImpl extends com.idega.data.IDOFactory implements IBStartPageHome
 {
  protected Class getEntityInterfaceClass(){
-  return IBStartPages.class;
+  return IBStartPage.class;
  }
 
 
- public IBStartPages create() throws javax.ejb.CreateException{
-  return (IBStartPages) super.createIDO();
+ public IBStartPage create() throws javax.ejb.CreateException{
+  return (IBStartPage) super.createIDO();
  }
 
 
- public IBStartPages createLegacy(){
+ public IBStartPage createLegacy(){
 	try{
 		return create();
 	}
@@ -26,29 +26,29 @@ public class IBStartPagesHomeImpl extends com.idega.data.IDOFactory implements I
 
 public java.util.Collection findAllTemplatesByDomain(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((IBStartPagesBMPBean)entity).ejbFindAllTemplatesByDomain(p0);
+	java.util.Collection ids = ((IBStartPageBMPBean)entity).ejbFindAllTemplatesByDomain(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
 public java.util.Collection findAllPagesByDomain(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((IBStartPagesBMPBean)entity).ejbFindAllPagesByDomain(p0);
+	java.util.Collection ids = ((IBStartPageBMPBean)entity).ejbFindAllPagesByDomain(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
- public IBStartPages findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (IBStartPages) super.findByPrimaryKeyIDO(pk);
+ public IBStartPage findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+  return (IBStartPage) super.findByPrimaryKeyIDO(pk);
  }
 
 
- public IBStartPages findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (IBStartPages) super.findByPrimaryKeyIDO(id);
+ public IBStartPage findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (IBStartPage) super.findByPrimaryKeyIDO(id);
  }
 
 
- public IBStartPages findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
+ public IBStartPage findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
 		return findByPrimaryKey(id);
 	}

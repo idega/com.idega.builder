@@ -1,7 +1,7 @@
 package com.idega.builder.data;
 
 
-public interface IBStartPages extends com.idega.data.IDOLegacyEntity
+public interface IBStartPage extends com.idega.data.IDOLegacyEntity
 {
  public void setPageId(int p0);
  public void setPageId(java.lang.Integer p0);

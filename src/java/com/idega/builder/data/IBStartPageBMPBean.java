@@ -1,5 +1,5 @@
 /*
- * $Id: IBStartPagesBMPBean.java,v 1.4 2003/10/03 01:41:59 tryggvil Exp $
+ * $Id: IBStartPageBMPBean.java,v 1.1 2004/03/25 15:37:39 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import javax.ejb.FinderException;
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
+public class IBStartPageBMPBean extends GenericEntity implements IBStartPage {
   private static final String TABLE_NAME = "ib_start_pages";
   private static final String DOMAIN_ID = "ib_domain_id";
   private static final String PAGE_ID = "ib_page_id";
@@ -33,14 +33,14 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
   /**
    *
    */
-  public IBStartPagesBMPBean() {
+  public IBStartPageBMPBean() {
     super();
   }
 
   /**
    *
    */
-  public IBStartPagesBMPBean(int id) throws SQLException {
+  public IBStartPageBMPBean(int id) throws SQLException {
     super(id);
   }
 
@@ -95,10 +95,10 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
       Iterator it = domains.iterator();
       while (it.hasNext()) {
         ICDomain domain = (ICDomain)it.next();
-        IBStartPages start = null;
+        IBStartPage start = null;
         int id = domain.getStartPageID();
         if (id > 0) {
-          start = ((IBStartPagesHome)IDOLookup.getHome(this.getClass())).create();
+          start = ((IBStartPageHome)IDOLookup.getHome(this.getClass())).create();
           start.setDomainId(domain.getID());
           start.setPageId(id);
           start.setPageTypePage();
@@ -107,7 +107,7 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
 
         id = domain.getStartTemplateID();
         if (id > 0) {
-          start = ((IBStartPagesHome)IDOLookup.getHome(this.getClass())).create();
+          start = ((IBStartPageHome)IDOLookup.getHome(this.getClass())).create();
           start.setDomainId(domain.getID());
           start.setPageId(id);
           start.setPageTypeTemplate();
