@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.34 2001/10/02 19:47:02 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.35 2001/10/04 18:59:56 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,7 +41,10 @@ import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.jmodule.image.presentation.ImageEditorWindow;
 import java.util.ListIterator;
 import java.util.List;
-
+import com.idega.core.data.GenericGroup;
+import java.util.Vector;
+import java.util.Iterator;
+import java.sql.SQLException;
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -101,15 +104,31 @@ public class BuilderLogic {
   public Page getPage(int id,ModuleInfo modinfo) {
     try {
       boolean builderview = false;
+      boolean permissionview = false;
       if (modinfo.isParameterSet("view")) {
         builderview = true;
+      } else if (modinfo.isParameterSet("ic_pm") && AccessControl.isAdmin(modinfo)) {
+        permissionview = true;
       }
 
       Page page = PageCacher.getPage(Integer.toString(id),modinfo);
       if (builderview) {
         return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,modinfo));
-      }
-      else {
+      }else if(permissionview){
+        int groupId = -1906;
+        String bla = modinfo.getParameter("ic_pm");
+        if(bla != null){
+          try {
+            groupId = Integer.parseInt(bla);
+          }
+          catch (NumberFormatException ex) {
+
+          }
+
+        }
+        page = PageCacher.getPage(Integer.toString(id));
+        return(BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id),page,modinfo));
+      }else {
         return(page);
       }
     }
@@ -151,6 +170,82 @@ public class BuilderLogic {
 
       return page;
   }
+
+    public Page getPermissionTransformed(int groupId, String pageKey,Page page,ModuleInfo modinfo){
+      List groupIds = new Vector();
+      groupIds.add(Integer.toString(groupId));
+      try {
+        List groups = AccessControl.getPermissionGroups(new GenericGroup(groupId));
+        if(groups != null){
+          Iterator iter = groups.iterator();
+          while (iter.hasNext()) {
+            com.idega.core.data.GenericGroup item = (GenericGroup)iter.next();
+            groupIds.add(Integer.toString(item.getID()));
+          }
+        }
+      }
+      catch (SQLException ex) {
+      }
+
+      List list = page.getAllContainingObjects();
+      if(list != null){
+        ListIterator iter = list.listIterator();
+        while (iter.hasNext()) {
+          int index = iter.nextIndex();
+          Object item = iter.next();
+          if(item instanceof ModuleObject){
+            filterForPermission(groupIds,(ModuleObject)item,page,index,modinfo);
+          }
+        }
+      }
+
+      return page;
+  }
+
+  private void filterForPermission(List groupIds, ModuleObject obj, ModuleObjectContainer parentObject, int index, ModuleInfo modinfo){
+    if(!AccessControl.hasViewPermission(groupIds,obj,modinfo)){
+      System.err.println(obj+": removed");
+      parentObject.getAllContainingObjects().remove(index);
+      parentObject.getAllContainingObjects().add(index,ModuleObject.NULL_CLONE_OBJECT);
+    }else if(obj instanceof ModuleObjectContainer){
+      if(obj instanceof Table){
+        Table tab = (Table)obj;
+        int cols = tab.getColumns();
+        int rows = tab.getRows();
+        for (int x=1;x<=cols ;x++ ) {
+          for (int y=1;y<=rows ;y++ ) {
+            ModuleObjectContainer moc = tab.containerAt(x,y);
+            if(moc!=null){
+              List l = moc.getAllContainingObjects();
+              if(l != null){
+                ListIterator iterT = l.listIterator();
+                while (iterT.hasNext()) {
+                  int index2 = iterT.nextIndex();
+                  Object itemT = iterT.next();
+                  if(itemT instanceof ModuleObject){
+                    filterForPermission(groupIds,(ModuleObject)itemT,moc,index2,modinfo);
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else{
+        List list = ((ModuleObjectContainer)obj).getAllContainingObjects();
+        if(list!=null){
+          ListIterator iter = list.listIterator();
+          while (iter.hasNext()) {
+            int index2 = iter.nextIndex();
+            ModuleObject item = (ModuleObject)iter.next();
+            filterForPermission(groupIds,item,(ModuleObjectContainer)obj,index2,modinfo);
+          }
+        }
+      }
+    }
+  }
+
+
+
 
   private void processImageSet(String pageKey,int ICObjectInstanceID,int imageID,IWMainApplication iwma){
     setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID),iwma);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.15 2001/10/04 14:49:43 palli Exp $
+ * $Id: IBApplication.java,v 1.16 2001/10/04 18:59:56 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.interfaceobject.TreeViewer;
 import com.idega.idegaweb.IWBundle;
+import com.idega.builder.presentation.IBPermissionWindow;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -314,6 +315,9 @@ public class IBApplication extends IWApplication {
         ModuleObject propertiesIcon = getPropertiesIcon(modinfo);
         add(propertiesIcon);
 
+        ModuleObject permissionIcon = getPermissionIcon(modinfo);
+        add(permissionIcon);
+
         add(separator);
 
         Image tool_1 = new Image("/common/pics/arachnea/toolbar_back_1.gif","Go back");
@@ -357,6 +361,18 @@ public class IBApplication extends IWApplication {
       String pageICObjectInstanceID = "-1";
       link.addParameter(BuilderLogic.IC_OBJECT_ID_PARAMETER,pageICObjectInstanceID);
       return(link);
+    }
+
+    public ModuleObject getPermissionIcon(ModuleInfo modinfo){
+      //IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+      //Image image = bundle.getImage("properties.gif","Page properties");
+      Image image = new Image("/common/pics/arachnea/toolbar_permissions_1.gif","Page Permissions");
+      Link link = new Link(image);
+      link.setWindowToOpen(IBPermissionWindow.class);
+      link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,BuilderLogic.getInstance().getCurrentIBPage(modinfo));
+      link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,com.idega.core.accesscontrol.business.AccessControl._CATEGORY_PAGE_INSTANCE);
+
+      return link;
     }
   }
 

@@ -87,10 +87,10 @@ public class IBPermissionWindow extends IBAdminWindow{
           keys = AccessControl.getBundlePermissionKeys(Class.forName(identifier));
           break;
         case AccessControl._CATEGORY_PAGE_INSTANCE :
-          keys = new String[0];
+          keys = AccessControl.getPagePermissionKeys();
           break;
         case AccessControl._CATEGORY_PAGE :
-          keys = new String[0];
+          keys = AccessControl.getPagePermissionKeys();
           break;
         case AccessControl._CATEGORY_JSP_PAGE :
           keys = new String[0];
@@ -279,6 +279,7 @@ public class IBPermissionWindow extends IBAdminWindow{
       hash.put(_PARAMETERSTRING_PERMISSION_CATEGORY,modinfo.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY));
       modinfo.setSessionAttribute(SessionAddressPermissionMapOldValue,hash);
     }
+
     if(hash.get(permissionKey) == null){
       if(groups != null){
         hash.put(permissionKey,groups);
