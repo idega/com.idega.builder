@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.8 2003/10/03 01:41:59 tryggvil Exp $
+ * $Id: IBPageBMPBean.java,v 1.9 2003/11/28 11:10:28 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,9 +31,9 @@ import com.idega.util.IWTimestamp;
 public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.core.builder.data.ICPage {
 	private final static String ENTITY_NAME = "ib_page";
 	private final static String FILE_COLUMN = "file_id";
-	private final static String NAME_COLUMN = "name";
+	private final static String NAME_COLUMN = "NAME";
 	private final static String TEMPLATE_ID_COLUMN = "template_id";
-	private final static String TYPE_COLUMN = "page_type";
+	private final static String TYPE_COLUMN = "PAGE_TYPE";
 	private final static String SUBTYPE_COLUMN = "page_sub_type";
 	private final static String LOCKED_COLUMN = "locked_by";
 	private final static String DELETED_COLUMN = "deleted";
