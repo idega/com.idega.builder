@@ -21,6 +21,9 @@ import com.idega.core.data.ICObject;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICObjectInstance;
 
+import com.idega.core.business.ICObjectBusiness;
+import com.idega.block.IWBlock;
+
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWProperty;
@@ -449,9 +452,13 @@ public class BuilderLogic{
       ////////
       try {
         Object Block = ICObjectBusiness.getICObjectClass(ICObjectInstanceID);
-        if(Block instanceof IWBlock){
-          ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
+        if(Block != null){
+          if(Block instanceof IWBlock){
+            blockDeleted = ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
+          }
         }
+        else
+          blockDeleted = true;
       }
       catch (Exception ex) {
         blockDeleted = false;
