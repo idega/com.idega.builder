@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.9 2003/10/03 01:41:59 tryggvil Exp $
+ * $Id: IBDomainBMPBean.java,v 1.10 2003/12/01 13:50:23 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,12 +36,12 @@ import com.idega.user.data.GroupDomainRelationTypeBMPBean;
  * @version 1.0
  */
 public class IBDomainBMPBean extends GenericEntity implements ICDomain {
-  public static final String tableName = "ib_domain";
-  public static final String domain_name = "domain_name";
-  public static final String domain_url = "url";
-  public static final String start_page = "start_ib_page_id";
-  public static final String start_template = "start_ib_template_id";
-  public static final String COLUMNNAME_GROUP_ID = "group_id";
+  public static final String tableName = "ID_DOMAIN";
+  public static final String domain_name = "DOMAIN_NAME";
+  public static final String domain_url = "URL";
+  public static final String start_page = "START_IB_PAGE_ID";
+  public static final String start_template = "START_IB_TEMPLATE_ID";
+  public static final String COLUMNNAME_GROUP_ID = "GROUP_ID";
 
   private static Map cachedDomains;
 
