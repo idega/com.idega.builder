@@ -26,6 +26,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
@@ -398,8 +399,8 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
       l.setDeletedWhen(IWTimestamp.getTimestampRightNow());
       l.update();
 
-
-      com.idega.builder.business.IBPageHelper.getInstance().deletePage(Integer.toString(l.getPageId()),true,PageTreeNode.getTree(iwc),userId);
+      ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
+      com.idega.builder.business.IBPageHelper.getInstance().deletePage(Integer.toString(l.getPageId()),true,PageTreeNode.getTree(iwc),userId, domain);
 
       return true;
     }

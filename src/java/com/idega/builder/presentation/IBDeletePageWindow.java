@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.18 2004/08/05 22:10:39 tryggvil Exp $
+ * $Id: IBDeletePageWindow.java,v 1.19 2004/08/24 14:04:25 thomas Exp $
 
  *
 
@@ -19,6 +19,7 @@ package com.idega.builder.presentation;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
+import com.idega.core.builder.data.ICDomain;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -60,13 +61,16 @@ public class IBDeletePageWindow extends IWAdminWindow
 		boolean submit = iwc.isParameterSet("ok");
 		boolean quit = iwc.isParameterSet("cancel");
 		String deleteAll = iwc.getParameter("deletechildren");
+	    ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
 		if (submit)
 		{
-			if ((deleteAll != null) && (deleteAll.equals("true")))
-				IBPageHelper.getInstance().deletePage(pageId, true, PageTreeNode.getTree(iwc), iwc.getUserId());
-			else
-				IBPageHelper.getInstance().deletePage(pageId, false, PageTreeNode.getTree(iwc), iwc.getUserId());
-			BuilderLogic.getInstance().setCurrentIBPage(iwc,Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
+			if ((deleteAll != null) && (deleteAll.equals("true"))) {
+				IBPageHelper.getInstance().deletePage(pageId, true, PageTreeNode.getTree(iwc), iwc.getUserId(),domain);
+			}
+			else {
+				IBPageHelper.getInstance().deletePage(pageId, false, PageTreeNode.getTree(iwc), iwc.getUserId(), domain);
+			}
+			BuilderLogic.getInstance().setCurrentIBPage(iwc,Integer.toString(domain.getStartPageID()));
 			/**@todo is this in the right place? -eiki**/
 			//      setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
 			setOnUnLoad("window.opener.parent.parent.location.reload()");
@@ -77,7 +81,7 @@ public class IBDeletePageWindow extends IWAdminWindow
 		{
 			close();
 		}
-		okToDelete = IBPageHelper.getInstance().checkDeletePage(pageId);
+		okToDelete = IBPageHelper.getInstance().checkDeletePage(pageId, domain);
 		if (okToDelete)
 		{
 			okToDeleteChildren = IBPageHelper.getInstance().checkDeleteChildrenOfPage(pageId);
@@ -113,7 +117,7 @@ public class IBDeletePageWindow extends IWAdminWindow
 		else
 		{
 			SubmitButton cancel = new SubmitButton("cancel", iwrb.getLocalizedString("cancel", "Cancel"));
-			Text notAllowed = new Text(iwrb.getLocalizedString("not_allowed", "There are pages using this template so you can not delete it"));
+			Text notAllowed = new Text(iwrb.getLocalizedString("deleting_not_allowed", "This page (template) is either used by other pages (templates) or is the start page (template) of the domain so you can't delete it."));
 			notAllowed.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			Table table = new Table(1, 2);
 			table.setCellpadding(6);
