@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.58 2002/03/15 16:48:11 laddi Exp $
+ *  $Id: IBApplication.java,v 1.59 2002/03/15 16:54:59 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -82,6 +82,7 @@ public class IBApplication extends IWApplication {
     super.setResizable(true);
     super.setWidth(900);
     super.setHeight(700);
+    super.setOnLoad("moveTo(0,0);");
   }
 
 
@@ -163,7 +164,6 @@ public class IBApplication extends IWApplication {
    *@param  iwc  Description of the Parameter
    */
   public void main(IWContext iwc) {
-    setOnLoad("moveTo(0,0);");
     startIBApplication(iwc);
     add(IBBanner.class);
     if (iwc.getParameter("toolbar") != null) {
