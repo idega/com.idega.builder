@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.27 2001/11/01 23:09:10 aron Exp $
+ * $Id: IBPage.java,v 1.28 2001/11/14 15:37:04 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,10 +15,12 @@ import java.sql.Timestamp;
 import java.io.InputStream;
 import java.io.OutputStream;
 import com.idega.core.data.ICFile;
+import com.idega.core.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
 import com.idega.util.idegaTimestamp;
 import com.idega.presentation.IWContext;
+
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -74,6 +76,7 @@ public class IBPage extends TreeableEntity {
     addAttribute(getColumnDeletedBy(),"Deleted by",true,true,Integer.class,"many-to-one",User.class);
     addAttribute(getColumnDeletedWhen(),"Deleted when",true,true,Timestamp.class);
 //    addAttribute(getColumnDomain(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
+                addManyToManyRelationShip(ICProtocol.class,"ib_page_ic_protocol");
 	}
 
   /**
