@@ -132,8 +132,10 @@ public class IBPageExporterWindow extends IBPageWindow {
 	  		messageContainer.setMainMessage(mainMessage.toString());
 	  		return false;
   		}
-	  	messageContainer = new MessageContainer();
-	  	messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_exportt_success", "Files were successfully exported"));
+  		if (downloadLink != null) {
+  			messageContainer = new MessageContainer();
+  			messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_exportt_success", "Files were successfully exported"));
+  		}
 	  	return true;
   	}
   	return true;
