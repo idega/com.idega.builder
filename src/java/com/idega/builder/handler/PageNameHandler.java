@@ -1,5 +1,5 @@
 /*
- * $Id: PageNameHandler.java,v 1.3 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: PageNameHandler.java,v 1.4 2002/12/20 15:39:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,49 +23,37 @@ import java.util.Map;
  * @version 1.0
  */
 public class PageNameHandler implements PropertyHandler {
-  /**
-   *
-   */
-  public PageNameHandler() {
-  }
+	public PageNameHandler() {
+	}
 
-  /**
-   *
-   */
-  public List getDefaultHandlerTypes() {
-    return(null);
-  }
+	public List getDefaultHandlerTypes() {
+		return (null);
+	}
 
-  /**
-   *
-   */
-  public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-    TextInput input = new TextInput(name);
-    input.setValue(stringValue);
+	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
+		TextInput input = new TextInput(name);
+		input.setValue(stringValue);
 
-    return(input);
-  }
+		return (input);
+	}
 
-  /**
-   *
-   */
-  public void onUpdate(String values[], IWContext iwc) {
-    if (values != null) {
-      String value = values[0];
+	public void onUpdate(String values[], IWContext iwc) {
+		if (values != null) {
+			String value = values[0];
 
-      if (value != null) {
-        String currPage = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+			if (value != null) {
+				String currPage = BuilderLogic.getInstance().getCurrentIBPage(iwc);
 
-        if (currPage != null) {
-          Map tree = PageTreeNode.getTree(iwc);
+				if (currPage != null) {
+					Map tree = PageTreeNode.getTree(iwc);
 
-          Integer i = new Integer(currPage);
+					Integer i = new Integer(currPage);
 
-          PageTreeNode node = (PageTreeNode)tree.get(i);
-          node.setNodeName(value);
-          IBPageUpdater.updatePageName(i.intValue(),value);
-        }
-      }
-    }
-  }
+					PageTreeNode node = (PageTreeNode) tree.get(i);
+					node.setNodeName(value);
+					IBPageUpdater.updatePageName(i.intValue(), value);
+				}
+			}
+		}
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.9 2002/08/15 10:53:35 palli Exp $
+ * $Id: PageTreeNode.java,v 1.10 2002/12/20 15:39:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,18 +9,23 @@
  */
 package com.idega.builder.business;
 
+import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBPageName;
+import com.idega.core.ICTreeNode;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.presentation.IWContext;
+
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
-
-import com.idega.builder.data.IBPage;
-import com.idega.core.ICTreeNode;
-import com.idega.idegaweb.IWApplicationContext;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -28,6 +33,7 @@ import com.idega.idegaweb.IWApplicationContext;
  */
 public class PageTreeNode implements ICTreeNode {
 	private static final String PAGE_TREE = "ib_page_node_tree";
+	private static final String NAME_TREE = "ib_page_node_tree_names";
 
 	protected int _id = -1;
 	protected String _name = null;
@@ -37,9 +43,9 @@ public class PageTreeNode implements ICTreeNode {
 	protected int _order = -1;
 
 	protected PageTreeNode(int id, String name) {
-		this(id,name,-1);
+		this(id, name, -1);
 	}
-	
+
 	protected PageTreeNode(int id, String name, int order) {
 		_id = id;
 		_name = name;
@@ -82,9 +88,39 @@ public class PageTreeNode implements ICTreeNode {
 		_name = name;
 	}
 
-	/**
-	 *
-	 */
+	protected static Map getNamesFromDatabase() {
+		Map names = new Hashtable();
+		Collection col = TreeNodeFinder.getAllPageNames();		
+		if (col != null) {
+			Iterator it = col.iterator();
+			while (it.hasNext()) {
+				IBPageName nameEntry = (IBPageName)it.next();
+				int pageId = nameEntry.getPageId();
+				int localeId = nameEntry.getLocaleId();
+								
+				Locale loc = ICLocaleBusiness.getLocale(localeId);
+				
+				Integer locId = new Integer(pageId);
+				Map localizedNames = (Map)names.get(locId);
+				if (localizedNames == null) {
+					localizedNames = new Hashtable();
+					names.put(locId,localizedNames);					
+				}
+				
+				StringBuffer localizedKey = new StringBuffer(loc.getLanguage());
+				String country = loc.getCountry();
+				if (country != null && !country.equals("")) {
+					localizedKey.append("_");
+					localizedKey.append(country);
+				}
+				
+				localizedNames.put(localizedKey.toString(),nameEntry.getPageName());
+			}		
+		}
+		
+		return names;
+	}
+
 	protected static Map getTreeFromDatabase() {
 		List page = null;
 		List template = null;
@@ -139,7 +175,6 @@ public class PageTreeNode implements ICTreeNode {
 				PageTreeNode parent = (PageTreeNode) tree.get(parentId);
 				PageTreeNode child = (PageTreeNode) tree.get(childId);
 				if (parent != null) {
-//					parent._children.add(child);
 					parent.addChild(child);
 				}
 
@@ -156,7 +191,6 @@ public class PageTreeNode implements ICTreeNode {
 				PageTreeNode parent = (PageTreeNode) tree.get(parentId);
 				PageTreeNode child = (PageTreeNode) tree.get(childId);
 				if (parent != null) {
-//					parent._children.add(child);
 					parent.addChild(child);
 				}
 
@@ -219,10 +253,10 @@ public class PageTreeNode implements ICTreeNode {
 	public boolean isLeaf() {
 		/*int children = getChildCount();
 		if (children > 0) {
-		  return(false);
+		  return false;
 		}
 		else {
-		  returntrue;
+		  return true;
 		}*/
 		return true;
 	}
@@ -232,6 +266,47 @@ public class PageTreeNode implements ICTreeNode {
 	 */
 	public String getNodeName() {
 		return _name;
+	}
+	
+	public String getLocalizedNodeName(IWContext iwc) {
+		Hashtable names = (Hashtable)iwc.getApplicationAttribute(NAME_TREE);
+		if (names == null)
+			return getNodeName();
+			
+		Hashtable pageNames = (Hashtable)names.get(new Integer(getNodeID()));
+		if (pageNames == null)
+			return getNodeName();
+	
+		Locale curr = iwc.getCurrentLocale();
+		StringBuffer localeString = new StringBuffer(curr.getLanguage());
+		String country = curr.getCountry();
+		if (country != null && !country.equals("")) {
+			localeString.append("_");
+			localeString.append(country);
+		}
+			
+		String localizedName = (String)pageNames.get(localeString.toString());
+		if (localizedName != null && !localizedName.equals(""))
+			return localizedName;
+		
+		return getNodeName();
+	}	
+	
+	public void setLocalizedNodeName(String locale, String name, IWContext iwc) {
+		Hashtable names = (Hashtable)iwc.getApplicationAttribute(NAME_TREE);
+		if (names == null) {
+			names = new Hashtable();
+			iwc.setApplicationAttribute(NAME_TREE,names);
+		}
+		
+		Integer nodeId = new Integer(getNodeID());
+		Hashtable pageNames = (Hashtable)names.get(nodeId);
+		if (pageNames == null) {
+			pageNames = new Hashtable();
+			names.put(nodeId,pageNames);
+		}
+		
+		pageNames.put(locale,name);
 	}
 
 	/**
@@ -281,18 +356,18 @@ public class PageTreeNode implements ICTreeNode {
 				}
 				else {
 					ListIterator it = (new LinkedList(_children)).listIterator();
-					
+
 					while (it.hasNext()) {
-						PageTreeNode node = (PageTreeNode)it.next();
+						PageTreeNode node = (PageTreeNode) it.next();
 						if (node._order == -1 || node._order > child._order) {
 							int i = it.previousIndex();
-							_children.add(i,child);
-							return true;							
+							_children.add(i, child);
+							return true;
 						}
 					}
-					
-					_children.add(child);	
-				}				
+
+					_children.add(child);
+				}
 			}
 		}
 
@@ -310,7 +385,7 @@ public class PageTreeNode implements ICTreeNode {
 	 *
 	 */
 	public Object getExtraInfo() {
-		return (_extra);
+		return _extra;
 	}
 
 	/**
@@ -322,9 +397,11 @@ public class PageTreeNode implements ICTreeNode {
 		if (tree == null) {
 			tree = getTreeFromDatabase();
 			iwc.setApplicationAttribute(PageTreeNode.PAGE_TREE, tree);
+			Map names = getNamesFromDatabase();
+			iwc.setApplicationAttribute(PageTreeNode.NAME_TREE, names);
 		}
 
-		return (tree);
+		return tree;
 	}
 
 	/**
@@ -336,9 +413,9 @@ public class PageTreeNode implements ICTreeNode {
 			if (node._id == _id)
 				return true;
 			else
-				return (false);
+				return false;
 		}
 		else
-			return (false);
+			return false;
 	}
 }

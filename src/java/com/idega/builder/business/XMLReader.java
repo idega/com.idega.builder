@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.41 2002/12/10 18:30:53 palli Exp $
+ * $Id: XMLReader.java,v 1.42 2002/12/20 15:39:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -313,7 +313,12 @@ public class XMLReader {
 		if (key != null) {
 			//key is MethodIdentifier
 			if (key.startsWith(XMLConstants.METHOD_STRING)) {
-				setReflectionProperty(object, key, values);
+				try {
+					setReflectionProperty(object, key, values);
+				}
+				catch(Exception e) {
+					e.printStackTrace();	
+				}
 			}
 			else {
 				vals = new String[values.size()];

@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.70 2002/10/10 13:37:48 laddi Exp $
+ *  $Id: IBApplication.java,v 1.71 2002/12/20 15:39:37 palli Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -54,8 +54,8 @@ public class IBApplication extends IWApplication {
 	public final static String IB_CONTENT_FRAME = "ib_content";
 	public final static String IB_STATUS_FRAME = "ib_status";
 	public final static String IB_LEFT_MENU_FRAME = "ib_left_menu";
-	private final static String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
-	private final static String _linkHoverStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#FF8008;text-decoration:none;";
+	private final static String LINK_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
+	private final static String LINK_HOVER_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#FF8008;text-decoration:none;";
 	private final static String ACTION_BUILDER = "builder";
 	private final static String ACTION_TEMPLATES = "templates";
 	private final static String ACTION_SETTINGS = "settings";
@@ -321,10 +321,10 @@ public class IBApplication extends IWApplication {
 		}
 		private void setStyles() {
 			if (getParentPage() != null) {
-				getParentPage().setStyleDefinition("A", _linkStyle);
+				getParentPage().setStyleDefinition("A", LINK_STYLE);
 				//getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
 				//getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
-				getParentPage().setStyleDefinition("A:hover", _linkHoverStyle);
+				getParentPage().setStyleDefinition("A:hover", LINK_HOVER_STYLE);
 			}
 		}
 	}
@@ -396,10 +396,10 @@ public class IBApplication extends IWApplication {
 		}
 		private void setStyles() {
 			if (getParentPage() != null) {
-				getParentPage().setStyleDefinition("A", _linkStyle);
+				getParentPage().setStyleDefinition("A", LINK_STYLE);
 				//getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
 				//getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
-				getParentPage().setStyleDefinition("A:hover", _linkHoverStyle);
+				getParentPage().setStyleDefinition("A:hover", LINK_HOVER_STYLE);
 			}
 		}
 	}
@@ -645,6 +645,7 @@ public class IBApplication extends IWApplication {
 			down.setSelectedElement(url + iwc.getCurrentLocale().toString());
 			down.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE_SMALL);
 			down.setOnChange("javascript:jumpMenu('parent.frames[\\'" + IB_CONTENT_FRAME + "\\']',this,0)");
+//			down.setOnChange("javascript:jumpMenu('parent.parent.frames[\\'" + IB_LEFT_MENU_FRAME + "\\']',this,0)");
 			return down;
 		}
 		/**
@@ -766,7 +767,7 @@ public class IBApplication extends IWApplication {
 					if (tree != null) {
 						PageTreeNode node = (PageTreeNode) tree.get(pageId);
 						if (node != null) {
-							name = Text.NON_BREAKING_SPACE + node.getNodeName();
+							name = Text.NON_BREAKING_SPACE + node.getLocalizedNodeName(iwc);
 						}
 					}
 					if (name == null) {
@@ -774,7 +775,7 @@ public class IBApplication extends IWApplication {
 						if (tree != null) {
 							PageTreeNode node = (PageTreeNode) tree.get(pageId);
 							if (node != null) {
-								name = Text.NON_BREAKING_SPACE + node.getNodeName();
+								name = Text.NON_BREAKING_SPACE + node.getLocalizedNodeName(iwc);
 							}
 						}
 					}

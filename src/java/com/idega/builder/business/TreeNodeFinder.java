@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.6 2002/08/15 10:53:35 palli Exp $
+ * $Id: TreeNodeFinder.java,v 1.7 2002/12/20 15:39:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,21 +9,44 @@
  */
 package com.idega.builder.business;
 
+import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBPageName;
+import com.idega.builder.data.IBPageNameHome;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
-import com.idega.builder.data.IBPage;
-import com.idega.data.EntityFinder;
+import javax.ejb.FinderException;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class TreeNodeFinder {
+	public static Collection getAllPageNames() {
+		try {
+			Collection col = ((IBPageNameHome)IDOLookup.getHome(IBPageName.class)).findAll();
+			
+			return col;
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public static List listOfAllPages() {
 		try {
 			IBPage pages = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.4 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: IBPageHandler.java,v 1.5 2002/12/20 15:39:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,43 +22,31 @@ import java.util.Map;
  * @version 1.0
  */
 public class IBPageHandler implements PropertyHandler {
-  /**
-   *
-   */
-  public IBPageHandler() {
-  }
-
-  /**
-   *
-   */
-  public List getDefaultHandlerTypes() {
-    return(null);
-  }
-
-  /**
-   *
-   */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-    IBPageChooser chooser = new IBPageChooser(name);
-    try {
-      if (value != null && !value.equals("")) {
-	Map tree = PageTreeNode.getTree(iwc);
-	if (tree != null) {
-	  PageTreeNode node = (PageTreeNode)tree.get(Integer.valueOf(value));
-	  if (node != null)
-	    chooser.setSelectedPage(node.getNodeID(),node.getNodeName());
+	public IBPageHandler() {
 	}
-      }
-    }
-    catch(NumberFormatException e) {
-      e.printStackTrace();
-    }
-    return(chooser);
-  }
 
-  /**
-   *
-   */
-  public void onUpdate(String values[], IWContext iwc) {
-  }
+	public List getDefaultHandlerTypes() {
+		return (null);
+	}
+
+	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+		IBPageChooser chooser = new IBPageChooser(name);
+		try {
+			if (value != null && !value.equals("")) {
+				Map tree = PageTreeNode.getTree(iwc);
+				if (tree != null) {
+					PageTreeNode node = (PageTreeNode) tree.get(Integer.valueOf(value));
+					if (node != null)
+						chooser.setSelectedPage(node.getNodeID(), node.getNodeName());
+				}
+			}
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		return (chooser);
+	}
+
+	public void onUpdate(String values[], IWContext iwc) {
+	}
 }

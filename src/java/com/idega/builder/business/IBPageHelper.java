@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.19 2002/12/11 13:14:59 palli Exp $
+ * $Id: IBPageHelper.java,v 1.20 2002/12/20 15:39:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -202,6 +202,7 @@ public class IBPageHelper {
 			e.printStackTrace();
 			return (-1);
 		}
+		
 		if (tid != -1) {
 			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
 			Page current = currentXMLPage.getPopulatedPage();
