@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.3 2002/06/20 19:21:55 gummi Exp $
+ * $Id: IBDomainBMPBean.java,v 1.4 2002/06/28 16:43:50 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,10 @@
  */
 package com.idega.builder.data;
 
+import java.rmi.RemoteException;
+import java.util.*;
+import com.idega.user.data.*;
 import com.idega.data.*;
-import com.idega.user.data.Group;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBDomain;
 //import com.idega.data.IDOLegacyEntity;
@@ -18,9 +20,6 @@ import com.idega.builder.data.IBDomainHome;
 import com.idega.builder.data.IBPageHome;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageBMPBean;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
 import java.sql.SQLException;
 import javax.ejb.FinderException;
 
@@ -34,6 +33,7 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
   public static final String domain_url = "url";
   public static final String start_page = "start_ib_page_id";
   public static final String start_template = "start_ib_template_id";
+  public static final String COLUMNNAME_GROUP_ID = "group_id";
 
   private static Map cachedDomains;
 
@@ -47,11 +47,14 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
+
     addAttribute(getColumnDomainName(),"Domain name",true,true,String.class);
     addAttribute(getColumnURL(),"Domain URL",true,true,String.class,1000);
     addAttribute(getColumnStartPage(),"Start Page",true,true,Integer.class,"many-to-one",IBPage.class);
     addAttribute(getColumnStartTemplate(),"Start Template",true,true,Integer.class,"many-to-one",IBPage.class);
-    this.addManyToManyRelationShip(Group.class);
+//    this.addManyToManyRelationShip(Group.class);
+//    addAttribute(COLUMNNAME_GROUP_ID,"Group ID",true,true,Integer.class,"one-to-one",Group.class);
+
   }
 
   public static IBDomain getDomain(int id)throws SQLException {
@@ -138,6 +141,14 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
     return(getIntColumnValue(getColumnStartTemplate()));
   }
 
+//  public Group getGroup() {
+//    return((Group)getColumnValue(COLUMNNAME_GROUP_ID));
+//  }
+//
+//  public int getGroupID() {
+//    return(getIntColumnValue(COLUMNNAME_GROUP_ID));
+//  }
+
   public String getName() {
     return(getDomainName());
   }
@@ -150,8 +161,29 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
     return(getStringColumnValue(getColumnURL()));
   }
 
-  public Collection getTopLevelGroupsUnderDomain() throws IDORelationshipException{
-    return this.idoGetRelatedEntities(Group.class);
+  public Collection getTopLevelGroupsUnderDomain() throws IDORelationshipException, RemoteException, FinderException{
+    Collection relations = ((GroupDomainRelationHome)IDOLookup.getHome(GroupDomainRelation.class)).findGroupsRelationshipsUnder(this);
+
+    GroupDomainRelationType type = ((GroupDomainRelationTypeHome)IDOLookup.getHome(GroupDomainRelationType.class)).getTopNodeRelationType();
+
+    Iterator iter = relations.iterator();
+    Collection groups = new Vector();
+    while (iter.hasNext()) {
+      GroupDomainRelation item = (GroupDomainRelation)iter.next();
+      if(!type.isIdentical(item.getRelationship())){
+//        iter.remove();
+      } else {
+        groups.add(item.getRelatedGroup());
+      }
+    }
+
+    return groups;
+//    return ((GroupHome)IDOLookup.getHome(Group.class)).findGroups();
+
+
+
+
+//    return relations;
   }
 
   public void setIBPage(IBPage page) {
@@ -161,6 +193,10 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
   public void setStartTemplate(IBPage template) {
     setColumn(getColumnStartTemplate(),template);
   }
+
+//  public void setGroup(Group group) {
+//     setColumn(COLUMNNAME_GROUP_ID,group);
+//  }
 
   public void setName(String name) {
     setColumn(getColumnDomainName(),name);
