@@ -1,5 +1,5 @@
 /*
- * $Id: LibraryTreeNode.java,v 1.2 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: LibraryTreeNode.java,v 1.3 2003/07/30 03:20:34 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.builder.business;
 
 import com.idega.core.ICTreeNode;
 import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -85,6 +86,10 @@ public class LibraryTreeNode implements ICTreeNode {
   public String getNodeName() {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
     throw new java.lang.UnsupportedOperationException("Method getNodeName() not yet implemented.");
+  }
+  
+  public String getNodeName(Locale locale) {
+	return getNodeName();
   }
 
   /**
