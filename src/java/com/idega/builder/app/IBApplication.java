@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.46 2002/02/13 19:13:22 gummi Exp $
+ * $Id: IBApplication.java,v 1.47 2002/02/13 19:22:30 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -236,12 +236,12 @@ public class IBApplication extends IWApplication {
       //System.out.println("Startup in progress for PageTree:"+startupInProgress);
       if(!startupInProgress && iwc.getParameter("reload") != null){
         if ( noCurtain ) {
-          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          //getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
         }
         else {
-          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          //getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
         }
@@ -286,12 +286,12 @@ public class IBApplication extends IWApplication {
       //System.out.println("Startup in progress for TemplateTree:"+startupInProgress);
       if(!startupInProgress && iwc.getParameter("reload") != null){
         if ( noCurtain ) {
-          getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          //getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
         }
         else {
-          getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+          //getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
           getParentPage().setOnLoad("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_STATUS_FRAME+"'].location.reload()");
         }
