@@ -128,7 +128,7 @@ public class FormEmailer extends Block {
       String error3 = iwrb.getLocalizedString("formemailer.error3","No email to send to");
       throw new Exception(error3);
     }
-    com.idega.util.SendMail.send("idega@idega.is",emailToSendTo,"","",emailServer,subject,bodyText);
+    com.idega.util.SendMail.send("webmaster@nobody.com",emailToSendTo,"","",emailServer,subject,bodyText);
     cleanUpFromSession(iwc);
   }
 
