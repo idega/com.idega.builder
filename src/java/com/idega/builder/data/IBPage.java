@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.28 2001/11/14 15:37:04 gummi Exp $
+ * $Id: IBPage.java,v 1.29 2001/12/14 11:22:48 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,8 @@ public class IBPage extends TreeableEntity {
   public final static String PAGE = "P";
   public final static String TEMPLATE = "T";
   public final static String DRAFT = "D";
+  public final static String DPT_TEMPLATE = "A";
+  public final static String DPT_PAGE = "B";
 
   public final static String DELETED = "Y";
   public final static String NOT_DELETED = "N";
@@ -64,10 +66,10 @@ public class IBPage extends TreeableEntity {
   /**
    *
    */
-	public void initializeAttributes() {
-		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
-		addAttribute(getIDColumnName());
-		addAttribute(getColumnName(),"Nafn",true,true,String.class);
+  public void initializeAttributes() {
+                 //par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
+    addAttribute(getIDColumnName());
+    addAttribute(getColumnName(),"Nafn",true,true,String.class);
     addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
     addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
     addAttribute(getColumnType(),"Type",true,true,String.class,1);
@@ -75,9 +77,10 @@ public class IBPage extends TreeableEntity {
     addAttribute(getColumnDeleted(),"Deleted",true,true,String.class,1);
     addAttribute(getColumnDeletedBy(),"Deleted by",true,true,Integer.class,"many-to-one",User.class);
     addAttribute(getColumnDeletedWhen(),"Deleted when",true,true,Timestamp.class);
-//    addAttribute(getColumnDomain(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
-                addManyToManyRelationShip(ICProtocol.class,"ib_page_ic_protocol");
-	}
+    //    addAttribute(getColumnDomain(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
+    addManyToManyRelationShip(ICProtocol.class,"ib_page_ic_protocol");
+
+  }
 
   /**
    *
@@ -462,4 +465,12 @@ public class IBPage extends TreeableEntity {
     else
       return(false);
   }
+
+
+  public boolean isLeaf(){
+    return true;
+  }
+
+
+
 }
