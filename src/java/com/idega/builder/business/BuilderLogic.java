@@ -170,6 +170,7 @@ public class BuilderLogic{
           imageObj.setImageID(image_id);
       }
       inserter = new ImageInserter();
+      inserter.setHasUseBox(false);
       int image_id=imageObj.getImageID();
       if(image_id!=-1){
         inserter.setImageId(image_id);
@@ -451,7 +452,7 @@ public class BuilderLogic{
     /** @todo  */
       ////////
       try {
-        Object Block = ICObjectBusiness.getICObjectClassForInstance(ICObjectInstanceID).newInstance();
+        ModuleObject Block = ICObjectBusiness.getNewObjectInstance(ICObjectInstanceID);
         if(Block != null){
           if(Block instanceof IWBlock){
             blockDeleted = ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
@@ -543,9 +544,18 @@ public class BuilderLogic{
     }
 
     private boolean isPropertyMultivalued(String propertyName,int icObjecctInstanceID,IWMainApplication iwma)throws Exception{
-      ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
-      Class c = instance.getObject().getObjectClass();
-      IWBundle iwb = instance.getObject().getBundle(iwma);
+      Class c = null;
+      IWBundle iwb = null;
+      if(icObjecctInstanceID==-1){
+        c = com.idega.jmodule.object.Page.class;
+        iwb = iwma.getBundle(ModuleObject.IW_BUNDLE_IDENTIFIER);
+      }
+      else{
+        ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
+        c = instance.getObject().getObjectClass();
+        iwb = instance.getObject().getBundle(iwma);
+      }
+
       IWPropertyList complist = iwb.getComponentList();
       IWPropertyList component = complist.getPropertyList(c.getName());
       IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);

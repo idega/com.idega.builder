@@ -111,7 +111,14 @@ public class IBPropertiesWindow extends IBAdminWindow{
         input.setContent(value);
       }
       table.add(input,1,1);*/
-      Class ICObjectClass = BuilderLogic.getInstance().getObjectClass(Integer.parseInt(icObjectInstanceID));
+      Class ICObjectClass = null;
+      int icObjectInstanceIDint = Integer.parseInt(icObjectInstanceID);
+      if(icObjectInstanceIDint == -1){
+        ICObjectClass = com.idega.jmodule.object.Page.class;
+      }
+      else{
+        ICObjectClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
+      }
       String namePrefix = "ib_property_";
       java.lang.reflect.Method method = MethodFinder.getInstance().getMethod(methodIdentifier,ICObjectClass);
       Class[] parameters = method.getParameterTypes();

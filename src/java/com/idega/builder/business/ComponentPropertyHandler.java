@@ -98,11 +98,22 @@ public class ComponentPropertyHandler {
             argument =  stringValue;
         }
         else if(parameterType.equals(Boolean.class) || parameterType.equals(Boolean.TYPE)){
-          argument = new Boolean(stringValue);
+          if(stringValue.equals("Y")){
+            argument = Boolean.TRUE;
+          }
+          else if(stringValue.equals("N")){
+            argument = Boolean.FALSE;
+          }
+          else{
+            argument = new Boolean(stringValue);
+          }
         }
         else if(parameterType.equals(Float.class) || parameterType.equals(Float.TYPE)){
           argument = new Float(stringValue);
         }
+        /*else if(parameterType.equals(IBPage.class)){
+          argument = new IBPage(Integer.parseInt(stringValue));
+        }*/
         return argument;
     }
 
