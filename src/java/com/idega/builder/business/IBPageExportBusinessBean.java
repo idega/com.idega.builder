@@ -14,6 +14,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -65,11 +66,37 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 	}
 		
 	private String exportPages(List pageIds,IBExportImportData metadata) throws IOException, FinderException  {
+		List finishedPageIds = new ArrayList();
+		List additionalPageIds = pageIds;
+		while (! additionalPageIds.isEmpty()) {
+			List usedPageIds = prepareMetadataGetUsedPageIds(additionalPageIds, metadata);
+			finishedPageIds.addAll(additionalPageIds);
+			additionalPageIds = new ArrayList();
+			Iterator iterator = usedPageIds.iterator();
+			while (iterator.hasNext()) {
+				Integer usedId = (Integer) iterator.next();
+				if (! finishedPageIds.contains(usedId)) {
+					additionalPageIds.add(usedId);
+				}
+			}
+		}
+  	FileBusiness fileBusiness = getFileBusiness();
+  	return fileBusiness.getURLForOfferingDownload(metadata);
+  }
+	
+	private List prepareMetadataGetUsedPageIds(List pageIds, IBExportImportData metadata) throws IDOLookupException, FinderException, IOException {
+		List additionalPageIds = new ArrayList();
   	Iterator pageIterator = pageIds.iterator();
   	while (pageIterator.hasNext()) {
   		Integer pageId = (Integer) pageIterator.next();
   		ICPageHome pageHome = getPageHome();
   		ICPage page = pageHome.findByPrimaryKey(pageId);
+  		// add parent page
+  		ICTreeNode nodeTree = page.getParentNode();
+  		if (nodeTree != null) {
+  			Integer additionalPageId = new Integer(nodeTree.getNodeID());
+  			additionalPageIds.add(additionalPageId);
+  		}
   		ICFile file = page.getFile();
   		XMLData xmlData = XMLData.getInstanceForFile(file);
   		XMLDocument pageXML = xmlData.getDocument();
@@ -77,10 +104,17 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
   		getReferences().checkElementForReferencesNoteNecessaryModules(pageRoot, metadata);
   		metadata.addFileEntry(page);
   	}
-  	FileBusiness fileBusiness = getFileBusiness();
-  	return fileBusiness.getURLForOfferingDownload(metadata);
-  }
-	
+  	// check pages that are used
+  	List pages = metadata.getPageData();
+  	Iterator usedPageIterator = pages.iterator();
+  	while (usedPageIterator.hasNext()) {
+  		ICPage usedPage = (ICPage) usedPageIterator.next();
+  		Integer usedPageId = (Integer) usedPage.getPrimaryKey();
+  		additionalPageIds.add(usedPageId);
+  	}
+		return additionalPageIds;
+	}
+
 	private IBReferences getReferences() throws IOException {
 		if (references == null) {
 			references = new IBReferences(getIWMainApplication());
