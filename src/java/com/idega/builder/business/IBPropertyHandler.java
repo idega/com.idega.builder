@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.45 2004/08/05 18:07:24 laddi Exp $
+ * $Id: IBPropertyHandler.java,v 1.46 2005/01/13 23:07:23 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -669,6 +669,7 @@ public class IBPropertyHandler {
 			paramMap.put(METHOD_PARAMETER_PROPERTY_PRIMARY_KEY, new Boolean(primaryKeys[i]));
 		}
 		method.setProperties(options);
+		iwb.storeState();
 		return true;
 	}
 
