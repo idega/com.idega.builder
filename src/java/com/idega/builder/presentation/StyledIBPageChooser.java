@@ -8,7 +8,6 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.AbstractChooser;
-import com.idega.user.presentation.StyledIWAdminWindow;
 
 /**
  * Title:        idegaclasses
