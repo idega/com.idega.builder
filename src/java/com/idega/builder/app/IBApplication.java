@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.50 2002/02/22 12:53:56 laddi Exp $
+ * $Id: IBApplication.java,v 1.51 2002/03/09 17:43:03 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -497,22 +497,28 @@ public class IBApplication extends IWApplication {
 	link_new.setWindowToOpen(IBCreatePageWindow.class);
 	toolbarTable.add(link_new,xpos,1);
 
-	Image tool_open = iwb.getImage("shared/toolbar/open.gif","shared/toolbar/open1.gif","Open Page",20,20);
+	//Image tool_open = iwb.getImage("shared/toolbar/open.gif","shared/toolbar/open1.gif","Open Page",20,20);
+	Image tool_open = iwb.getImage("shared/toolbar/open.gif","Open Page",20,20);
 	tool_open.setHorizontalSpacing(2);
 	Link link_open = new Link(tool_open);
-	toolbarTable.add(link_open,xpos,1);
+	//toolbarTable.add(link_open,xpos,1);
+	toolbarTable.add(tool_open,xpos,1);
 
-	Image tool_save = iwb.getImage("shared/toolbar/save.gif","shared/toolbar/save1.gif","Save Page",20,20);
+	//Image tool_save = iwb.getImage("shared/toolbar/save.gif","shared/toolbar/save1.gif","Save Page",20,20);
+	Image tool_save = iwb.getImage("shared/toolbar/save.gif","Save Page",20,20);
 	tool_save.setHorizontalSpacing(2);
 	Link link_save = new Link(tool_save);
 	link_save.setWindowToOpen(IBSavePageWindow.class);
-	toolbarTable.add(link_save,xpos,1);
+	//toolbarTable.add(link_save,xpos,1);
+	toolbarTable.add(tool_save,xpos,1);
 
-	Image tool_save_as = iwb.getImage("shared/toolbar/saveas.gif","shared/toolbar/saveas1.gif","Save As Page",20,20);
+	//Image tool_save_as = iwb.getImage("shared/toolbar/saveas.gif","shared/toolbar/saveas1.gif","Save As Page",20,20);
+	Image tool_save_as = iwb.getImage("shared/toolbar/saveas.gif","Save As Page",20,20);
 	tool_save_as.setHorizontalSpacing(2);
 	Link link_save_as = new Link(tool_save_as);
 	link_save_as.setWindowToOpen(IBSaveAsPageWindow.class);
-	toolbarTable.add(link_save_as,xpos,1);
+	//toolbarTable.add(link_save_as,xpos,1);
+	toolbarTable.add(tool_save_as,xpos,1);
 
 	Image tool_delete = iwb.getImage("shared/toolbar/delete.gif","shared/toolbar/delete1.gif","Delete Page",20,20);
 	tool_delete.setHorizontalSpacing(2);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.8 2002/02/12 13:18:23 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.9 2002/03/09 17:42:40 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 
+import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -36,34 +37,41 @@ public class IBDeletePageWindow extends IWAdminWindow {
   private static final String PAGE_TYPE             = "ib_page_type";
   private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
 
+  public IBDeletePageWindow() {
+    setWidth(240);
+    setHeight(140);
+    setScrollbar(false);
+  }
+
   public void main(IWContext iwc) throws Exception {
     boolean okToDelete = false;
     boolean okToDeleteChildren = true;
-    IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
+    IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
     Form form = new Form();
 
-    setTitle(iwrb.getLocalizedString("delete_page","Delete a page"));
+    setTitle(iwrb.getLocalizedString("delete_page","Delete page"));
+    addTitle(iwrb.getLocalizedString("delete_page","Delete page"),IWConstants.BUILDER_FONT_STYLE_TITLE);
     add(form);
 
     BuilderLogic instance = BuilderLogic.getInstance();
     String pageId = instance.getCurrentIBPage(iwc);
 
-    String submit = iwc.getParameter("ok");
-    String quit = iwc.getParameter("cancel");
+    boolean submit = iwc.isParameterSet("ok");
+    boolean quit = iwc.isParameterSet("cancel");
     String deleteAll = iwc.getParameter("deletechildren");
 
-    if (submit != null) {
+    if (submit) {
       boolean deleted = false;
       if ((deleteAll != null) && (deleteAll.equals("true")))
-        deleted = IBPageHelper.deletePage(pageId,true,PageTreeNode.getTree(iwc),iwc.getUserId());
+	deleted = IBPageHelper.deletePage(pageId,true,PageTreeNode.getTree(iwc),iwc.getUserId());
       else
-        deleted = IBPageHelper.deletePage(pageId,false,PageTreeNode.getTree(iwc),iwc.getUserId());
+	deleted = IBPageHelper.deletePage(pageId,false,PageTreeNode.getTree(iwc),iwc.getUserId());
 
       iwc.setSessionAttribute("ib_page_id",Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
       setParentToReload();
       close();
     }
-    else if (quit != null) {
+    else if (quit) {
       close();
     }
 
@@ -71,32 +79,34 @@ public class IBDeletePageWindow extends IWAdminWindow {
 
     if (okToDelete) {
       okToDeleteChildren = IBPageHelper.checkDeleteChildrenOfPage(pageId);
-      SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("yes","Yes"));
-      SubmitButton cancel = new SubmitButton("cancel",iwrb.getLocalizedString("no","No"));
+      SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("yes","Yes"),"ok");
+      SubmitButton cancel = new SubmitButton(iwrb.getLocalizedImageButton("cancel","Cancel"),"cancel");
       CheckBox deleteChildren = new CheckBox("deletechildren","true");
       deleteChildren.setChecked(false);
       Text deleteChildrenText = new Text(iwrb.getLocalizedString("childrentext","Delete children of page"));
+	deleteChildrenText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
       Text sureText = new Text(iwrb.getLocalizedString("suredelete","Are you sure you want to delete this page"));
+	sureText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
-      Table table = new Table(2,3);
-      table.mergeCells(1,1,2,1);
-      table.mergeCells(1,3,2,3);
-      table.setAlignment(1,2,"left");
+      Table table = new Table(1,3);
+      table.setCellpadding(6);
+      table.setAlignment(1,3,"right");
 
       table.add(sureText,1,1);
-      table.add(ok,1,2);
-      table.add(cancel,2,2);
+      table.add(cancel,1,3);
+      table.add(Text.getNonBrakingSpace(),1,3);
+      table.add(ok,1,3);
       if (!okToDeleteChildren) {
-        deleteChildren.setValue("false");
-        deleteChildren.setDisabled(true);
+	deleteChildren.setValue("false");
+	deleteChildren.setDisabled(true);
       }
       else {
-        deleteChildren.setValue("true");
-        deleteChildren.setDisabled(false);
+	deleteChildren.setValue("true");
+	deleteChildren.setDisabled(false);
       }
 
-      table.add(deleteChildren,1,3);
-      table.add(deleteChildrenText,1,3);
+      table.add(deleteChildren,1,2);
+      table.add(deleteChildrenText,1,2);
 
       form.add(table);
     }
@@ -107,4 +117,9 @@ public class IBDeletePageWindow extends IWAdminWindow {
       form.add(cancel);
     }
   }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
 }

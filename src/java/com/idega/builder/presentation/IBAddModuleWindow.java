@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.15 2002/03/09 01:31:54 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.16 2002/03/09 17:42:40 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 
+import com.idega.idegaweb.IWConstants;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import java.util.*;
 import com.idega.builder.business.ModuleComparator;
@@ -51,15 +52,17 @@ public class IBAddModuleWindow extends IBAdminWindow {
 
 
   public IBAddModuleWindow(){
-    super.setResizable(true);
+    setWidth(280);
+    setHeight(400);
+    setResizable(true);
   }
 
   /**
    *
    */
   public void main(IWContext iwc) throws Exception {
-    IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
-    super.addTitle(iwrb.getLocalizedString("ib_addmodule_window","Add a new Module"));
+    IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+    super.addTitle(iwrb.getLocalizedString("ib_addmodule_window","Add a new Module"),IWConstants.BUILDER_FONT_STYLE_TITLE);
     setStyles();
     button = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
 
@@ -151,7 +154,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
     String listColor = com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR;
 
     ICObject staticICO = (ICObject)ICObject.getStaticInstance(ICObject.class);
-    System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
     try {
       List elements = null;
       List blocks = null;
@@ -185,7 +187,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
       addSubComponentList(sElements,elements,theReturn,1,1,iwc);
       addSubComponentList(sBlocks,blocks,theReturn,1,2,iwc);
 
-    System.out.println(new com.idega.util.idegaTimestamp().getTimestampRightNow().toString());
       theReturn.setColumnVerticalAlignment(1,"top");
       theReturn.setColumnVerticalAlignment(2,"top");
     }
@@ -200,9 +201,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
    */
   private void addSubComponentList(String name, List list, Table table, int ypos, int xpos, IWContext iwc) {
     Table subComponentTable = new Table();
-    subComponentTable.setWidth("100%");
-    subComponentTable.setWidth(1,"11");
-    subComponentTable.setWidth(2,"100%");
     table.add(subComponentTable,xpos,ypos);
 
     Text header = new Text(name,true,false,false);

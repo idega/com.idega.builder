@@ -1,5 +1,6 @@
 package com.idega.builder.presentation;
 
+import com.idega.idegaweb.IWConstants;
 import com.idega.core.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import javax.servlet.http.Cookie;
@@ -28,6 +29,8 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
   private static final String COOKIE_NAME = "not_again";
 
   private static final String IB_DELETE_CONFIRM = "ib_del_confirm";
+  private static final String IB_DELETE_CLOSE = "ib_del_close";
+  private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
 
   public IBDeleteModuleWindow() {
     setWidth(240);
@@ -36,13 +39,16 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
   }
 
   public void main(IWContext iwc){
+      if ( iwc.isParameterSet(IB_DELETE_CLOSE) ) {
+	close();
+      }
 
       setTitle("Confirm delete");
       String ib_parent_id = iwc.getParameter(ib_parent_parameter);
       String ib_page_id = iwc.getParameter(ib_page_parameter);
       this.setParentToReload();
       String ic_object_id = iwc.getParameter(ic_object_id_parameter);
-      this.addTitle(ICObjectBusiness.getInstance().getNewObjectInstance(Integer.parseInt(ic_object_id)).getBuilderName(iwc),"font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;");
+      this.addTitle(ICObjectBusiness.getInstance().getNewObjectInstance(Integer.parseInt(ic_object_id)).getBuilderName(iwc),IWConstants.BUILDER_FONT_STYLE_TITLE);
 
       boolean doConfirm = !iwc.isParameterSet(IB_DELETE_CONFIRM);
       if ( iwc.isCookieSet(COOKIE_NAME) ) {
@@ -64,9 +70,8 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
   }
 
   private void setCookie(IWContext iwc) {
-    System.out.println("Setting cookie...");
     Cookie cookie = new Cookie(COOKIE_NAME,"true");
-      cookie.setMaxAge(31*24*60*60);
+      cookie.setMaxAge(42*24*60*60);
       cookie.setPath("/");
     iwc.addCookies(cookie);
   }
@@ -88,13 +93,13 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
     t.setAlignment(com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
 
     Text confirmText = new Text("Are you sure you want to delete this module and all its contents?");
-      confirmText.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;font-weight:bold;color:#000000;");
+      confirmText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
     t.add(confirmText,1,1);
-    Text notAgainText = new Text("Don't ask again for a month");
-      notAgainText.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:7pt;color:#000000;");
+    Text notAgainText = new Text("Don't ask again for 42 days");
+      notAgainText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 
-    SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("yes","Yes"),this.IB_DELETE_CONFIRM,"Yes");
-    CloseButton closebutton = new CloseButton(iwrb.getLocalizedImageButton("cancel","Cancel"));
+    SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("yes","Yes"),this.IB_DELETE_CONFIRM);
+    SubmitButton closebutton = new SubmitButton(iwrb.getLocalizedImageButton("cancel","Cancel"),this.IB_DELETE_CLOSE);
     CheckBox notAgain = new CheckBox("not_again","true");
 
     t.add(closebutton,1,3);
@@ -104,6 +109,10 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
     t.add(notAgainText,1,2);
 
     return f;
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
 }
