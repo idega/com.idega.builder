@@ -27,14 +27,16 @@ public class IBApplication extends IWApplication {
   public IBApplication() {
     super("idegaWeb Builder");
     add(IBBanner.class);
-    add(IBMenu.class);
+    //add(IBMenu.class);
     add(FrameSet1.class);
     this.setSpanPixels(1,24);
     setScrolling(1,false);
-    this.setSpanPixels(2,24);
+    this.setSpanAdaptive(2);
     setScrolling(2,false);
-    this.setSpanAdaptive(3);
-    setScrolling(3,false);
+    //this.setSpanPixels(2,24);
+    //setScrolling(2,false);
+    //this.setSpanAdaptive(3);
+    //setScrolling(3,false);
     super.setResizable(true);
     super.setWidth(900);
     super.setHeight(700);
@@ -44,6 +46,7 @@ public class IBApplication extends IWApplication {
       public FrameSet1(){
         add(IBLeftMenu.class);
         add(FrameSet2.class);
+        setScrolling(1,false);
         setSpanPixels(1,180);
         setSpanAdaptive(2);
         setHorizontal();
