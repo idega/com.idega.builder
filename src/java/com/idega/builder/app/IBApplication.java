@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.85 2005/02/16 09:33:51 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.86 2005/03/03 04:16:24 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,11 +8,13 @@
  *
  */
 package com.idega.builder.app;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import javax.faces.context.FacesContext;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.PageTreeNode;
@@ -83,8 +85,8 @@ public class IBApplication extends IWApplication {
 	}
 	protected static String getContentEditURL(IWContext iwc) {
 		//return iwc.getIWMainApplication().getBuilderServletURI() + "?view=builder";
-		//String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
-	    String urlString = iwc.getIWMainApplication().getBuilderPagePrefixURI();
+		String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
+	    //String urlString = iwc.getIWMainApplication().getBuilderPagePrefixURI();
 	    if(urlString.indexOf("?")==-1){
 			return urlString+ "?view=builder";
 		}
@@ -94,8 +96,8 @@ public class IBApplication extends IWApplication {
 	}
 	protected static String getContentPreviewURL(IWContext iwc) {
 		//return iwc.getIWMainApplication().getBuilderServletURI() + "?view=preview";
-		//String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
-	    String urlString = iwc.getIWMainApplication().getBuilderPagePrefixURI();
+		String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
+	    //String urlString = iwc.getIWMainApplication().getBuilderPagePrefixURI();
 	    if(urlString.indexOf("?")==-1){
 			return urlString+ "?view=preview";
 		}
@@ -235,8 +237,13 @@ public class IBApplication extends IWApplication {
 		/**
 		 */
 		public FrameSet2() {
+			IWContext iwc = IWContext.getInstance();
+			initFrames(iwc);
 		}
-		public void main(IWContext iwc) {
+		public void main(IWContext iwc){
+			//initFrames(iwc);
+		}
+		public void initFrames(IWContext iwc) {
 			add(IBToolBar.class);
 			//add(CONTENT_EDIT_URL);
 			add(getContentEditURL(iwc));
@@ -253,6 +260,25 @@ public class IBApplication extends IWApplication {
 			setSpanPixels(3, 25);
 			setScrolling(3, false);
 		}
+		
+		public void print(IWContext iwc) throws Exception{
+			//debug:
+			super.print(iwc);
+		}
+		
+		public void encodeBegin(FacesContext context) throws IOException{
+			//debug:
+			super.encodeBegin(context);
+		}
+		public void encodeChildren(FacesContext context) throws IOException{
+			//debug:
+			super.encodeChildren(context);
+		}
+		public void encodeEnd(FacesContext context) throws IOException{
+			//debug:
+			super.encodeEnd(context);
+		}
+		
 	}
 	/**
 	 *@author     palli
@@ -307,19 +333,7 @@ public class IBApplication extends IWApplication {
 		 */
 		public void main(IWContext iwc) {
 			setStyles();
-			boolean startupInProgress = startupInProgress(iwc);
-			if (!startupInProgress && iwc.getParameter("reload") != null) {
-				if (noCurtain) {
-					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-				}
-				else {
-					getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
-					getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
-					getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-				}
-			}
+
 			getParentPage().setAllMargins(2);
 			try {
 				//<<<<<<< IBApplication.java
@@ -336,6 +350,32 @@ public class IBApplication extends IWApplication {
 				if (page_id != null) {
 					BuilderLogic.getInstance().setCurrentIBPage(iwc,page_id);
 				}
+				
+
+				boolean startupInProgress = startupInProgress(iwc);
+				if (!startupInProgress && iwc.getParameter("reload") != null) {
+					if (noCurtain) {
+						
+						//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET1_FRAME + "'].location.reload();");
+						
+						getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+						//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+						//this is a workaround since the reaload doesn't work:
+						getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.href='"+getContentEditURL(iwc)+"'");
+						getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+					
+					
+					}
+					else {
+						//getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].location.reload();");
+						getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+						//getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+						getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.href='"+getContentEditURL(iwc)+"'");
+						getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+					}
+				}
+				
+				
 				//=======
 				//	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
 				//	add(viewer);
@@ -388,13 +428,22 @@ public class IBApplication extends IWApplication {
 			boolean startupInProgress = startupInProgress(iwc);
 			if (!startupInProgress && iwc.getParameter("reload") != null) {
 				if (noCurtain) {
-					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+					
+					//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET1_FRAME + "'].location.reload();");
+					
 					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+					//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+					//this is a workaround since the reaload doesn't work:
+					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.href='"+getContentEditURL(iwc)+"'");
 					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
+				
+				
 				}
 				else {
-					getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+					//getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].location.reload();");
 					getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
+					//getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
+					getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.href='"+getContentEditURL(iwc)+"'");
 					getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
 				}
 			}
@@ -469,7 +518,8 @@ public class IBApplication extends IWApplication {
 				Image closeImage = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("toolbar_remove.gif", "toolbar_remove_1.gif", "Hide Curtain", 16, 16);
 				closeImage.setAlignment("right");
 				Link closeLink = new Link(closeImage);
-				closeLink.setTarget(Link.TARGET_TOP_WINDOW);
+				closeLink.setTarget(Link.TARGET_PARENT_WINDOW);
+				closeLink.setURL(iwc.getIWMainApplication().getWindowOpenerURI(IBApplication.class));
 				closeLink.addParameter("toolbar", "remove");
 				closeLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER, IBApplication.class);
 				menuTable.add(closeLink, 1, 1);
@@ -623,7 +673,9 @@ public class IBApplication extends IWApplication {
 				}
 				leftMenuImage.setHorizontalSpacing(2);
 				Link leftMenuLink = new Link(leftMenuImage);
-				leftMenuLink.setTarget(Link.TARGET_TOP_WINDOW);
+				leftMenuLink.setTarget(Link.TARGET_PARENT_WINDOW);
+				leftMenuLink.setURL(iwc.getIWMainApplication().getWindowOpenerURI(IBApplication.class));
+				//leftMenuLink.setTarget(Link.TARGET_TOP_WINDOW);
 				if (noCurtain) {
 					leftMenuLink.addParameter("toolbar", "add");
 				}
@@ -858,9 +910,22 @@ public class IBApplication extends IWApplication {
 				}
 				//        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
 				Text pageName = new Text(name);
+				String currentPageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+				String pageUri = BuilderLogic.getInstance().getPageCacher().getCachedBuilderPage(currentPageKey).getPageUri();
+				Link uriLink = null;
+				if(pageUri!=null){
+					String pageUrl = BuilderLogic.getInstance().getIBPageURL(iwc,currentPageKey);
+					String linkText = " - ("+pageUri+")";
+					uriLink = new Link(linkText,pageUrl);
+					uriLink.setTarget(Link.TARGET_NEW_WINDOW);
+				}
+				
 				pageName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 				toolbarTable.add(tilerCell, 1, 1);
 				toolbarTable.add(pageName, 2, 1);
+				if(uriLink!=null){
+					toolbarTable.add(uriLink, 2, 1);
+				}
 				toolbarTable.add(toolTable, 3, 1);
 			}
 			else if (action.equals(ACTION_TEMPLATES)) {

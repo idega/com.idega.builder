@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.171 2005/03/01 23:25:03 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.172 2005/03/03 04:16:24 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1063,8 +1063,15 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public String getIBPageURL(IWApplicationContext iwc, int ib_page_id) {
+		String pageKey = Integer.toString(ib_page_id);
+		return getIBPageURL(iwc,pageKey);
+	}
+		
+		
+		
+	public String getIBPageURL(IWApplicationContext iwc, String pageKey) {
 		if(IWMainApplication.useNewURLScheme){
-			String pageKey = Integer.toString(ib_page_id);
+			//String pageKey = Integer.toString(ib_page_id);
 			String pageUri = getPageCacher().getCachedBuilderPage(pageKey).getPageUri();
 			if(pageUri!=null){
 				String returnUrl = iwc.getIWMainApplication().getBuilderPagePrefixURI()+pageUri;
@@ -1072,13 +1079,13 @@ public class BuilderLogic implements Singleton {
 				return StringHandler.removeMultipleSlashes(returnUrl);
 			}
 			else{
-				return iwc.getIWMainApplication().getBuilderPagePrefixURI()+ib_page_id+"/";
+				return iwc.getIWMainApplication().getBuilderPagePrefixURI()+pageKey+"/";
 			}
-			
 		}
 		else{
 			StringBuffer url = new StringBuffer();
 			url.append(iwc.getIWMainApplication().getBuilderPagePrefixURI());
+			int ib_page_id = Integer.parseInt(pageKey);
 			if (ib_page_id > 0) {
 				url.append("?");
 				url.append(BuilderConstants.IB_PAGE_PARAMETER);
