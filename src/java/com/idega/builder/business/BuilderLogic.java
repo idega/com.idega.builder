@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.110 2002/03/12 21:29:34 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.111 2002/03/13 10:29:52 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -475,6 +475,32 @@ public class BuilderLogic {
 
   public String getCurrentIBPage(IWContext iwc) {
     String theReturn = null;
+    String requestURI = iwc.getRequestURI();
+    if(requestURI.startsWith(IWMainApplication.BUILDER_SERVLET_URL)){
+      int indexOfPage = requestURI.indexOf("/page/");
+      if( indexOfPage != -1 ){
+        boolean pageISNumber= true;
+        String pageID=null;
+        try{
+          String subString = requestURI.substring(indexOfPage+6);
+          int lastSlash = subString.indexOf("/");
+          if(lastSlash==-1){
+            pageID=subString;
+          }
+          else{
+            pageID = subString.substring(0,lastSlash);
+          }
+          Integer.parseInt(pageID);
+        }
+        catch(NumberFormatException e){
+          pageISNumber=false;
+        }
+        if(pageISNumber){
+          return pageID;
+        }
+      }
+    }
+
     if(iwc.isParameterSet(IB_PAGE_PARAMETER))
       theReturn = iwc.getParameter(IB_PAGE_PARAMETER);
     else if(iwc.getSessionAttribute(SESSION_PAGE_KEY)!=null)
@@ -1207,7 +1233,7 @@ public class BuilderLogic {
   /**
    *
    */
-  public static String getIBPageURL(int ib_page_id){
+  public String getIBPageURL(IWContext iwc, int ib_page_id){
     return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
   }
 
