@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.83 2001/12/17 15:48:39 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.84 2001/12/19 14:48:10 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -66,6 +66,7 @@ public class BuilderLogic {
   public static final String IB_LABEL_PARAMETER = "ib_label";
   public static final String IB_OBJECT_INSTANCE_COORDINATE = "ib_ob_inst";
   public static final String IB_OBJECT_INSTANCE_EVENT_SOURCE = "ib_ob_inst_ev_s";
+  public static final String IB_LIBRARY_NAME = "ib_library_name";
 
   public static final String IB_CONTROL_PARAMETER = "ib_control_par";
   public static final String ACTION_DELETE ="ACTION_DELETE";
@@ -122,13 +123,12 @@ public class BuilderLogic {
     return PageCacher.getXML(Integer.toString(id));
   }
 
-  public Page getPage(int id,boolean builderview,IWContext iwc) {
+  /**
+   *
+   */
+  public Page getPage(int id, boolean builderview, IWContext iwc) {
     try {
-      //boolean builderview = false;
       boolean permissionview = false;
-      //if (iwc.isParameterSet("view")) {
-      //  builderview = true;
-      //} else
       if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
         permissionview = true;
       }
@@ -136,21 +136,22 @@ public class BuilderLogic {
       Page page = PageCacher.getPage(Integer.toString(id),iwc);
       if (builderview) {
         return(BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,iwc));
-      }else if(permissionview){
+      }
+      else if(permissionview) {
         int groupId = -1906;
         String bla = iwc.getParameter("ic_pm");
-        if(bla != null){
+        if (bla != null) {
           try {
             groupId = Integer.parseInt(bla);
           }
           catch (NumberFormatException ex) {
 
           }
-
         }
         page = PageCacher.getPage(Integer.toString(id));
         return(BuilderLogic.getInstance().getPermissionTransformed(groupId, Integer.toString(id),page,iwc));
-      }else {
+      }
+      else {
         return(page);
       }
     }
@@ -165,10 +166,8 @@ public class BuilderLogic {
   /**
    *
    */
-  public Page getBuilderTransformed(String pageKey,Page page,IWContext iwc) {
+  public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc) {
     List list = page.getAllContainingObjects();
-    //Layer layer = new Layer();
-      //layer.setZIndex(0);
     if (list != null) {
       ListIterator iter = list.listIterator();
       PresentationObjectContainer parent = page;
@@ -811,45 +810,45 @@ public class BuilderLogic {
   }
 
    // add by Aron 20.sept 2001 01:49
-   public boolean deleteModule(String pageKey,String parentObjectInstanceID,int ICObjectInstanceID){
+  public boolean deleteModule(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
     IBXMLPage xml = getIBXMLPage(pageKey);
     boolean blockDeleted = false;
-    /** @todo  */
-      ////////
-      try {
-        PresentationObject Block = ICObjectBusiness.getNewObjectInstance(ICObjectInstanceID);
-        if(Block != null){
-          if(Block instanceof IWBlock){
-            blockDeleted = ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
-          }
+    try {
+      PresentationObject Block = ICObjectBusiness.getNewObjectInstance(ICObjectInstanceID);
+      if (Block != null) {
+        if (Block instanceof IWBlock) {
+          blockDeleted = ((IWBlock)Block).deleteBlock(ICObjectInstanceID);
         }
-        else
-          blockDeleted = true;
       }
-      catch (Exception ex) {
-        blockDeleted = false;
-        ex.printStackTrace();
+      else {
+        blockDeleted = true;
       }
-
-    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID) ){
-      xml.update();
-      return true;
     }
-    else {
-      return false;
+    catch(Exception ex) {
+      blockDeleted = false;
+      ex.printStackTrace();
+    }
+
+    if (XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)) {
+      xml.update();
+      return(true);
+    }
+    else{
+      return(false);
     }
   }
 
   /**
    *
    */
-  public boolean copyModule(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID, int userId, String name) {
-    IBXMLPage xml = getIBXMLPage(pageKey);
+  public boolean copyModule(String parentObjectInstanceID, int ICObjectInstanceID, String name) {
+//    IBXMLPage xml = getIBXMLPage(pageKey);
+//    IBXMLFragment fragment = new IBXMLFragment(true);
 
-//    xml.
-
-/*    if (XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)) {
-      xml.update();
+    System.out.println("parentObjectInstanceID = " + parentObjectInstanceID);
+    System.out.println("ICObjectInstanceID = " + ICObjectInstanceID);
+    System.out.println("name = " + name);
+/*    if (XMLWriter.copyModule(xml,parentObjectInstanceID,ICObjectInstanceID,String name)) {
       return(true);
     }
     else {
@@ -1219,6 +1218,20 @@ public class BuilderLogic {
     l.addParameter(IB_OBJECT_INSTANCE_EVENT_SOURCE,ibPageId+"_"+instanceId);
   }
 
+  /**
+   *
+   */
+  public void changeLinkPageId(IWMainApplication iwma, Link link, String newPageId) {
+    int moduleId = link.getICObjectInstanceID();
+    int pageId = link.getParentObjectInstanceID();
 
+    /**
+     * @todo Laga þetta!!!
+     */
+    String element = ":method:1:implied:void:setPage:com.idega.builder.data.IBPage:";
 
+    IBXMLPage page = getIBXMLPage(pageId);
+    XMLWriter.setProperty(iwma,page,moduleId,element,newPageId);
+    page.update();
+  }
 }
