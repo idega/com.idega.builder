@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.39 2001/11/06 18:18:03 palli Exp $
+ * $Id: IBApplication.java,v 1.40 2001/11/12 15:58:28 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -242,7 +242,9 @@ public class IBApplication extends IWApplication {
         }
       }
       getParentPage().setAllMargins(2);
-      int i_page_id = 1;
+      //int i_page_id = 1;
+      int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
+
       try {
 //        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
         TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc),iwc);
@@ -288,7 +290,9 @@ public class IBApplication extends IWApplication {
       }
       getParentPage().setAllMargins(2);
 
-      int i_template_id = 2;
+      //int i_template_id = 2;
+      int i_template_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartTemplateID();
+
       try {
 //        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
         TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc),iwc);

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.76 2001/11/06 18:18:03 palli Exp $
+ * $Id: BuilderLogic.java,v 1.77 2001/11/12 15:58:21 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.business;
 
 import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBDomain;
 import com.idega.builder.presentation.IBAdminWindow;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBDeleteModuleWindow;
@@ -443,6 +444,20 @@ public class BuilderLogic {
       return(getIBXMLPage(key));
     }
     return null;
+  }
+
+  public IBDomain getCurrentDomain(IWContext iwc){
+      /**
+       * @todo: Change from hardcoded DomainID:
+       */
+       try{
+         int domainID=1;
+         return IBDomain.getDomain(domainID);
+       }
+       catch(Exception e){
+        e.printStackTrace();
+        throw new RuntimeException(e.getMessage());
+       }
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.11 2001/10/17 08:26:04 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.12 2001/11/12 15:58:37 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ public class IBMainServlet extends IWJSPPresentationServlet {
     /**
      * @todo change from hardcoded domain_id
      */
-    int domain_id=1;
+    //int domain_id=1;
     int i_page_id=1;
     String page_id = null;
     boolean builderview = false;
@@ -51,13 +51,14 @@ public class IBMainServlet extends IWJSPPresentationServlet {
 
     //if(page_id == null){
       if(page_id==null){
-        try{
-          IBDomain domain = IBDomain.getDomain(domain_id);
+        //try{
+          //IBDomain domain = IBDomain.getDomain(domain_id);
+          IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
           i_page_id = domain.getStartPageID();
-        }
-        catch(java.sql.SQLException e){
-          e.printStackTrace();
-        }
+        //}
+        //catch(java.sql.SQLException e){
+        //  e.printStackTrace();
+        //}
       }
       else{
         i_page_id = Integer.parseInt(page_id);
