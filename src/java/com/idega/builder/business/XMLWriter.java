@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.32 2003/04/03 09:10:10 laddi Exp $
+ * $Id: XMLWriter.java,v 1.33 2003/04/03 19:54:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -84,7 +84,6 @@ public class XMLWriter {
 	 */
 	private static XMLElement findXMLElementInside(IBXMLAble xml, String id, String name, XMLElement parentElement) {
 		List list = parentElement.getChildren();
-		boolean nameIsNull;
 		if (id != null) {
 			try {
 				int theID = Integer.parseInt(id);
@@ -96,13 +95,6 @@ public class XMLWriter {
 			catch (NumberFormatException e) {
 
 			}
-		}
-
-		if (name == null) {
-			nameIsNull = true;
-		}
-		else {
-			nameIsNull = true;
 		}
 
 		if (list != null) {

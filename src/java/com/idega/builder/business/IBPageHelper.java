@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.21 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.22 2003/04/03 19:54:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -346,7 +346,6 @@ public class IBPageHelper {
 	public boolean checkDeleteChildrenOfPage(String pageId) {
 		try {
 			IBPage page = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
-			boolean okToDelete = true;
 			if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE))
 				return true;
 			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DRAFT))

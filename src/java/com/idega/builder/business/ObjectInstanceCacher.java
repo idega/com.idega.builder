@@ -120,7 +120,7 @@ public class ObjectInstanceCacher{
       getObjectInstancesCachedForPage(page.getPageID()).put(newInstanceKey,newObjectInstance);
     }
 
-    Map tmp = getObjectInstancesCachedForPage(page.getPageID());
+    //Map tmp = getObjectInstancesCachedForPage(page.getPageID());
 /*
     System.out.println("pageID = "+page.getPageID());
 

@@ -66,8 +66,6 @@ public class IBEntityBMPBean extends com.idega.data.GenericEntity implements com
 
         public void insertStartData()throws Exception{
 
-          IBEntity obj;
-
           Class textReaderClass = com.idega.block.text.presentation.TextReader.class;
 
           Class newsModuleClass = com.idega.block.news.presentation.NewsReader.class;

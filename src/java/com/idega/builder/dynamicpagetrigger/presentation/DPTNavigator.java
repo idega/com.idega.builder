@@ -106,7 +106,7 @@ public abstract class DPTNavigator extends Block {
           int toAddToIndex = (extraRows<iterStartIndex)?iterStartIndex-1:extraRows;
           while (lIter.hasNext()) {
             int index = (lIter.nextIndex()+1)+toAddToIndex;
-            Link lItem = (Link)lIter.next();
+            lIter.next();
             Table tbl = (Table)rowTemplateTable.clone();
             rowTemplateTable.add(tbl,linkColumn,1);
             table.add(rowTemplateTable,1,index);

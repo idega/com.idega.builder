@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.21 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBMainServlet.java,v 1.22 2003/04/03 19:54:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,7 +26,6 @@ public class IBMainServlet extends IWJSPPresentationServlet {
     BuilderLogic blogic = BuilderLogic.getInstance();
     IWContext iwc = getIWContext();
 
-    String page_id = null;
     boolean builderview = false;
     if (iwc.isParameterSet("view")) {
       if(blogic.isBuilderApplicationRunning(iwc)){

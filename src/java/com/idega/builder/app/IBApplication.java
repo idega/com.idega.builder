@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.72 2003/03/03 17:01:09 eiki Exp $
+ *  $Id: IBApplication.java,v 1.73 2003/04/03 19:54:57 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -286,7 +286,6 @@ public class IBApplication extends IWApplication {
 				}
 			}
 			getParentPage().setAllMargins(2);
-			int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
 			try {
 				//<<<<<<< IBApplication.java
 				TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
@@ -483,7 +482,6 @@ public class IBApplication extends IWApplication {
 		 *@param  iwc  Description of the Parameter
 		 */
 		public void main(IWContext iwc) {
-			boolean startupInProgress = startupInProgress(iwc);
 			/*      if (!startupInProgress) {
 				//super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
 				//the tree reloading in done in the appropriate windows such as in the create new page window
@@ -512,7 +510,7 @@ public class IBApplication extends IWApplication {
 				toolbarTable.add(link_new, xpos, 1);
 				Image tool_open = iwb.getImage("shared/toolbar/open.gif", "Open Page", 20, 20);
 				tool_open.setHorizontalSpacing(2);
-				Link link_open = new Link(tool_open);
+				//Link link_open = new Link(tool_open);
 				toolbarTable.add(tool_open, xpos, 1);
 				Image tool_save = iwb.getImage("shared/toolbar/save.gif", "Save Page", 20, 20);
 				tool_save.setHorizontalSpacing(2);
@@ -696,7 +694,6 @@ public class IBApplication extends IWApplication {
 		 *@param  iwc  Description of the Parameter
 		 */
 		public void main(IWContext iwc) {
-			IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
 			IWBundle _iwrb = getBundle(iwc);
 			String controlParameter = "builder_controlparameter";
 			setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);

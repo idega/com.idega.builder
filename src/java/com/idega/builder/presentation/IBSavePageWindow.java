@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSavePageWindow.java,v 1.4 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBSavePageWindow.java,v 1.5 2003/04/03 19:54:57 laddi Exp $
 
  *
 
@@ -225,12 +225,6 @@ public class IBSavePageWindow extends IWAdminWindow {
       String name = iwc.getParameter(PAGE_NAME_PARAMETER);
 
       type = iwc.getParameter(PAGE_TYPE);
-
-      String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
-
-      String templateName = iwc.getParameter(TEMPLATE_CHOOSER_NAME+"_displaystring");
-
-
 
       if (name != null)
 

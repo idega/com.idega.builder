@@ -24,7 +24,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 /**
@@ -74,11 +73,10 @@ public class IBMovePageWindow extends IBPageWindow
 		boolean quit = iwc.isParameterSet("cancel");
 		if (submit)
 		{
-			boolean updated = false;
 			//if ((deleteAll != null) && (deleteAll.equals("true")))
 			//	deleted = IBPageHelper.getInstance().deletePage(pageId, true, PageTreeNode.getTree(iwc), iwc.getUserId());
 			//else
-			updated = IBPageHelper.getInstance().movePage(iPageId, iNewParentPageId, PageTreeNode.getTree(iwc), userId);
+			IBPageHelper.getInstance().movePage(iPageId, iNewParentPageId, PageTreeNode.getTree(iwc), userId);
 			iwc.setSessionAttribute("ib_page_id", Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
 			/**@todo is this in the right place? -eiki**/
 			//      setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
@@ -97,7 +95,6 @@ public class IBMovePageWindow extends IBPageWindow
 			{
 				SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("ok", "OK"), "ok");
 				SubmitButton cancel = new SubmitButton(iwrb.getLocalizedImageButton("cancel", "Cancel"), "cancel");
-				CheckBox deleteChildren = new CheckBox("deletechildren", "true");
 				Text moveText = new Text(iwrb.getLocalizedString("move_page_text", "Select page to move this page to under") + ":");
 				moveText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 				Table table = new Table(1, 3);

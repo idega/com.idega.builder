@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.39 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBCreatePageWindow.java,v 1.40 2003/04/03 19:54:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -162,8 +162,6 @@ public class IBCreatePageWindow extends IBPageWindow {
 		else {
 			String name = iwc.getParameter(PAGE_NAME_PARAMETER);
 			type = iwc.getParameter(PAGE_TYPE);
-			String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
-			String templateName = iwc.getParameter(TEMPLATE_CHOOSER_NAME + "_displaystring");
 
 			if (topLevelString != null)
 				topLevel.setChecked(true);

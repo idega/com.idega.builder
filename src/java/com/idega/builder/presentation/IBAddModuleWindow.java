@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.24 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.25 2003/04/03 19:54:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -78,7 +78,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
    */
   public void addNewObject(IWContext iwc) throws Exception {
     Window window = this;
-    String insert = "object_has_inserted";
     Form form = getForm();
     add(form);
     Table table = new Table(1,2);
@@ -152,7 +151,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
     theReturn.setWidth(2,"50%");
     theReturn.setColor(1,1,"#ECECEC");
     theReturn.setColor(2,1,"#ECECEC");
-    String listColor = com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR;
 
     ICObject staticICO = (ICObject)com.idega.core.data.ICObjectBMPBean.getStaticInstance(ICObject.class);
     try {

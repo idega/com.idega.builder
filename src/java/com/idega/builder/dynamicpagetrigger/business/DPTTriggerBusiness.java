@@ -179,9 +179,8 @@ public class DPTTriggerBusiness {
       return (-1);
     }
 
-    IBPage page = null;
     try {
-      page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(id);
+      ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(id);
     }
     catch(SQLException e) {
       return (-1);

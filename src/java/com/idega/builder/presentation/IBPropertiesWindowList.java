@@ -120,7 +120,6 @@ public class IBPropertiesWindowList extends Page{
     int iICObjectInstanceID = Integer.parseInt(ICObjectInstanceID);
     IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(iICObjectInstanceID,iwc.getApplication());
     Iterator iter = methodList.iterator();
-    int counter=1;
     while (iter.hasNext()) {
       IWProperty methodProp = (IWProperty)iter.next();
       String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);

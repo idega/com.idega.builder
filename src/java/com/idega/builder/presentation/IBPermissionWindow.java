@@ -154,7 +154,6 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       Map hash = (Map)iwc.getSessionAttribute(this.SessionAddressPermissionMap);
       List directGroups = null;
-      List oldvalues = null;
       if(hash != null && hash.get(permissionType)!=null){
 	directGroups = UserGroupBusiness.getGroups((String[])hash.get(permissionType));
 	collectOld = false;

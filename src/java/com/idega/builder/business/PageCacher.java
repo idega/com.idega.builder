@@ -53,7 +53,6 @@ public class PageCacher
 	}
 	public static Page getPage(String key, IWContext iwc)
 	{
-		Page theReturn = null;
 		IBXMLPage xml = null;
 		xml = getXML(key);
 		if (xml != null)
@@ -65,7 +64,6 @@ public class PageCacher
 	}
 	public static Page getPage(String key)
 	{
-		Page theReturn = null;
 		IBXMLPage xml = null;
 		xml = getXML(key);
 		if (xml != null)
