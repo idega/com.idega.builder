@@ -50,7 +50,7 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 		IBExportImportData metadata = new IBExportImportData();
 		// add always both trees, because it might be that later some templates are added (see method exportPages)
 		metadata.addPageTree(iwc);
-		metadata.addTemplateTree(null);
+		metadata.addTemplateTree(iwc);
 		if (pageIdsExists) {
 			ids = new ArrayList(pageIds);
 		}
