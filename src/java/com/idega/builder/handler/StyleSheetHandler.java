@@ -54,7 +54,10 @@ public class StyleSheetHandler implements PropertyHandler {
     while (iter.hasNext()) {
     	chooser.addMenuElement((String)iter.next());
     }
-    chooser.setSelectedElement(value);
+    if (iwc.isParameterSet(name))
+    	chooser.setSelectedElement(iwc.getParameter(name));
+    else
+    	chooser.setSelectedElement(value);
     IBPropertyHandler.getInstance().setDropdownToChangeValue(chooser);
     return(chooser);
   }
