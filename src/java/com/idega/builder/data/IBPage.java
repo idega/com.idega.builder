@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.4 2001/05/18 13:31:47 eiki Exp $
+ * $Id: IBPage.java,v 1.5 2001/05/18 15:18:15 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,12 +50,17 @@ public class IBPage extends GenericEntity {
     setColumn("name",name);
   }
 
-  public BlobWrapper getPageValue() {
-      return (BlobWrapper) getColumnValue("page_value");
-  }
-
   public void setPageValue(InputStream stream) {
     setColumn("page_value",stream);
+  }
+
+  public InputStream getPageValue() {
+    try {
+      return getInputStreamColumnValue("page_value");
+    }
+    catch(java.lang.Exception e) {
+      return null;
+    }
   }
 
 
