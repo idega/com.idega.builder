@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.idega.exception.PageDoesNotExist;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.HtmlPage;
 import com.idega.presentation.Page;
 
@@ -40,7 +41,9 @@ public class HtmlBasedPage extends IBXMLPage {
 		//hPage.setResource(stream);
 
 		try {
-			InputStreamReader reader = new InputStreamReader(stream,"UTF-8");
+			String encoding = IWMainApplication.getDefaultIWApplicationContext().getApplicationSettings().getCharacterEncoding();
+			
+			InputStreamReader reader = new InputStreamReader(stream,encoding);
 			int bufferlength=1000;
 			char[] buf = new char[bufferlength];
 			StringBuffer sbuffer = new StringBuffer();			
