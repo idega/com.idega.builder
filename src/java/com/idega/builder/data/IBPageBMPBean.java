@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.10 2003/11/28 15:49:13 sigtryggur Exp $
+ * $Id: IBPageBMPBean.java,v 1.11 2004/03/24 18:51:00 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.builder.data;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -22,13 +23,15 @@ import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.io.ObjectWriter;
+import com.idega.io.Storable;
 import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.3
  */
-public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.core.builder.data.ICPage {
+public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.core.builder.data.ICPage, Storable {
 	private final static String ENTITY_NAME = "IB_PAGE";
 	private final static String FILE_COLUMN = "FILE_ID";
 	private final static String NAME_COLUMN = "NAME";
@@ -576,4 +579,9 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public int getTreeOrder() {
 		return getIntColumnValue(TREE_ORDER);
 	}
+	
+	public Object write(ObjectWriter writer) throws RemoteException {
+		return writer.write(this.getFile());
+	}
+		
 }
