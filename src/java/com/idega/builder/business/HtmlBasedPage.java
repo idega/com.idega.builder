@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.idega.exception.PageDoesNotExist;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.HtmlPage;
 import com.idega.presentation.Page;
 

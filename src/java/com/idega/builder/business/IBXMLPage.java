@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.51 2004/07/07 19:19:10 eiki Exp $
+ * $Id: IBXMLPage.java,v 1.52 2004/07/12 10:48:50 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,7 +27,6 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOLookupException;
 import com.idega.exception.PageDoesNotExist;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.Page;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
