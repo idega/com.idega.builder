@@ -4,6 +4,7 @@ import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.text.Text;
 
 /**
@@ -23,13 +24,15 @@ public class FontStyleHandler implements PropertyHandler {
     return null;
   }
   public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
-    DropdownMenu menu = new DropdownMenu(name);
+    /*DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
     menu.addMenuElement(Text.FONT_FACE_STYLE_BOLD,"Bold");
     menu.addMenuElement(Text.FONT_FACE_STYLE_ITALIC,"Italic");
     //menu.addMenuElement(Text.FONT_FACE_STYLE_NORMAL,"Normal");
-    menu.setSelectedElement(value);
-    return menu;
+    menu.setSelectedElement(value);*/
+    TextInput text = new TextInput(name);
+    text.setContent(value);
+    return text;
   }
 
 }
