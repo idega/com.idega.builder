@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.1 2001/11/01 17:21:07 palli Exp $
+ * $Id: IBCopyModuleWindow.java,v 1.2 2001/12/17 16:05:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 
+import com.idega.builder.data.IBObjectLibrary;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
@@ -23,62 +24,55 @@ import com.idega.presentation.ui.CheckBox;
  * @version 1.0
  */
 public class IBCopyModuleWindow extends IBAdminWindow {
-  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
-  private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
-  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
+  private static final String IC_OBJECT_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
+  private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
+  private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+  private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
+  private static final String ACTION_COPY = BuilderLogic.ACTION_COPY;
+  private static final String ACTION_LIBRARY = BuilderLogic.ACTION_LIBRARY;
+  private static final String IB_LIBRARY_NAME = BuilderLogic.IB_LIBRARY_NAME;
+//  private static final String CLIPBOARD = IBObjectLibrary.CLIPBOARD;
+//  private static final String LIBRARY = IBObjectLibrary.LIBRARY;
 
-  private static final String IB_CONFIRM = "ib_del_confirm";
-
+  /**
+   *
+   */
   public IBCopyModuleWindow() {
     setWidth(300);
     setHeight(200);
   }
 
+  /**
+   *
+   */
   public void main(IWContext iwc) {
     setTitle("Copy module");
 
-    String ib_parent_id = iwc.getParameter(ib_parent_parameter);
-    String ib_page_id = iwc.getParameter(ib_page_parameter);
-    setParentToReload();
-    String ic_object_id = iwc.getParameter(ic_object_id_parameter);
+    String control = iwc.getParameter(IB_CONTROL_PARAMETER);
+    String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
+    String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
+    String ic_object_id = iwc.getParameter(IC_OBJECT_ID_PARAMETER);
+//    String libraryName = iwc.getParameter();
 
-    boolean doConfirm = !iwc.isParameterSet(IB_CONFIRM);
-    if (doConfirm) {
-      add(getConfirmBox(iwc));
-    }
-    else {
-      copyObject(ib_page_id,ib_parent_id,ic_object_id);
+    if (control == null)
       close();
+
+    setParentToReload();
+
+    if (control.equals(ACTION_COPY)) {
+      copyObject(ib_parent_id,ic_object_id,iwc.getUserId(),"C",null);
     }
+    else if (control.equals(ACTION_LIBRARY)) {
+      String name = "Test";
+      copyObject(ib_parent_id,ic_object_id,iwc.getUserId(),"L",name);
+    }
+    close();
   }
 
-  public void copyObject(String pageKey,String parentID,String objectID) {
-//     BuilderLogic.getInstance().deleteModule(pageKey,parentID,Integer.parseInt(objectID));
-  }
-
-  public PresentationObject getConfirmBox(IWContext iwc) {
-    Table t = new Table(1,2);
-    Form f = new Form();
-
-    f.maintainParameter(ic_object_id_parameter);
-    f.maintainParameter(ib_parent_parameter);
-    f.maintainParameter(ib_page_parameter);
-
-    f.add(t);
-    t.setWidth("100%");
-    t.setHeight("150");
-    t.setAlignment(com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
-
-    Text confirmText = new Text("Copy this module to clipboard or library");
-    t.add(confirmText,1,1);
-
-    SubmitButton button = new SubmitButton(IB_CONFIRM,"Yes");
-
-    Table innerTable = new Table(2,1);
-    innerTable.setAlignment(com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
-    innerTable.add(button,1,1);
-    t.add(innerTable,1,2);
-
-    return(f);
+  /**
+   *
+   */
+  public void copyObject(String parentID,String objectID, int userId, String type, String name) {
+//    BuilderLogic.getInstance().copyModule(parentID,Integer.parseInt(objectID),name);
   }
 }

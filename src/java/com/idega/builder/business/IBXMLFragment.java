@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLFragment.java,v 1.3 2001/12/03 16:18:31 palli Exp $
+ * $Id: IBXMLFragment.java,v 1.4 2001/12/17 16:05:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -55,12 +55,12 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
     try {
       lib = new IBObjectLibrary(Integer.parseInt(key));
       setXMLLibraryDescriptionFile(lib.getPageValue());
-      if (lib.getType().equals(lib.LIBRARY))
+/*      if (lib.getType().equals(lib.LIBRARY))
         setType(FRAGMENT_TYPE_LIBRARY);
       else if (lib.getType().equals(lib.CLIPBOARD))
         setType(FRAGMENT_TYPE_CLIPBOARD);
       else
-        setType(FRAGMENT_TYPE_LIBRARY);
+        setType(FRAGMENT_TYPE_LIBRARY);*/
     }
     catch(LibraryDoesNotExist ldne) {
     }
