@@ -29,14 +29,14 @@ public class IBFileChooserWindow extends AbstractChooserWindow {
  * with better implementation ibdomain...
  */
   public void displaySelection(ModuleInfo modinfo){
-    /*
+
     try{
      // TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),modinfo);
      //IBDomain domain = IBDomain.getDomain(1);
     //int i_page_id = domain.getStartPageID();
-    int i_page_id = 1;
+    int i_file_id = 1;
 
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBFile(i_page_id),modinfo);
+      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.core.data.ICFile(i_file_id),modinfo);
 
       add(viewer);
       viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,modinfo);
