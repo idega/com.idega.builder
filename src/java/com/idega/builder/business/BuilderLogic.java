@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.157 2004/07/06 10:33:10 gummi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.158 2004/07/06 10:43:45 gimmi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -930,10 +930,12 @@ public class BuilderLogic {
 		else{
 			StringBuffer url = new StringBuffer();
 			url.append(iwc.getIWMainApplication().getBuilderPagePrefixURI());
-			url.append("?");
-			url.append(BuilderConstants.IB_PAGE_PARAMETER);
-			url.append("=");
-			url.append(ib_page_id);
+			if (ib_page_id > 0) {
+				url.append("?");
+				url.append(BuilderConstants.IB_PAGE_PARAMETER);
+				url.append("=");
+				url.append(ib_page_id);
+			}
 			return url.toString();
 		}
 	}
