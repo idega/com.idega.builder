@@ -1,6 +1,6 @@
 package com.idega.builder.data;
 
-import com.idega.io.Storable;
+import com.idega.io.export.Storable;
 
 /**
  * <p>Title: idegaWeb</p>
