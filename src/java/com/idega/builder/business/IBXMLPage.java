@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.40 2002/12/10 17:52:30 palli Exp $
+ * $Id: IBXMLPage.java,v 1.41 2002/12/10 18:30:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -113,12 +113,14 @@ public class IBXMLPage implements IBXMLAble {
 			e.printStackTrace();
 		}
 		setPopulatedPage(XMLReader.getPopulatedPage(this));
-		if (ibpage.getType() == IBPageBMPBean.PAGE) {
+/*		String tmp = ibpage.getType();
+		String tmp2 = IBPageBMPBean.PAGE;
+		if (ibpage.getType().equals(IBPageBMPBean.PAGE)) {
 			Page p = getPopulatedPage();
 			if (p.getTitle() == null || p.getTitle().trim().equals("")) {
 				p.setTitle(ibpage.getName());
 			}
-		}
+		}*/
 	}
 
 	public String getKey() {

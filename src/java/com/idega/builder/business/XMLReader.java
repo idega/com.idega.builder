@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.40 2002/12/10 16:27:05 palli Exp $
+ * $Id: XMLReader.java,v 1.41 2002/12/10 18:30:53 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -129,6 +129,8 @@ public class XMLReader {
 				//      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
 			}
 		}
+		
+		parentContainer.setTitle(ibxml.getName());
 
 		if (pageXML.hasChildren()) {
 			List children = pageXML.getChildren();
@@ -137,8 +139,6 @@ public class XMLReader {
 			while (it.hasNext()) {
 				XMLElement child = (XMLElement) it.next();
 				
-				System.out.println("child.getname() = " + child.getName());
-
 				if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
 					setProperties(child, parentContainer);
 				}
@@ -515,8 +515,6 @@ public class XMLReader {
 	 *
 	 */
 	static void changeInstanceId(XMLElement change, Page page) {
-		System.out.println("in XMLReader.changeInstanceId(...)");
-		System.out.println("Page.id = " + page.getID());
 		int from = -1, to = -1;
 		try {
 			from = change.getAttribute(XMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
@@ -527,20 +525,15 @@ public class XMLReader {
 			return;
 		}
 		
-		System.out.println("from = " + from);
-		System.out.println("to = " + to);
-
 		if (from != -1 && to != -1) {
 			List children = page.getAllContainedObjectsRecursive();
 			if (children != null) {
 				Iterator it = children.iterator();
 				while (it.hasNext()) {
 					PresentationObject obj = (PresentationObject) it.next();
-					System.out.println("child.id = " + obj.getICObjectInstanceID());
 					if (obj.getICObjectInstanceID() == from) {
 						obj.setICObjectInstanceID(to);
 						ObjectInstanceCacher.changeObjectInstanceID(page, Integer.toString(from), Integer.toString(to), obj);
-						System.out.println("cached id changed");
 						return;
 					}
 				}
