@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.56 2004/12/06 15:33:53 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.57 2004/12/12 22:57:19 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,19 +39,26 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	private static void setAllBuilderControls(PresentationObjectContainer parent, boolean setTo) {
-		List list = parent.getChildren();
-		if (list != null) {
-			Iterator it = list.iterator();
+	private static void setAllBuilderControls(PresentationObject parent, boolean setTo) {
+		//List list = parent.getChildren();
+		//if (list != null) {
+			//Iterator it = list.iterator();
+			Iterator it = parent.getFacetsAndChildren();
 			while (it.hasNext()) {
-				PresentationObject obj = (PresentationObject) it.next();
-				obj.setUseBuilderObjectControl(setTo);
-				obj.setBelongsToParent(true);
-				if (obj instanceof PresentationObjectContainer) {
-					setAllBuilderControls((PresentationObjectContainer) obj, setTo);
+				try{
+					PresentationObject obj = (PresentationObject) it.next();
+					obj.setUseBuilderObjectControl(setTo);
+					obj.setBelongsToParent(true);
+					//if (obj instanceof PresentationObjectContainer) {
+					//	setAllBuilderControls((PresentationObjectContainer) obj, setTo);
+					//}
+					setAllBuilderControls(obj, setTo);
+				}
+				catch(ClassCastException cce){
+					cce.printStackTrace();
 				}
 			}
-		}
+		//}
 	}
 
 	/**
