@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.dynamicpagetrigger.util.KeyAndValue;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
 import com.idega.util.datastructures.HashMatrix;
 
 
@@ -21,7 +22,7 @@ import com.idega.util.datastructures.HashMatrix;
  * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
-public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession {
+public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession, ICDynamicPageTriggerCopySession {
 	
 	private boolean runningSession = false;
 	
@@ -154,5 +155,9 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	 */
 	public void setRootPagePrimaryKey(Object rootPagePrimaryKey) {
 		this.rootPagePrimaryKey = rootPagePrimaryKey;
+	}
+	
+	public boolean hasRootPage() {
+		return rootPagePrimaryKey != null;
 	}
 }
