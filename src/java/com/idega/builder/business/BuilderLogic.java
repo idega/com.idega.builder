@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.89 2002/01/07 16:09:46 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.90 2002/01/07 16:14:59 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1067,7 +1067,7 @@ public class BuilderLogic {
   public void changeName(String name, IWContext iwc) {
     IBXMLPage xml = getCurrentIBXMLPage(iwc);
     if (xml != null) {
-      if (!xml.getName(ICLocaleBusiness.getICLocale(iwc.getCurrentLocale()).getID()).equals(name)) {
+      if (!xml.getName().equals(name)) {
         xml.setName(name);
         java.util.Map tree = PageTreeNode.getTree(iwc);
 
