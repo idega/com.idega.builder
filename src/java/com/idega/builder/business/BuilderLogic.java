@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.72 2001/11/01 22:31:38 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.73 2001/11/02 02:15:43 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -657,7 +657,7 @@ public class BuilderLogic {
           table.setAttribute("onClick",hideLayers);
         rTable.add(table);
 
-        Image separator = getBundle(iwc).getImage("menu_separator.gif");
+        Image separator = getBundle(iwc).getImage("shared/menu/menu_separator.gif");
           separator.setWidth("100%");
           separator.setHeight(2);
 
