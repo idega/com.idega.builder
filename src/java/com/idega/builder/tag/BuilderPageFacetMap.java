@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderPageFacetMap.java,v 1.4 2004/12/28 00:20:58 tryggvil Exp $
+ * $Id: BuilderPageFacetMap.java,v 1.5 2005/01/04 15:44:22 palli Exp $
  * Created on 16.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,16 +15,15 @@ import java.util.Map;
 import java.util.Set;
 import javax.faces.component.UIComponent;
 import com.idega.presentation.Page;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectComponentFacetMap;
 import com.idega.presentation.PresentationObjectContainer;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/28 00:20:58 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/01/04 15:44:22 $ by $Author: palli $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 

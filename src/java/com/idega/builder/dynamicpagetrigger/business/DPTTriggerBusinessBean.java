@@ -6,13 +6,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageFinder;
 import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.business.CachedBuilderPage;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
