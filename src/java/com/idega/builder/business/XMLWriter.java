@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.24 2002/01/15 13:47:17 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.25 2002/01/15 14:10:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -357,7 +357,7 @@ public class XMLWriter {
   static boolean setProperty(IWMainApplication iwma,IBXMLAble xml,int ICObjectInstanceId,String propertyName,String[] propertyValues,boolean allowMultiValued){
 
     //Checks if the propertyValues array is correctly formatted
-    if(isPropertyValueArrayValid(propertyValues))
+    if(!isPropertyValueArrayValid(propertyValues))
       return false;
 
     boolean changed = false;
