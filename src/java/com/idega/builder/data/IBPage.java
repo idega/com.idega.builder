@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.6 2001/06/18 15:49:46 tryggvil Exp $
+ * $Id: IBPage.java,v 1.7 2001/07/16 09:51:18 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import com.idega.data.GenericEntity;
 import com.idega.data.BlobWrapper;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -34,6 +35,12 @@ public class IBPage extends GenericEntity {
                 addAttribute("page_value","Page value",true,true,"com.idega.data.BlobWrapper");
 	}
 
+        public void insertStartData()throws Exception{
+          IBPage page = new IBPage();
+          page.setName("Empty page");
+          page.insert();
+        }
+
 	public String getEntityName() {
 		return "ib_page";
 	}
@@ -46,22 +53,26 @@ public class IBPage extends GenericEntity {
 		return getStringColumnValue("name");
 	}
 
-  public void setName(String name) {
-    setColumn("name",name);
-  }
+        public void setName(String name) {
+          setColumn("name",name);
+        }
 
-  public void setPageValue(InputStream stream) {
-    setColumn("page_value",stream);
-  }
+        public OutputStream getPageValueForWrite() {
+          return getColumnOutputStream("page_value");
+        }
 
-  public InputStream getPageValue() {
-    try {
-      return getInputStreamColumnValue("page_value");
-    }
-    catch(java.lang.Exception e) {
-      return null;
-    }
-  }
+        public void setPageValue(InputStream stream) {
+          setColumn("page_value",stream);
+        }
+
+        public InputStream getPageValue() {
+          try {
+            return getInputStreamColumnValue("page_value");
+          }
+          catch(java.lang.Exception e) {
+            return null;
+          }
+        }
 
 
 
