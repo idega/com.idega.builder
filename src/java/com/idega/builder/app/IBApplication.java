@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.82 2004/09/03 16:17:50 eiki Exp $
+ *  $Id: IBApplication.java,v 1.83 2004/12/16 14:07:23 eiki Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -650,7 +650,7 @@ public class IBApplication extends IWApplication {
 						if (b.getIsSeparator())
 							toolbarTable.add(separator, xpos, 1);
 						else
-							toolbarTable.add(b.getLink(), xpos, 1);
+							toolbarTable.add((Link)b.getLink().clone(), xpos, 1);
 					}
 				}
 				add(toolbarTable);
