@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.124 2002/05/10 18:02:44 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.125 2002/05/28 17:22:26 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -880,6 +880,7 @@ public class BuilderLogic {
       _tableLayer.add(obj);
 
       obj.setParentObject(_parent);
+      obj.setLocation(_parent.getLocation());
     }
   }
 
