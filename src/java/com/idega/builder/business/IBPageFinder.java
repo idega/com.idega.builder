@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageFinder.java,v 1.1 2001/10/11 15:35:35 palli Exp $
+ * $Id: IBPageFinder.java,v 1.2 2001/10/11 16:23:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,8 +34,6 @@ public class IBPageFinder {
       sql.append(" is null or ");
       sql.append(page.getColumnDeleted());
       sql.append(" = 'N')");
-
-System.out.println("sql = " + sql.toString());
 
       return(EntityFinder.findAll(page,sql.toString()));
     }

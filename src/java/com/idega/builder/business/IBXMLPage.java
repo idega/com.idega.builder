@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.16 2001/10/11 16:13:04 palli Exp $
+ * $Id: IBXMLPage.java,v 1.17 2001/10/11 16:23:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -118,7 +118,6 @@ public class IBXMLPage {
       _usingTemplate = new Vector();
 
     if (!_usingTemplate.contains(id)) {
-    System.out.println("Adding page " + id + " as using template " + _key);
       _usingTemplate.add(id);
     }
   }
