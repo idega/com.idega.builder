@@ -314,12 +314,12 @@ public class IBObjectControl extends PresentationObjectContainer
 	}
 	public void add(PresentationObject obj)
 	{
-		if (obj.isMarkupAttributeSet(obj.WIDTH))
+		if (obj.isWidthSet())
 		{
 			_layer.setWidth(obj.getWidth());
 			_table.setWidth(obj.getWidth());
 		}
-		if (obj.isMarkupAttributeSet(obj.HEIGHT))
+		if (obj.isHeightSet())
 		{
 			_layer.setHeight(obj.getHeight());
 			_table.setHeight(obj.getHeight());
