@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.68 2002/06/20 19:21:54 gummi Exp $
+ *  $Id: IBApplication.java,v 1.69 2002/10/06 02:18:01 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.Locale;
-import com.idega.builder.app.IBToolbarButton;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.presentation.Script;
 import com.idega.idegaweb.IWMainApplication;
@@ -25,6 +24,7 @@ import com.idega.presentation.ui.TreeViewer;
 import com.idega.presentation.ui.IFrame;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.presentation.IBCreatePageWindow;
+import com.idega.builder.presentation.IBMovePageWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBDeletePageWindow;
 import com.idega.builder.presentation.IBSaveAsPageWindow;
@@ -583,6 +583,12 @@ public class IBApplication extends IWApplication {
 	Link link_delete = new Link(tool_delete);
 	link_delete.setWindowToOpen(IBDeletePageWindow.class);
 	toolbarTable.add(link_delete, xpos, 1);
+	
+	Image tool_move = iwb.getImage("shared/toolbar/move.gif", "shared/toolbar/move1.gif", "Move Page", 20, 20);
+	tool_move.setHorizontalSpacing(2);
+	Link link_move = new Link(tool_move);
+	link_move.setWindowToOpen(IBMovePageWindow.class);
+	toolbarTable.add(link_move, xpos, 1);
 
 	PresentationObject propertiesIcon = getPropertiesIcon(iwc);
 	toolbarTable.add(propertiesIcon, xpos, 1);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.34 2002/05/10 15:55:26 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.35 2002/10/06 02:18:01 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,26 +36,20 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * @author <a href="mailto:palli@idega.is">Pall Helgason</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
 */
-public class IBCreatePageWindow extends IWAdminWindow {
-  private static final String PAGE_NAME_PARAMETER   = "ib_page_name";
-  private static final String PAGE_CHOOSER_NAME     = IBPropertyHandler.PAGE_CHOOSER_NAME;
-  private static final String TEMPLATE_CHOOSER_NAME = IBPropertyHandler.TEMPLATE_CHOOSER_NAME;
-  private static final String PAGE_TYPE             = "ib_page_type";
-  private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
+public class IBCreatePageWindow extends IBPageWindow {
+
 
   private static final String TOP_LEVEL = "top_level";
 
   public IBCreatePageWindow() {
-    setWidth(280);
-    setHeight(180);
-    setScrollbar(false);
+    super();
   }
 
   public void main(IWContext iwc) throws Exception {
-    IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+    IWResourceBundle iwrb = getResourceBundle(iwc);
     Form form = new Form();
     String type = iwc.getParameter(PAGE_TYPE);
     String topLevelString = iwc.getParameter(TOP_LEVEL);
@@ -194,69 +188,5 @@ public class IBCreatePageWindow extends IWAdminWindow {
     }
   }
 
-  /*
-   *
-   */
-  private IBPageChooser getPageChooser(String name, IWContext iwc) {
-    IBPageChooser chooser = new IBPageChooser(name);
-    chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 
-    try {
-      IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
-      if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE))
-      	chooser.setSelectedPage(current.getID(),current.getName());
-      else {
-      	IBDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
-      	IBPage top = domain.getStartPage();
-      	if (top != null)
-      	  chooser.setSelectedPage(top.getID(),top.getName());
-      }
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-
-    return(chooser);
-  }
-
-  /**
-   *
-   */
-  private IBTemplateChooser getTemplateChooser(String name, IWContext iwc, String type){
-    IBTemplateChooser chooser = new IBTemplateChooser(name);
-    chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-
-    try {
-      String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
-      if (templateId == null || templateId.equals("")) {
-      	IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
-      	if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.TEMPLATE))
-      	  chooser.setSelectedPage(current);
-      	else {
-      	  if (type.equals(IBPageHelper.TEMPLATE)) {
-	          IBDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
-    	      IBPage top = domain.getStartTemplate();
-    	      if (top != null)
-	            chooser.setSelectedPage(top);
-      	  }
-      	}
-      }
-      else {
-      	IBPage top = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(templateId));
-      	if (top != null)
-      	  chooser.setSelectedPage(top);
-      }
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-    return chooser;
-  }
-
-  /**
-   *
-   */
-  public String getBundleIdentifier() {
-    return IW_BUNDLE_IDENTIFIER;
-  }
 }
