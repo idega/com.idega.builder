@@ -122,7 +122,17 @@ public class BuilderLogic{
   }
 
   private void transformObject(ModuleObject obj,int index, ModuleObjectContainer parent,String parentKey,ModuleInfo modinfo){
-    if(obj instanceof JModuleObject){
+    if(obj instanceof Image){
+      if(((Image)obj).hasSource()){
+          Link outerLink = new Link((Image)obj);
+          outerLink.addParameter();
+      }
+      else{
+          Link outerLink = new Link((Image)obj);
+          outerLink.addParameter();
+      }
+    }
+    else if(obj instanceof JModuleObject){
 
     }
     else if(obj instanceof ModuleObjectContainer){
