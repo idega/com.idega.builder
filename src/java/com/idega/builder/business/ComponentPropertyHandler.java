@@ -145,7 +145,7 @@ public class ComponentPropertyHandler {
           catch (Exception ex) {
             ex.printStackTrace(System.err);
           }
-        }*/
+        }*/ 
         else if(parameterType.equals(Image.class)){
           //try {
             argument = new Image(Integer.parseInt(stringValue));
