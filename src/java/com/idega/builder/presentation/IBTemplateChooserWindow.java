@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.1 2001/09/13 17:38:17 palli Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.2 2001/10/02 10:34:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -60,7 +60,5 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
     catch(Exception e){
       e.printStackTrace();
     }
-
   }
-
 }

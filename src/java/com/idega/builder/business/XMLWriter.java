@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.8 2001/09/28 15:39:45 palli Exp $
+ * $Id: XMLWriter.java,v 1.9 2001/10/02 10:34:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -368,6 +368,24 @@ public class XMLWriter {
       parent.addAttribute(lock);
       return(true);
     }
+    else {
+      int index = parentObjectInstanceID.indexOf(".");
+      if (index != -1) {
+        Element region = new Element(XMLConstants.REGION_STRING);
+        Attribute id = new Attribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+        region.addAttribute(id);
+
+        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+        Element regionParent = findModule(xml,parentID);
+        if (regionParent != null)
+          regionParent.addContent(region);
+
+        Attribute lock = new Attribute(XMLConstants.REGION_LOCKED,"true");
+        region.addAttribute(lock);
+
+        return(true);
+      }
+    }
 
     return(false);
   }
@@ -381,6 +399,25 @@ public class XMLWriter {
       parent.addAttribute(lock);
       return(true);
     }
+    else {
+      int index = parentObjectInstanceID.indexOf(".");
+      if (index != -1) {
+        Element region = new Element(XMLConstants.REGION_STRING);
+        Attribute id = new Attribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+        region.addAttribute(id);
+
+        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+        Element regionParent = findModule(xml,parentID);
+        if (regionParent != null)
+          regionParent.addContent(region);
+
+        Attribute lock = new Attribute(XMLConstants.REGION_LOCKED,"false");
+        region.addAttribute(lock);
+
+        return(true);
+      }
+    }
+
 
     return(false);
   }

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.31 2001/09/28 18:42:59 palli Exp $
+ * $Id: BuilderLogic.java,v 1.32 2001/10/02 10:34:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -86,7 +86,6 @@ public class BuilderLogic {
     String theID = Integer.toString(id);
     IBXMLPage xml = PageCacher.getXML(theID);
     xml.update();
-//    System.err.println("Invalidating page = " + theID);
     PageCacher.flagPageInvalid(theID);
     return(true);
   }
@@ -134,19 +133,6 @@ public class BuilderLogic {
         }
       }
       //"-1" is identified as the top page object (parent)
-/*      if (page.getIsTemplate()) {
-        page.add(getAddIcon(Integer.toString(-1),modinfo));
-        if (page.getShowLock()) {
-          if (page.isLocked())
-            page.add(getLockIcon(Integer.toString(-1),modinfo));
-          else
-            page.add(getUnlockIcon(Integer.toString(-1),modinfo));
-        }
-      }
-      else if (!page.isLocked()) {
-        page.add(getAddIcon(Integer.toString(-1),modinfo));
-      }*/
-
       if (page.getIsExtendingTemplate()) {
         if (!page.isLocked()) {
           page.add(getAddIcon(Integer.toString(-1),modinfo));
@@ -179,14 +165,14 @@ public class BuilderLogic {
       String sessionID="ic_"+ICObjectIntanceID;
       String session_image_id = (String)modinfo.getSessionAttribute(sessionID);
       if(session_image_id!=null){
-          int image_id = Integer.parseInt(session_image_id);
-          /**
-           * @todo
-           * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
-           */
-          processImageSet(pageKey,ICObjectIntanceID,image_id,modinfo.getApplication());
-          modinfo.removeSessionAttribute(sessionID);
-          imageObj.setImageID(image_id);
+        int image_id = Integer.parseInt(session_image_id);
+        /**
+         * @todo
+         * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
+         */
+        processImageSet(pageKey,ICObjectIntanceID,image_id,modinfo.getApplication());
+        modinfo.removeSessionAttribute(sessionID);
+        imageObj.setImageID(image_id);
       }
       inserter = new ImageInserter();
       inserter.setHasUseBox(false);
@@ -204,9 +190,7 @@ public class BuilderLogic {
       obj.setICObjectInstanceID(ICObjectIntanceID);
       obj.setUseBuilderObjectControl(useBuilderObjectControl);
     }
-    else
-    if(obj instanceof JModuleObject){
-
+    else if(obj instanceof JModuleObject) {
 
     }
     else if(obj instanceof ModuleObjectContainer){
@@ -223,17 +207,6 @@ public class BuilderLogic {
             }
 
             Page curr = PageCacher.getPage(this.getCurrentIBPage(modinfo),modinfo);
-/*              if (curr.getIsTemplate()) {
-                tab.add(getAddIcon(newParentKey,modinfo),x,y);
-
-                  if (tab.isLocked(x,y))
-                    tab.add(getLockIcon(newParentKey,modinfo),x,y);
-                  else
-                    tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
-              }
-              else if (!tab.isLocked(x,y)) {
-                tab.add(getAddIcon(newParentKey,modinfo),x,y);
-              }*/
             if (curr.getIsExtendingTemplate()) {
               if (tab.getBelongsToParent()) {
                 if (!tab.isLocked(x,y))
@@ -283,19 +256,6 @@ public class BuilderLogic {
 
         if (index != -1) {
           Page curr = PageCacher.getPage(this.getCurrentIBPage(modinfo),modinfo);
-/*          if (curr.getIsTemplate()) {
-            ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
-
-//            if (obj.getShowLock()) {
-              if (((ModuleObjectContainer)obj).isLocked())
-                ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
-              else
-                ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
-            }
-//          }
-          else if (!((ModuleObjectContainer)obj).isLocked()) {
-            ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
-          }*/
           if (curr.getIsExtendingTemplate()) {
             if (obj.getBelongsToParent()) {
               if (!((ModuleObjectContainer)obj).isLocked())

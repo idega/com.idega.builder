@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.1 2001/09/13 17:38:17 palli Exp $
+ * $Id: IBTemplateChooser.java,v 1.2 2001/10/02 10:34:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ public class IBTemplateChooser extends AbstractChooser {
    */
   public IBTemplateChooser(String name) {
     addForm(false);
-    setChooseButtonImage(new Image("/common/pics/arachnea/toolbar_open_1.gif","Choose"));
+    setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
     setChooserParameter(name);
   }
 

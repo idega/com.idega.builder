@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.7 2001/09/24 23:29:46 eiki Exp $
+ * $Id: IBCreatePageWindow.java,v 1.8 2001/10/02 10:34:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,8 +22,10 @@ import com.idega.jmodule.object.interfaceobject.SubmitButton;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.jmodule.object.interfaceobject.RadioGroup;
+import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import java.util.List;
 import java.util.Iterator;
+import com.idega.jmodule.object.interfaceobject.Window;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -31,7 +33,6 @@ import java.util.Iterator;
  * @version 1.0 alpha
 */
 
-//public class IBCreatePageWindow extends IBAdminWindow{
 public class IBCreatePageWindow extends IWAdminWindow {
   private static final String PAGE_NAME_PARAMETER   = "ib_page_name";
   private static final String PAGE_CHOOSER_NAME     = IBPropertyHandler.PAGE_CHOOSER_NAME;
@@ -51,30 +52,39 @@ public class IBCreatePageWindow extends IWAdminWindow {
     tab.add(iwrb.getLocalizedString("page_name","Page name"),1,1);
     tab.add(inputName,2,1);
 
+    DropdownMenu mnu = new DropdownMenu(PAGE_TYPE);
+    mnu.addMenuElement("1","Page");
+    mnu.addMenuElement("2","Template");
 
-    tab.add(iwrb.getLocalizedString("parent_page","Create page under:"),1,2);
-    tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,2);
+    tab.add(new Text("Select page type : "),1,2);
+    tab.add(mnu,2,2);
 
-    tab.add(iwrb.getLocalizedString("using_template","Using template:"),1,3);
-    tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME),2,3);
+    mnu.setToSubmit();
 
-    RadioGroup rg = new RadioGroup(PAGE_TYPE);
-    rg.addRadioButton(1,new Text("Page"),true);
-    rg.addRadioButton(2,new Text("Draft"),false);
-    rg.addRadioButton(3,new Text("Template"),false);
+    String type = modinfo.getParameter(PAGE_TYPE);
 
-    tab.add(new Text("Select page type : "),1,4);
-    tab.add(rg,2,4);
+    tab.add(iwrb.getLocalizedString("parent_page","Create page under:"),1,3);
+    if (type != null) {
+      if (type.equals("2"))
+        tab.add(getTemplateChooser(PAGE_CHOOSER_NAME),2,3);
+      else
+        tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+    }
+    else
+      tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
 
-    SubmitButton button = new SubmitButton("submit",iwrb.getLocalizedString("save","Save"));
+    tab.add(iwrb.getLocalizedString("using_template","Using template:"),1,4);
+    tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME),2,4);
+
+    SubmitButton button = new SubmitButton("subbi",iwrb.getLocalizedString("save","Save"));
     tab.add(button,2,5);
 
-    String submit = modinfo.getParameter("submit");
+    String submit = modinfo.getParameter("subbi");
 
     if (submit != null) {
       String pageId = modinfo.getParameter(PAGE_CHOOSER_NAME);
       String name = modinfo.getParameter(PAGE_NAME_PARAMETER);
-      String type = modinfo.getParameter(PAGE_TYPE);
+      type = modinfo.getParameter(PAGE_TYPE);
       String templateId = modinfo.getParameter(TEMPLATE_CHOOSER_NAME);
 
       if (pageId != null) {
@@ -88,8 +98,6 @@ public class IBCreatePageWindow extends IWAdminWindow {
         if (type.equals("1"))
           ibPage.setType(IBPage.PAGE);
         else if (type.equals("2"))
-          ibPage.setType(IBPage.DRAFT);
-        else if (type.equals("3"))
           ibPage.setType(IBPage.TEMPLATE);
         else
           ibPage.setType(IBPage.PAGE);
@@ -111,15 +119,43 @@ public class IBCreatePageWindow extends IWAdminWindow {
         close();
       }
     }
+    else {
+      String name = modinfo.getParameter(PAGE_NAME_PARAMETER);
+      type = modinfo.getParameter(PAGE_TYPE);
+      String templateId = modinfo.getParameter(TEMPLATE_CHOOSER_NAME);
+      String templateName = modinfo.getParameter(TEMPLATE_CHOOSER_NAME+"_displaystring");
+
+      if (name != null)
+        inputName.setValue(name);
+
+      if (type != null)
+        mnu.setSelectedElement(type);
+
+
+/*      System.out.println("id = " + templateId);
+      System.out.println("name = " + templateName);*/
+
+      java.util.Enumeration e = modinfo.getParameterNames();
+
+      while (e.hasMoreElements()) {
+        String param = (String)e.nextElement();
+        String value = modinfo.getParameter(param);
+        System.out.println(param + " = " + value);
+      }
+
+    }
   }
 
-/**
- * @todo use the name variable to identify the parameter
- */
+  /*
+   *
+   */
   private ModuleObject getPageChooser(String name){
     return new IBPageChooser(name);
   }
 
+  /*
+   *
+   */
   private ModuleObject getTemplateChooser(String name){
     return new IBTemplateChooser(name);
   }
