@@ -32,6 +32,8 @@ import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.jmodule.object.interfaceobject.Window;
 
+import com.idega.jmodule.image.presentation.ImageInserter;
+
 import java.util.ListIterator;
 import java.util.List;
 
@@ -52,6 +54,8 @@ public class BuilderLogic{
 
     public static final String SESSION_PAGE_KEY = "ib_page_id";
 
+    public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
+    public static final String IMAGE_IC_OBJECT_INSTANCE_SESSION_ADDRESS = "ic_object_id_image";
 
   private static BuilderLogic instance;
 
@@ -92,7 +96,7 @@ public class BuilderLogic{
       }
       Page page = PageCacher.getPage(Integer.toString(id));
       if(builderview){
-        return BuilderLogic.getInstance().getBuilderTransformed(page,modinfo);
+        return BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,modinfo);
       }
       else{
         return page;
@@ -106,7 +110,7 @@ public class BuilderLogic{
     }
   }
 
-  public Page getBuilderTransformed(Page page,ModuleInfo modinfo){
+  public Page getBuilderTransformed(String pageKey,Page page,ModuleInfo modinfo){
       List list = page.getAllContainingObjects();
       if(list!=null){
         ListIterator iter = list.listIterator();
@@ -114,7 +118,7 @@ public class BuilderLogic{
         while (iter.hasNext()) {
           int index = iter.nextIndex();
           ModuleObject item = (ModuleObject)iter.next();
-          transformObject(item,index,parent,"-1",modinfo);
+          transformObject(pageKey,item,index,parent,"-1",modinfo);
         }
       }
       //"-1" is identified as the top page object (parent)
@@ -122,20 +126,40 @@ public class BuilderLogic{
       return page;
   }
 
-  private void transformObject(ModuleObject obj,int index, ModuleObjectContainer parent,String parentKey,ModuleInfo modinfo){
-    /*
+  private void processImageSet(String pageKey,int ICObjectInstanceID,int imageID){
+    setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID));
+  }
+
+  private void transformObject(String pageKey,ModuleObject obj,int index, ModuleObjectContainer parent,String parentKey,ModuleInfo modinfo){
+    boolean useBuilderObjectControl=true;
+
     if(obj instanceof Image){
+      Image imageObj = (Image)obj;
+      ImageInserter inserter = null;
+      int ICObjectIntanceID = imageObj.getICObjectInstanceID();
+      String sessionID="ic_"+ICObjectIntanceID;
+      String session_image_id = (String)modinfo.getSessionAttribute(sessionID);
+      if(session_image_id!=null){
+          int image_id = Integer.parseInt(session_image_id);
+          /**
+           * @todo
+           * Change this so that id is done in a more appropriate place
+           */
+          processImageSet(pageKey,ICObjectIntanceID,image_id);
+          imageObj.setImageID(image_id);
+      }
       if(((Image)obj).hasSource()){
-          Link outerLink = new Link((Image)obj);
-          outerLink.addParameter();
+        inserter = new ImageInserter(imageObj);
       }
       else{
-          Link outerLink = new Link((Image)obj);
-          outerLink.addParameter();
+        inserter = new ImageInserter();
       }
+
+      inserter.setImSessionImageName(sessionID);
+      obj = inserter;
+      obj.setICObjectInstanceID(ICObjectIntanceID);
     }
-    */
-    //else
+    else
     if(obj instanceof JModuleObject){
 
 
@@ -150,7 +174,7 @@ public class BuilderLogic{
               ModuleObjectContainer moc = tab.containerAt(x,y);
               String newParentKey = obj.getICObjectInstanceID()+"."+x+"."+y;
               if(moc!=null){
-                transformObject(moc,-1,tab,newParentKey,modinfo);
+                transformObject(pageKey,moc,-1,tab,newParentKey,modinfo);
               }
               tab.add(getAddIcon(newParentKey,modinfo),x,y);
           }
@@ -167,11 +191,11 @@ public class BuilderLogic{
              * If parent is Table
              */
             if(index==-1){
-                transformObject(item,index2,(ModuleObjectContainer)obj,parentKey,modinfo);
+                transformObject(pageKey,item,index2,(ModuleObjectContainer)obj,parentKey,modinfo);
             }
             else{
               String newParentKey = Integer.toString(obj.getICObjectInstanceID());
-              transformObject(item,index2,(ModuleObjectContainer)obj,newParentKey,modinfo);
+              transformObject(pageKey,item,index2,(ModuleObjectContainer)obj,newParentKey,modinfo);
             }
           }
         }
@@ -182,10 +206,12 @@ public class BuilderLogic{
       }
     }
 
-    if(index != -1){
-      //parent.remove(obj);
-      //parent.add(new BuilderObjectControl(obj,parent));
-      parent.set(index,new BuilderObjectControl(obj,parent,parentKey,modinfo));
+    if(useBuilderObjectControl){
+      if(index != -1){
+        //parent.remove(obj);
+        //parent.add(new BuilderObjectControl(obj,parent));
+        parent.set(index,new BuilderObjectControl(obj,parent,parentKey,modinfo));
+      }
     }
 
   }
@@ -297,6 +323,7 @@ public class BuilderLogic{
         if(height!=null){
           table.setHeight(height);
           ((Table)obj).setHeight("100%");
+
         }
 
       }
