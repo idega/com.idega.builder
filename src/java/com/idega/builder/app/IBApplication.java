@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.25 2001/10/30 17:41:40 palli Exp $
+ * $Id: IBApplication.java,v 1.26 2001/10/31 15:31:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -191,8 +191,8 @@ public class IBApplication extends IWApplication {
       getParentPage().setAllMargins(2);
       int i_page_id = 1;
       try {
-//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.PAGE_TREE),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
+//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.PAGE_TREE),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
@@ -230,8 +230,8 @@ public class IBApplication extends IWApplication {
 
       int i_template_id = 2;
       try {
-//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
+//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
