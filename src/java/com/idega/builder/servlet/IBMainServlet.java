@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.16 2002/01/11 12:16:38 laddi Exp $
+ * $Id: IBMainServlet.java,v 1.17 2002/01/11 17:36:28 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,7 +57,7 @@ public class IBMainServlet extends IWJSPPresentationServlet {
       if(page_id==null){
         //try{
           //IBDomain domain = IBDomain.getDomain(domain_id);
-          IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
+          IBDomain domain = BuilderLogic.getStartPageId(iwc);
           i_page_id = domain.getStartPageID();
         //}
         //catch(java.sql.SQLException e){

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.94 2002/01/09 17:49:38 palli Exp $
+ * $Id: BuilderLogic.java,v 1.95 2002/01/11 17:36:34 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1352,4 +1352,8 @@ public class BuilderLogic {
     return ObjectInstanceCacher.getObjectInstanceClone(key,iwc);
   }
 
+  public static int getStartPageId(IWContext iwc){
+    IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
+    return domain.getStartPageID();
+  }
 }
