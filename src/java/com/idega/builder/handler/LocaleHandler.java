@@ -1,5 +1,5 @@
 /*
- * $Id: LocaleHandler.java,v 1.2 2001/12/12 21:06:32 palli Exp $
+ * $Id: LocaleHandler.java,v 1.3 2002/01/09 13:25:55 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,10 +15,14 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.text.Text;
 import com.idega.development.presentation.Localizer;
+import com.idega.builder.business.IBPropertyHandler;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
+ *
+ * This handler is to display a selection with the available Locales.
+ * In the selection the keys (values) are the locale-stringrepresentations e.g. "en_US" for English/US
  */
 public class LocaleHandler implements PropertyHandler {
   /**
@@ -40,6 +44,7 @@ public class LocaleHandler implements PropertyHandler {
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
     DropdownMenu menu = Localizer.getAvailableLocalesDropdown(iwc.getApplication(),name);
     menu.setSelectedElement(value);
+    IBPropertyHandler.getInstance().setDropdownToChangeValue(menu);
     return(menu);
   }
 
