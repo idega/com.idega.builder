@@ -11,6 +11,7 @@ package com.idega.builder.business;
 
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -89,6 +90,36 @@ public class ObjectInstanceCacher{
       getObjectInstancesCachedForPage(ibxml.getKey()).put(instanceKey,objectInstance);
     }
   }
+
+  public static void changeObjectInstanceID(Page page, String oldInstanceKey, String newInstanceKey, PresentationObject newObjectInstance){
+    if(newInstanceKey != null){
+      getObjectInstanceCacheMap().put(newInstanceKey,newObjectInstance);
+    }
+    //System.err.println("Cashing objectInstance: "+instanceKey);
+    Map map = getObjectInstancesCachedForPage(page.getPageID());
+    if(map == null){
+      String templateKey = page.getTemplateId();
+      Map templateMap = getObjectInstancesCachedForPage(templateKey);
+      if(templateMap != null){
+        //System.err.println("geting template Map");
+        map = (Map)((Hashtable)templateMap).clone();
+      } else {
+        //System.err.println("creating new Map");
+        map = new Hashtable();
+      }
+      getObjectInstanceCacheMapForPage().put(Integer.toString(page.getPageID()),map);
+    }
+
+    //System.err.println("Cashing objectInstance: "+instanceKey+" on page "+ ibxml.getKey()+" extending: "+ibxml.getTemplateId());
+    if(oldInstanceKey != null){
+      getObjectInstancesCachedForPage(page.getPageID()).remove(oldInstanceKey);
+    }
+
+    if(newInstanceKey != null){
+      getObjectInstancesCachedForPage(page.getPageID()).put(newInstanceKey,newObjectInstance);
+    }
+  }
+
 
 
 

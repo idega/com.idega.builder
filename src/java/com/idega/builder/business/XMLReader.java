@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.32 2002/01/14 09:31:43 gummi Exp $
+ * $Id: XMLReader.java,v 1.33 2002/02/15 14:13:20 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -512,7 +512,7 @@ public class XMLReader {
   /**
    *
    */
-  static void changeInstanceId(XMLElement change, PresentationObjectContainer page) {
+  static void changeInstanceId(XMLElement change, Page page) {
     int from = -1, to = -1;
     try {
       from = change.getAttribute(XMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
@@ -530,6 +530,7 @@ public class XMLReader {
           PresentationObject obj = (PresentationObject)it.next();
           if (obj.getICObjectInstanceID() == from) {
             obj.setICObjectInstanceID(to);
+            ObjectInstanceCacher.changeObjectInstanceID(page,Integer.toString(from),Integer.toString(to),obj);
             return;
           }
         }
