@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.5 2003/07/01 14:07:21 gummi Exp $
+ * $Id: IBPageBMPBean.java,v 1.6 2003/07/05 15:39:29 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -242,12 +242,17 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	}
 
 	/**
-	 *
+	 * Gets the file 
 	 */
 	public ICFile getFile() {
-		int fileID = getFileID();
-		if (fileID != -1) {
-			_file = (ICFile)getColumnValue(getColumnFile());
+		// if we already have an instance of the file we do not
+		// want to loose it, especially not if a filevalue has been
+		// written to it, else the filevalue gets lost.
+		if(_file==null){
+			int fileID = getFileID();
+			if ( fileID != -1) {
+				_file = (ICFile)getColumnValue(getColumnFile());
+			}
 		}
 		return (_file);
 	}
