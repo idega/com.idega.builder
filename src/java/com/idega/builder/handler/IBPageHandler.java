@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.2 2001/12/12 21:06:32 palli Exp $
+ * $Id: IBPageHandler.java,v 1.3 2002/03/12 18:43:39 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,8 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.builder.presentation.IBPageChooser;
+import com.idega.builder.business.PageTreeNode;
+import java.util.Map;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -38,6 +40,19 @@ public class IBPageHandler implements PropertyHandler {
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
     IBPageChooser chooser = new IBPageChooser(name);
+    try {
+      if (value != null && !value.equals("")) {
+	Map tree = PageTreeNode.getTree(iwc);
+	if (tree != null) {
+	  PageTreeNode node = (PageTreeNode)tree.get(Integer.valueOf(value));
+	  if (node != null)
+	    chooser.setSelectedPage(node.getNodeID(),node.getNodeName());
+	}
+      }
+    }
+    catch(NumberFormatException e) {
+      e.printStackTrace();
+    }
     return(chooser);
   }
 
