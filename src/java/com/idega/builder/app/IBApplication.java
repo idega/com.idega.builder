@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.31 2001/11/01 18:08:02 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.32 2001/11/01 18:11:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -380,7 +380,9 @@ public class IBApplication extends IWApplication {
       boolean startupInProgress = startupInProgress(iwc);
       //System.out.println("Startup in progress for IBToolBar:"+startupInProgress);
       if(!startupInProgress){
-        super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+        //Not realoding content frame as each tree does that
+        //super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+        super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload()");
       }
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
