@@ -196,10 +196,10 @@ private String[] _styles = StyleConstants.ALL_STYLES;
     formTable.add(letterSpacing,2,row);
     row++;
 
-    TextInput wordSpacing = new TextInput(StyleConstants.ATTRIBUTE_WORD_SPACING);
-      wordSpacing.setContent(getStyleValue(StyleConstants.ATTRIBUTE_WORD_SPACING));
-    formTable.add("Word spacing:",1,row);
-    formTable.add(wordSpacing,2,row);
+    TextInput lineHeight = new TextInput(StyleConstants.ATTRIBUTE_LINE_HEIGHT);
+      lineHeight.setContent(getStyleValue(StyleConstants.ATTRIBUTE_LINE_HEIGHT));
+    formTable.add("Line height:",1,row);
+    formTable.add(lineHeight,2,row);
     row++;
 
     Text text = new Text("See preview here");
