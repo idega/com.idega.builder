@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.115 2002/03/21 01:07:11 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.116 2002/03/21 01:24:42 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -719,28 +719,38 @@ public class BuilderLogic {
 
       controlLayer.add(layer);
 
-      _table = new Table(1,2);
+      _table = new Table(3,5);
       _table.add(controlLayer);
-      _table.add(_tableLayer,1,2);
+      _table.add(_tableLayer,2,4);
       _layer.add(_table);
       _layer.setZIndex(number);
       super.add(_layer);
       _table.setBorder(0);
       //_table.setWidth(1,"3");
-      _table.setHeight(2,"1");
+      //_table.setHeight(2,"1");
+      _table.setWidth(1,"1");
+      _table.setWidth(3,"1");
+      _table.setHeight(1,"1");
+      _table.setHeight(3,"1");
+      _table.setHeight(5,"1");
       _table.setCellpadding(0);
       _table.setCellspacing(0);
       //_table.setCellspacing(1);
       //_table.setColor("#000000");
       //_table.setColor(1,2,"white");
-      _table.setColor(1,1,"#CCCCCC");
-      _table.setLineFrame(true);
+      _table.setColor(2,2,"#CCCCCC");
+      _table.setRowColor(1,"#000000");
+      _table.setRowColor(3,"#000000");
+      _table.setRowColor(5,"#000000");
+      _table.setColumnColor(1,"#000000");
+      _table.setColumnColor(3,"#000000");
+      /*_table.setLineFrame(true);
       _table.setLineAfterRow(1);
       _table.setLineWidth("1");
       _table.setLineHeight("1");
-      _table.setLineColor("#000000");
+      _table.setLineColor("#000000");*/
 
-      _table.setHeight(1,1,"11");
+      _table.setHeight(2,2,"11");
 
       Image image = getBundle(iwc).getImage("menuicon.gif","Component menu");
       image.setHorizontalSpacing(1);
@@ -759,14 +769,21 @@ public class BuilderLogic {
 	  buffer.append(Text.NON_BREAKING_SPACE);
 
 	text.setText(buffer.toString());
-	_table.add(image);
-	_table.add(text);
+	_table.add(image,2,2);
+	_table.add(text,2,2);
 
-	RaisedTable rTable = new RaisedTable();
+	Table rTable = new Table(3,3);
 	  rTable.setWidth(80);
 	  rTable.setHeight(50);
-	  rTable.setLightShadowColor("#000000");
-	  rTable.setDarkShadowColor("#000000");
+	  rTable.setHeight(1,"1");
+	  rTable.setHeight(3,"1");
+          rTable.setWidth(1,"1");
+          rTable.setWidth(3,"1");
+	  rTable.setColumnColor(1,"#000000");
+	  rTable.setColumnColor(3,"#000000");
+          rTable.setRowColor(1,"#000000");
+          rTable.setRowColor(3,"#000000");
+          rTable.setCellpaddingAndCellspacing(0);
 
 	table = new Table();
 	  table.setCellpadding(3);
@@ -776,7 +793,7 @@ public class BuilderLogic {
 	  table.setColor("#CCCCCC");
 	  table.setAttribute("onMouseOver",showLayers);
 	  table.setAttribute("onClick",hideLayers);
-	rTable.add(table);
+	rTable.add(table,2,2);
 
 	Image separator = getBundle(iwc).getImage("shared/menu/menu_separator.gif");
 	  separator.setWidth("100%");
@@ -814,8 +831,8 @@ public class BuilderLogic {
 	layer.add(rTable);
       }
       else {
-	_table.add(getDeleteIcon(0,_parentKey,iwc));
-	_table.add(getEditIcon(0,iwc));
+	_table.add(getDeleteIcon(0,_parentKey,iwc),2,2);
+	_table.add(getEditIcon(0,iwc),2,2);
       }
     }
 
@@ -834,12 +851,15 @@ public class BuilderLogic {
     }
 
     public void add(PresentationObject obj){
-      if ( obj.isAttributeSet(obj.WIDTH) )
+      if ( obj.isAttributeSet(obj.WIDTH) ) {
         _layer.setWidth(obj.getWidth());
-      if ( obj.isAttributeSet(obj.HEIGHT) )
+      }
+      if ( obj.isAttributeSet(obj.HEIGHT) ) {
         _layer.setHeight(obj.getHeight());
-      if ( obj.isAttributeSet(obj.HORIZONTAL_ALIGNMENT) )
+      }
+      if ( obj.isAttributeSet(obj.HORIZONTAL_ALIGNMENT) ) {
         _layer.setHorizontalAlignment(obj.getHorizontalAlignment());
+      }
 
       if ( obj instanceof Layer ) {
         if ( obj.isAttributeSet(Layer.LEFT) )
