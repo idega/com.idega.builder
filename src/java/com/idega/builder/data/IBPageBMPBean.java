@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.19 2004/09/27 13:51:36 aron Exp $
+ * $Id: IBPageBMPBean.java,v 1.20 2004/10/29 09:28:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,11 +14,16 @@ import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Locale;
+
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageCacher;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
@@ -129,6 +134,24 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	 */
 	public String getName() {
 		return (getStringColumnValue(getColumnName()));
+	}
+	
+	public String getName(Locale locale) {
+		int localeID = ICLocaleBusiness.getLocaleId(locale);
+		
+		try {
+			IBPageNameHome home = (IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class);
+			IBPageName name = home.findByPageIdAndLocaleId(((Integer) getPrimaryKey()).intValue(), localeID);
+			return name.getPageName();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			//Nothing found...
+		}
+
+		return getName();
 	}
 
 	/**

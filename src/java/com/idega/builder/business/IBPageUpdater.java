@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageUpdater.java,v 1.5 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: IBPageUpdater.java,v 1.6 2004/10/29 09:28:32 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,17 +9,15 @@
  */
 package com.idega.builder.business;
 
-import com.idega.builder.data.IBPageName;
-import com.idega.core.builder.data.ICPage;
-import com.idega.core.builder.data.ICPageHome;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
+import com.idega.builder.data.IBPageName;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -70,15 +68,7 @@ public class IBPageUpdater {
 
 	public static boolean addLocalizedPageName(int pageId, int localeId, String pageName) {
 		try {
-			IBPageName name = null;
-			Collection col = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).findAllByPageIdAndLocaleId(pageId, localeId);
-			if (col != null && !col.isEmpty()) {
-				Iterator it = col.iterator();
-				if (it.hasNext()) {
-					name = (IBPageName)it.next();	
-				}
-			}
-			
+			IBPageName name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).findByPageIdAndLocaleId(pageId, localeId);
 			if (name == null) {
 				name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).create();
 			}

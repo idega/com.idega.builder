@@ -118,6 +118,21 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
     return super.idoFindIDsBySQL(sql.toString());
 	}
 	
+	public Integer ejbFindByPageIdAndLocaleId(int pageId, int localeId) throws FinderException {
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(getTableName());
+    sql.append(" where ");
+    sql.append(PAGE_ID);
+    sql.append(" = ");
+    sql.append(pageId);
+    sql.append(" and ");
+    sql.append(LOCALE_ID);
+    sql.append(" = ");
+    sql.append(localeId);
+    
+    return (Integer) super.idoFindOnePKBySQL(sql.toString());
+	}
+	
 	public Collection ejbFindAll() throws FinderException {
 		return super.idoFindAllIDsBySQL();	
 	}
