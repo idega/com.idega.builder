@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.28 2003/05/21 17:02:10 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.29 2003/05/23 09:17:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -82,6 +82,10 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	public void addNewObject(IWContext iwc) throws Exception {
 		Window window = this;
 		Form form = getForm();
+		add(form);
+		Table table = new Table(1, 2);
+		table.setBorder(0);
+		form.add(getComponentList(iwc));
 
 		String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
 		if (ib_parent_id == null) {
@@ -118,12 +122,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			BuilderLogic.getInstance().addNewModule(ib_page_id, ib_parent_id, Integer.parseInt(ic_object_id), label);
 			window.close();
 		}
-		else {
-			add(form);
-			Table table = new Table(1, 2);
-			table.setBorder(0);
-			form.add(getComponentList(iwc));
-		}
 	}
 
 	/**
@@ -159,32 +157,37 @@ public class IBAddModuleWindow extends IBAdminWindow {
 
 		ICObject staticICO = (ICObject) com.idega.core.data.ICObjectBMPBean.getStaticInstance(ICObject.class);
 		try {
-			List elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
-			List blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
-			if (elements != null) {
-				java.util.Collections.sort(elements, new ModuleComparator(iwc));
+			List elements = null;
+			List blocks = null;
+
+			try {
+				elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
+				blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
 			}
-			if (blocks != null) {
-				java.util.Collections.sort(blocks, new ModuleComparator(iwc));
+			catch (Exception e) {
+				elements = null;
+				blocks = null;
+			}
+
+			if (elements == null && blocks == null) {
+				elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
+				blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
+
+				if (elements != null) {
+					java.util.Collections.sort(elements, new ModuleComparator(iwc));
+				}
+				if (blocks != null) {
+					java.util.Collections.sort(blocks, new ModuleComparator(iwc));
+				}
+				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
+				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
 			}
 
 			String sElements = iwrb.getLocalizedString("elements_header", "Elements");
 			String sBlocks = iwrb.getLocalizedString("blocks_header", "Blocks");
 
-			Table elementTable = (Table) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
-			if (elementTable == null) {
-				elementTable = getSubComponentList(sElements, elements, iwc);
-				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elementTable);
-			}
-
-			Table blocksTable = (Table) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
-			if (blocksTable == null) {
-				blocksTable = getSubComponentList(sBlocks, blocks, iwc);
-				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocksTable);
-			}
-			
-			theReturn.add(elementTable, 1, 1);
-			theReturn.add(blocksTable, 2, 1);
+			addSubComponentList(sElements, elements, theReturn, 1, 1, iwc);
+			addSubComponentList(sBlocks, blocks, theReturn, 1, 2, iwc);
 
 			theReturn.setColumnVerticalAlignment(1, "top");
 			theReturn.setColumnVerticalAlignment(2, "top");
@@ -198,9 +201,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	/**
 	 *
 	 */
-	private Table getSubComponentList(String name, List list, IWContext iwc) {
+	private void addSubComponentList(String name, List list, Table table, int ypos, int xpos, IWContext iwc) {
 		Table subComponentTable = new Table();
-		int ypos = 1;
+		table.add(subComponentTable, xpos, ypos);
 
 		Text header = new Text(name, true, false, false);
 		header.setFontSize(Text.FONT_SIZE_12_HTML_3);
@@ -239,8 +242,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				ypos++;
 			}
 		}
-		
-		return subComponentTable;
 	}
 
 	private void setStyles() {
