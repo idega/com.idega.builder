@@ -78,12 +78,12 @@ public IBPropertiesWindow() {
 
     super.setTitle(title);
     //add(IBPropertiesWindowTop.class);
-    IWURL topURL = FrameSet.getFrameURL(IBPropertiesWindowTop.class);
+    IWURL topURL = FrameSet.getFrameURL(IBPropertiesWindowTop.class,iwc);
     topURL.addParameter(HEADER_TEXT_PARAMETER,title);
     add(topURL.toString());
 
     //add(IBPropertiesWindowMiddle.class);
-    IWURL mURL = FrameSet.getFrameURL(IBPropertiesWindowMiddle.class);
+    IWURL mURL = FrameSet.getFrameURL(IBPropertiesWindowMiddle.class,iwc);
     mURL.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
     add(mURL.toString());
 
@@ -105,11 +105,11 @@ public IBPropertiesWindow() {
 
     public void main(IWContext iwc){
       super.setHorizontal();
-      IWURL url1 = FrameSet.getFrameURL(IBPropertiesWindowList.class);
+      IWURL url1 = FrameSet.getFrameURL(IBPropertiesWindowList.class,iwc);
       url1.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
       add(url1.toString());
 
-      IWURL url2 = FrameSet.getFrameURL(IBPropertiesWindowSetter.class);
+      IWURL url2 = FrameSet.getFrameURL(IBPropertiesWindowSetter.class,iwc);
       url2.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
       add(url2.toString());
 
