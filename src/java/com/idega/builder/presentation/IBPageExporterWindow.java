@@ -7,12 +7,12 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageExportBusiness;
+import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.core.builder.data.ICDomain;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -76,13 +76,13 @@ public class IBPageExporterWindow extends IWAdminWindow {
 
   }
   
-  private void getContent(IWResourceBundle resourceBundle, IWContext iwc) {
+  private void getContent(IWResourceBundle resourceBundle, IWContext iwc) throws IDOLookupException, FinderException {
   	Form form = new Form();
-  	ICDomain domain = BuilderLogic.getCurrentDomain(iwc);
-  	int startPageId = domain.getStartPageID();
-  	int startTemplateId = domain.getStartTemplateID();
-  	PresentationObject pageViewer = getPageViewer(startPageId, PAGE_KEY, iwc);
-  	PresentationObject templateViewer = getPageViewer(startTemplateId, TEMPLATE_KEY, iwc);
+  	IBPageHelper pageHelper = IBPageHelper.getInstance();
+  	List startPages = pageHelper.getFirstLevelPageTreeNodesDomainFirst(iwc);
+  	List templateStartPages = pageHelper.getFirstLevelPageTreeNodesTemplateDomainFirst(iwc);
+  	PresentationObject pageViewer = getPageViewer(startPages, PAGE_KEY);
+  	PresentationObject templateViewer = getPageViewer(templateStartPages, TEMPLATE_KEY);
   	form.add(pageViewer);
   	form.add(templateViewer);
   	form.add(getButtons(resourceBundle));
@@ -150,12 +150,11 @@ public class IBPageExporterWindow extends IWAdminWindow {
   }
   	
   		
-	private PresentationObject getPageViewer( int pageId, String key, IWContext iwc) {
-		PageTreeNode pageTreeNode = new PageTreeNode(pageId, iwc);
-		return getDoubleSelectionBox(pageTreeNode, key);
+	private PresentationObject getPageViewer( List startPages, String key) {
+		return getDoubleSelectionBox(startPages, key);
   }
 
-	private SelectionDoubleBox getDoubleSelectionBox( PageTreeNode node, String rightSelectionKey) {
+	private SelectionDoubleBox getDoubleSelectionBox(List startPages, String rightSelectionKey) {
 		// create selection double box and set parameter string
 		SelectionDoubleBox selectionDoubleBox = new SelectionDoubleBox(rightSelectionKey);
     // set size
@@ -165,7 +164,11 @@ public class IBPageExporterWindow extends IWAdminWindow {
     leftBox.setHeight("20");   
 		// submit selection on right box
 		rightBox.selectAllOnSubmit();
-		addItems(leftBox, node, "");
+		Iterator iterator = startPages.iterator();
+		while (iterator.hasNext()) {
+			PageTreeNode pageTreeNode = (PageTreeNode) iterator.next();
+			addItems(leftBox, pageTreeNode, "");
+		}
 		return selectionDoubleBox;
 	}
 
