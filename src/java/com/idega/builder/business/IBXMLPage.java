@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.34 2002/01/09 16:18:31 palli Exp $
+ * $Id: IBXMLPage.java,v 1.35 2002/03/26 20:31:49 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -90,15 +90,15 @@ public class IBXMLPage implements IBXMLAble {
       String templateString = null;
       if (template != -1)
         templateString = Integer.toString(template);
-      if (ibpage.getType().equals(ibpage.PAGE))
+      if (ibpage.getType().equals(IBPage.PAGE))
         setPageAsEmptyPage(TYPE_PAGE,templateString);
-      else if (ibpage.getType().equals(ibpage.DRAFT))
+      else if (ibpage.getType().equals(IBPage.DRAFT))
         setPageAsEmptyPage(TYPE_DRAFT,templateString);
-      else if (ibpage.getType().equals(ibpage.TEMPLATE))
+      else if (ibpage.getType().equals(IBPage.TEMPLATE))
         setPageAsEmptyPage(TYPE_TEMPLATE,templateString);
-      else if (ibpage.getType().equals(ibpage.DPT_TEMPLATE))
+      else if (ibpage.getType().equals(IBPage.DPT_TEMPLATE))
         setPageAsEmptyPage(TYPE_DPT_TEMPLATE,templateString);
-      else if (ibpage.getType().equals(ibpage.DPT_PAGE))
+      else if (ibpage.getType().equals(IBPage.DPT_PAGE))
         setPageAsEmptyPage(TYPE_DPT_PAGE,templateString);
       else
         setPageAsEmptyPage(TYPE_PAGE,templateString);
