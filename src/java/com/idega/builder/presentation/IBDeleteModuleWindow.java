@@ -90,7 +90,6 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
 
     f.add(t);
     t.setWidth("100%");
-    t.setAlignment(com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
 
     Text confirmText = new Text("Are you sure you want to delete this module and all its contents?");
       confirmText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
