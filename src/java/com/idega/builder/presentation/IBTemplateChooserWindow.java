@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.10 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.11 2002/04/09 12:04:02 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,8 +25,8 @@ import com.idega.builder.business.BuilderLogic;
  * @version 1.3
  */
 public class IBTemplateChooserWindow extends AbstractChooserWindow {
-  private static final int _width = 250;
-  private static final int _height = 200;
+  private static final int _width = 280;
+  private static final int _height = 400;
   private static final String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
 
   /**
@@ -40,6 +40,7 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
     setWidth(_width);
     setHeight(_height);
     this.setCellpadding(5);
+    setScrollbar(true);
   }
 
   /**
@@ -64,6 +65,7 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
       viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
       viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
       viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
+      viewer.setDefaultOpenLevel(999);
 
       Link link = new Link();
 	link.setNoTextObject(true);
