@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.67 2001/10/31 17:21:23 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.68 2001/10/31 17:26:49 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -620,13 +620,13 @@ public class BuilderLogic {
         table.setAttribute("onMouseOver","showHideLayers('"+layer.getID()+"','','show')");
         table.setAttribute("onClick","showHideLayers('"+layer.getID()+"','','hide')");
 
-        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,4,layer.getID());
+        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1,layer.getID());
         addToTable(new Text("Copy"),2,1,layer.getID());
-        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1,layer.getID());
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,2,layer.getID());
         addToTable(new Text("Delete"),2,2,layer.getID());
         addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,3,layer.getID());
         addToTable(new Text("Permission"),2,3,layer.getID());
-        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,2,layer.getID());
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,4,layer.getID());
         addToTable(new Text("Properties"),2,4,layer.getID());
 
         layer.add(table);
