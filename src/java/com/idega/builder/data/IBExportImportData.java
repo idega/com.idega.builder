@@ -56,9 +56,11 @@ public class IBExportImportData implements Storable {
 	protected List pageIds = null;
 
 	
-	private static String getSourceClassForPage() {
-		 return ICPage.class.getName();
-	}
+	private static String SOURCE_CLASS_FOR_PAGE;
+	
+	static {
+		 	SOURCE_CLASS_FOR_PAGE = ICPage.class.getName();
+		}
 		
 	
 	public String getName() {
@@ -68,6 +70,24 @@ public class IBExportImportData implements Storable {
 	public List getData() {
 		return files;
 	}
+	
+	public List getPageData() {
+		int index = 0; 
+		List list = new ArrayList();
+		Iterator iterator = fileElements.iterator();
+		while (iterator.hasNext()) {
+			XMLElement element = (XMLElement) iterator.next();
+			String sourceClass = element.getTextTrim(XMLConstants.FILE_SOURCE);
+			if (SOURCE_CLASS_FOR_PAGE.equals(sourceClass)) {
+				Storable page = (Storable) files.get(index);
+				list.add(page);
+			}
+			index++;
+		}
+		return list;
+	}
+			
+			
 	
 	public String getParentIdForPageId(String id) {
 		return (String) ((childParent == null) ? null : childParent.get(id));
@@ -150,12 +170,11 @@ public class IBExportImportData implements Storable {
 	}
 	
 	public void addFileEntry(ICPage page) {
-		String sourceClassForPage = IBExportImportData.getSourceClassForPage();
 		files.add(page);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
-		fileElement.addContent(XMLConstants.FILE_MODULE, sourceClassForPage);
+		fileElement.addContent(XMLConstants.FILE_MODULE, SOURCE_CLASS_FOR_PAGE);
 		fileElement.addContent(XMLConstants.FILE_NAME, page.getIDColumnName());
-		fileElement.addContent(XMLConstants.FILE_SOURCE, sourceClassForPage);
+		fileElement.addContent(XMLConstants.FILE_SOURCE, SOURCE_CLASS_FOR_PAGE);
 		fileElement.addContent(XMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
 		fileElements.add(fileElement);
 	}
@@ -228,7 +247,7 @@ public class IBExportImportData implements Storable {
 		Iterator iterator = fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement fileElement = (XMLElement) iterator.next();
-			if (getPageElements == IBExportImportData.getSourceClassForPage().equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)))		{
+			if (getPageElements == SOURCE_CLASS_FOR_PAGE.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)))		{
 				elements.add(fileElement);
 			}
 		}
