@@ -65,7 +65,8 @@ public class PageCacher{
     IBXMLPage xml = null;
     xml = getXML(key);
     if(xml!=null){
-      return (Page)xml.getPopulatedPage().clone(modinfo);
+      // temp return (Page)xml.getPopulatedPage().clone(modinfo);
+      return (Page)xml.getPopulatedPage().clone();
     }
     return null;
   }
