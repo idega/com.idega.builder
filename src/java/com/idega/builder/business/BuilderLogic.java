@@ -96,7 +96,7 @@ public class BuilderLogic{
           builderview=true;
         //}
       }
-      Page page = PageCacher.getPage(Integer.toString(id));
+      Page page = PageCacher.getPage(Integer.toString(id),modinfo);
       if(builderview){
         return BuilderLogic.getInstance().getBuilderTransformed(Integer.toString(id),page,modinfo);
       }

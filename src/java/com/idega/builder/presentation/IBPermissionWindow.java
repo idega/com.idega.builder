@@ -276,7 +276,7 @@ public class IBPermissionWindow extends IBAdminWindow{
           }
           for (int i = 0; i < groups.length; i++) {
             oldGroups.remove(groups[i]);
-            AccessControl.setObjectInstacePermission(groups[i],instanceId,(String)item,Boolean.TRUE);
+            AccessControl.setObjectInstacePermission(modinfo, groups[i],instanceId,(String)item,Boolean.TRUE);
           }
           if(oldGroups.size()>0){
             String[] groupsToRemove = new String[oldGroups.size()];
@@ -285,7 +285,7 @@ public class IBPermissionWindow extends IBAdminWindow{
             while (iter2.hasNext()) {
               groupsToRemove[index2++] = (String)iter2.next();
             }
-            AccessControl.removeICObjectInstancePermissionRecords(instanceId,(String)item, groupsToRemove);
+            AccessControl.removeICObjectInstancePermissionRecords(modinfo, instanceId,(String)item, groupsToRemove);
           }
         }
       }else{

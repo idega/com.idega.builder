@@ -13,6 +13,8 @@ import com.idega.jmodule.object.Page;
 
 import com.idega.builder.data.IBPage;
 
+import com.idega.jmodule.object.ModuleInfo;
+
 import com.idega.exception.PageDoesNotExist;
 
 import java.util.Hashtable;
@@ -55,6 +57,17 @@ public class PageCacher{
     else{
       pagesValid.put(key,Boolean.FALSE);
     }
+  }
+
+
+  public static Page getPage(String key, ModuleInfo modinfo ){
+    Page theReturn = null;
+    IBXMLPage xml = null;
+    xml = getXML(key);
+    if(xml!=null){
+      return (Page)xml.getPopulatedPage().clone(modinfo);
+    }
+    return null;
   }
 
 
