@@ -14,6 +14,7 @@ import com.idega.builder.presentation.IBAdminWindow;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBDeleteModuleWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
+import com.idega.builder.presentation.IBPermissionWindow;
 
 import com.idega.core.data.ICObject;
 
@@ -49,6 +50,7 @@ public class BuilderLogic{
     public static final String ACTION_EDIT ="ACTION_EDIT";
     public static final String ACTION_ADD ="ACTION_ADD";
     public static final String ACTION_MOVE ="ACTION_MOVE";
+    public static final String ACTION_PERMISSION ="ACTION_PERMISSION";
 
     public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
 
@@ -262,6 +264,17 @@ public class BuilderLogic{
     return link;
   }
 
+  public  ModuleObject getPermissionIcon(int key,ModuleInfo modinfo){
+    IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    Image editImage = bundle.getImage("edit.gif","Set permissions");
+    Link link = new Link(editImage);
+    link.setWindowToOpen(IBPermissionWindow.class);
+    link.addParameter(ib_page_parameter,"1");
+    link.addParameter(ib_control_parameter,ACTION_PERMISSION);
+    link.addParameter(ic_object_id_parameter,key);
+    return link;
+  }
+
   public  ModuleObject getEditIcon(int key,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image editImage = bundle.getImage("edit.gif","Edit component");
@@ -303,6 +316,7 @@ public class BuilderLogic{
         //table.add(theObject.getClassName());
         table.add(getDeleteIcon(theObject.getICObjectInstanceID(),parentKey,modinfo));
         table.add(getEditIcon(theObject.getICObjectInstanceID(),modinfo));
+        table.add(getPermissionIcon(theObject.getICObjectInstanceID(),modinfo));
       }
       else{
           System.out.println("theObject==null");
