@@ -4,6 +4,7 @@ import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:        idegaclasses
@@ -22,7 +23,7 @@ public class ColorHandler implements PropertyHandler {
     return null;
   }
   public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
-    DropdownMenu menu = new DropdownMenu(name);
+    /*DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
     menu.addMenuElement("#000000","Black");
     menu.addMenuElement("#FFFFFF","White");
@@ -31,6 +32,15 @@ public class ColorHandler implements PropertyHandler {
     menu.addMenuElement("#00FF00","Green");
     menu.addMenuElement("#0000FF","Blue");
     menu.setSelectedElement(value);
-    return menu;
+    return menu;*/
+
+    //Table tab = new Table(2,1);
+    //tab.add("#",1,1);
+    TextInput input = new TextInput(name);
+    if(value!=null){
+      input.setValue(value);
+    }
+    //tab.add(input,2,1);
+    return input;
   }
 }
