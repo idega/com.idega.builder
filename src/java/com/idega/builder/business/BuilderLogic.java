@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.57 2001/10/29 16:41:22 aron Exp $
+ * $Id: BuilderLogic.java,v 1.58 2001/10/30 15:05:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -827,6 +827,10 @@ public class BuilderLogic {
     }
 
     return(false);
+  }
+
+  public static String getIBPageURL(int ib_page_id){
+    return IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id;
   }
 
 }
