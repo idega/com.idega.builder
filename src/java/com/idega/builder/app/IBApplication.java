@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.32 2001/11/01 18:11:58 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.33 2001/11/01 18:19:31 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -91,16 +91,30 @@ public class IBApplication extends IWApplication {
     }
   }
 
-  static void startStartup(IWContext iwc){
-    List l = new Vector();
-    iwc.setSessionAttribute("ib_startup_class_list",l);
+  //To prevent constant realoding when many frames are loaded at the same time
+  static void startIBApplication(IWContext iwc){
+    List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
+    if(l==null){
+      l = new Vector();
+      iwc.setSessionAttribute("ib_startup_class_list",l);
+    }
     l.add(IBToolBar.class);
+  }
+
+  static void startLeftMenu(IWContext iwc){
+    List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
+    if(l==null){
+      l = new Vector();
+      iwc.setSessionAttribute("ib_startup_class_list",l);
+    }
     l.add(PageTree.class);
     l.add(TemplateTree.class);
   }
 
+
+
   public void main(IWContext iwc) {
-    startStartup(iwc);
+    startIBApplication(iwc);
     add(IBBanner.class);
     if ( iwc.getParameter("toolbar") != null ) {
       iwc.setSessionAttribute("toolbar",iwc.getParameter("toolbar"));
@@ -313,6 +327,7 @@ public class IBApplication extends IWApplication {
     }
 
     public void main(IWContext iwc){
+      startLeftMenu(iwc);
       setAlignment("left");
       setVerticalAlignment("top");
       setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
