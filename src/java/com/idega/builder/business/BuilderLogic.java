@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.66 2001/10/31 17:16:41 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.67 2001/10/31 17:21:23 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -565,6 +565,10 @@ public class BuilderLogic {
       getParentPage().setAssociatedScript(script);
     }
 
+    public String getBundleIdentifier(){
+      return "com.idega.builder";
+    }
+
     private void init(IWContext iwc){
       _layer = new Layer();
 
@@ -599,7 +603,7 @@ public class BuilderLogic {
       _table.setColor(1,2,"white");
       _table.setHeight(1,1,"11");
 
-      Image image = this.getBundle(iwc).getImage("menuicon.gif");
+      Image image = getBundle(iwc).getImage("menuicon.gif");
       image.setOnClick("showHideLayers('"+layer.getID()+"','','show')");
 
 
