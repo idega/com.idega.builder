@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.39 2002/12/10 16:05:38 palli Exp $
+ * $Id: XMLReader.java,v 1.40 2002/12/10 16:27:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -136,6 +136,8 @@ public class XMLReader {
 
 			while (it.hasNext()) {
 				XMLElement child = (XMLElement) it.next();
+				
+				System.out.println("child.getname() = " + child.getName());
 
 				if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
 					setProperties(child, parentContainer);
