@@ -1,5 +1,5 @@
 /*
- * $Id: IBObjectLibraryBMPBean.java,v 1.6 2003/10/03 01:41:59 tryggvil Exp $
+ * $Id: IBObjectLibraryBMPBean.java,v 1.7 2003/11/28 16:11:14 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,9 +24,9 @@ import com.idega.data.IDOLookupException;
  * @version 1.0
  */
 public class IBObjectLibraryBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.builder.data.IBObjectLibrary {
-	private final static String ENTITY_NAME = "ib_library";
-	private final static String FILE_COLUMN = "file_id";
-	private final static String OWNER_COLUMN = "user_id";
+	private final static String ENTITY_NAME = "IB_LIBRARY";
+	private final static String FILE_COLUMN = "FILE_ID";
+	private final static String OWNER_COLUMN = "USER_ID";
 
 	private ICFile _file;
 
