@@ -34,15 +34,15 @@ public class IBEntity extends GenericEntity{
 
         public void insertStartData()throws Exception{
           IBEntity obj;
-          Class textReaderClass = com.idega.jmodule.text.presentation.TextReader.class;
-          Class newsModuleClass = com.idega.jmodule.news.presentation.NewsReader.class;
+          Class textReaderClass = com.idega.block.text.presentation.TextReader.class;
+          Class newsModuleClass = com.idega.block.news.presentation.NewsReader.class;
 
           IBObject[] newsRecords = (IBObject[]) (new IBEntity()).findAllByColumn("class_name",newsModuleClass.getName());
           if(newsRecords.length>0){
             IBObject newsRecord = newsRecords[0];
             IBEntity entity = new IBEntity();
             entity.setClassName("Fréttir");
-            entity.setEntityClassName(com.idega.jmodule.news.data.NewsCategory.class.getName());
+            entity.setEntityClassName(com.idega.block.news.data.NewsCategory.class.getName());
             entity.insert();
             entity.addTo(newsRecord);
           }
@@ -52,7 +52,7 @@ public class IBEntity extends GenericEntity{
             IBObject textRecord = textRecords[0];
             IBEntity entity = new IBEntity();
             entity.setClassName("Texti");
-            entity.setEntityClassName(com.idega.jmodule.text.data.TextModule.class.getName());
+            entity.setEntityClassName(com.idega.block.text.data.TxText.class.getName());
             entity.insert();
             entity.addTo(textRecord);
           }

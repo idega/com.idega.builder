@@ -8,10 +8,9 @@ package com.idega.builder.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.presentation.*;
-import com.idega.jmodule.news.presentation.NewsReader;
-import com.idega.jmodule.text.presentation.TextReader;
-import com.idega.jmodule.login.presentation.Login;
-import com.idega.jmodule.text.presentation.TextReader;
+import com.idega.block.news.presentation.NewsReader;
+import com.idega.block.text.presentation.TextReader;
+import com.idega.block.login.presentation.Login;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
