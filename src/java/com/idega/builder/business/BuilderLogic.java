@@ -12,6 +12,8 @@ package com.idega.builder.business;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.presentation.IBAdminWindow;
 import com.idega.builder.presentation.IBAddModuleWindow;
+import com.idega.builder.presentation.IBDeleteModuleWindow;
+import com.idega.builder.presentation.IBPropertiesWindow;
 
 import com.idega.core.data.ICObject;
 
@@ -192,7 +194,7 @@ public class BuilderLogic{
     //Window window = new IBAdminWindow();
     //Link link = new Link(deleteImage,window);
     Link link = new Link(deleteImage);
-    link.setWindowToOpen(IBAdminWindow.class);
+    link.setWindowToOpen(IBDeleteModuleWindow.class);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_DELETE);
     link.addParameter(ib_parent_parameter,parentKey);
@@ -222,7 +224,7 @@ public class BuilderLogic{
     //Window window = new IBAdminWindow();
     //Link link = new Link(editImage,window);
     Link link = new Link(editImage);
-    link.setWindowToOpen(IBAdminWindow.class);
+    link.setWindowToOpen(IBPropertiesWindow.class);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_EDIT);
     link.addParameter(ic_object_id_parameter,key);
@@ -285,11 +287,18 @@ public class BuilderLogic{
     }
   }
 
+
+  public String getProperty(String pageKey,int ObjectInstanceId,String propertyName){
+      IBXMLPage xml = getIBXMLPage(pageKey);
+      return XMLWriter.getProperty(xml,ObjectInstanceId,propertyName);
+  }
+
+
   public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String propertyValue){
       IBXMLPage xml = getIBXMLPage(pageKey);
       if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValue)){
-        System.out.println("propertyName="+propertyName);
-        System.out.println("propertyValue="+propertyName);
+        //System.out.println("propertyName="+propertyName);
+        //System.out.println("propertyValue="+propertyValue);
         xml.update();
         return true;
       }

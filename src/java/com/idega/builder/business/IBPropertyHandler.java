@@ -9,6 +9,11 @@ import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 
+import com.idega.idegaweb.*;
+import com.idega.util.reflect.*;
+import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectInstance;
+
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 0.5 alpha
@@ -16,6 +21,61 @@ import com.idega.jmodule.object.textObject.*;
 
 public class IBPropertyHandler{
 
+    private static final String METHODS_KEY = "iw_component_methods";
+    private static IBPropertyHandler instance;
+
+    private IBPropertyHandler(){}
+
+    public static IBPropertyHandler getInstance(){
+      if(instance==null){
+        instance = new IBPropertyHandler();
+      }
+      return instance;
+    }
+
+    public void removeMethod(IWBundle iwb,String componentKey,String methodIdentifier){
+      IWPropertyList methods = getMethods(iwb,componentKey);
+      if(methods!=null){
+        methods.removeProperty(methodIdentifier);
+      }
+    }
+
+    public void setMethod(IWBundle iwb,String componentKey,String methodIdentifier,String methodDescription){
+      IWPropertyList methods = getMethods(iwb,componentKey);
+      if(methods!=null){
+        methods.setProperty(methodIdentifier,methodDescription);
+      }
+    }
+
+    public IWPropertyList getMethods(int ic_object_instance_id,IWMainApplication iwma)throws Exception{
+      ICObjectInstance icoi = new ICObjectInstance(ic_object_instance_id);
+      ICObject obj = icoi.getObject();
+      IWBundle iwb = obj.getBundle(iwma);
+      String componentKey = obj.getClassName();
+      return getMethods(iwb,componentKey);
+    }
+
+    public IWPropertyList getMethods(IWBundle iwb,String componentKey){
+      IWPropertyList compList = iwb.getComponentList();
+      IWPropertyList componentProperties = compList.getPropertyList(componentKey);
+      if(componentProperties!=null){
+        IWPropertyList methodList = componentProperties.getPropertyList(METHODS_KEY);
+        if(methodList==null){
+            methodList = componentProperties.getNewPropertyList(METHODS_KEY);
+        }
+        return methodList;
+      }
+      return null;
+    }
+
+    /*public IWPropertyList getMethods(IWBundle iwb,String componentKey){
+      IWPropertyList compList = iwb.getComponentList();
+      IWPropertyList methodList = compList.getPropertyList(METHODS_KEY);
+      if(methodList==null){
+          methodList = getPropertyList().getNewPropertyList(METHODS_KEY);
+      }
+      return methodList;
+    }*/
 
     public static ModuleObject[] getInterfaceComponent(Class[] classes,String[] names){
       ModuleObject[] objects = new ModuleObject[classes.length];

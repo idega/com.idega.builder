@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.9 2001/08/23 18:00:52 tryggvil Exp $
+ * $Id: IBPage.java,v 1.10 2001/08/25 12:19:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -76,12 +76,17 @@ public class IBPage extends TreeableEntity{
           setColumn(getColumnName(),name);
         }
 
+        private int getFileID(){
+          return getIntColumnValue(getColumnFile());
+        }
+
         public ICFile getFile(){
-          if(this.file==null){
+          int fileID = getFileID();
+          if(fileID!=-1){
             return (ICFile)getColumnValue(getColumnFile());
           }
           else{
-            return file;
+            return this.file;
           }
         }
 
@@ -148,9 +153,11 @@ public class IBPage extends TreeableEntity{
               if(file.getID()==-1){
                 file.insert();
                 setFile(file);
+                System.out.println("Trying insert on ICFile");
               }
               else{
                 file.update();
+                System.out.println("Trying update on ICFile");
               }
             }
             catch(Exception e){

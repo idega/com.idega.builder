@@ -40,6 +40,7 @@ public class XMLReader {
 
     private static final String TYPE_TAG = "type";
 
+    private static final String method = ":method";
     //private static Hashtable theRegions;
 
     private XMLReader() {
@@ -246,7 +247,7 @@ public class XMLReader {
         List li = properties.getChildren();
         Iterator it = li.iterator();
 
-        Element typeEl = properties.getChild(TYPE_TAG);
+        //Element typeEl = properties.getChild(TYPE_TAG);
 
 
         while (it.hasNext()) {
@@ -270,15 +271,21 @@ public class XMLReader {
         }
 
         if (key != null) {
+          //key is MethodIdentifier
+          if(key.startsWith(method)){
+            setReflectionProperty(object,key,values);
+          }
+          else{
             vals = new String[values.size()];
             for (int i = 0; i < values.size(); i++)
                 vals[i] = (String)values.elementAt(i);
             object.setProperty(key,vals);
+          }
         }
     }
 
-    static void setReflectionProperty(ModuleObject instance,String methodIdentifier,Element values){
-      ComponentPropertyHandler.getInstance().setReflectionProperty(instance,methodIdentifier,values);
+    static void setReflectionProperty(ModuleObject instance,String methodIdentifier,Vector stringValues){
+      ComponentPropertyHandler.getInstance().setReflectionProperty(instance,methodIdentifier,stringValues);
     }
 /*
     static void setReflectionProperty(ModuleObject instance,Method method,Element values){

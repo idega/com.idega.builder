@@ -59,7 +59,6 @@ public class IBDomain extends GenericEntity {
   }
 
   public void insertStartData()throws Exception{
-    System.out.println("Inserting StartData for IBDomain");
     IBDomain domain = new IBDomain();
     domain.setName("Default Site");
 

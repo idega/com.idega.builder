@@ -42,14 +42,32 @@ public class ComponentPropertyHandler {
     return instance;
   }
 
-     void setReflectionProperty(ModuleObject instance,String methodIdentifier,Element values){
-      Method m = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier);
-      setReflectionProperty(instance,m,values);
+     void setReflectionProperty(ModuleObject instance,String methodIdentifier,Vector stringValues){
+      Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier);
+      if(method==null){
+        throw new RuntimeException("Method: "+methodIdentifier+" not found");
+      }
+      else{
+        setReflectionProperty(instance,method,stringValues);
+      }
     }
 
-     void setReflectionProperty(ModuleObject instance,Method method,Element values){
-        Object[] args = getObjectArguments(values);
+     void setReflectionProperty(ModuleObject instance,Method method,Vector stringValues){
+        //Object[] args = getObjectArguments(stringValues);
         //method.invoke(instance,args);
+        Object[] args = new Object[stringValues.size()];
+        Class[] parameterTypes = method.getParameterTypes();
+        for (int i = 0; i < parameterTypes.length; i++) {
+          if(parameterTypes[i]!=null){
+            args[i] = handleParameter(parameterTypes[i],(String)stringValues.get(i));
+          }
+        }
+        try{
+          method.invoke(instance,args);
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
     }
 
     private  Object[] getObjectArguments(Element value){
@@ -69,6 +87,23 @@ public class ComponentPropertyHandler {
         theReturn = new Object[0];
       }
       return theReturn;
+    }
+
+    static Object handleParameter(Class parameterType,String stringValue){
+        Object argument=null;
+        if(parameterType.equals(Integer.class) || parameterType.equals(Integer.TYPE)){
+            argument = new Integer(stringValue);
+        }
+        else if(parameterType.equals(String.class)){
+            argument =  stringValue;
+        }
+        else if(parameterType.equals(Boolean.class) || parameterType.equals(Boolean.TYPE)){
+          argument = new Boolean(stringValue);
+        }
+        else if(parameterType.equals(Float.class) || parameterType.equals(Float.TYPE)){
+          argument = new Float(stringValue);
+        }
+        return argument;
     }
 
     public Object handleElementProperty(Element el){

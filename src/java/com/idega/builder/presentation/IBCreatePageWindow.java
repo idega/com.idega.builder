@@ -35,7 +35,7 @@ public class IBCreatePageWindow extends IBAdminWindow{
   private static final String PAGE_CHOOSER_NAME = "ib_page_chooser";
   private static final String TEMPLATE_CHOOSER_NAME = "ib_template_chooser";
 
-  public void main(ModuleInfo modinfo){
+  public void main(ModuleInfo modinfo)throws Exception{
     IWResourceBundle iwrb = getBundle(modinfo).getResourceBundle(modinfo);
     Form form = new Form();
     add(form);

@@ -151,6 +151,15 @@ public class XMLWriter {
     return null;
   }
 
+  static String getProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName){
+    Element module = findModule(xml,ObjectInstanceId);
+    Element property = findProperty(module,propertyName);
+    if(property!=null){
+      Element value = property.getChild(VALUE_STRING);
+      return value.getText();
+    }
+    return null;
+  }
 
 
   static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String propertyValue){
