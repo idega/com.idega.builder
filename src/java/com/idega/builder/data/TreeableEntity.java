@@ -135,7 +135,7 @@ public abstract class TreeableEntity extends GenericEntity implements ICTreeNode
 
 
   public void addChild(TreeableEntity entity)throws java.sql.SQLException{
-    this.addTo(entity);
+    this.addTo(entity,"child_"+entity.getIDColumnName());
   }
 
 

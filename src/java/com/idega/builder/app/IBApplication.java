@@ -20,8 +20,10 @@ import com.idega.jmodule.object.interfaceobject.*;
 
 public class IBApplication extends IWApplication {
 
-
+  private final static String IB_FRAMESET1_FRAME = "ib_frameset1";
+  private final static String IB_FRAMESET2_FRAME = "ib_frameset2";
   private final static String IB_CONTENT_FRAME = "ib_content";
+  private final static String IB_LEFT_MENU_FRAME = "ib_left_menu";
   private final static String CONTENT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL+"?view=builder";
 
   public IBApplication() {
@@ -37,6 +39,7 @@ public class IBApplication extends IWApplication {
     //setScrolling(2,false);
     //this.setSpanAdaptive(3);
     //setScrolling(3,false);
+    this.setFrameName(2,IB_FRAMESET1_FRAME);
     super.setResizable(true);
     super.setWidth(900);
     super.setHeight(700);
@@ -47,6 +50,8 @@ public class IBApplication extends IWApplication {
         add(IBLeftMenu.class);
         add(FrameSet2.class);
         setScrolling(1,false);
+        this.setFrameName(1,IB_LEFT_MENU_FRAME);
+        this.setFrameName(2,IB_FRAMESET2_FRAME);
         setSpanPixels(1,180);
         setSpanAdaptive(2);
         setHorizontal();
@@ -160,6 +165,7 @@ public class IBApplication extends IWApplication {
 
   public static class IBLeftMenu extends IWApplicationComponent{
       public IBLeftMenu(){
+        super.setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
         setAlignment("left");
         setVerticalAlignment("top");
         Text idegawebBuilder = new Text("idegaWeb Builder");
@@ -168,10 +174,35 @@ public class IBApplication extends IWApplication {
         idegawebBuilder.setFontSize(2);
         add(idegawebBuilder);
         addBreak();
-        Text build = new Text("Build 782");
+        Text build = new Text("Build 205b");
         build.setFontColor("blue");
         build.setFontSize(1);
         add(build);
+      }
+
+      public void main(ModuleInfo modinfo){
+        int i_page_id=1;
+        try{
+          TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),modinfo);
+          viewer.setTarget(IB_LEFT_MENU_FRAME);
+          //viewer.setTarget(IB_CONTENT_FRAME);
+          viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+          Link l = new Link();
+          l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+          viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+          //Link link = new Link();
+          //link.addParameter("view","builder");
+          //link.setTarget(IB_CONTENT_FRAME);
+          viewer.setLinkProtototype(l);
+          add(viewer);
+          String page_id = modinfo.getParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
+          if(page_id!=null){
+            modinfo.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY,page_id);
+          }
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
       }
   }
 
@@ -180,6 +211,7 @@ public class IBApplication extends IWApplication {
       }
 
       public void main(ModuleInfo modinfo){
+        super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload();top.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload()");
 
         String controlParameter = "builder_controlparameter";
 
@@ -247,7 +279,7 @@ public class IBApplication extends IWApplication {
             Link link_5 = new Link(tool_5);
             //link_5.setURL("#");
             //link_5.setOnClick("");
-            link_4.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_URL+"'");
+            link_5.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_URL+"'");
 
             add(link_5);
 

@@ -50,6 +50,7 @@ public class BuilderLogic{
 
     public static final String IW_BUNDLE_IDENTIFIER="com.idega.builder";
 
+    public static final String SESSION_PAGE_KEY = "ib_page_id";
 
 
   private static BuilderLogic instance;
@@ -189,12 +190,21 @@ public class BuilderLogic{
 
   }
 
+  public String getCurrentIBPage(ModuleInfo modinfo){
+    String theReturn = (String)modinfo.getSessionAttribute(SESSION_PAGE_KEY);
+    if(theReturn==null){
+      return "1";
+    }
+    else
+      return theReturn;
+  }
+
   public  ModuleObject getAddIcon(String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif","Add new component");
     Link link = new Link(addImage);
     link.setWindowToOpen(IBAddModuleWindow.class);
-    link.addParameter(ib_page_parameter,"1");
+    link.addParameter(ib_page_parameter,getCurrentIBPage(modinfo));
     link.addParameter(ib_control_parameter,ACTION_ADD);
     link.addParameter(ib_parent_parameter,parentKey);
 
@@ -206,7 +216,7 @@ public class BuilderLogic{
     Image deleteImage = bundle.getImage("delete.gif","Delete component");
     Link link = new Link(deleteImage);
     link.setWindowToOpen(IBDeleteModuleWindow.class);
-    link.addParameter(ib_page_parameter,"1");
+    link.addParameter(ib_page_parameter,getCurrentIBPage(modinfo));
     link.addParameter(ib_control_parameter,ACTION_DELETE);
     link.addParameter(ib_parent_parameter,parentKey);
     link.addParameter(ic_object_id_parameter,key);
@@ -231,7 +241,7 @@ public class BuilderLogic{
     Image editImage = bundle.getImage("edit.gif","Edit component");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPropertiesWindow.class);
-    link.addParameter(ib_page_parameter,"1");
+    link.addParameter(ib_page_parameter,getCurrentIBPage(modinfo));
     link.addParameter(ib_control_parameter,ACTION_EDIT);
     link.addParameter(ic_object_id_parameter,key);
     return link;
@@ -261,8 +271,10 @@ public class BuilderLogic{
       table.setCellspacing(2);
       table.setColor("gray");
       table.setColor(1,2,"white");
+      table.setHeight(1,1,"11");
 
       if(theObject!=null){
+        //table.add(theObject.getClassName());
         table.add(getDeleteIcon(theObject.getICObjectInstanceID(),parentKey,modinfo));
         table.add(getEditIcon(theObject.getICObjectInstanceID(),modinfo));
       }

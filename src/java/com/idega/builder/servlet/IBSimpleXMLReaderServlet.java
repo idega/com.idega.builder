@@ -38,7 +38,7 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
     try{
       page = PageCacher.getPage(prefix+File.separator+fileName);
     }
-    catch(Exception e){
+    catch(RuntimeException e){
       e.printStackTrace();
     }
     if(builderview){
