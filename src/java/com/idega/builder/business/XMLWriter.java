@@ -204,6 +204,7 @@ public class XMLWriter {
         ICObjectInstance instance = new ICObjectInstance();
         instance.setICObjectID(newICObjectTypeID);
         instance.insert();
+        System.out.println("instanceid="+instance.getID());
 
         Element newElement = new Element(MODULE_STRING);
         Attribute id = new Attribute(ID_STRING,Integer.toString(instance.getID()));
@@ -260,7 +261,7 @@ public class XMLWriter {
       String theRest = parentObjectInstanceID.substring(parentObjectInstanceID.indexOf(".")+1,parentObjectInstanceID.length());
 
       int xpos = Integer.parseInt(theRest.substring(0,theRest.indexOf(".")));
-      int ypos = Integer.parseInt(theRest.substring(theRest.indexOf(".")+1),theRest.length());
+      int ypos = Integer.parseInt(theRest.substring(theRest.indexOf(".")+1,theRest.length()));
 
       return addNewModule(xml,parentID,newICObjectID,xpos,ypos);
     }

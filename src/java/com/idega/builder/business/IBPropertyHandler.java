@@ -31,7 +31,7 @@ public class IBPropertyHandler{
     }
 
 
-      public static ModuleObject getInterfaceComponent(Class theClass,String name){
+    public static ModuleObject getInterfaceComponent(Class theClass,String name){
       ModuleObject obj =null;
       String className = theClass.getName();
       if(className.equals("java.lang.Integer") || className.equals("int")){

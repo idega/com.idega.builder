@@ -11,6 +11,7 @@ package com.idega.builder.business;
 
 import com.idega.builder.data.IBPage;
 import com.idega.builder.presentation.IBAdminWindow;
+import com.idega.builder.presentation.IBAddModuleWindow;
 
 import com.idega.core.data.ICObject;
 
@@ -174,8 +175,10 @@ public class BuilderLogic{
   public  ModuleObject getAddIcon(String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif");
-    Window window = new IBAdminWindow();
-    Link link = new Link(addImage,window);
+    //Window window = new IBAdminWindow();
+    //Link link = new Link(addImage,window);
+    Link link = new Link(addImage);
+    link.setWindowToOpen(IBAddModuleWindow.class);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_ADD);
     link.addParameter(ib_parent_parameter,parentKey);
@@ -186,8 +189,10 @@ public class BuilderLogic{
   public  ModuleObject getDeleteIcon(int key,String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image deleteImage = bundle.getImage("delete.gif");
-    Window window = new IBAdminWindow();
-    Link link = new Link(deleteImage,window);
+    //Window window = new IBAdminWindow();
+    //Link link = new Link(deleteImage,window);
+    Link link = new Link(deleteImage);
+    link.setWindowToOpen(IBAdminWindow.class);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_DELETE);
     link.addParameter(ib_parent_parameter,parentKey);
@@ -198,9 +203,11 @@ public class BuilderLogic{
 
   public  ModuleObject getMoveIcon(int key,String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image deleteImage = bundle.getImage("move.gif");
-    Window window = new IBAdminWindow();
-    Link link = new Link(deleteImage,window);
+    Image moveImage = bundle.getImage("move.gif");
+    //Window window = new IBAdminWindow();
+    //Link link = new Link(deleteImage,window);
+    Link link = new Link(moveImage);
+    link.setWindowToOpen(IBAdminWindow.class);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_MOVE);
     link.addParameter(ib_parent_parameter,parentKey);
@@ -212,8 +219,10 @@ public class BuilderLogic{
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image editImage = bundle.getImage("edit.gif");
 
-    Window window = new IBAdminWindow();
-    Link link = new Link(editImage,window);
+    //Window window = new IBAdminWindow();
+    //Link link = new Link(editImage,window);
+    Link link = new Link(editImage);
+    link.setWindowToOpen(IBAdminWindow.class);
     link.addParameter(ib_page_parameter,"1");
     link.addParameter(ib_control_parameter,ACTION_EDIT);
     link.addParameter(ic_object_id_parameter,key);

@@ -12,6 +12,7 @@ package com.idega.builder.business;
 
 import com.idega.builder.data.*;
 import com.idega.jmodule.object.*;
+import java.lang.reflect.Method;
 
 import java.io.InputStream;
 
@@ -36,6 +37,8 @@ public class XMLReader {
 
     private static final String PAGE_STRING = "page";
     private static final String ID_STRING = "id";
+
+    private static final String TYPE_TAG = "type";
 
     //private static Hashtable theRegions;
 
@@ -188,11 +191,8 @@ public class XMLReader {
           catch(NumberFormatException e){
               int parentID = Integer.parseInt(regionID.substring(0,regionID.indexOf(".")));
               String theRest = regionID.substring(regionID.indexOf(".")+1,regionID.length());
-
               x = Integer.parseInt(theRest.substring(0,theRest.indexOf(".")));
-              y = Integer.parseInt(theRest.substring(theRest.indexOf(".")+1),theRest.length());
-
-
+              y = Integer.parseInt(theRest.substring(theRest.indexOf(".")+1,theRest.length()));
           }
         }
 
@@ -246,6 +246,9 @@ public class XMLReader {
         List li = properties.getChildren();
         Iterator it = li.iterator();
 
+        Element typeEl = properties.getChild(TYPE_TAG);
+
+
         while (it.hasNext()) {
             Element e = (Element)it.next();
 
@@ -263,7 +266,7 @@ public class XMLReader {
                 values.addElement(e.getTextTrim());
             }
             else
-                System.err.println("Error!!!!");
+                System.err.println("Error in setProperties!!!!");
         }
 
         if (key != null) {
@@ -273,6 +276,17 @@ public class XMLReader {
             object.setProperty(key,vals);
         }
     }
+
+    static void setReflectionProperty(ModuleObject instance,String methodIdentifier,Element values){
+      ComponentPropertyHandler.getInstance().setReflectionProperty(instance,methodIdentifier,values);
+    }
+/*
+    static void setReflectionProperty(ModuleObject instance,Method method,Element values){
+        Object[] args = getObjectArguments(values);
+        method.invoke(instance,args);
+    }
+*/
+
 
 
     static void parseElement(Element el, ModuleObjectContainer parent) {

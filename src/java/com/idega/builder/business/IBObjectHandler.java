@@ -34,7 +34,8 @@ public class IBObjectHandler {
         newObj.setName(PublicName);
         newObj.insert();
         return newObj.getID();
-    }else{
+    }
+    else{
       System.out.println(" WARNING! : This ICObject has been adden before and got the object_id = " + objID);
       return objID;
     }

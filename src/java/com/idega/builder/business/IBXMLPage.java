@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.1 2001/07/16 09:51:03 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.2 2001/08/23 18:00:52 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -94,7 +94,8 @@ public class IBXMLPage {
   public boolean update(){
       try{
         IBPage ibpage = new IBPage(Integer.parseInt(key));
-        store(ibpage.getPageValueForWrite());
+        OutputStream stream = ibpage.getPageValueForWrite();
+        store(stream);
         ibpage.update();
         //ibpage.setPageValue(xmlDocument.);
         //setXMLPageDescriptionFile(ibpage.getPageValue());
@@ -123,6 +124,7 @@ public class IBXMLPage {
       outputter.setLineSeparator(System.getProperty("line.separator"));
       outputter.setTrimText(true);
       outputter.output(xmlDocument,stream);
+      stream.close();
     }
     catch(IOException e) {
       e.printStackTrace();
@@ -165,10 +167,12 @@ public class IBXMLPage {
    * @throws com.idega.exception.PageDescriptionDoesNotExists The given XML file does not exists.
    */
   public void setXMLPageDescriptionFile(InputStream stream) throws PageDoesNotExist {
+    boolean streamopen=true;
     try {
       xmlDocument = builder.build(stream);
       stream.close();
       rootElement = xmlDocument.getRootElement();
+      streamopen=false;
     }
     catch(org.jdom.JDOMException e) {
       System.err.println("JDOM Exception: " + e.getMessage());
@@ -177,9 +181,23 @@ public class IBXMLPage {
     catch(java.io.IOException ioe) {
       ioe.printStackTrace();
     }
+    finally{
+      if(streamopen){
+        try{
+          System.out.println("Closing page inputstream");
+          if(stream!=null){
+            stream.close();
+          }
+        }
+        catch(IOException e){
+          e.printStackTrace();
+        }
+      }
+    }
   }
 
   public void setPageAsEmptyPage(){
+    System.out.println("setPageAsEmptyPage");
     rootElement = new Element(ROOT_STRING);
     Element pageElement = new Element(PAGE_STRING);
     rootElement.addContent(pageElement);

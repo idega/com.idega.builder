@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.4 2001/07/16 09:51:18 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.5 2001/08/23 18:00:52 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,12 @@
  */
 package com.idega.builder.servlet;
 
+
 import com.idega.jmodule.JSPModule;
 import com.idega.jmodule.object.ModuleInfo;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.data.*;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -25,15 +27,25 @@ public class IBMainServlet extends JSPModule {
 
   public void initializePage(){
     ModuleInfo modinfo = getModuleInfo();
-    int id;
-    String page_id = modinfo.getParameter("idegaweb_page_id");
+    /**
+     * @todo change from hardcoded domain_id
+     */
+    int domain_id=1;
+    int i_page_id=1;
+    String page_id = modinfo.getParameter("iw_page_id");
     if(page_id == null){
-      id = 1;
+      try{
+        IBDomain domain = IBDomain.getDomain(domain_id);
+        i_page_id = domain.getStartPageID();
+      }
+      catch(java.sql.SQLException e){
+        e.printStackTrace();
+      }
     }
     else {
-      id = Integer.parseInt(page_id);
+      i_page_id = Integer.parseInt(page_id);
     }
-    setPage(BuilderLogic.getInstance().getPage(id,modinfo));
+    setPage(BuilderLogic.getInstance().getPage(i_page_id,modinfo));
 
   }
 

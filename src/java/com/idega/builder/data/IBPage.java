@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.8 2001/07/17 02:16:11 tryggvil Exp $
+ * $Id: IBPage.java,v 1.9 2001/08/23 18:00:52 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,16 +10,28 @@
 package com.idega.builder.data;
 
 import java.sql.SQLException;
-import com.idega.data.GenericEntity;
-import com.idega.data.BlobWrapper;
+
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.BlobWrapper;
+
+import com.idega.core.data.ICFile;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.3
  */
-public class IBPage extends GenericEntity {
+public class IBPage extends TreeableEntity{
+
+      private static String template_id_column = "template_id";
+      private static String file_column = "file_id";
+      private static String name_column = "name";
+      private static String entity_name = "ib_page";
+
+      private ICFile file;
+
 	public IBPage() {
 		super();
 	}
@@ -28,21 +40,27 @@ public class IBPage extends GenericEntity {
 		super(id);
 	}
 
-	public void initializeAttributes() {
+	public void initializeAttributes(){
 		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
 		addAttribute(getIDColumnName());
-		addAttribute("name","Nafn",true,true,"java.lang.String");
-                addAttribute("page_value","Page value",true,true,"com.idega.data.BlobWrapper");
+		addAttribute(getColumnName(),"Nafn",true,true,"java.lang.String");
+                //addAttribute("page_value","Page value",true,true,"com.idega.data.BlobWrapper");
+                addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
+                addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBTemplatePage.class);
+
+                //this.addTreeRelationShip();
+
 	}
 
         public void insertStartData()throws Exception{
-          IBPage page = new IBPage();
+          /*IBPage page = new IBPage();
           page.setName("Empty page");
           page.insert();
+          */
         }
 
 	public String getEntityName() {
-		return "ib_page";
+		return entity_name;
 	}
 
 	public void setDefaultValues() {
@@ -50,30 +68,128 @@ public class IBPage extends GenericEntity {
 	}
 
 	public String getName() {
-		return getStringColumnValue("name");
+		return getStringColumnValue(getColumnName());
 	}
 
 
         public void setName(String name) {
-          setColumn("name",name);
+          setColumn(getColumnName(),name);
+        }
+
+        public ICFile getFile(){
+          if(this.file==null){
+            return (ICFile)getColumnValue(getColumnFile());
+          }
+          else{
+            return file;
+          }
+        }
+
+        public void setFile(ICFile file){
+          System.out.println("Calling setFile");
+          setColumn(getColumnFile(),file);
+          this.file = file;
         }
 
         public void setPageValue(InputStream stream) {
-          setColumn("page_value",stream);
+          //setColumn("page_value",stream);
+          ICFile file = getFile();
+          if(file==null){
+            file = new ICFile();
+            setFile(file);
+          }
+          file.setFileValue(stream);
         }
 
-        public InputStream getPageValue() {
+        public InputStream getPageValue(){
           try {
-            return getInputStreamColumnValue("page_value");
+            //return getInputStreamColumnValue("page_value");
+            ICFile file = getFile();
+            if(file!=null){
+              return file.getFileValue();
+            }
+            return null;
+
           }
-          catch(java.lang.Exception e) {
+          catch(Exception e) {
             return null;
           }
         }
 
-
         public OutputStream getPageValueForWrite() {
-          return getColumnOutputStream("page_value");
+          //return getColumnOutputStream("page_value");
+          ICFile file = getFile();
+          if(file==null){
+            file = new ICFile();
+            setFile(file);
+          }
+          return file.getFileValueForWrite();
+
+        }
+
+
+        public static String getColumnName(){
+          return name_column;
+        }
+
+        public static String getColumnTemplateID(){
+          return template_id_column;
+        }
+
+        public static String getColumnFile(){
+          return file_column;
+        }
+
+        public void update()throws SQLException{
+          ICFile file = getFile();
+          if(file!=null){
+            try{
+              System.out.println("file != null in update");
+              if(file.getID()==-1){
+                file.insert();
+                setFile(file);
+              }
+              else{
+                file.update();
+              }
+            }
+            catch(Exception e){
+              e.printStackTrace();
+            }
+          }
+          else{
+            System.out.println("file == null in update");
+          }
+          super.update();
+        }
+
+        public void insert()throws SQLException{
+          ICFile file = getFile();
+          if(file!=null){
+            System.out.println("file != null in insert");
+            file.insert();
+            setFile(file);
+          }
+          else{
+            System.out.println("file == null in insert");
+          }
+          super.insert();
+        }
+
+        public void delete()throws SQLException{
+          ICFile file = getFile();
+          if(file!=null){
+            System.out.println("file != null in delete");
+            try{
+              file.delete();
+            }
+            catch(SQLException e){
+            }
+          }
+          else{
+            System.out.println("file == null in delete");
+          }
+          super.delete();
         }
 
 

@@ -17,14 +17,15 @@ import com.idega.exception.PageDoesNotExist;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.HashMap;
 import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class PageCacher{
 
-  private static Map pageCache = new Hashtable();
-  private static Map pagesValid = new Hashtable();
+  private static Map pageCache = new HashMap();
+  private static Map pagesValid = new HashMap();
 
   private PageCacher(){
 
@@ -83,6 +84,7 @@ public class PageCacher{
     IBXMLPage xml = null;
     if (isPageInvalid(key)){
       xml = new IBXMLPage(false,key);
+      setPage(key,xml);
     }
     else{
       xml = getXMLPageCached(key);
