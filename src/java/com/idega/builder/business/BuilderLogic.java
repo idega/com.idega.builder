@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.30 2001/09/28 15:39:45 palli Exp $
+ * $Id: BuilderLogic.java,v 1.31 2001/09/28 18:42:59 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -151,13 +151,16 @@ public class BuilderLogic {
         if (!page.isLocked()) {
           page.add(getAddIcon(Integer.toString(-1),modinfo));
           if (page.getIsTemplate())
-            page.add(getUnlockIcon(Integer.toString(-1),modinfo));
+            page.add(getUnlockedIcon(Integer.toString(-1),modinfo));
         }
       }
       else {
         page.add(getAddIcon(Integer.toString(-1),modinfo));
         if (page.getIsTemplate())
-          page.add(getUnlockIcon(Integer.toString(-1),modinfo));
+          if (page.isLocked())
+            page.add(getLockedIcon(Integer.toString(-1),modinfo));
+          else
+            page.add(getUnlockedIcon(Integer.toString(-1),modinfo));
       }
 
       return page;
@@ -240,9 +243,9 @@ public class BuilderLogic {
                 tab.add(getAddIcon(newParentKey,modinfo),x,y);
                 if (curr.getIsTemplate()) {
                   if (tab.isLocked(x,y))
-                    tab.add(getLockIcon(newParentKey,modinfo),x,y);
+                    tab.add(getLockedIcon(newParentKey,modinfo),x,y);
                   else
-                    tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
+                    tab.add(getUnlockedIcon(newParentKey,modinfo),x,y);
                 }
               }
             }
@@ -250,9 +253,9 @@ public class BuilderLogic {
               tab.add(getAddIcon(newParentKey,modinfo),x,y);
               if (curr.getIsTemplate()) {
                 if (tab.isLocked(x,y))
-                  tab.add(getLockIcon(newParentKey,modinfo),x,y);
+                  tab.add(getLockedIcon(newParentKey,modinfo),x,y);
                 else
-                  tab.add(getUnlockIcon(newParentKey,modinfo),x,y);
+                  tab.add(getUnlockedIcon(newParentKey,modinfo),x,y);
               }
             }
           }
@@ -302,9 +305,9 @@ public class BuilderLogic {
               ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
               if (curr.getIsTemplate()) {
                 if (!((ModuleObjectContainer)obj).isLocked())
-                  ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                  ((ModuleObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
                 else
-                  ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                  ((ModuleObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
               }
             }
           }
@@ -312,9 +315,9 @@ public class BuilderLogic {
             ((ModuleObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
             if (curr.getIsTemplate()) {
               if (!((ModuleObjectContainer)obj).isLocked())
-                ((ModuleObjectContainer)obj).add(getLockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                ((ModuleObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
               else
-                ((ModuleObjectContainer)obj).add(getUnlockIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
+                ((ModuleObjectContainer)obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()),modinfo));
             }
           }
         }
@@ -352,7 +355,7 @@ public class BuilderLogic {
     return link;
   }
 
-  public ModuleObject getLockIcon(String parentKey, ModuleInfo modinfo) {
+  public ModuleObject getLockedIcon(String parentKey, ModuleInfo modinfo) {
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image lockImage = bundle.getImage("las_close.gif","Unlock region");
     Link link = new Link(lockImage);
@@ -364,7 +367,7 @@ public class BuilderLogic {
     return(link);
   }
 
-  public ModuleObject getUnlockIcon(String parentKey, ModuleInfo modinfo) {
+  public ModuleObject getUnlockedIcon(String parentKey, ModuleInfo modinfo) {
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image lockImage = bundle.getImage("las_open.gif","Lock region");
     Link link = new Link(lockImage);
