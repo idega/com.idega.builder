@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.15 2001/10/11 15:35:45 palli Exp $
+ * $Id: IBXMLPage.java,v 1.16 2001/10/11 16:13:04 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -126,6 +126,17 @@ public class IBXMLPage {
   /**
    *
    */
+  public void removeUsingTemplate(String id) {
+    if (_usingTemplate == null)
+      return;
+
+    if (_usingTemplate.contains(id))
+      _usingTemplate.remove(id);
+  }
+
+  /**
+   *
+   */
   public List getUsingTemplate() {
     if (_usingTemplate == null)
       findAllUsingTemplate();
@@ -134,17 +145,14 @@ public class IBXMLPage {
 
   private void findAllUsingTemplate() {
     _usingTemplate = new Vector();
-//    try {
-      List l = IBPageFinder.getAllPagesExtendingTemplate(Integer.parseInt(_key));//com.idega.data.EntityFinder.findAllByColumn(new com.idega.builder.data.IBPage(),com.idega.builder.data.IBPage.getColumnTemplateID(),Integer.parseInt(_key),IBPage.getColumnDeleted(),
-      if (l == null)
-        return;
-      Iterator i = l.iterator();
-      while (i.hasNext()) {
-        IBPage p = (IBPage)i.next();
-        addUsingTemplate(Integer.toString(p.getID()));
-      }
-//    }
-//    catch(java.sql.SQLException e) {}
+    List l = IBPageFinder.getAllPagesExtendingTemplate(Integer.parseInt(_key));
+    if (l == null)
+      return;
+    Iterator i = l.iterator();
+    while (i.hasNext()) {
+      IBPage p = (IBPage)i.next();
+      addUsingTemplate(Integer.toString(p.getID()));
+    }
   }
 
   private void invalidateUsingTemplate() {
