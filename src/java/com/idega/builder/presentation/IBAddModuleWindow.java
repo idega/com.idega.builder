@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.31 2003/08/07 19:02:40 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.32 2003/09/22 16:39:22 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -97,7 +97,12 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		String label = (String) iwc.getSessionAttribute(IB_LABEL_PARAMETER);
 		if (label == null) {
 			label = iwc.getParameter(IB_LABEL_PARAMETER);
-			iwc.setSessionAttribute(IB_LABEL_PARAMETER, label);
+			if( label!=null ) {
+				iwc.setSessionAttribute(IB_LABEL_PARAMETER, label);
+			}
+			else {
+				System.err.println("IBAddModuleWindow: Label is null "+ IB_LABEL_PARAMETER);
+			}
 		}
 	
 		if (hasSubmitted(iwc)) {
