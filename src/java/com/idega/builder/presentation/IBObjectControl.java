@@ -22,6 +22,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.text.TextStyler;
 import com.idega.xml.XMLElement;
 
 /**
@@ -123,7 +124,7 @@ public class IBObjectControl extends PresentationObjectContainer
 		showLayers = "showHideLayers('" + layer.getID() + "','','show');";
 		if (hideLayer)
 			showLayers += " showHideLayers('" + _tableLayer.getID() + "','','hide');";
-		layer.setOnMouseOut(hideLayers);
+		layer.setMarkupAttribute("onmouseout", hideLayers);
 		//controlLayer.add(layer);
 		_table = new Table(3, 5);
 		//_table.add(controlLayer);
@@ -330,16 +331,23 @@ public class IBObjectControl extends PresentationObjectContainer
 		}
 		if (obj instanceof Layer)
 		{
-			if (obj.isMarkupAttributeSet(Layer.LEFT))
-				_layer.setLeftPosition(obj.getMarkupAttribute(Layer.LEFT));
-			if (obj.isMarkupAttributeSet(Layer.TOP))
-				_layer.setTopPosition(obj.getMarkupAttribute(Layer.TOP));
-			if (obj.isMarkupAttributeSet(Layer.ZINDEX))
-				_layer.setZIndex(obj.getMarkupAttribute(Layer.ZINDEX));
-			obj.removeMarkupAttribute(Layer.LEFT);
-			obj.removeMarkupAttribute(Layer.TOP);
-			obj.removeMarkupAttribute(Layer.POSITION);
-			obj.removeMarkupAttribute(Layer.ZINDEX);
+			Layer tempLayer = (Layer) obj;
+			TextStyler styler = new TextStyler(tempLayer.getStyleAttribute());
+			
+			if (styler.isStyleSet(Layer.LEFT)) {
+				_layer.setLeftPosition(styler.getStyleValue(Layer.LEFT));
+			}
+			if (styler.isStyleSet(Layer.TOP)) {
+				_layer.setLeftPosition(styler.getStyleValue(Layer.TOP));
+			}
+			if (styler.isStyleSet(Layer.ZINDEX)) {
+				_layer.setLeftPosition(styler.getStyleValue(Layer.ZINDEX));
+			}
+			styler.removeStyleValue(Layer.LEFT);
+			styler.removeStyleValue(Layer.TOP);
+			styler.removeStyleValue(Layer.POSITION);
+			styler.removeStyleValue(Layer.ZINDEX);
+			obj.setStyleAttribute(styler.getStyleString());
 		}
 		_tableLayer.add(obj);
 		obj.setParentObject(_parent);
