@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.35 2002/12/20 15:39:37 palli Exp $
+ * $Id: IBPropertyHandler.java,v 1.36 2002/12/29 23:23:05 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -303,8 +303,8 @@ public class IBPropertyHandler {
 		}
 		if (parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)) {
 			obj = new IntegerInput(name);
-			((IntegerInput) obj).setMaxlength(4);
-			((IntegerInput) obj).setLength(4);
+			((IntegerInput) obj).setMaxlength(9);
+			((IntegerInput) obj).setLength(9);
 			if (stringValue != null) {
 				((IntegerInput) obj).setContent(stringValue);
 			}
