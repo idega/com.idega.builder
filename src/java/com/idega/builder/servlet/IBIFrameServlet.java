@@ -29,11 +29,11 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
      * @todo change from hardcoded domain_id
      */
     //int domain_id=1;
-    int i_page_id=1;
+/*    int i_page_id=1;
     String page_id = null;
     boolean builderview = false;
     boolean inBuilder = false;
-    /*
+*/    /*
     if (iwc.isParameterSet("view")) {
       if(blogic.isBuilderApplicationRunning(iwc)){
         inBuilder=true;
@@ -43,7 +43,7 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
       }
     }
 */
-    if(inBuilder){
+/*    if(inBuilder){
       page_id = (String) iwc.getSessionAttribute(BuilderLogic.SESSION_PAGE_KEY);
     }
     else{
@@ -63,14 +63,14 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
       }
       else{
         i_page_id = Integer.parseInt(page_id);
-      }
+      }*/
     /*}
     else {
       //iwc.setSessionAttribute(BuilderLogic.SESSION_PAGE_KEY,page_id);
       i_page_id = Integer.parseInt(page_id);
     }*/
 
-    Page parentPage = blogic.getPage(i_page_id,builderview,iwc);
+//    Page parentPage = blogic.getPage(i_page_id,builderview,iwc);
 /*
     //temp
     System.err.println("PageObjects bengin");
@@ -93,14 +93,18 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
     //temp
 */
     int instanceId = Integer.parseInt(iwc.getParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER));
-    PresentationObject obj = parentPage.getContainedICObjectInstance(instanceId);
+
+    //PresentationObject obj = parentPage.getContainedICObjectInstance(instanceId);
     PresentationObject iframeContent = null;
 
 
-
+/*
     if(obj instanceof IFrameContainer && obj != null){
       iframeContent = ((IFrameContainer)obj).getIFrameContent();
     }
+    */
+
+    iframeContent = blogic.getIFrameContent(-1,instanceId,iwc);
     Page pageToPrint = null;
     if(iframeContent != null){
       if(iframeContent instanceof Page){

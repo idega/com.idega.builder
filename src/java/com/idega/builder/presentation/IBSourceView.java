@@ -40,6 +40,7 @@ public class IBSourceView extends Window {
           }
           catch(Exception e){
             add("Error: "+e.getMessage());
+            e.printStackTrace();
           }
         }
       }

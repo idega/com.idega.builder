@@ -11,6 +11,7 @@ import com.idega.builder.business.IBXMLPage;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.IWContext;
+import com.idega.core.accesscontrol.data.PermissionGroup;
 
 import com.idega.business.GenericEntityComparator;
 import java.util.Collections;
@@ -220,6 +221,22 @@ public class DPTTriggerBusiness {
 
   private int createPage(IWContext iwc, int dptTemplateId, String name) throws SQLException{
     return createPage(iwc, dptTemplateId, name, new Hashtable());
+  }
+
+
+  public void copyPermission(PermissionGroup template, String oldModuleID, String newModuleID){
+    //
+    //
+    //
+    /**
+     * getTemplateGroups (linked to copyRule)
+     * copy group
+     * add templateGroup to new group
+     * set group to have same permission as templateGroup for new module id
+     */
+    //
+    //
+    //
   }
 
 

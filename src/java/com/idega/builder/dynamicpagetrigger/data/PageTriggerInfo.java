@@ -4,6 +4,7 @@ import com.idega.data.*;
 import com.idega.builder.data.IBPage;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.data.ICObject;
+import com.idega.core.data.GenericGroup;
 
 import java.sql.SQLException;
 
@@ -25,6 +26,7 @@ public class PageTriggerInfo extends GenericEntity {
 
   public static final String _TABLENAME_THIS_IBPAGE = "dpt_pti_ib_page";
   public static final String _TABLENAME_THIS_ICOBJECTINSTANCE = "dpt_pti_ic_object_instance";
+  public static final String _TABLENAME_THIS_IC_GROUP = "dpt_pti_ic_group";
 
 
   public PageTriggerInfo() {
@@ -42,6 +44,7 @@ public class PageTriggerInfo extends GenericEntity {
     this.addAttribute(_COLUMNNAME_DEFAULT_TEMPLATE_ID,"default tempalte",true,true,Integer.class,ONE_TO_MANY,IBPage.class);
     this.addManyToManyRelationShip(ICObjectInstance.class, _TABLENAME_THIS_ICOBJECTINSTANCE);
     this.addManyToManyRelationShip(IBPage.class, _TABLENAME_THIS_IBPAGE);
+    this.addManyToManyRelationShip(GenericGroup.class, _TABLENAME_THIS_IC_GROUP);
   }
 
 
