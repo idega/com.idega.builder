@@ -121,7 +121,11 @@ public IBPropertiesWindow() {
     }
 
     public void main(IWContext iwc){
-      IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+      Table table = new Table(1, 1);
+      table.setCellpaddingAndCellspacing(0);
+      table.setWidth(Table.HUNDRED_PERCENT);
+      add(table);
+    	IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
       Image b1 = iwrb.getLocalizedImageButton("close","CLOSE");
       b1.setOnClick("javascript:doClose()");
@@ -131,8 +135,8 @@ public IBPropertiesWindow() {
       b3.setOnClick("javascript:doApply()");
       Table t = new Table(3,1);
       t.setHeight("100%");
-      t.setAlignment("right");
-      add(t);
+      table.setAlignment(1, 1, "right");
+      table.add(t, 1, 1);
       t.add(b1,1,1);
       t.add(b2,2,1);
       t.add(b3,3,1);
