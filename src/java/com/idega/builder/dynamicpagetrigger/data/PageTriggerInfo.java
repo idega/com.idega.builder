@@ -23,6 +23,7 @@ public class PageTriggerInfo extends GenericEntity {
 
   public static final String _COLUMNNAME_REFERENCED_IC_OBJECT_ID = "referenced_ic_object_id";
   public static final String _COLUMNNAME_DEFAULT_TEMPLATE_ID = "default_template_id";
+  public static final String _COLUMNNAME_ROOT_PAGE_ID = "root_page_id";
 
   public static final String _TABLENAME_THIS_IBPAGE = "dpt_pti_ib_page";
   public static final String _TABLENAME_THIS_ICOBJECTINSTANCE = "dpt_pti_ic_object_instance";
@@ -42,6 +43,8 @@ public class PageTriggerInfo extends GenericEntity {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(_COLUMNNAME_REFERENCED_IC_OBJECT_ID,"ICObject sem tengst er við",true,true,Integer.class,ONE_TO_MANY,ICObject.class);
     this.addAttribute(_COLUMNNAME_DEFAULT_TEMPLATE_ID,"default tempalte",true,true,Integer.class,ONE_TO_MANY,IBPage.class);
+    this.addAttribute(_COLUMNNAME_ROOT_PAGE_ID,"root page",true,true,Integer.class,ONE_TO_MANY,IBPage.class);
+
     this.addManyToManyRelationShip(ICObjectInstance.class, _TABLENAME_THIS_ICOBJECTINSTANCE);
     this.addManyToManyRelationShip(IBPage.class, _TABLENAME_THIS_IBPAGE);
     this.addManyToManyRelationShip(GenericGroup.class, _TABLENAME_THIS_IC_GROUP);
@@ -64,6 +67,8 @@ public class PageTriggerInfo extends GenericEntity {
     }
   }
 
+
+
   public void setICObject(int icObjId){
     this.setColumn(PageTriggerInfo._COLUMNNAME_REFERENCED_IC_OBJECT_ID,icObjId);
   }
@@ -71,6 +76,11 @@ public class PageTriggerInfo extends GenericEntity {
   public void setDefaultTemplateId(int ibPageId){
     this.setColumn(PageTriggerInfo._COLUMNNAME_DEFAULT_TEMPLATE_ID,ibPageId);
   }
+
+  public void setRootPageId(int ibPageId){
+    this.setColumn(PageTriggerInfo._COLUMNNAME_ROOT_PAGE_ID,ibPageId);
+  }
+
 
 
   public int getICObjectID(){
@@ -80,4 +90,9 @@ public class PageTriggerInfo extends GenericEntity {
   public int getDefaultTemplateId(){
     return this.getIntColumnValue(PageTriggerInfo._COLUMNNAME_DEFAULT_TEMPLATE_ID);
   }
+
+  public int getRootPageId(){
+    return this.getIntColumnValue(PageTriggerInfo._COLUMNNAME_ROOT_PAGE_ID);
+  }
+
 }

@@ -129,7 +129,7 @@ public class DPTTriggerBusiness {
       pl.setStandardParameters(standardParameters);
     }
 
-    int pageId = createPage(iwc,pti.getDefaultTemplateId(), defaultLinkText);
+    int pageId = createPage(iwc,pti.getDefaultTemplateId(), pti.getRootPageId(), defaultLinkText);
 
     pl.setPageId(pageId);
 
@@ -171,7 +171,7 @@ public class DPTTriggerBusiness {
   */
 
 
-  private int createPage(IWContext iwc, int dptTemplateId, String name, Map createdPages) throws SQLException{
+  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name, Map createdPages) throws SQLException{
     BuilderLogic instance = BuilderLogic.getInstance();
 
     IBPage page = new IBPage();
@@ -182,15 +182,15 @@ public class DPTTriggerBusiness {
     page.setType(IBPage.PAGE);
     page.setTemplateId(dptTemplateId);
 
-//    try {
+    try {
       page.insert();
-//      IBPage ibPageParent = new IBPage(Integer.parseInt(parentPageId));
-//      ibPageParent.addChild(page);
-/*    }
+      IBPage ibPageParent = new IBPage(parentId);
+      ibPageParent.addChild(page);
+    }
     catch(SQLException e) {
       return(-1);
     }
-*/
+
     createdPages.put(Integer.toString(dptTemplateId),Integer.toString(page.getID()));
 
     instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
@@ -234,7 +234,11 @@ public class DPTTriggerBusiness {
         int templateId = item.getDPTTemplateId();
         String createdPage = (String)createdPages.get(Integer.toString(templateId));
         if(createdPage == null){
-          int newID = this.createPage(iwc,templateId, name+" subpage",createdPages);
+          String subpageName = item.getName();
+          if(subpageName == null){
+            subpageName = "Untitled";
+          }
+          int newID = this.createPage(iwc,templateId, page.getID(), subpageName,createdPages);
           instance.changeLinkPageId(item,pageIDString,Integer.toString(newID));
         } else {
           instance.changeLinkPageId(item,pageIDString,createdPage);
@@ -246,8 +250,8 @@ public class DPTTriggerBusiness {
   }
 
 
-  private int createPage(IWContext iwc, int dptTemplateId, String name) throws SQLException{
-    return createPage(iwc, dptTemplateId, name, new Hashtable());
+  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name) throws SQLException{
+    return createPage(iwc, dptTemplateId, parentId, name, new Hashtable());
   }
 
 
