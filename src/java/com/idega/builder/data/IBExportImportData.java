@@ -10,11 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.FinderException;
+import com.idega.builder.business.FileBusiness;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
 import com.idega.builder.io.IBExportImportDataReader;
-import com.idega.builder.io.IBExportImportDataWriter;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
@@ -208,7 +208,7 @@ public class IBExportImportData implements Storable {
 	}	
 	
 	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
-		return ((IBExportImportDataWriter) writer).write(this, iwc);
+		return ((FileBusiness)writer).write(this, iwc);
 	}
 	
 	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
