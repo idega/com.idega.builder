@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.61 2001/10/31 13:12:46 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.62 2001/10/31 16:52:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,8 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Page;
 import com.idega.presentation.Image;
+import com.idega.presentation.Script;
+import com.idega.presentation.Layer;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.Block;
 import com.idega.presentation.text.Link;
@@ -154,6 +156,8 @@ public class BuilderLogic {
    */
   public Page getBuilderTransformed(String pageKey,Page page,IWContext iwc) {
     List list = page.getAllContainingObjects();
+    Layer layer = new Layer();
+      layer.setZIndex(0);
     if (list != null) {
       ListIterator iter = list.listIterator();
       PresentationObjectContainer parent = page;
@@ -166,18 +170,20 @@ public class BuilderLogic {
     //"-1" is identified as the top page object (parent)
     if (page.getIsExtendingTemplate()) {
       if (!page.isLocked()) {
-        page.add(getAddIcon(Integer.toString(-1),iwc,null));
-        page.add(getPasteIcon(Integer.toString(-1),iwc));
+        layer.add(getAddIcon(Integer.toString(-1),iwc,null));
+        layer.add(getPasteIcon(Integer.toString(-1),iwc));
+        page.add(layer);
       }
     }
     else {
-      page.add(getAddIcon(Integer.toString(-1),iwc,null));
-      page.add(getPasteIcon(Integer.toString(-1),iwc));
+      layer.add(getAddIcon(Integer.toString(-1),iwc,null));
+      layer.add(getPasteIcon(Integer.toString(-1),iwc));
       if (page.getIsTemplate())
         if (page.isLocked())
-          page.add(getLockedIcon(Integer.toString(-1),iwc));
+          layer.add(getLockedIcon(Integer.toString(-1),iwc));
         else
-          page.add(getUnlockedIcon(Integer.toString(-1),iwc));
+          layer.add(getUnlockedIcon(Integer.toString(-1),iwc));
+      page.add(layer);
     }
 
     return(page);
@@ -407,7 +413,7 @@ public class BuilderLogic {
       if(index != -1){
         //parent.remove(obj);
         //parent.add(new BuilderObjectControl(obj,parent));
-        parent.set(index,new BuilderObjectControl(obj,parent,parentKey,iwc));
+        parent.set(index,new BuilderObjectControl(obj,parent,parentKey,iwc,index));
       }
     }
   }
@@ -444,6 +450,7 @@ public class BuilderLogic {
   public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif","Add new component");
+    addImage.setAttribute("style","z-index: 0;");
     Link link = new Link(addImage);
     link.setWindowToOpen(IBAddModuleWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
@@ -536,22 +543,54 @@ public class BuilderLogic {
   private class BuilderObjectControl extends PresentationObjectContainer {
     private com.idega.presentation.Layer _layer;
     private Table _table;
+    private Table table;
     private PresentationObjectContainer _parent;
     private String _parentKey;
     private PresentationObject _theObject;
+    private int number = 0;
 
-    public BuilderObjectControl(PresentationObject obj, PresentationObjectContainer objectParent, String theParentKey, IWContext iwc) {
+    public BuilderObjectControl(PresentationObject obj, PresentationObjectContainer objectParent, String theParentKey, IWContext iwc,int index) {
       _parent = objectParent;
       _theObject = obj;
       _parentKey = theParentKey;
+      number = index;
       init(iwc);
       add(obj);
     }
 
+    public void main(IWContext iwc){
+      Script script = getParentPage().getAssociatedScript();
+      script.addFunction("findObj(n, d)","function findObj(n, d) { \n\t var p,i,x;  if(!d) d=document; \n\t if((p=n.indexOf(\"?\"))>0&&parent.frames.length) { \n\t     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p); \n\t } \n\t  if(!(x=d[n])&&d.all) x=d.all[n]; \n\t for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n]; \n\t  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); \n\t if(!x && document.getElementById) x=document.getElementById(n); return x; \n }");
+      script.addFunction("showHideLayers()","function showHideLayers() { \n\t var i,p,v,obj,args=showHideLayers.arguments; \n\t for (i=0; i<(args.length-2); i+=3) \n\t if ((obj=findObj(args[i]))!=null) { \n\t v=args[i+2]; \n\t   if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v='hide')?'hidden':v; \n\t }    obj.visibility=v; \n\t }\n}");
+      getParentPage().setAssociatedScript(script);
+    }
+
     private void init(IWContext iwc){
-      _layer = new com.idega.presentation.Layer();
+      _layer = new Layer();
+
+      Layer controlLayer = new Layer(Layer.DIV);
+        controlLayer.setPositionType(Layer.RELATIVE);
+        controlLayer.setWidth(0);
+        controlLayer.setHeight(0);
+
+      Layer layer = new Layer(Layer.DIV);
+        layer.setID(_layer.getID()+"a");
+        layer.setPositionType(Layer.ABSOLUTE);
+        layer.setTopPosition(0);
+        layer.setLeftPosition(0);
+        layer.setBackgroundColor("#CCCCCC");
+        layer.setVisibility("hidden");
+        layer.setZIndex(1);
+        layer.setWidth(0);
+        layer.setHeight(0);
+        layer.setOnMouseOut("showHideLayers('"+layer.getID()+"','','hide')");
+
+      controlLayer.add(layer);
+
       _table = new Table(1,2);
+      _table.add(controlLayer);
       _layer.add(_table);
+      _layer.setZIndex(1000-number);
       super.add(_layer);
       _table.setBorder(0);
       _table.setCellpadding(0);
@@ -560,17 +599,41 @@ public class BuilderLogic {
       _table.setColor(1,2,"white");
       _table.setHeight(1,1,"11");
 
+      Image image = new Image("/idegaweb/bundles/builder.bundle/resources/delete.gif");
+      image.setAttribute("onClick","showHideLayers('"+layer.getID()+"','','show')");
+
+
       if(_theObject!=null){
         //table.add(theObject.getClassName());
-        _table.add(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc));
-        _table.add(getEditIcon(_theObject.getICObjectInstanceID(),iwc));
-        _table.add(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc));
-        _table.add(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc));
+        _table.add(image);
+
+        table = new Table();
+        table.setCellpadding(3);
+        table.setCellspacing(3);
+        table.setWidth(100);
+        table.setHeight(90);
+        table.setColor("#CCCCCC");
+        table.setAttribute("onMouseOver","showHideLayers('"+layer.getID()+"','','show')");
+        table.setAttribute("onClick","showHideLayers('"+layer.getID()+"','','hide')");
+        addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,1,layer.getID());
+        addToTable(new Text("Delete"),2,1,layer.getID());
+        addToTable(getEditIcon(_theObject.getICObjectInstanceID(),iwc),1,2,layer.getID());
+        addToTable(new Text("Edit"),2,2,layer.getID());
+        addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(),iwc),1,3,layer.getID());
+        addToTable(new Text("Permission"),2,3,layer.getID());
+        addToTable(getCopyIcon(_theObject.getICObjectInstanceID(),_parentKey,iwc),1,4,layer.getID());
+        addToTable(new Text("Copy"),2,4,layer.getID());
+        layer.add(table);
       }
       else{
           _table.add(getDeleteIcon(0,_parentKey,iwc));
           _table.add(getEditIcon(0,iwc));
       }
+    }
+
+    private void addToTable(PresentationObject obj,int col,int row,String ID) {
+      obj.setAttribute("onMouseOver","showHideLayers('"+ID+"','','show')");
+      table.add(obj,col,row);
     }
 
     public void add(PresentationObject obj){
@@ -831,6 +894,7 @@ public class BuilderLogic {
   public PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc) {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image copyImage = bundle.getImage("copy.gif","Copy component");
+    copyImage.setAttribute("style","z-index: 0;");
     Link link = new Link(copyImage);
 //    link.setWindowToOpen(IBDeleteModuleWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
