@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.84 2001/12/19 14:48:10 palli Exp $
+ * $Id: BuilderLogic.java,v 1.85 2001/12/20 19:16:09 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1221,16 +1221,17 @@ public class BuilderLogic {
   /**
    *
    */
-  public void changeLinkPageId(IWMainApplication iwma, Link link, String newPageId) {
+  public void changeLinkPageId(IWMainApplication iwma, Link link, String linkParentPageId, String newPageId) {
     int moduleId = link.getICObjectInstanceID();
-    int pageId = link.getParentObjectInstanceID();
+    //int pageId = link.getParentPageID();
 
     /**
      * @todo Laga þetta!!!
      */
     String element = ":method:1:implied:void:setPage:com.idega.builder.data.IBPage:";
 
-    IBXMLPage page = getIBXMLPage(pageId);
+    //IBXMLPage page = getIBXMLPage(pageId);
+    IBXMLPage page = getIBXMLPage(linkParentPageId);
     XMLWriter.setProperty(iwma,page,moduleId,element,newPageId);
     page.update();
   }

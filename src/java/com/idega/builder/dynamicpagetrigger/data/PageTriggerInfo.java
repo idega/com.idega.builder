@@ -68,4 +68,13 @@ public class PageTriggerInfo extends GenericEntity {
   public void setDefaultTemplateId(int ibPageId){
     this.setColumn(PageTriggerInfo._COLUMNNAME_DEFAULT_TEMPLATE_ID,ibPageId);
   }
+
+
+  public int getICObjectID(){
+    return this.getIntColumnValue(PageTriggerInfo._COLUMNNAME_REFERENCED_IC_OBJECT_ID);
+  }
+
+  public int getDefaultTemplateId(){
+    return this.getIntColumnValue(PageTriggerInfo._COLUMNNAME_DEFAULT_TEMPLATE_ID);
+  }
 }

@@ -77,7 +77,7 @@ public class PageLink extends GenericEntity {
     return this.getIntColumnValue(this._COLUMNNAME_ONMOUSEOVER_IMAGE);
   }
 
-  public int getCopyRuleId(){
+  public int getPageTriggerInfoId(){
     return this.getIntColumnValue(this._COLUMNNAME_PAGE_TRIGGER_INFO_ID);
   }
 
@@ -88,6 +88,44 @@ public class PageLink extends GenericEntity {
   public String getStandardParameters(){
     return this.getStringColumnValue(this._COLUMNNAME_STANDARD_PRM);
   }
+
+
+
+
+  public void setDefaultLinkText(String value){
+    this.setColumn(_COLUMNNAME_DEFAULT_LINK_TEXT, value);
+  }
+
+  public void setPageId(int value){
+    this.setColumn(this._COLUMNNAME_PAGE_ID, value);
+  }
+
+  public void setLinkImageId(int value){
+    this.setColumn(this._COLUMNNAME_LINK_IMAGE, value);
+  }
+
+  public void setOnClickImageId(int value){
+    this.setColumn(this._COLUMNNAME_ONCLICK_IMAGE, value);
+  }
+
+  public void setOnMouseOverImageId(int value){
+    this.setColumn(this._COLUMNNAME_ONMOUSEOVER_IMAGE, value);
+  }
+
+  public void setPageTriggerInfoId(int value){
+    this.setColumn(this._COLUMNNAME_PAGE_TRIGGER_INFO_ID, value);
+  }
+
+  public void setReferencedDataId(String value){
+    this.setColumn(this._COLUMNNAME_REFERENCED_DATA_ID, value);
+  }
+
+  public void setStandardParameters(String value){
+    this.setColumn(this._COLUMNNAME_STANDARD_PRM, value);
+  }
+
+
+
 
 
 }

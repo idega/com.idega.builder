@@ -7,6 +7,10 @@ import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBXMLPage;
+import com.idega.presentation.Page;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.IWContext;
 
 import com.idega.business.GenericEntityComparator;
 import java.util.Collections;
@@ -15,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Hashtable;
 
 import java.sql.SQLException;
 
@@ -104,13 +110,26 @@ public class DPTriggerBusiness {
   }
 
 
-  public int triggerPage(PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId){
+  public int createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws SQLException {
     PageLink pl = new PageLink();
 
-    /////////////////
+    pl.setPageTriggerInfoId(pti.getID());
+    pl.setReferencedDataId(referencedDataId);
+    pl.setDefaultLinkText(defaultLinkText);
 
-    //pl.insert();
-    return -1;//pl.getID();
+    if(standardParameters != null){
+      pl.setStandardParameters(standardParameters);
+    }
+
+    int pageId = createPage(iwc,pti.getDefaultTemplateId(), defaultLinkText);
+
+    pl.setPageId(pageId);
+
+
+    pl.insert();
+
+    return pl.getID();
+
   }
 
   public List getPageLinkRecords(ICObjectInstance instance) throws SQLException{
@@ -137,14 +156,19 @@ public class DPTriggerBusiness {
     }
   }
 
+  /*
+  public int triggerPage(){
+
+  }
+  */
 
 
-  public int triggerPage(int dptTemplateId, String name) throws SQLException{
+  private int createPage(IWContext iwc, int dptTemplateId, String name, Map createdPages) throws SQLException{
     BuilderLogic instance = BuilderLogic.getInstance();
 
     IBPage page = new IBPage();
     page.setName(name);
-    page.setType(IBPage.DPT_PAGE);
+    page.setType(IBPage.PAGE);
     page.insert();
 
     //instance.unlockRegion(Integer.toString(page.getID()),"-1",null);
@@ -152,10 +176,50 @@ public class DPTriggerBusiness {
     page.setTemplateId(dptTemplateId);
     page.update();
 
+    createdPages.put(Integer.toString(dptTemplateId),Integer.toString(page.getID()));
+
     instance.setTemplateId(Integer.toString(page.getID()),Integer.toString(dptTemplateId));
-    instance.getIBXMLPage(dptTemplateId).addUsingTemplate(Integer.toString(page.getID()));
+    IBXMLPage ibxmlPage =  instance.getIBXMLPage(dptTemplateId);
+    ibxmlPage.addUsingTemplate(Integer.toString(page.getID()));
+
+    Page popPage = ibxmlPage.getPopulatedPage();
+
+    List l = popPage.getAllContainedObjectsRecursive();
+    if(l != null){
+      Iterator iter = l.iterator();
+      while (iter.hasNext()) {
+        Object item = iter.next();
+        if(!(item instanceof Link)){
+          iter.remove();
+        }else{
+          Link link = (Link)item;
+          if(link.getDPTTemplateId() == 0){
+            iter.remove();
+          }
+        }
+      }
+      String pageIDString = Integer.toString(page.getID());
+      iter = l.iterator();
+      while(iter.hasNext()){
+        Link item = (Link)iter.next();
+
+        int templateId = item.getDPTTemplateId();
+        String createdPage = (String)createdPages.get(Integer.toString(templateId));
+        if(createdPage == null){
+          int newID = this.createPage(iwc,templateId, name+" subpage",createdPages);
+          instance.changeLinkPageId(iwc.getApplication(),item,pageIDString,Integer.toString(newID));
+        } else {
+          instance.changeLinkPageId(iwc.getApplication(),item,pageIDString,createdPage);
+        }
+      }
+    }
 
     return page.getID();
+  }
+
+
+  private int createPage(IWContext iwc, int dptTemplateId, String name) throws SQLException{
+    return createPage(iwc, dptTemplateId, name, new Hashtable());
   }
 
 
