@@ -3,7 +3,6 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
@@ -21,6 +20,7 @@ import com.idega.presentation.ui.AbstractChooser;
 
 public class StyledIBPageChooser extends AbstractChooser {
 	private String style;
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 
 	public StyledIBPageChooser(String chooserName) {
 		addForm(false);
@@ -35,8 +35,8 @@ public class StyledIBPageChooser extends AbstractChooser {
 
 	public void main(IWContext iwc) throws Exception {
 		this.empty();
-		IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		setChooseButtonImage(iwb.getImage("open.gif","Choose"));
+		IWBundle iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);//BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		setChooseButtonImage(iwb.getImage("magnifyingglass.gif","Choose"));//was open.gif
 	}
 
 	public Class getChooserWindowClass() {
@@ -67,5 +67,8 @@ public class StyledIBPageChooser extends AbstractChooser {
 	public void setValue(Object page){
 		setSelectedPage((ICPage)page);
 	}
+	public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 }
 
