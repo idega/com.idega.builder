@@ -355,6 +355,7 @@ public class IBPropertyHandler{
       if(parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)){
           obj = new IntegerInput(name);
           ((IntegerInput)obj).setMaxlength(4);
+          ((IntegerInput)obj).setLength(4);
           if(stringValue!=null){
             ((IntegerInput)obj).setContent(stringValue);
           }

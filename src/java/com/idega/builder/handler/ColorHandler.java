@@ -38,6 +38,8 @@ public class ColorHandler implements PropertyHandler {
     //Table tab = new Table(2,1);
     //tab.add("#",1,1);
     TextInput input = new TextInput(name);
+    input.setMaxlength(7);
+    input.setLength(7);
     if(value!=null){
       input.setValue(value);
     }
