@@ -12,9 +12,9 @@ import com.idega.presentation.IWContext;
  *
  *	Presentation objects that want to use the DropDownMenuSpecifiedChoiceHandler
  *	must implement this interface.
- *	The	 method below is used by the IBPropertyHandler to get a collection of
- *	strings							 from	 the presentation object. The collection is
- *	finally	 set into the drop 	down	 menu of the handler.
+ *	The method below is used by the IBPropertyHandler to get a collection of
+ *	strings from	the presentation object. The collection is
+ *	set into the drop down menu of the handler.
  *
  */
 public interface SpecifiedChoiceProvider {
