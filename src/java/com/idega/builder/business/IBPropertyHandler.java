@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.27 2001/12/13 11:23:16 palli Exp $
+ * $Id: IBPropertyHandler.java,v 1.28 2001/12/18 15:10:04 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -394,11 +394,25 @@ public class IBPropertyHandler {
      * @todo handle page, template, file if the inputs already hava a value
      */
     else if (parameterClass.equals(com.idega.core.data.ICFile.class)) {
-      //extends block.media.presentation.FileChooser
-      obj = new com.idega.builder.presentation.IBFileChooser(name);
+      try{
+        //extends block.media.presentation.FileChooser
+        com.idega.core.data.ICFile file = new com.idega.core.data.ICFile(Integer.parseInt(stringValue));
+        obj = new com.idega.builder.presentation.IBFileChooser(name);
+      }
+      catch(Exception e){
+        throw new RuntimeException(e.getMessage());
+      }
     }
     else if (parameterClass.equals(com.idega.builder.data.IBPage.class)) {
-      obj = new com.idega.builder.presentation.IBPageChooser(name);
+      try{
+        com.idega.builder.presentation.IBPageChooser chooser =  new com.idega.builder.presentation.IBPageChooser(name);
+        com.idega.builder.data.IBPage page = new com.idega.builder.data.IBPage(Integer.parseInt(stringValue));
+        chooser.setValue(page);
+        obj = chooser;
+      }
+      catch(Exception e){
+        throw new RuntimeException(e.getMessage());
+      }
     }
     else {
       obj = new TextInput(name);
