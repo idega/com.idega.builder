@@ -68,9 +68,15 @@ public class DynamicPageTrigger implements ICDynamicPageTrigger {
 	}
 
 	public Object clone() {
-		DynamicPageTrigger trigger = new DynamicPageTrigger();
-		trigger.currentUserHasRelationToContainingDPTPage = null;
-		trigger.dptOwnerGroup = dptOwnerGroup;
+		DynamicPageTrigger trigger = null;
+		try {
+			trigger = (DynamicPageTrigger)super.clone();
+			trigger.currentUserHasRelationToContainingDPTPage = null;
+			trigger.dptOwnerGroup = dptOwnerGroup;
+			trigger.rootPage = rootPage;
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 		return trigger;
 	}
 	
