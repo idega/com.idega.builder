@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.17 2002/04/10 01:38:49 tryggvil Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.18 2002/04/10 01:57:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -313,10 +313,7 @@ public class IBPropertiesWindowSetter extends Page {
   //invalidate cache for blocks
     PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(icObjectInstanceID);
     if( obj instanceof com.idega.presentation.Block ){
-      if(!((com.idega.presentation.Block)obj).getCacheKey().equals(com.idega.presentation.Block.IW_BLOCK_CACHE_KEY)){
-        iwma.getIWCacheManager().invalidateCache( ((com.idega.presentation.Block)obj).getCacheKey());
-      }
-
+      iwma.getIWCacheManager().invalidateCache( ((com.idega.presentation.Block)obj).getCacheKey());
     }
   //
 
@@ -335,10 +332,7 @@ public class IBPropertiesWindowSetter extends Page {
   //invalidate cache for blocks
     PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(icObjectInstanceID);
     if( obj instanceof com.idega.presentation.Block ){
-      if(!((com.idega.presentation.Block)obj).getCacheKey().equals(com.idega.presentation.Block.IW_BLOCK_CACHE_KEY)){
-        iwma.getIWCacheManager().invalidateCache( ((com.idega.presentation.Block)obj).getCacheKey());
-      }
-
+       iwma.getIWCacheManager().invalidateCache( ((com.idega.presentation.Block)obj).getCacheKey());
     }
   //
 
