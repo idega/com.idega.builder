@@ -177,7 +177,7 @@ public class BuilderLogic{
 
   public  ModuleObject getAddIcon(String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image addImage = bundle.getImage("add.gif");
+    Image addImage = bundle.getImage("add.gif","Add new component");
     Link link = new Link(addImage);
     link.setWindowToOpen(IBAddModuleWindow.class);
     link.addParameter(ib_page_parameter,"1");
@@ -189,7 +189,7 @@ public class BuilderLogic{
 
   public  ModuleObject getDeleteIcon(int key,String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image deleteImage = bundle.getImage("delete.gif");
+    Image deleteImage = bundle.getImage("delete.gif","Delete component");
     Link link = new Link(deleteImage);
     link.setWindowToOpen(IBDeleteModuleWindow.class);
     link.addParameter(ib_page_parameter,"1");
@@ -214,7 +214,7 @@ public class BuilderLogic{
 
   public  ModuleObject getEditIcon(int key,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image editImage = bundle.getImage("edit.gif");
+    Image editImage = bundle.getImage("edit.gif","Edit component");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPropertiesWindow.class);
     link.addParameter(ib_page_parameter,"1");
