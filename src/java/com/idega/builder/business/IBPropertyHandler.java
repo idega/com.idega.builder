@@ -14,6 +14,8 @@ import com.idega.util.reflect.*;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 
+import com.idega.data.EntityFinder;
+
 import com.idega.block.media.presentation.ImageInserter;
 
 import java.util.Map;
@@ -311,6 +313,16 @@ public class IBPropertyHandler{
         return list;
       }
       else{
+        return null;
+      }
+    }
+
+    public List getAvailablePropertyHandlers(){
+      try{
+        return EntityFinder.findAllByColumn(new ICObject(),ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_PROPERTYHANDLER);
+      }
+      catch(Exception e){
+        e.printStackTrace();
         return null;
       }
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.10 2001/10/15 17:35:57 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.11 2001/10/17 08:26:04 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,9 +32,24 @@ public class IBMainServlet extends IWJSPPresentationServlet {
      */
     int domain_id=1;
     int i_page_id=1;
-    String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-    if(page_id == null){
+    String page_id = null;
+    boolean builderview = false;
+    boolean inBuilder = false;
+    if (iwc.isParameterSet("view")) {
+      inBuilder=true;
+      String view = iwc.getParameter("view");
+      if(view.equals("builder"))
+        builderview=true;
+    }
+
+    if(inBuilder){
       page_id = (String) iwc.getSessionAttribute(BuilderLogic.SESSION_PAGE_KEY);
+    }
+    else{
+      page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+    }
+
+    //if(page_id == null){
       if(page_id==null){
         try{
           IBDomain domain = IBDomain.getDomain(domain_id);
@@ -47,12 +62,13 @@ public class IBMainServlet extends IWJSPPresentationServlet {
       else{
         i_page_id = Integer.parseInt(page_id);
       }
-    }
+    /*}
     else {
-      iwc.setSessionAttribute(BuilderLogic.SESSION_PAGE_KEY,page_id);
+      //iwc.setSessionAttribute(BuilderLogic.SESSION_PAGE_KEY,page_id);
       i_page_id = Integer.parseInt(page_id);
-    }
-    setPage(BuilderLogic.getInstance().getPage(i_page_id,iwc));
+    }*/
+
+    setPage(BuilderLogic.getInstance().getPage(i_page_id,builderview,iwc));
 
   }
 

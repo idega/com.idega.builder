@@ -1,5 +1,6 @@
+
 /*
- * $Id: BuilderLogic.java,v 1.46 2001/10/16 17:25:01 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.47 2001/10/17 08:26:04 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -110,13 +111,14 @@ public class BuilderLogic {
     return PageCacher.getXML(Integer.toString(id));
   }
 
-  public Page getPage(int id,IWContext iwc) {
+  public Page getPage(int id,boolean builderview,IWContext iwc) {
     try {
-      boolean builderview = false;
+      //boolean builderview = false;
       boolean permissionview = false;
-      if (iwc.isParameterSet("view")) {
-        builderview = true;
-      } else if (iwc.isParameterSet("ic_pm") && iwc.getAccessController().isAdmin(iwc)) {
+      //if (iwc.isParameterSet("view")) {
+      //  builderview = true;
+      //} else
+      if (iwc.isParameterSet("ic_pm") && iwc.getAccessController().isAdmin(iwc)) {
         permissionview = true;
       }
 
@@ -763,3 +765,4 @@ public class BuilderLogic {
     return(false);
   }
 }
+

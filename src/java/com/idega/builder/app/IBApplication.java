@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.21 2001/10/16 14:19:42 palli Exp $
+ * $Id: IBApplication.java,v 1.22 2001/10/17 08:26:04 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,7 +47,8 @@ public class IBApplication extends IWApplication {
 
   private static final String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
 
-  private final static String CONTENT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
+  private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
+  private final static String CONTENT_EDIT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
 
   /**
    *
@@ -94,7 +95,7 @@ public class IBApplication extends IWApplication {
      */
     public FrameSet2(){
       add(IBToolBar.class);
-      add(CONTENT_URL);
+      add(CONTENT_EDIT_URL);
       super.setFrameName(2,IB_CONTENT_FRAME);
       add(IBStatusBar.class);
       setSpanPixels(1,24);
@@ -349,7 +350,7 @@ public class IBApplication extends IWApplication {
 
         Image tool_5 = iwb.getImage("toolbar_home_1.gif","Go to startpage");
         Link link_5 = new Link(tool_5);
-        link_5.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_URL+"'");
+        link_5.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_EDIT_URL+"'");
 
         add(link_5);
       }
@@ -436,12 +437,12 @@ public class IBApplication extends IWApplication {
 
         Link editLink = new Link(_iwrb.getImage("editorwindow/edit.gif"));
         editLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-        editLink.setURL(IBApplication.CONTENT_URL);
+        editLink.setURL(IBApplication.CONTENT_EDIT_URL);
         toolTable.add(editLink,1,1);
 
         Link previewLink = new Link(_iwrb.getImage("editorwindow/preview.gif"));
         previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-        previewLink.setURL(com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL);
+        previewLink.setURL(IBApplication.CONTENT_PREVIEW_URL);
         toolTable.add(previewLink,2,1);
 
         Link sourceLink = new Link(_iwrb.getImage("editorwindow/source.gif"));
