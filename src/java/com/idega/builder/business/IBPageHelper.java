@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.40 2004/06/30 10:32:27 thomas Exp $
+ * $Id: IBPageHelper.java,v 1.41 2004/08/24 14:03:38 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -413,22 +414,23 @@ public class IBPageHelper {
 	/**
 	 *
 	 */
-	public boolean checkDeletePage(String pageId) {
+	public boolean checkDeletePage(String pageId, ICDomain domain) {
+		int pageIdInt = Integer.parseInt(pageId);
+		// do not delete the start page or start template of the domain
+		// does the user try to delete the start page of the domain  or the start template of the domain?
+		ICPage domainStartPage  = domain.getStartPage();
+		ICPage domainStartTemplate =  domain.getStartTemplate();
+		int domainStartPageId = ((Integer) domainStartPage.getPrimaryKey()).intValue();
+		int domainStartTemplateId = ((Integer) domainStartTemplate.getPrimaryKey()).intValue();
+		if (pageIdInt == domainStartPageId || pageIdInt == domainStartTemplateId) {
+			return false;
+		}
 		IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageId);
-		boolean okToDelete = true;
 		if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
 			List map = xml.getUsingTemplate();
-			if ((map == null) || (map.isEmpty())) {
-				okToDelete = true;
-			}
-			else {
-				okToDelete = false;
-			}
+			return ((map == null) || (map.isEmpty()));
 		}
-		else {
-			okToDelete = true;
-		}
-		return (okToDelete);
+		return true;
 	}
 	/**
 	 *
@@ -527,13 +529,59 @@ public class IBPageHelper {
 	/**
 	 *
 	 */
-	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId) {
+	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain) {
 		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
 		try {
 			t.begin();
-			ICPage ibpage = getIBPageHome().findByPrimaryKey(Integer.parseInt(pageId));
+			int pageIdInt = Integer.parseInt(pageId);
+			ICPage ibpage = getIBPageHome().findByPrimaryKey(pageIdInt);
+			boolean isPage = ibpage.isPage();
 			ICPage parent = (ICPage) ibpage.getParentNode();
-			parent.removeChild(ibpage);
+			PageTreeNode childNode = (tree == null) ? null : (PageTreeNode) tree.get(ibpage.getIDInteger());
+			PageTreeNode parentNode = null;
+			ICPage newParentForChildren = null;
+			if (parent ==  null) {
+				// is it a top level  page or top level  template? Should be, but we better check....
+				Collection startPagesOrTemplates = (isPage) ? getStartPages(domain) : getTemplateStartPages(domain);
+				// look up the start page or template start page
+				Iterator iterator = startPagesOrTemplates.iterator();
+				IBStartPage correspondingStartPage = null;
+				while (iterator.hasNext() && correspondingStartPage == null) {
+					IBStartPage startPage = (IBStartPage) iterator.next();
+					int tempPageId = startPage.getPageId();
+					if (tempPageId == pageIdInt) {
+						correspondingStartPage = startPage;
+					}
+				}
+				// check if everything is fine: Does the top level page or top level template  exist?
+				if (correspondingStartPage == null) {
+					System.err.println("[IBPageHelper] Page without parent that isn't a top level page was found.");
+					return false;
+				}
+				// does the user try to delete the start page of the domain  or the start template of the domain?
+				ICPage domainStartPageOrStartTemplate = (isPage) ? domain.getStartPage() : domain.getStartTemplate();
+				int domainStartPageOrStartTemplateId = ((Integer) domainStartPageOrStartTemplate.getPrimaryKey()).intValue();
+				if (domainStartPageOrStartTemplateId == pageIdInt) {
+					System.err.println("[IBPageHelper] Page that is the start page of the domain can't be deleted.");
+					return false;
+				}
+				// everything is fine. Now delete the top level page
+				correspondingStartPage.remove();
+				// choose the start page or start template of the domain as new parent for the children
+				newParentForChildren = domainStartPageOrStartTemplate; 
+				if (tree != null) {
+					parentNode = (PageTreeNode) tree.get(domainStartPageOrStartTemplate.getIDInteger());
+				}
+			}
+			else {
+				// page has a parent (is not a top level page)
+				newParentForChildren = parent;
+				parent.removeChild(ibpage);
+				if (tree != null) {
+					parentNode =  (PageTreeNode) tree.get(parent.getIDInteger());
+					parentNode.removeChild(childNode);
+				}
+			}
 			ibpage.delete(userId);
 			int templateId = ibpage.getTemplateId();
 			if (templateId > 0) {
@@ -541,28 +589,23 @@ public class IBPageHelper {
 			}
 			if (deleteChildren) {
 				deleteAllChildren(ibpage, tree, userId);
-				if (tree != null) {
-					PageTreeNode parentNode = (PageTreeNode) tree.get(parent.getIDInteger());
-					PageTreeNode childNode = (PageTreeNode) tree.get(ibpage.getIDInteger());
-					parentNode.removeChild(childNode);
-					tree.remove(ibpage.getIDInteger());
-				}
 			}
 			else {
-				parent.moveChildrenFrom(ibpage);
+				newParentForChildren.moveChildrenFrom(ibpage);
+				// handle tree
 				if (tree != null) {
-					PageTreeNode parentNode = (PageTreeNode) tree.get(parent.getIDInteger());
-					PageTreeNode childNode = (PageTreeNode) tree.get(ibpage.getIDInteger());
 					Iterator it = childNode.getChildren();
 					if (it != null) {
 						while (it.hasNext()) {
 							parentNode.addChild((PageTreeNode) it.next());
 						}
 					}
-					parentNode.removeChild(childNode);
-					tree.remove(ibpage.getIDInteger());
 				}
 			}
+			if (tree != null) {
+				// finally remove the deleted page from the tree
+				tree.remove(ibpage.getIDInteger());
+			}				
 		}
 		catch (Exception e) {
 			try {
