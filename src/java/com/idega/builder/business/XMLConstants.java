@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.17 2004/03/25 17:54:13 thomas Exp $
+ * $Id: XMLConstants.java,v 1.18 2004/03/30 15:50:42 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -62,12 +62,14 @@ public abstract class XMLConstants {
   public static final String EXPORT_PROVIDER_METHOD = "method";
   
   // for file metadata
-  public static final String FILE = "file";
+  public static final String FILE_FILES = "files";
+  public static final String FILE_FILE = "file";
   public static final String FILE_SOURCE = "source";
   public static final String FILE_NAME = "name";
   public static final String FILE_VALUE = "value";
   public static final String FILE_USED_ID = "identifier";
   public static final String FILE_ORIGINAL_NAME = "original_name";
+  public static final String FILE_MIME_TYPE = "mime_type";
   
   public static final String PAGE_TREE_PAGES = "pages";
   public static final String PAGE_TREE_TEMPLATES = "templates";
