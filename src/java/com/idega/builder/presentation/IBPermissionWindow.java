@@ -174,15 +174,15 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       // Submit
       Table buttonTable = new Table(2,1);
-      SubmitButton submit = new SubmitButton("    OK    ","submit","save");
-      SubmitButton cancel = new SubmitButton("  Cancel  ","submit","cancel");
+      SubmitButton submit = new SubmitButton("    OK    ","subm","save");
+      SubmitButton cancel = new SubmitButton("  Cancel  ","subm","cancel");
 
       buttonTable.add(submit,1,1);
       buttonTable.add(cancel,2,1);
 
       frameTable.add(permissionKeyText,1,1);
       frameTable.add(permissionTypes,1,2);
-      frameTable.add(new SubmitButton("->"),1,2);
+      /*frameTable.add(new SubmitButton("->"),1,2);*/
       frameTable.add(permissionBox,1,3);
       frameTable.add(buttonTable,1,4);
       frameTable.add(new HiddenInput(lastPermissionKeyParameterString, permissionType ));
@@ -195,7 +195,7 @@ public class IBPermissionWindow extends IBAdminWindow{
 
   public void main(ModuleInfo modinfo)throws Exception{
       super.addTitle("IBPermissionWindow");
-      String submit = modinfo.getParameter("submit");
+      String submit = modinfo.getParameter("subm");
       Form myForm = new Form();
       myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
       myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
