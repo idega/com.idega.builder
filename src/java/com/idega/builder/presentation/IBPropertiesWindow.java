@@ -53,14 +53,19 @@ public class IBPropertiesWindow extends FrameSet{
     super.setStatus(true);
     String title = "Properties";
 
-    String sICObjectInstanceID = iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
-    if(sICObjectInstanceID!=null){
-      title += " : ";
-      int iInstanceID = Integer.parseInt(sICObjectInstanceID);
-      ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getICObjectInstance(iInstanceID);
-      ICObject ico = instance.getObject();
-      String name = ico.getName();
-      title += name;
+    try{
+      String sICObjectInstanceID = iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
+      if(sICObjectInstanceID!=null){
+        title += " : ";
+        int iInstanceID = Integer.parseInt(sICObjectInstanceID);
+        ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getICObjectInstance(iInstanceID);
+        ICObject ico = instance.getObject();
+        String name = ico.getName();
+        title += name;
+      }
+    }
+    catch(Exception e){
+
     }
 
     super.setTitle(title);
