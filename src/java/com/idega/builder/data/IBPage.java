@@ -38,4 +38,7 @@ public interface IBPage extends com.idega.data.TreeableEntity
  public void setSubType(java.lang.String p0);
  public void setTemplateId(int p0);
  public void setType(java.lang.String p0);
+ public void setTreeOrder(int p0);
+ public void setTreeOrder(java.lang.Integer p0);
+ public int getTreeOrder();
 }
