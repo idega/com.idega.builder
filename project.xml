@@ -73,9 +73,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-	<!--
-      <version>1.9</version>
-	-->
+	<!--<version>1.9</version>-->
       <version>SNAPSHOT</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
@@ -199,7 +197,6 @@
     <report>maven-file-activity-plugin</report>
     <report>maven-changes-plugin</report>
     <report>maven-checkstyle-plugin</report>
-    <report>maven-jdepend-plugin</report>
     <report>maven-license-plugin</report>
     <report>maven-multichanges-plugin</report>
     <report>maven-statcvs-plugin</report>
