@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.165 2005/02/01 17:33:39 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.166 2005/02/03 11:06:07 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1174,7 +1174,7 @@ public class BuilderLogic implements Singleton {
 	 * Return the singleton instance of IBPageHelper
 	 * @return
 	 */
-	public IBPageHelper getIBPageHelper(){
+	public synchronized IBPageHelper getIBPageHelper(){
 		if(ibPageHelper==null){
 			setIBPageHelper(new IBPageHelper());
 		}
