@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.77 2004/03/24 18:44:06 thomas Exp $
+ *  $Id: IBApplication.java,v 1.78 2004/03/25 17:52:32 thomas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.builder.presentation.IBCreatePageWindow;
 import com.idega.builder.presentation.IBDeletePageWindow;
 import com.idega.builder.presentation.IBMovePageWindow;
 import com.idega.builder.presentation.IBPageExporterWindow;
+import com.idega.builder.presentation.IBPageImporterWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBSaveAsPageWindow;
@@ -545,6 +546,12 @@ public class IBApplication extends IWApplication {
 				Link link_export = new Link(tool_export);
 				link_export.setWindowToOpen(IBPageExporterWindow.class);
 				toolbarTable.add(link_export, xpos, 1);
+				// import pages and templates
+				Image tool_import = iwb.getImage("shared/toolbar/move.gif", "shared/toolbar/move1.gif", "Import Pages", 20, 20);
+				tool_import.setHorizontalSpacing(2);
+				Link link_import = new Link(tool_import);
+				link_import.setWindowToOpen(IBPageImporterWindow.class);
+				toolbarTable.add(link_import, xpos, 1);
 
 				PresentationObject propertiesIcon = getPropertiesIcon(iwc);
 				toolbarTable.add(propertiesIcon, xpos, 1);
