@@ -14,6 +14,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 
 /**
  * IBMainServiceBean : Implementation of BuilderService and simplified interface to BuilderLogic
@@ -23,6 +24,12 @@ import com.idega.presentation.IWContext;
  */
 public class IBMainServiceBean extends IBOServiceBean implements IBMainService,BuilderService
 {
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.business.BuilderService#getPage(java.lang.String)
+	 */
+	public Page getPage(String pageID) throws RemoteException {
+		return PageCacher.getPage(pageID);
+	}
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getCurrentDomain()
 	 */
