@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.31 2001/12/03 16:18:30 palli Exp $
+ * $Id: IBXMLPage.java,v 1.32 2001/12/19 11:20:51 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,6 +40,8 @@ public class IBXMLPage implements IBXMLAble {
   public final static String TYPE_PAGE = XMLConstants.PAGE_TYPE_PAGE;
   public final static String TYPE_TEMPLATE = XMLConstants.PAGE_TYPE_TEMPLATE;
   public final static String TYPE_DRAFT = XMLConstants.PAGE_TYPE_DRAFT;
+  public final static String TYPE_DPT_TEMPLATE = XMLConstants.PAGE_TYPE_DPT_TEMPLATE;
+  public final static String TYPE_DPT_PAGE = XMLConstants.PAGE_TYPE_DPT_PAGE;
 //  private final static String EMPTY = "";
   private XMLParser _parser = null;
   private XMLDocument _xmlDocument = null;
@@ -76,6 +78,10 @@ public class IBXMLPage implements IBXMLAble {
         setType(TYPE_DRAFT);
       else if (ibpage.getType().equals(ibpage.TEMPLATE))
         setType(TYPE_TEMPLATE);
+      else if (ibpage.getType().equals(ibpage.DPT_TEMPLATE))
+        setType(TYPE_DPT_TEMPLATE);
+      else if (ibpage.getType().equals(ibpage.DPT_PAGE))
+        setType(TYPE_DPT_PAGE);
       else
         setType(TYPE_PAGE);
     }
@@ -86,10 +92,14 @@ public class IBXMLPage implements IBXMLAble {
         templateString = Integer.toString(template);
       if (ibpage.getType().equals(ibpage.PAGE))
         setPageAsEmptyPage(TYPE_PAGE,templateString);
-      if (ibpage.getType().equals(ibpage.DRAFT))
+      else if (ibpage.getType().equals(ibpage.DRAFT))
         setPageAsEmptyPage(TYPE_DRAFT,templateString);
-      if (ibpage.getType().equals(ibpage.TEMPLATE))
+      else if (ibpage.getType().equals(ibpage.TEMPLATE))
         setPageAsEmptyPage(TYPE_TEMPLATE,templateString);
+      else if (ibpage.getType().equals(ibpage.DPT_TEMPLATE))
+        setPageAsEmptyPage(TYPE_DPT_TEMPLATE,templateString);
+      else if (ibpage.getType().equals(ibpage.DPT_PAGE))
+        setPageAsEmptyPage(TYPE_DPT_PAGE,templateString);
       else
         setPageAsEmptyPage(TYPE_PAGE,templateString);
     }
@@ -362,7 +372,10 @@ public class IBXMLPage implements IBXMLAble {
 
     if ((type.equals(TYPE_DRAFT)) ||
         (type.equals(TYPE_PAGE)) ||
-        (type.equals(TYPE_TEMPLATE))) {
+        (type.equals(TYPE_TEMPLATE)) ||
+        (type.equals(TYPE_DPT_TEMPLATE)) ||
+        (type.equals(TYPE_DPT_PAGE))
+        ) {
 //      pageElement.addAttribute(XMLConstants.PAGE_TYPE,type);
       pageElement.setAttribute(XMLConstants.PAGE_TYPE,type);
       setType(type);
@@ -431,9 +444,11 @@ public class IBXMLPage implements IBXMLAble {
    *
    */
   public void setType(String type) {
-    if ((type == TYPE_PAGE) ||
-        (type == TYPE_TEMPLATE) ||
-        (type == TYPE_DRAFT))
+    if ((type.equals(TYPE_PAGE)) ||
+        (type.equals(TYPE_TEMPLATE)) ||
+        (type.equals(TYPE_DRAFT)) ||
+        (type.equals(TYPE_DPT_TEMPLATE)) ||
+        (type.equals(TYPE_DPT_PAGE)))
       _type = type;
     else
       _type = TYPE_PAGE;

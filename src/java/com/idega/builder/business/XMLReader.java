@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.25 2001/12/03 16:17:57 palli Exp $
+ * $Id: XMLReader.java,v 1.26 2001/12/19 11:24:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,9 +26,15 @@ import com.idega.xml.XMLException;
  * @version 1.0
  */
 public class XMLReader {
+  /**
+   *
+   */
   private XMLReader() {
   }
 
+  /**
+   *
+   */
   private static void setAllBuilderControls(PresentationObjectContainer parent, boolean setTo) {
     List list = parent.getAllContainingObjects();
     if (list != null) {
@@ -70,7 +76,8 @@ public class XMLReader {
         setAllBuilderControls(parentContainer,false);
       }
       else if (at.getName().equalsIgnoreCase(XMLConstants.PAGE_TYPE)) {
-        if (at.getValue().equals(XMLConstants.PAGE_TYPE_TEMPLATE)) {
+        String value = at.getValue();
+        if (value.equals(XMLConstants.PAGE_TYPE_TEMPLATE) || value.equals(XMLConstants.PAGE_TYPE_DPT_TEMPLATE)) {
           isTemplate = true;
         }
       }
@@ -145,8 +152,6 @@ public class XMLReader {
     catch (NumberFormatException ex) {
 //      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
     }
-
-
 
     return(parentContainer);
   }
@@ -293,10 +298,6 @@ public class XMLReader {
       else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
         values.addElement(e.getTextTrim());
       }
-/*      else {
-        System.err.println("Error in setProperties!!!!");
-        System.err.println("Name = " + e.getName());
-      }*/
     }
 
     if (key != null) {
@@ -356,8 +357,8 @@ public class XMLReader {
     }
 
     try {
-      if ( id == null ) {
-        try{
+      if (id == null) {
+        try {
           inst = (PresentationObject)Class.forName(className).newInstance();
         }
         catch(Exception e){
@@ -369,10 +370,10 @@ public class XMLReader {
         ICObjectInstance ico = new ICObjectInstance(Integer.parseInt(id));
         inst = ico.getNewInstance();
         inst.setICObjectInstance(ico);
-        if(ic_object_id==null){
+        if (ic_object_id == null) {
           inst.setICObject(ico.getObject());
         }
-        else{
+        else {
           inst.setICObjectID(Integer.parseInt(ic_object_id));
         }
       }

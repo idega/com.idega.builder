@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.29 2001/12/14 11:22:48 gummi Exp $
+ * $Id: IBPage.java,v 1.30 2001/12/19 11:20:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -216,7 +216,7 @@ public class IBPage extends TreeableEntity {
    *
    */
   public void setType(String type) {
-    if ((type.equals(PAGE)) || (type.equals(TEMPLATE)) || (type.equals(DRAFT)))
+    if ((type.equals(PAGE)) || (type.equals(TEMPLATE)) || (type.equals(DRAFT)) || (type.equals(DPT_TEMPLATE)) || (type.equals(DPT_PAGE)))
       setColumn(getColumnType(),type);
   }
 
@@ -470,7 +470,4 @@ public class IBPage extends TreeableEntity {
   public boolean isLeaf(){
     return true;
   }
-
-
-
 }
