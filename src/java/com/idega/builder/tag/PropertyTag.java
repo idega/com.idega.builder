@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyTag.java,v 1.2 2005/02/01 21:45:51 tryggvil Exp $
+ * $Id: PropertyTag.java,v 1.3 2005/02/03 14:26:24 laddi Exp $
  * Created on 15.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.util.reflect.Property;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/01 21:45:51 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/02/03 14:26:24 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PropertyTag implements BodyTag{
 
@@ -136,7 +136,7 @@ public class PropertyTag implements BodyTag{
 	public int doEndTag() throws JspException {
 		
 		PresentationObject parentPO = getParentPresentationObject();
-		String key = parentPO.getId();
+		//String key = parentPO.getId();
 		String name = getName();
 		String[] values = getValues();
 		if(name!=null && values!=null){
@@ -186,8 +186,8 @@ public class PropertyTag implements BodyTag{
 		String propertyName = aPropertyName2[0];
 		setName(propertyName);
 		
-		String[] aPropertyValue1 = aPropertyName2[1].split("<value>");
-		String propertyValue1 = aPropertyValue1[1];
+		//String[] aPropertyValue1 = aPropertyName2[1].split("<value>");
+		//String propertyValue1 = aPropertyValue1[1];
 		
 	}
 
@@ -195,7 +195,7 @@ public class PropertyTag implements BodyTag{
 	 * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
 	 */
 	public void doInitBody() throws JspException {
-		boolean b = true;
+		//boolean b = true;
 	}
 
 	/* (non-Javadoc)
