@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.32 2002/03/06 23:59:07 eiki Exp $
+ * $Id: IBPage.java,v 1.33 2002/03/19 09:50:50 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,8 +33,8 @@ public class IBPage extends TreeableEntity {
   private final static String NAME_COLUMN = "name";
   private final static String TEMPLATE_ID_COLUMN = "template_id";
   private final static String TYPE_COLUMN = "page_type";
+  private final static String SUBTYPE_COLUMN = "page_sub_type";
   private final static String LOCKED_COLUMN = "locked_by";
-//  private static String DOMAIN_COLUMN = "ib_domain_id";
   private final static String DELETED_COLUMN = "deleted";
   private final static String DELETED_BY_COLUMN = "deleted_by";
   private final static String DELETED_WHEN_COLUMN = "deleted_when";
@@ -44,6 +44,7 @@ public class IBPage extends TreeableEntity {
   public final static String PAGE = "P";
   public final static String TEMPLATE = "T";
   public final static String DRAFT = "D";
+  public final static String FOLDER = "F";
   public final static String DPT_TEMPLATE = "A";
   public final static String DPT_PAGE = "B";
 
@@ -68,19 +69,17 @@ public class IBPage extends TreeableEntity {
    *
    */
   public void initializeAttributes() {
-                 //par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
     addAttribute(getIDColumnName());
     addAttribute(getColumnName(),"Nafn",true,true,String.class);
     addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
     addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
     addAttribute(getColumnType(),"Type",true,true,String.class,1);
+    addAttribute(getColumnSubType(),"Sub type",true,true,String.class);
     addAttribute(getColumnLockedBy(),"Locked by",true,true,Integer.class,"many-to-one",User.class);
     addAttribute(getColumnDeleted(),"Deleted",true,true,String.class,1);
     addAttribute(getColumnDeletedBy(),"Deleted by",true,true,Integer.class,"many-to-one",User.class);
     addAttribute(getColumnDeletedWhen(),"Deleted when",true,true,Timestamp.class);
-    //    addAttribute(getColumnDomain(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
     addManyToManyRelationShip(ICProtocol.class,"ib_page_ic_protocol");
-
   }
 
   /**
@@ -136,6 +135,13 @@ public class IBPage extends TreeableEntity {
    */
   public String getType() {
     return(getStringColumnValue(getColumnType()));
+  }
+
+  /**
+   *
+   */
+  public String getSubType() {
+    return(getStringColumnValue(getColumnSubType()));
   }
 
   /**
@@ -219,6 +225,13 @@ public class IBPage extends TreeableEntity {
   public void setType(String type) {
     if ((type.equals(PAGE)) || (type.equals(TEMPLATE)) || (type.equals(DRAFT)) || (type.equals(DPT_TEMPLATE)) || (type.equals(DPT_PAGE)))
       setColumn(getColumnType(),type);
+  }
+
+  /**
+   *
+   */
+  public void setSubType(String type) {
+    setColumn(getColumnSubType(),type);
   }
 
   /*
@@ -317,6 +330,13 @@ public class IBPage extends TreeableEntity {
    */
   public static String getColumnType() {
     return(TYPE_COLUMN);
+  }
+
+  /**
+   *
+   */
+  public static String getColumnSubType() {
+    return(SUBTYPE_COLUMN);
   }
 
   /**
