@@ -9,22 +9,21 @@
  */
 package com.idega.builder.handler;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageUpdater;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.LocalePresentationUtil;
-import com.idega.development.presentation.Localizer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  * This class does something very clever.....
