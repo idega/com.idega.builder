@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.20 2001/09/18 17:19:45 palli Exp $
+ * $Id: IBPage.java,v 1.21 2001/09/24 14:22:47 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import com.idega.core.data.ICFile;
+import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
 
 /**
@@ -26,6 +27,7 @@ public class IBPage extends TreeableEntity {
   private static String _nameColumn = "name";
   private static String _entityName = "ib_page";
   private static String _type = "page_type";
+  private static String _locked = "locked_by";
   private ICFile _file;
   private BlobWrapper _wrapper;
 
@@ -58,6 +60,7 @@ public class IBPage extends TreeableEntity {
     addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
     addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
     addAttribute(getColumnType(),"Type",true,true,String.class,1);
+    addAttribute(getColumnLockedBy(),"Locked by",true,true,Integer.class,"many-to-one",User.class);
 	}
 
   /**
@@ -80,36 +83,73 @@ public class IBPage extends TreeableEntity {
 		//setColumn("image_id",1);
 	}
 
+  /**
+   *
+   */
 	public String getName() {
 		return(getStringColumnValue(getColumnName()));
 	}
 
-
+  /**
+   *
+   */
   public void setName(String name) {
     setColumn(getColumnName(),name);
   }
 
+  /**
+   *
+   */
   public int getTemplateId() {
     return(getIntColumnValue(getColumnTemplateID()));
   }
 
+  /**
+   *
+   */
   public void setTemplateId(int id) {
     setColumn(getColumnTemplateID(),id);
   }
 
+  /**
+   *
+   */
   public String getType() {
     return(getStringColumnValue(getColumnType()));
   }
 
+  /**
+   *
+   */
+  public int getLockedBy() {
+    return(getIntColumnValue(getColumnLockedBy()));
+  }
+
+  /**
+   *
+   */
+  public void setLockedBy(int id) {
+    setColumn(getColumnLockedBy(),id);
+  }
+
+  /**
+   *
+   */
   public void setType(String type) {
     if ((type.equals(PAGE)) || (type.equals(TEMPLATE)) || (type.equals(DRAFT)))
       setColumn(getColumnType(),type);
   }
 
+  /*
+   *
+   */
   private int getFileID() {
     return(getIntColumnValue(getColumnFile()));
   }
 
+  /**
+   *
+   */
   public ICFile getFile() {
     int fileID = getFileID();
     if (fileID !=- 1) {
@@ -118,12 +158,17 @@ public class IBPage extends TreeableEntity {
     return(_file);
   }
 
+  /**
+   *
+   */
   public void setFile(ICFile file) {
-    //System.out.println("Calling setFile");
     setColumn(getColumnFile(),file);
     _file = file;
   }
 
+  /**
+   *
+   */
   public void setPageValue(InputStream stream) {
     ICFile file = getFile();
     if (file == null) {
@@ -133,6 +178,9 @@ public class IBPage extends TreeableEntity {
     file.setFileValue(stream);
   }
 
+  /**
+   *
+   */
   public InputStream getPageValue() {
     try {
       ICFile file = getFile();
@@ -146,6 +194,9 @@ public class IBPage extends TreeableEntity {
     return(null);
   }
 
+  /**
+   *
+   */
   public OutputStream getPageValueForWrite() {
     ICFile file = getFile();
     if (file == null) {
@@ -158,34 +209,53 @@ public class IBPage extends TreeableEntity {
     return(theReturn);
   }
 
+  /**
+   *
+   */
   public static String getColumnName() {
     return(_nameColumn);
   }
 
+  /**
+   *
+   */
   public static String getColumnTemplateID() {
     return(_templateIdColumn);
   }
 
+  /**
+   *
+   */
   public static String getColumnFile() {
     return(_fileColumn);
   }
 
+  /**
+   *
+   */
   public static String getColumnType() {
     return(_type);
   }
 
+  /**
+   *
+   */
+  public static String getColumnLockedBy() {
+    return(_locked);
+  }
+
+  /**
+   *
+   */
   public void update() throws SQLException {
     ICFile file = getFile();
-    if(file != null) {
+    if (file != null) {
       try {
-        //System.out.println("file != null in update");
         if(file.getID() == -1) {
           file.insert();
           setFile(file);
-          //System.out.println("Trying insert on ICFile");
         }
         else {
-          //System.out.println("Trying update on ICFile");
           if (_wrapper != null) {
             file.setColumn(ICFile.getColumnFileValue(),_wrapper);
           }
@@ -202,6 +272,9 @@ public class IBPage extends TreeableEntity {
     super.update();
   }
 
+  /**
+   *
+   */
   public void insert() throws SQLException {
     ICFile file = getFile();
     if(file != null) {
@@ -215,6 +288,9 @@ public class IBPage extends TreeableEntity {
     super.insert();
   }
 
+  /**
+   *
+   */
   public void delete() throws SQLException {
     ICFile file = getFile();
     if(file != null) {
@@ -231,18 +307,30 @@ public class IBPage extends TreeableEntity {
     super.delete();
   }
 
+  /**
+   *
+   */
   public void setIsPage() {
     setType(PAGE);
   }
 
+  /**
+   *
+   */
   public void setIsTemplate() {
     setType(TEMPLATE);
   }
 
+  /**
+   *
+   */
   public void setIsDraft() {
     setType(DRAFT);
   }
 
+  /**
+   *
+   */
   public boolean isPage() {
     String type = getType();
     if (type.equals(PAGE))
@@ -251,6 +339,9 @@ public class IBPage extends TreeableEntity {
       return(false);
   }
 
+  /**
+   *
+   */
   public boolean isTemplate() {
     String type = getType();
     if (type.equals(TEMPLATE))
@@ -259,6 +350,9 @@ public class IBPage extends TreeableEntity {
       return(false);
   }
 
+  /**
+   *
+   */
   public boolean isDraft() {
     String type = getType();
     if (type.equals(DRAFT))
