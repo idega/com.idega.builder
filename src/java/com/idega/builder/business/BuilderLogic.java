@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.62 2001/10/31 16:52:10 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.63 2001/10/31 17:07:13 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -599,8 +599,8 @@ public class BuilderLogic {
       _table.setColor(1,2,"white");
       _table.setHeight(1,1,"11");
 
-      Image image = new Image("/idegaweb/bundles/builder.bundle/resources/delete.gif");
-      image.setAttribute("onClick","showHideLayers('"+layer.getID()+"','','show')");
+      Image image = this.getBundle(iwc).getImage("menuicon.gif");
+      image.setOnClick("onClick","showHideLayers('"+layer.getID()+"','','show')");
 
 
       if(_theObject!=null){
