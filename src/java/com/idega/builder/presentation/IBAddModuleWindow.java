@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.12 2001/11/03 15:06:57 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.13 2002/01/09 15:33:11 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -144,7 +144,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
     try {
       List elements = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_ELEMENT);
       List blocks = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_BLOCK);
-      List applications = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_APPLICATION);
+      //List applications = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_APPLICATION);
 
       if ( elements != null ) {
         java.util.Collections.sort(elements,new ModuleComparator());
@@ -152,21 +152,21 @@ public class IBAddModuleWindow extends IBAdminWindow {
       if ( blocks != null ) {
         java.util.Collections.sort(blocks,new ModuleComparator());
       }
-      if ( applications != null ) {
-        java.util.Collections.sort(applications,new ModuleComparator());
-      }
+      //if ( applications != null ) {
+      //  java.util.Collections.sort(applications,new ModuleComparator());
+      //}
 
       String sElements = iwrb.getLocalizedString("elements_header","Elements");
       String sBlocks = iwrb.getLocalizedString("blocks_header","Blocks");
-      String sApplications = iwrb.getLocalizedString("applicaitions_header","Applications");
+      //String sApplications = iwrb.getLocalizedString("applicaitions_header","Applications");
 
       addSubComponentList(sElements,elements,theReturn,1,1,iwc);
       addSubComponentList(sBlocks,blocks,theReturn,1,2,iwc);
-      addSubComponentList(sApplications,applications,theReturn,1,3,iwc);
+      //addSubComponentList(sApplications,applications,theReturn,1,3,iwc);
 
       theReturn.setColumnVerticalAlignment(1,"top");
       theReturn.setColumnVerticalAlignment(2,"top");
-      theReturn.setColumnVerticalAlignment(3,"top");
+      //theReturn.setColumnVerticalAlignment(3,"top");
     }
     catch(Exception e) {
       e.printStackTrace();
