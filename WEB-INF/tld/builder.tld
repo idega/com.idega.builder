@@ -65,7 +65,7 @@
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>class</name>
+			<name>componentClass</name>
 			<required>false</required>
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
