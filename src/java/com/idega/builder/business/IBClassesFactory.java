@@ -18,7 +18,7 @@ public class IBClassesFactory  {
 	 */
 	public IBImageInserter createImageInserterImpl() {
 		try {
-			IBImageInserter inserter = (IBImageInserter) ImplementorRepository.getInstance().getImplementor(IBImageInserter.class, this.getClass());
+			IBImageInserter inserter = (IBImageInserter) ImplementorRepository.getInstance().newInstance(IBImageInserter.class, this.getClass());
 			return inserter;
 		}
 		catch (ClassNotFoundException ex) {
@@ -37,7 +37,7 @@ public class IBClassesFactory  {
 	 */
 	public IBFileChooser createFileChooserImpl() {
 		try {
-			IBFileChooser fileChooser = (IBFileChooser) ImplementorRepository.getInstance().getImplementor(IBFileChooser.class, this.getClass());
+			IBFileChooser fileChooser = (IBFileChooser) ImplementorRepository.getInstance().newInstance(IBFileChooser.class, this.getClass());
 			return fileChooser;
 		}
 		catch (ClassNotFoundException ex) {
