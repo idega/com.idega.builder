@@ -339,10 +339,13 @@ public class IBExportImportData implements Storable {
 			XMLElement moduleElement = (XMLElement) iterator.next();
 			String className = moduleElement.getTextTrim(XMLConstants.MODULE_CLASS);
 			if (! checkICObject(className)) {
+				String bundleName = moduleElement.getTextTrim(XMLConstants.MODULE_BUNDLE);
+				StringBuffer buffer = new StringBuffer(className);
+				buffer.append(" ( ").append(bundleName).append(" ) ");
 				if (missingModules == null) {
 					missingModules = new ArrayList();
 				}
-				missingModules.add(className);
+				missingModules.add(buffer.toString());
 			}
 		}
 		return missingModules;
