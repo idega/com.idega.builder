@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.48 2001/10/17 12:54:09 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.49 2001/10/17 17:55:44 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -117,7 +117,7 @@ public class BuilderLogic {
       //if (iwc.isParameterSet("view")) {
       //  builderview = true;
       //} else
-      if (iwc.isParameterSet("ic_pm") && iwc.isAdmin()) {
+      if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
         permissionview = true;
       }
 
