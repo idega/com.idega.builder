@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.25 2004/03/31 17:22:28 eiki Exp $
+ * $Id: IBMainServlet.java,v 1.26 2004/03/31 17:37:20 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,11 +70,11 @@ public class IBMainServlet extends IWJSPPresentationServlet {
         }
         
         try {
+            IWContext iwc = getIWContext();
             IWApplicationContext iwac = this.getApplication().getIWApplicationContext();
             BuilderService bs = BuilderServiceFactory.getBuilderService(iwac);
-	        IWContext iwc = getIWContext();
-
-	        Integer pageID = new Integer(bs.getCurrentPageId(iwc));
+	        	
+            Integer pageID = new Integer(bs.getCurrentPageId(iwc));
 	        if(initializedPageIDs.contains(pageID)) {
 	            //no need to synchronize
 	            return false;
