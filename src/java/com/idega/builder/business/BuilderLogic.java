@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.44 2001/10/15 17:35:57 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.45 2001/10/16 16:06:04 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -116,7 +116,7 @@ public class BuilderLogic {
       boolean permissionview = false;
       if (iwc.isParameterSet("view")) {
         builderview = true;
-      } else if (iwc.isParameterSet("ic_pm") && AccessControl.isAdmin(iwc)) {
+      } else if (iwc.isParameterSet("ic_pm") && iwc.getAccessControler().isAdmin(iwc)) {
         permissionview = true;
       }
 
@@ -210,7 +210,7 @@ public class BuilderLogic {
   }
 
   private void filterForPermission(List groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc){
-    if(!AccessControl.hasViewPermission(groupIds,obj,iwc)){
+    if(!iwc.getAccessControler().hasViewPermission(groupIds,obj,iwc)){
       System.err.println(obj+": removed");
       parentObject.getAllContainingObjects().remove(index);
       parentObject.getAllContainingObjects().add(index,PresentationObject.NULL_CLONE_OBJECT);

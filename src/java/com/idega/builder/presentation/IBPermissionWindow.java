@@ -80,19 +80,19 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       switch (intPermissionCategory) {
         case AccessControl._CATEGORY_OBJECT_INSTANCE :
-          keys = AccessControl.getICObjectPermissionKeys(ICObjectBusiness.getICObjectClassForInstance(Integer.parseInt(identifier)));
+          keys = iwc.getAccessControler().getICObjectPermissionKeys(ICObjectBusiness.getICObjectClassForInstance(Integer.parseInt(identifier)));
           break;
         case AccessControl._CATEGORY_OBJECT :
-          keys = AccessControl.getICObjectPermissionKeys(ICObjectBusiness.getICObjectClass(Integer.parseInt(identifier)));
+          keys = iwc.getAccessControler().getICObjectPermissionKeys(ICObjectBusiness.getICObjectClass(Integer.parseInt(identifier)));
           break;
         case AccessControl._CATEGORY_BUNDLE :
-          keys = AccessControl.getBundlePermissionKeys(Class.forName(identifier));
+          keys = iwc.getAccessControler().getBundlePermissionKeys(Class.forName(identifier));
           break;
         case AccessControl._CATEGORY_PAGE_INSTANCE :
-          keys = AccessControl.getPagePermissionKeys();
+          keys = iwc.getAccessControler().getPagePermissionKeys();
           break;
         case AccessControl._CATEGORY_PAGE :
-          keys = AccessControl.getPagePermissionKeys();
+          keys = iwc.getAccessControler().getPagePermissionKeys();
           break;
         case AccessControl._CATEGORY_JSP_PAGE :
           keys = new String[0];
@@ -131,7 +131,7 @@ public class IBPermissionWindow extends IBAdminWindow{
         directGroups = UserGroupBusiness.getGroups((String[])hash.get(permissionType));
         collectOld = false;
       } else {
-        directGroups = AccessControl.getAllowedGroups(intPermissionCategory, identifier,permissionType);
+        directGroups = iwc.getAccessControler().getAllowedGroups(intPermissionCategory, identifier,permissionType);
         collectOld = true;
 
       }
@@ -160,7 +160,7 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       }
 
-      List notDirectGroups = AccessControl.getAllPermissionGroups();
+      List notDirectGroups = iwc.getAccessControler().getAllPermissionGroups();
       if(notDirectGroups != null){
         if(directGroups != null){
           notDirectGroups.removeAll(directGroups);
@@ -314,7 +314,7 @@ public class IBPermissionWindow extends IBAdminWindow{
           int intCategory = Integer.parseInt(category);
           for (int i = 0; i < groups.length; i++) {
             oldGroups.remove(groups[i]);
-            AccessControl.setPermission(intCategory, iwc, groups[i],instanceId,(String)item,Boolean.TRUE);
+            iwc.getAccessControler().setPermission(intCategory, iwc, groups[i],instanceId,(String)item,Boolean.TRUE);
           }
           if(oldGroups.size()>0){
             String[] groupsToRemove = new String[oldGroups.size()];
