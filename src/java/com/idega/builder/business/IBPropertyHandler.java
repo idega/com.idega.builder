@@ -14,12 +14,18 @@ import com.idega.util.reflect.*;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 
+import java.util.Map;
+
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
-*@version 0.5 alpha
+*@version 1.0 alpha
 */
 
 public class IBPropertyHandler{
+
+    public final static String METHOD_PROPERTY_IDENTIFIER = "iw_method_identifier";
+    public final static String METHOD_PROPERTY_DESCRIPTION = "iw_method_description";
+    public static final String METHOD_PROPERTY_ALLOW_MULTIVALUED = "iw_method_option_multiv";
 
     private static final String METHODS_KEY = "iw_component_methods";
     private static IBPropertyHandler instance;
@@ -40,18 +46,35 @@ public class IBPropertyHandler{
       }
     }
 
-    public void setMethod(IWBundle iwb,String componentKey,String methodIdentifier,String methodDescription){
+    public void setMethod(IWBundle iwb,String componentKey,String methodIdentifier,String methodDescription,Map options){
       IWPropertyList methods = getMethods(iwb,componentKey);
       if(methods!=null){
-        methods.setProperty(methodIdentifier,methodDescription);
+        IWProperty method = methods.getIWProperty(methodIdentifier);
+        if(method!=null){
+          methods.removeProperty(methodIdentifier);
+        }
+        IWPropertyList methodprop = methods.getNewPropertyList(methodIdentifier);
+        methodprop.setProperty(METHOD_PROPERTY_IDENTIFIER,methodIdentifier);
+        methodprop.setProperty(METHOD_PROPERTY_DESCRIPTION,methodDescription);
+        methodprop.setProperties(options);
+        //methods.setProperty(methodIdentifier,methodDescription);
       }
     }
 
     public IWPropertyList getMethods(int ic_object_instance_id,IWMainApplication iwma)throws Exception{
-      ICObjectInstance icoi = new ICObjectInstance(ic_object_instance_id);
-      ICObject obj = icoi.getObject();
-      IWBundle iwb = obj.getBundle(iwma);
-      String componentKey = obj.getClassName();
+      String componentKey = null;
+      IWBundle iwb = null;
+      //Hardcoded -1 for the top page
+      if(ic_object_instance_id==-1){
+        componentKey = "com.idega.jmodule.object.Page";
+        iwb = iwma.getBundle(com.idega.jmodule.object.Page.IW_BUNDLE_IDENTIFIER);
+      }
+      else{
+        ICObjectInstance icoi = new ICObjectInstance(ic_object_instance_id);
+        ICObject obj = icoi.getObject();
+        iwb = obj.getBundle(iwma);
+        componentKey = obj.getClassName();
+      }
       return getMethods(iwb,componentKey);
     }
 
@@ -77,7 +100,7 @@ public class IBPropertyHandler{
       return methodList;
     }*/
 
-    public static ModuleObject[] getInterfaceComponent(Class[] classes,String[] names){
+    /*public static ModuleObject[] getInterfaceComponent(Class[] classes,String[] names){
       ModuleObject[] objects = new ModuleObject[classes.length];
       for (int i = 0; i < classes.length; i++) {
         if(names==null){
@@ -88,32 +111,70 @@ public class IBPropertyHandler{
         }
       }
       return objects;
-    }
+    }*/
 
 
-    public static ModuleObject getInterfaceComponent(Class theClass,String name){
+    public static ModuleObject getPropertySetterComponent(Class parameterClass,String name,String stringValue){
       ModuleObject obj =null;
-      String className = theClass.getName();
-      if(className.equals("java.lang.Integer") || className.equals("int")){
+      //String className = parameterClass.getName();
+      if(parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)){
           obj = new IntegerInput(name);
+          if(stringValue!=null){
+            ((IntegerInput)obj).setContent(stringValue);
+          }
       }
-      else if(className.equals("java.lang.String") ){
+      else if(parameterClass.equals(java.lang.String.class) ){
           obj = new TextInput(name);
+          if(stringValue!=null){
+            ((TextInput)obj).setContent(stringValue);
+          }
       }
-      else if(className.equals("java.lang.Boolean") || className.equals("boolean")){
+      else if(parameterClass.equals(java.lang.Boolean.class) || parameterClass.equals(Boolean.TYPE)){
           obj = new BooleanInput(name);
+          if(stringValue!=null){
+            ((BooleanInput)obj).setSelected(Boolean.getBoolean(stringValue));
+          }
       }
-      else if(className.equals("java.lang.Float") || className.equals("float")){
+      else if(parameterClass.equals(java.lang.Float.class) || parameterClass.equals(Float.TYPE)){
           obj = new FloatInput(name);
+          if(stringValue!=null){
+            ((FloatInput)obj).setContent(stringValue);
+          }
       }
-      else if(className.equals("java.lang.Double") || className.equals("double")){
+      else if(parameterClass.equals(java.lang.Double.class) || parameterClass.equals(Double.TYPE)){
           obj = new FloatInput(name);
+          if(stringValue!=null){
+            ((FloatInput)obj).setContent(stringValue);
+          }
       }
-      else if(theClass.getName().equals("com.idega.jmodule.object.Image")){
+      else if(parameterClass.equals(com.idega.jmodule.object.Image.class)){
           obj = new Link("Veldu mynd");
+      }
+      else{
+        obj = new TextInput(name);
+        if(stringValue!=null){
+          ((TextInput)obj).setContent(stringValue);
+        }
       }
       return obj;
     }
 
+    public String getMethodIdentifier(IWProperty methodProperty){
+      if(methodProperty.getType().equals(IWProperty.MAP_TYPE)){
+          return methodProperty.getPropertyList().getProperty(METHOD_PROPERTY_IDENTIFIER);
+      }
+      else{
+        return methodProperty.getKey();
+      }
+    }
+
+    public String getMethodDescription(IWProperty methodProperty){
+      if(methodProperty.getType().equals(IWProperty.MAP_TYPE)){
+          return methodProperty.getPropertyList().getProperty(METHOD_PROPERTY_DESCRIPTION);
+      }
+      else{
+        return methodProperty.getValue();
+      }
+    }
 
 }

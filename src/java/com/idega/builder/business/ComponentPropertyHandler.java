@@ -43,7 +43,7 @@ public class ComponentPropertyHandler {
   }
 
      void setReflectionProperty(ModuleObject instance,String methodIdentifier,Vector stringValues){
-      Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier);
+      Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier,instance.getClass());
       if(method==null){
         throw new RuntimeException("Method: "+methodIdentifier+" not found");
       }

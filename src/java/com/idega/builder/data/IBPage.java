@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.15 2001/09/13 18:47:59 tryggvil Exp $
+ * $Id: IBPage.java,v 1.17 2001/09/13 18:49:44 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -115,7 +115,7 @@ public class IBPage extends TreeableEntity {
   }
 
   public void setFile(ICFile file) {
-    System.out.println("Calling setFile");
+    //System.out.println("Calling setFile");
     setColumn(getColumnFile(),file);
     file_ = file;
   }
@@ -174,14 +174,14 @@ public class IBPage extends TreeableEntity {
     ICFile file = getFile();
     if(file != null) {
       try {
-        System.out.println("file != null in update");
+        //System.out.println("file != null in update");
         if(file.getID() == -1) {
           file.insert();
           setFile(file);
-          System.out.println("Trying insert on ICFile");
+          //System.out.println("Trying insert on ICFile");
         }
         else {
-          System.out.println("Trying update on ICFile");
+          //System.out.println("Trying update on ICFile");
           if (wrapper_ != null) {
             file.setColumn(ICFile.getColumnFileValue(),wrapper_);
           }
@@ -193,7 +193,7 @@ public class IBPage extends TreeableEntity {
       }
     }
     else {
-      System.out.println("file == null in update");
+      //System.out.println("file == null in update");
     }
     super.update();
   }
@@ -201,12 +201,12 @@ public class IBPage extends TreeableEntity {
   public void insert() throws SQLException {
     ICFile file = getFile();
     if(file != null) {
-      System.out.println("file != null in insert");
+      //System.out.println("file != null in insert");
       file.insert();
       setFile(file);
     }
     else {
-      System.out.println("file == null in insert");
+      //System.out.println("file == null in insert");
     }
     super.insert();
   }
@@ -214,7 +214,7 @@ public class IBPage extends TreeableEntity {
   public void delete() throws SQLException {
     ICFile file = getFile();
     if(file != null) {
-      System.out.println("file != null in delete");
+      //System.out.println("file != null in delete");
       try {
         file.delete();
       }
@@ -222,7 +222,7 @@ public class IBPage extends TreeableEntity {
       }
     }
     else {
-      System.out.println("file == null in delete");
+      //System.out.println("file == null in delete");
     }
     super.delete();
   }

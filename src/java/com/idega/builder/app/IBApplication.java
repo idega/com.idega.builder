@@ -1,5 +1,6 @@
 package com.idega.builder.app;
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.presentation.*;
 
 import com.idega.jmodule.object.app.IWApplication;
@@ -7,6 +8,7 @@ import com.idega.jmodule.object.app.IWApplicationComponent;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
+
 
 
 /**
@@ -257,9 +259,12 @@ public class IBApplication extends IWApplication {
             Link link_save = new Link(tool_save);
             add(link_save);
 
-            Image tool_properties = new Image("/common/pics/arachnea/toolbar_properties_1.gif","Page Properties");
-            Link link_properties = new Link(tool_properties);
-            add(link_properties);
+            //Image tool_properties = new Image("/common/pics/arachnea/toolbar_properties_1.gif","Page Properties");
+            //Link link_properties = new Link(tool_properties);
+            //add(link_properties);
+
+            ModuleObject propertiesIcon = getPropertiesIcon(modinfo);
+            add(propertiesIcon);
 
             add(separator);
 
@@ -301,6 +306,20 @@ public class IBApplication extends IWApplication {
 
             }
 
+      }
+
+      public ModuleObject getPropertiesIcon(ModuleInfo modinfo){
+        //IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+        //Image image = bundle.getImage("properties.gif","Page properties");
+        Image image = new Image("/common/pics/arachnea/toolbar_properties_1.gif","Page Properties");
+        Link link = new Link(image);
+        link.setWindowToOpen(IBPropertiesWindow.class);
+        link.addParameter(BuilderLogic.ib_page_parameter,BuilderLogic.getInstance().getCurrentIBPage(modinfo));
+        link.addParameter(BuilderLogic.ib_control_parameter,BuilderLogic.ACTION_EDIT);
+        //Hardcoded -1 for the top page
+        String pageICObjectInstanceID = "-1";
+        link.addParameter(BuilderLogic.ic_object_id_parameter,pageICObjectInstanceID);
+        return link;
       }
   }
 

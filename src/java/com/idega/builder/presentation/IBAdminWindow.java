@@ -11,9 +11,7 @@ import java.beans.BeanInfo;
 import java.beans.PropertyDescriptor;
 import java.beans.Introspector;
 
-import com.idega.jmodule.*;
-import com.idega.data.*;
-import com.idega.jmodule.news.presentation.*;
+
 import com.idega.util.*;
 import com.idega.builder.data.*;
 import com.idega.core.data.*;

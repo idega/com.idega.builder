@@ -14,6 +14,7 @@ package com.idega.builder.business;
 
  import java.util.List;
  import java.util.Iterator;
+ import java.util.Vector;
 
  import com.idega.core.data.ICObject;
  import com.idega.core.data.ICObjectInstance;
@@ -72,6 +73,7 @@ public class XMLWriter {
     if(id!=null){
       try{
         int theID = Integer.parseInt(id);
+        //Hardcoded -1 for the top Page element
         if(theID==-1){
           return getPageRootElement(xml);
         }
@@ -151,6 +153,29 @@ public class XMLWriter {
     return null;
   }
 
+  /**
+   * Returns a List of Strings
+   */
+  static List getPropertyValues(IBXMLPage xml,int ObjectInstanceId,String propertyName){
+    Element module = findModule(xml,ObjectInstanceId);
+    Element property = findProperty(module,propertyName);
+    List theReturn = new Vector();
+    if(property!=null){
+      List list = property.getChildren(VALUE_STRING);
+      Iterator iter = list.iterator();
+      while (iter.hasNext()) {
+        Element el = (Element)iter.next();
+        theReturn.add(el.getText());
+      }
+      //Element value = property.getChild(VALUE_STRING);
+      //return value.getText();
+    }
+    return theReturn;
+  }
+
+  /**
+   * Returns the first property if there is an array of properties set
+   */
   static String getProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName){
     Element module = findModule(xml,ObjectInstanceId);
     Element property = findProperty(module,propertyName);
@@ -161,47 +186,86 @@ public class XMLWriter {
     return null;
   }
 
+  static boolean removeProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String value){
+      Element module = findModule(xml,ObjectInstanceId);
+      if(module!=null){
+        Element property = findProperty(module,propertyName);
+        if(property!=null){
+          return module.removeContent(property);
+        }
+        else{
+          return false;
+        }
+      }
+      else{
+        return false;
+      }
+  }
 
   static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String propertyValue){
+      String[] values = {propertyValue};
+      return setProperty(xml,ObjectInstanceId,propertyName,values,false);
+  }
+
+
+
+
+  static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String[] propertyValues,boolean allowMultiValued){
     Element module = findModule(xml,ObjectInstanceId);
-    Element property = findProperty(module,propertyName);
+    Element property = null;
+    if(!allowMultiValued){
+      property = findProperty(module,propertyName);
+    }
 
     if(property==null){
-      property = getNewProperty(propertyName,propertyValue);
+      property = getNewProperty(propertyName,propertyValues);
       module.addContent(property);
       System.out.println("property==null");
     }
     else{
       System.out.println("property!=null");
-      Element value = property.getChild(VALUE_STRING);
-      if(value!=null){
-        value.setText(propertyValue);
+      List values = property.getChildren(VALUE_STRING);
+      if(values!=null){
+        Iterator iter = values.iterator();
+        int index = 0;
+        while (iter.hasNext()) {
+          String propertyValue = propertyValues[index];
+          Element value = (Element)iter.next();
+          value.setText(propertyValue);
+          index++;
+        }
       }
       else{
-        value = new Element(VALUE_STRING);
-        value.addContent(propertyValue);
-        property.addContent(value);
+        for (int index = 0; index < propertyValues.length; index++) {
+            String propertyValue = propertyValues[index];
+            Element value = new Element(VALUE_STRING);
+            value.addContent(propertyValue);
+            property.addContent(value);
+        }
+
       }
     }
     return true;
   }
 
 
-  private static Element getNewProperty(String propertyName,Object propertyValue){
+  private static Element getNewProperty(String propertyName,Object[] propertyValues){
 
     Element element = new Element(PROPERTY_STRING);
     Element name = new Element(NAME_STRING);
-    Element value = new Element(VALUE_STRING);
-    Element type = new Element(TYPE_STRING);
-
-    element.addContent(name);
-    element.addContent(value);
-    element.addContent(type);
-
-    name.addContent(propertyName);
-    value.addContent(propertyValue.toString());
-    type.addContent(propertyValue.getClass().getName());
-
+    for (int i = 0; i < propertyValues.length; i++) {
+      Element value = new Element(VALUE_STRING);
+      Element type = new Element(TYPE_STRING);
+      Object propertyValue = propertyValues[i];
+      if(i==0){
+        element.addContent(name);
+        name.addContent(propertyName);
+      }
+      element.addContent(value);
+      element.addContent(type);
+      value.addContent(propertyValue.toString());
+      type.addContent(propertyValue.getClass().getName());
+    }
     return element;
   }
 

@@ -18,9 +18,13 @@ import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
 
 import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectInstance;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWProperty;
+import com.idega.idegaweb.IWPropertyList;
+import com.idega.idegaweb.IWMainApplication;
 
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleInfo;
@@ -134,8 +138,8 @@ public class BuilderLogic{
       return page;
   }
 
-  private void processImageSet(String pageKey,int ICObjectInstanceID,int imageID){
-    setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID));
+  private void processImageSet(String pageKey,int ICObjectInstanceID,int imageID,IWMainApplication iwma){
+    setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID),iwma);
   }
 
   private void transformObject(String pageKey,ModuleObject obj,int index, ModuleObjectContainer parent,String parentKey,ModuleInfo modinfo){
@@ -151,19 +155,20 @@ public class BuilderLogic{
           int image_id = Integer.parseInt(session_image_id);
           /**
            * @todo
-           * Change this so that id is done in a more appropriate place
+           * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
            */
-          processImageSet(pageKey,ICObjectIntanceID,image_id);
+          processImageSet(pageKey,ICObjectIntanceID,image_id,modinfo.getApplication());
+          modinfo.removeSessionAttribute(sessionID);
           imageObj.setImageID(image_id);
       }
-      if(((Image)obj).hasSource()){
-        inserter = new ImageInserter(imageObj);
-      }
-      else{
-        inserter = new ImageInserter();
+      inserter = new ImageInserter();
+      int image_id=imageObj.getImageID();
+      if(image_id!=-1){
+        inserter.setImageId(image_id);
       }
 
       inserter.setImSessionImageName(sessionID);
+      inserter.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
       obj = inserter;
       obj.setICObjectInstanceID(ICObjectIntanceID);
     }
@@ -382,25 +387,51 @@ public class BuilderLogic{
     }
   }
 
+  /**
+   * Returns a List of Strings
+   */
+  public List getPropertyValues(String pageKey,int ObjectInstanceId,String propertyName){
+      IBXMLPage xml = getIBXMLPage(pageKey);
+      return XMLWriter.getPropertyValues(xml,ObjectInstanceId,propertyName);
+  }
 
+  public boolean removeProperty(String pageKey,int ObjectInstanceId,String propertyName,String value){
+      IBXMLPage xml = getIBXMLPage(pageKey);
+      return XMLWriter.removeProperty(xml,ObjectInstanceId,propertyName,value);
+  }
+
+  /**
+   * Returns the first property if there is an array of properties set
+   */
   public String getProperty(String pageKey,int ObjectInstanceId,String propertyName){
     IBXMLPage xml = getIBXMLPage(pageKey);
     return XMLWriter.getProperty(xml,ObjectInstanceId,propertyName);
   }
 
+  public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String propertyValue,IWMainApplication iwma){
+      String[] values = {propertyValue};
+      return setProperty(pageKey,ObjectInstanceId,propertyName,values,iwma);
+  }
 
-  public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String propertyValue){
-    IBXMLPage xml = getIBXMLPage(pageKey);
-    if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValue)){
-      //System.out.println("propertyName="+propertyName);
-      //System.out.println("propertyValue="+propertyValue);
-      xml.update();
-      return true;
-    }
-    else{
-      System.out.println("SetProperty failed for ic_object_instance_id="+ObjectInstanceId);
-      return false;
-    }
+  public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String[] propertyValues,IWMainApplication iwma){
+      try{
+        IBXMLPage xml = getIBXMLPage(pageKey);
+        boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
+        if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)){
+          //System.out.println("propertyName="+propertyName);
+          //System.out.println("propertyValue="+propertyValue);
+          xml.update();
+          return true;
+        }
+        else{
+          System.out.println("SetProperty failed for ic_object_instance_id = "+ObjectInstanceId);
+          return false;
+        }
+      }
+      catch(Exception e){
+        e.printStackTrace();
+        return false;
+      }
   }
 
   public boolean deleteModule(String pageKey,String parentObjectInstanceID,int ICObjectInstanceID){
@@ -458,6 +489,36 @@ public class BuilderLogic{
     }
   }
 
+    public Class getObjectClass(int icObjectInstanceID){
+      try{
+        ICObjectInstance instance = new ICObjectInstance(icObjectInstanceID);
+        return instance.getObject().getObjectClass();
+      }
+      catch(Exception e){
+        e.printStackTrace();
+      }
+      return null;
+    }
 
+    private boolean isPropertyMultivalued(String propertyName,int icObjecctInstanceID,IWMainApplication iwma)throws Exception{
+      ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
+      Class c = instance.getObject().getObjectClass();
+      IWBundle iwb = instance.getObject().getBundle(iwma);
+      IWPropertyList complist = iwb.getComponentList();
+      IWPropertyList component = complist.getPropertyList(c.getName());
+      IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
+      IWPropertyList method = methodlist.getPropertyList(propertyName);
+      IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
+      if(prop!=null){
+        String value = prop.getValue();
+        try{
+          return Boolean.getBoolean(value);
+        }
+        catch(Exception e){
+          return false;
+        }
+      }
+      else return false;
+    }
 
 }
