@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.67 2002/06/14 11:24:26 laddi Exp $
+ *  $Id: IBApplication.java,v 1.68 2002/06/20 19:21:54 gummi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -316,18 +316,33 @@ public class IBApplication extends IWApplication {
       int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
 
       try {
-	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
-	add(viewer);
-	viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_pages");
-	viewer.getLocation().setApplicationClass(IBApplication.class);
-	viewer.getLocation().isInFrameSet(true);
+//<<<<<<< IBApplication.java
+      	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
+        add(viewer);
+        viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_pages");
+        viewer.getLocation().setApplicationClass(IBApplication.class);
+        viewer.getLocation().isInFrameSet(true);
 
-	System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
+//        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
 
-	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-	if (page_id != null) {
-	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
-	}
+        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+        if (page_id != null) {
+          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+        }
+//=======
+//	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
+//	add(viewer);
+//	viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_pages");
+//	viewer.getLocation().setApplicationClass(IBApplication.class);
+//	viewer.getLocation().isInFrameSet(true);
+//
+//	System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
+//
+//	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+//	if (page_id != null) {
+//	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+//	}
+//>>>>>>> 1.67
       }
       catch (Exception e) {
 	e.printStackTrace(System.err);
@@ -380,18 +395,33 @@ public class IBApplication extends IWApplication {
       getParentPage().setAllMargins(2);
 
       try {
-	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
-	add(viewer);
-	viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_templates");
-	viewer.getLocation().setApplicationClass(IBApplication.class);
-	viewer.getLocation().isInFrameSet(true);
+//<<<<<<< IBApplication.java
+        TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
+        add(viewer);
+        viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_templates");
+        viewer.getLocation().setApplicationClass(IBApplication.class);
+        viewer.getLocation().isInFrameSet(true);
 
-	System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
+//        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
 
-	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
-	if (page_id != null) {
-	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
-	}
+        String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+        if (page_id != null) {
+          iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+        }
+//=======
+//	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
+//	add(viewer);
+//	viewer.getLocation().setTarget(IB_LEFT_MENU_FRAME+"_templates");
+//	viewer.getLocation().setApplicationClass(IBApplication.class);
+//	viewer.getLocation().isInFrameSet(true);
+//
+//	System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
+//
+//	String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+//	if (page_id != null) {
+//	  iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+//	}
+//>>>>>>> 1.67
       }
       catch (Exception e) {
 	e.printStackTrace(System.err);

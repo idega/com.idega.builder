@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.2 2002/05/10 15:55:26 palli Exp $
+ * $Id: IBDomainBMPBean.java,v 1.3 2002/06/20 19:21:55 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,8 @@
  */
 package com.idega.builder.data;
 
+import com.idega.data.*;
+import com.idega.user.data.Group;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBDomain;
 //import com.idega.data.IDOLegacyEntity;
@@ -16,8 +18,6 @@ import com.idega.builder.data.IBDomainHome;
 import com.idega.builder.data.IBPageHome;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageBMPBean;
-import com.idega.data.GenericEntity;
-import com.idega.data.IDOLookup;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
@@ -51,6 +51,7 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
     addAttribute(getColumnURL(),"Domain URL",true,true,String.class,1000);
     addAttribute(getColumnStartPage(),"Start Page",true,true,Integer.class,"many-to-one",IBPage.class);
     addAttribute(getColumnStartTemplate(),"Start Template",true,true,Integer.class,"many-to-one",IBPage.class);
+    this.addManyToManyRelationShip(Group.class);
   }
 
   public static IBDomain getDomain(int id)throws SQLException {
@@ -147,6 +148,10 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
 
   public String getURL() {
     return(getStringColumnValue(getColumnURL()));
+  }
+
+  public Collection getTopLevelGroupsUnderDomain() throws IDORelationshipException{
+    return this.idoGetRelatedEntities(Group.class);
   }
 
   public void setIBPage(IBPage page) {
