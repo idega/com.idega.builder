@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.19 2001/09/15 23:54:20 tryggvil Exp $
+ * $Id: IBPage.java,v 1.20 2001/09/18 17:19:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,7 @@
  */
 package com.idega.builder.data;
 
-import com.idega.data.GenericEntity;
 import com.idega.data.BlobWrapper;
-import com.idega.core.data.ICFile;
 import java.sql.SQLException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,18 +21,18 @@ import com.idega.data.TreeableEntity;
  * @version 1.3
  */
 public class IBPage extends TreeableEntity {
-  private static String templateIdColumn_ = "template_id";
-  private static String fileColumn_ = "file_id";
-  private static String nameColumn_ = "name";
-  private static String entityName_ = "ib_page";
-  private static String type_ = "page_type";
+  private static String _templateIdColumn = "template_id";
+  private static String _fileColumn = "file_id";
+  private static String _nameColumn = "name";
+  private static String _entityName = "ib_page";
+  private static String _type = "page_type";
+  private ICFile _file;
+  private BlobWrapper _wrapper;
 
-  public static String page = "P";
-  public static String template = "T";
-  public static String draft = "D";
+  public static String PAGE = "P";
+  public static String TEMPLATE = "T";
+  public static String DRAFT = "D";
 
-  private ICFile file_;
-  private BlobWrapper wrapper_;
 
   /**
    *
@@ -57,9 +55,9 @@ public class IBPage extends TreeableEntity {
 		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnName(),"Nafn",true,true,String.class);
-                addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
-                addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
-                addAttribute(getColumnType(),"Type",true,true,String.class,1);
+    addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
+    addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
+    addAttribute(getColumnType(),"Type",true,true,String.class,1);
 	}
 
   /**
@@ -72,7 +70,7 @@ public class IBPage extends TreeableEntity {
    *
    */
 	public String getEntityName() {
-		return(entityName_);
+		return(_entityName);
 	}
 
   /**
@@ -91,12 +89,20 @@ public class IBPage extends TreeableEntity {
     setColumn(getColumnName(),name);
   }
 
+  public int getTemplateId() {
+    return(getIntColumnValue(getColumnTemplateID()));
+  }
+
+  public void setTemplateId(int id) {
+    setColumn(getColumnTemplateID(),id);
+  }
+
   public String getType() {
     return(getStringColumnValue(getColumnType()));
   }
 
   public void setType(String type) {
-    if ((type.equalsIgnoreCase(page)) || (type.equalsIgnoreCase(template)) || (type.equalsIgnoreCase(draft)))
+    if ((type.equals(PAGE)) || (type.equals(TEMPLATE)) || (type.equals(DRAFT)))
       setColumn(getColumnType(),type);
   }
 
@@ -107,15 +113,15 @@ public class IBPage extends TreeableEntity {
   public ICFile getFile() {
     int fileID = getFileID();
     if (fileID !=- 1) {
-      file_ = (ICFile)getColumnValue(getColumnFile());
+      _file = (ICFile)getColumnValue(getColumnFile());
     }
-    return(file_);
+    return(_file);
   }
 
   public void setFile(ICFile file) {
     //System.out.println("Calling setFile");
     setColumn(getColumnFile(),file);
-    file_ = file;
+    _file = file;
   }
 
   public void setPageValue(InputStream stream) {
@@ -147,25 +153,25 @@ public class IBPage extends TreeableEntity {
       setFile(file);
     }
     OutputStream theReturn = file.getFileValueForWrite();
-    wrapper_ = (BlobWrapper)file.getColumnValue(ICFile.getColumnFileValue());
+    _wrapper = (BlobWrapper)file.getColumnValue(ICFile.getColumnFileValue());
 
     return(theReturn);
   }
 
   public static String getColumnName() {
-    return(nameColumn_);
+    return(_nameColumn);
   }
 
   public static String getColumnTemplateID() {
-    return(templateIdColumn_);
+    return(_templateIdColumn);
   }
 
   public static String getColumnFile() {
-    return(fileColumn_);
+    return(_fileColumn);
   }
 
   public static String getColumnType() {
-    return(type_);
+    return(_type);
   }
 
   public void update() throws SQLException {
@@ -180,8 +186,8 @@ public class IBPage extends TreeableEntity {
         }
         else {
           //System.out.println("Trying update on ICFile");
-          if (wrapper_ != null) {
-            file.setColumn(ICFile.getColumnFileValue(),wrapper_);
+          if (_wrapper != null) {
+            file.setColumn(ICFile.getColumnFileValue(),_wrapper);
           }
           file.update();
         }
@@ -226,20 +232,20 @@ public class IBPage extends TreeableEntity {
   }
 
   public void setIsPage() {
-    setType(page);
+    setType(PAGE);
   }
 
   public void setIsTemplate() {
-    setType(template);
+    setType(TEMPLATE);
   }
 
   public void setIsDraft() {
-    setType(draft);
+    setType(DRAFT);
   }
 
   public boolean isPage() {
     String type = getType();
-    if (type.equalsIgnoreCase(page))
+    if (type.equals(PAGE))
       return(true);
     else
       return(false);
@@ -247,7 +253,7 @@ public class IBPage extends TreeableEntity {
 
   public boolean isTemplate() {
     String type = getType();
-    if (type.equalsIgnoreCase(template))
+    if (type.equals(TEMPLATE))
       return(true);
     else
       return(false);
@@ -255,7 +261,7 @@ public class IBPage extends TreeableEntity {
 
   public boolean isDraft() {
     String type = getType();
-    if (type.equalsIgnoreCase(draft))
+    if (type.equals(DRAFT))
       return(true);
     else
       return(false);

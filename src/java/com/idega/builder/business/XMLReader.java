@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.6 2001/09/14 15:30:14 palli Exp $
+ * $Id: XMLReader.java,v 1.7 2001/09/18 17:19:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,7 +25,6 @@ import org.jdom.Attribute;
  * @version 1.0
  */
 public class XMLReader {
-
   private XMLReader() {
   }
 
@@ -66,7 +65,7 @@ public class XMLReader {
         if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)){
           setProperties(child,parentContainer);
         }
-        else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
+        else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
             if (hasTemplate)
                 System.err.println("Using element or module on top level in a page having a template");
             else
@@ -77,7 +76,7 @@ public class XMLReader {
 
             parseElement(child,parentContainer);
         }
-        else if (child.getName().equalsIgnoreCase("region")) {
+        else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
             parseRegion(child,parentContainer);
         }
         else {
@@ -106,7 +105,7 @@ public class XMLReader {
           regionID = regionIDattr.getValue();
           try{
             int region_id_int = Integer.parseInt(regionID);
-            Attribute regionAttrX = reg.getAttribute("x");
+            Attribute regionAttrX = reg.getAttribute(XMLConstants.X_REGION_STRING);
             if(regionAttrX!=null){
               try {
                   x = regionAttrX.getIntValue();
@@ -116,7 +115,7 @@ public class XMLReader {
                   x = 1;
               }
             }
-            Attribute regionAttrY = reg.getAttribute("y");
+            Attribute regionAttrY = reg.getAttribute(XMLConstants.Y_REGION_STRING);
             if(regionAttrY!=null){
               try {
                   y = regionAttrY.getIntValue();
@@ -192,7 +191,7 @@ public class XMLReader {
         while (it.hasNext()) {
             Element e = (Element)it.next();
 
-            if (e.getName().equalsIgnoreCase("name")) {
+            if (e.getName().equalsIgnoreCase(XMLConstants.NAME_STRING)) {
                 if (key != null) {
                     vals = new String[values.size()];
                     for (int i = 0; i < values.size(); i++)
@@ -202,7 +201,7 @@ public class XMLReader {
                 }
                 key = e.getTextTrim();
             }
-            else if (e.getName().equalsIgnoreCase("value")) {
+            else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
                 values.addElement(e.getTextTrim());
             }
             else
@@ -241,10 +240,10 @@ public class XMLReader {
         Iterator it = at.iterator();
         while (it.hasNext()) {
             Attribute attr = (Attribute)it.next();
-            if (attr.getName().equalsIgnoreCase("class")) {
+            if (attr.getName().equalsIgnoreCase(XMLConstants.CLASS_STRING)) {
                 className = attr.getValue();
             }
-            else if (attr.getName().equalsIgnoreCase("id")) {
+            else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
                 id = attr.getValue();
             }
         }
@@ -269,14 +268,14 @@ public class XMLReader {
 
                     while (itr.hasNext()) {
                         Element child = (Element)itr.next();
-                        if (child.getName().equalsIgnoreCase("property")) {
+                        if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
                             setProperties(child,table);
                         }
-                        else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
+                        else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
                             //parseElement(child,table,null);
                             parseElement(child,table);
                         }
-                        else if (child.getName().equalsIgnoreCase("region")) {
+                        else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
                             parseRegion(child,table);
                         }
                         else
@@ -309,14 +308,14 @@ public class XMLReader {
 
                     while (itr.hasNext()) {
                         Element child = (Element)itr.next();
-                        if (child.getName().equalsIgnoreCase("property")) {
+                        if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
                             setProperties(child,inst);
                         }
-                        else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
+                        else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
                             //parseElement(child,(ModuleObjectContainer)inst,region);
                             parseElement(child,(ModuleObjectContainer)inst);
                         }
-                        else if (child.getName().equalsIgnoreCase("region")) {
+                        else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
                             parseRegion(child,(ModuleObjectContainer)inst);
                         }
                         else {

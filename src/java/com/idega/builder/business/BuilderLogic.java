@@ -507,7 +507,11 @@ public class BuilderLogic{
       IWPropertyList complist = iwb.getComponentList();
       IWPropertyList component = complist.getPropertyList(c.getName());
       IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
+      if (methodlist == null)
+        return(false);
       IWPropertyList method = methodlist.getPropertyList(propertyName);
+      if (method == null)
+        return(false);
       IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
       if(prop!=null){
         String value = prop.getValue();

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.5 2001/09/14 15:30:14 palli Exp $
+ * $Id: XMLWriter.java,v 1.6 2001/09/18 17:19:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -300,7 +300,7 @@ public class XMLWriter {
 
   static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos){
 
-    String regionId = parentObjectInstanceID+"."+xpos+"."+ypos;
+    String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
     Element region = findRegion(xml,regionId);
 
     if(region==null){

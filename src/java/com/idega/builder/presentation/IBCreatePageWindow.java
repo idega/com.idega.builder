@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.4 2001/09/13 17:38:17 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.5 2001/09/18 17:19:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -71,26 +71,30 @@ public class IBCreatePageWindow extends IWAdminWindow {
     String submit = modinfo.getParameter("submit");
 
     if (submit != null) {
-      String pageId = modinfo.getParameter("chooser_value");
+      String pageId = modinfo.getParameter(PAGE_CHOOSER_NAME);
       String name = modinfo.getParameter(PAGE_NAME_PARAMETER);
       String type = modinfo.getParameter(PAGE_TYPE);
+      String templateId = modinfo.getParameter(TEMPLATE_CHOOSER_NAME);
+
       if (pageId != null) {
         IBPage ibPage = new IBPage();
         if (name == null)
           name = "Untitled";
         ibPage.setName(name);
         ICFile file = new ICFile();
-        //file.insert();
         ibPage.setFile(file);
 
-        if (type.equalsIgnoreCase("1"))
-          ibPage.setType(IBPage.page);
-        else if (type.equalsIgnoreCase("2"))
-          ibPage.setType(IBPage.draft);
-        else if (type.equalsIgnoreCase("3"))
-          ibPage.setType(IBPage.template);
+        if (type.equals("1"))
+          ibPage.setType(IBPage.PAGE);
+        else if (type.equals("2"))
+          ibPage.setType(IBPage.DRAFT);
+        else if (type.equals("3"))
+          ibPage.setType(IBPage.TEMPLATE);
         else
-          ibPage.setType(IBPage.page);
+          ibPage.setType(IBPage.PAGE);
+
+        if (templateId != null)
+          ibPage.setTemplateId(Integer.parseInt(templateId));
 
         ibPage.insert();
         IBPage ibPageParent = new IBPage(Integer.parseInt(pageId));
@@ -113,6 +117,5 @@ public class IBCreatePageWindow extends IWAdminWindow {
   private ModuleObject getTemplateChooser(String name){
     return new IBTemplateChooser(name);
   }
-
 }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.2 2001/08/23 18:00:52 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.3 2001/09/18 17:19:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,10 +49,6 @@ public class IBXMLPage {
   private Page populatedPage = null;
   private String key;
 
-
-  private final static String PAGE_STRING = "page";
-  private final static String ROOT_STRING = "xml";
-
   private IBXMLPage(boolean verify) {
     builder = new SAXBuilder(verify);
   }
@@ -63,15 +59,18 @@ public class IBXMLPage {
   }*/
 
   public IBXMLPage(boolean verify,String key){
-
     this(verify);
-    this.key=key;
+    this.key = key;
+
+    IBPage ibpage = null;
       try{
-        IBPage ibpage = new IBPage(Integer.parseInt(key));
+        ibpage = new IBPage(Integer.parseInt(key));
         setXMLPageDescriptionFile(ibpage.getPageValue());
       }
-      catch(PageDoesNotExist pe){
-        setPageAsEmptyPage();
+      catch(PageDoesNotExist pe) {
+
+        if (ibpage.getType().equals(ibpage.PAGE))
+          setPageAsEmptyPage(null,null);
       }
       catch(NumberFormatException ne){
         try{
@@ -82,7 +81,7 @@ public class IBXMLPage {
           fnfe.printStackTrace();
         }
         catch(PageDoesNotExist pe){
-          setPageAsEmptyPage();
+          setPageAsEmptyPage(null,null);
         }
       }
       catch(Exception e){
@@ -196,10 +195,25 @@ public class IBXMLPage {
     }
   }
 
-  public void setPageAsEmptyPage(){
+  public void setPageAsEmptyPage(String type, String template) {
     System.out.println("setPageAsEmptyPage");
-    rootElement = new Element(ROOT_STRING);
-    Element pageElement = new Element(PAGE_STRING);
+    rootElement = new Element(XMLConstants.ROOT_STRING);
+    Element pageElement = new Element(XMLConstants.PAGE_STRING);
+
+    if (type == null)
+      type = XMLConstants.PAGE_TYPE_PAGE;
+
+    if ((type.equals(XMLConstants.PAGE_TYPE_DRAFT)) ||
+        (type.equals(XMLConstants.PAGE_TYPE_PAGE)) ||
+        (type.equals(XMLConstants.PAGE_TYPE_TEMPLATE)))
+      pageElement.addAttribute(XMLConstants.PAGE_TYPE,type);
+    else
+      pageElement.addAttribute(XMLConstants.PAGE_TYPE,XMLConstants.PAGE_TYPE_PAGE);
+
+    if (template != null)
+      pageElement.addAttribute(XMLConstants.TEMPLATE_STRING,template);
+
+
     rootElement.addContent(pageElement);
     xmlDocument = new Document(rootElement);
     setPopulatedPage(XMLReader.getPopulatedPage(this));
@@ -217,7 +231,7 @@ public class IBXMLPage {
 
   Element getPageRootElement(){
     if(rootElement!=null){
-      return rootElement.getChild(PAGE_STRING);
+      return rootElement.getChild(XMLConstants.PAGE_STRING);
     }
     return null;
   }
