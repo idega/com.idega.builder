@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.17 2004/09/20 17:41:32 eiki Exp $
+ * $Id: IBPageBMPBean.java,v 1.18 2004/09/20 17:43:55 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,17 +14,14 @@ import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-
 import javax.ejb.CreateException;
-
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageCacher;
-import com.idega.core.builder.data.*;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectReader;
