@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.141 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.142 2004/01/17 23:06:22 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -170,10 +170,13 @@ public class BuilderLogic
 				transformObject(pageKey, item, index, parent, "-1", iwc);
 			}
 		}
+		
+		
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		boolean clipboardEmpty = true;
-		if (pasted != null)
+		if (pasted != null){
 			clipboardEmpty = false;
+		}
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate())
 		{
@@ -223,6 +226,8 @@ public class BuilderLogic
 		}
 		catch (Exception ex)
 		{}
+		
+		
 		List list = page.getAllContainingObjects();
 		if (list != null)
 		{
