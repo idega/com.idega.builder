@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.172 2005/03/03 04:16:24 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.173 2005/03/03 15:31:45 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -630,6 +630,10 @@ public class BuilderLogic implements Singleton {
 			}
 			catch(NumberFormatException nfe){
 				//nothing printed out
+			}
+			catch(RuntimeException re){
+				//nothing printed out
+				//this can come from getPageKeyByURI() for old style systems with /servlet/IBMainSerlet uri
 			}
 			catch(Exception e){
 				e.printStackTrace();
