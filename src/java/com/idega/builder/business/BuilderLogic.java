@@ -1,6 +1,5 @@
-
 /*
- * $Id: BuilderLogic.java,v 1.47 2001/10/17 08:26:04 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.48 2001/10/17 12:54:09 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -118,7 +117,7 @@ public class BuilderLogic {
       //if (iwc.isParameterSet("view")) {
       //  builderview = true;
       //} else
-      if (iwc.isParameterSet("ic_pm") && iwc.getAccessController().isAdmin(iwc)) {
+      if (iwc.isParameterSet("ic_pm") && iwc.isAdmin()) {
         permissionview = true;
       }
 
@@ -193,7 +192,7 @@ public class BuilderLogic {
           }
         }
       }
-      catch (SQLException ex) {
+      catch (Exception ex) {
       }
 
       List list = page.getAllContainingObjects();
@@ -212,7 +211,7 @@ public class BuilderLogic {
   }
 
   private void filterForPermission(List groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc){
-    if(!iwc.getAccessController().hasViewPermission(groupIds,obj,iwc)){
+    if(!iwc.hasViewPermission(groupIds,obj)){
       System.err.println(obj+": removed");
       parentObject.getAllContainingObjects().remove(index);
       parentObject.getAllContainingObjects().add(index,PresentationObject.NULL_CLONE_OBJECT);
