@@ -317,7 +317,7 @@ public class BuilderLogic{
 
   public  ModuleObject getPermissionIcon(int key,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-    Image editImage = bundle.getImage("las_open.gif","Set permissions");
+    Image editImage = bundle.getImage("key_small.gif","Set permissions");
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPermissionWindow.class);
     link.addParameter(ib_page_parameter,"1");
