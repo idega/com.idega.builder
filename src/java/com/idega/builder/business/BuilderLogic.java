@@ -116,6 +116,7 @@ public class BuilderLogic{
           transformObject(item,index,parent,"-1",modinfo);
         }
       }
+      //"-1" is identified as the top page object (parent)
       page.add(getAddIcon(Integer.toString(-1),modinfo));
       return page;
   }
@@ -177,8 +178,6 @@ public class BuilderLogic{
   public  ModuleObject getAddIcon(String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif");
-    //Window window = new IBAdminWindow();
-    //Link link = new Link(addImage,window);
     Link link = new Link(addImage);
     link.setWindowToOpen(IBAddModuleWindow.class);
     link.addParameter(ib_page_parameter,"1");
@@ -191,8 +190,6 @@ public class BuilderLogic{
   public  ModuleObject getDeleteIcon(int key,String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image deleteImage = bundle.getImage("delete.gif");
-    //Window window = new IBAdminWindow();
-    //Link link = new Link(deleteImage,window);
     Link link = new Link(deleteImage);
     link.setWindowToOpen(IBDeleteModuleWindow.class);
     link.addParameter(ib_page_parameter,"1");
@@ -206,8 +203,6 @@ public class BuilderLogic{
   public  ModuleObject getMoveIcon(int key,String parentKey,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image moveImage = bundle.getImage("move.gif");
-    //Window window = new IBAdminWindow();
-    //Link link = new Link(deleteImage,window);
     Link link = new Link(moveImage);
     link.setWindowToOpen(IBAdminWindow.class);
     link.addParameter(ib_page_parameter,"1");
@@ -220,9 +215,6 @@ public class BuilderLogic{
   public  ModuleObject getEditIcon(int key,ModuleInfo modinfo){
     IWBundle bundle = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image editImage = bundle.getImage("edit.gif");
-
-    //Window window = new IBAdminWindow();
-    //Link link = new Link(editImage,window);
     Link link = new Link(editImage);
     link.setWindowToOpen(IBPropertiesWindow.class);
     link.addParameter(ib_page_parameter,"1");
