@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.68 2001/10/31 17:26:49 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.69 2001/10/31 17:35:00 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -559,10 +559,15 @@ public class BuilderLogic {
     }
 
     public void main(IWContext iwc){
-      Script script = getParentPage().getAssociatedScript();
-      script.addFunction("findObj(n, d)","function findObj(n, d) { \n\t var p,i,x;  if(!d) d=document; \n\t if((p=n.indexOf(\"?\"))>0&&parent.frames.length) { \n\t     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p); \n\t } \n\t  if(!(x=d[n])&&d.all) x=d.all[n]; \n\t for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n]; \n\t  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); \n\t if(!x && document.getElementById) x=document.getElementById(n); return x; \n }");
-      script.addFunction("showHideLayers()","function showHideLayers() { \n\t var i,p,v,obj,args=showHideLayers.arguments; \n\t for (i=0; i<(args.length-2); i+=3) \n\t if ((obj=findObj(args[i]))!=null) { \n\t v=args[i+2]; \n\t   if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v='hide')?'hidden':v; \n\t }    obj.visibility=v; \n\t }\n}");
-      getParentPage().setAssociatedScript(script);
+      try{
+        Script script = getParentPage().getAssociatedScript();
+        script.addFunction("findObj(n, d)","function findObj(n, d) { \n\t var p,i,x;  if(!d) d=document; \n\t if((p=n.indexOf(\"?\"))>0&&parent.frames.length) { \n\t     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p); \n\t } \n\t  if(!(x=d[n])&&d.all) x=d.all[n]; \n\t for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n]; \n\t  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); \n\t if(!x && document.getElementById) x=document.getElementById(n); return x; \n }");
+        script.addFunction("showHideLayers()","function showHideLayers() { \n\t var i,p,v,obj,args=showHideLayers.arguments; \n\t for (i=0; i<(args.length-2); i+=3) \n\t if ((obj=findObj(args[i]))!=null) { \n\t v=args[i+2]; \n\t   if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v='hide')?'hidden':v; \n\t }    obj.visibility=v; \n\t }\n}");
+        getParentPage().setAssociatedScript(script);
+      }
+      catch(NullPointerException e){
+        System.out.println("getParentPage() returns null in BuilderObjectControl for Object "+_theObject.getClass().getName()+" and ICObjectInstanceID="+_theObject.getICObjectInstanceID());
+      }
     }
 
     public String getBundleIdentifier(){
