@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.16 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.17 2002/04/10 01:38:49 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 
+import com.idega.core.business.ICObjectBusiness;
 import com.idega.presentation.Page;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -309,7 +310,19 @@ public class IBPropertiesWindowSetter extends Page {
    *
    */
   public boolean setProperty(String key, String values[], String icObjectInstanceID, String pageKey, IWMainApplication iwma) {
+  //invalidate cache for blocks
+    PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(icObjectInstanceID);
+    if( obj instanceof com.idega.presentation.Block ){
+      if(!((com.idega.presentation.Block)obj).getCacheKey().equals(com.idega.presentation.Block.IW_BLOCK_CACHE_KEY)){
+        iwma.getIWCacheManager().invalidateCache( ((com.idega.presentation.Block)obj).getCacheKey());
+      }
+
+    }
+  //
+
     return(BuilderLogic.getInstance().setProperty(pageKey,Integer.parseInt(icObjectInstanceID),key,values,iwma));
+
+
   }
 
   /**
@@ -319,6 +332,16 @@ public class IBPropertiesWindowSetter extends Page {
     /**
      * @todo Change so that it removes properties of specific values for multivalued properties
      */
+  //invalidate cache for blocks
+    PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(icObjectInstanceID);
+    if( obj instanceof com.idega.presentation.Block ){
+      if(!((com.idega.presentation.Block)obj).getCacheKey().equals(com.idega.presentation.Block.IW_BLOCK_CACHE_KEY)){
+        iwma.getIWCacheManager().invalidateCache( ((com.idega.presentation.Block)obj).getCacheKey());
+      }
+
+    }
+  //
+
     BuilderLogic.getInstance().removeProperty(iwma,pageKey,Integer.parseInt(icObjectInstanceID),key,values);
   }
 }

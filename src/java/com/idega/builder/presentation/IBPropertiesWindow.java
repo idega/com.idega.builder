@@ -67,7 +67,8 @@ public IBPropertiesWindow() {
 	int iInstanceID = Integer.parseInt(sICObjectInstanceID);
 	/*ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getInstance().getICObjectInstance(iInstanceID);
 	ICObject ico = instance.getObject();*/
-	String name = ICObjectBusiness.getInstance().getNewObjectInstance(iInstanceID).getBuilderName(iwc);
+        PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(iInstanceID);
+	String name = obj.getBuilderName(iwc);
 	title += name;
       }
     }
