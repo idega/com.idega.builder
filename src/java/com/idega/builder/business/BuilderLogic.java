@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.99 2002/02/01 10:16:17 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.100 2002/02/14 16:51:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -102,7 +102,7 @@ public class BuilderLogic {
 
   //private static final String DEFAULT_PAGE = "1";
 
-  private static final String CLIPBOARD = "user_clipboard";
+  public static final String CLIPBOARD = "user_clipboard";
 
   private static BuilderLogic _instance;
 
@@ -1157,10 +1157,16 @@ public class BuilderLogic {
     return(false);
   }
 
+  /**
+   *
+   */
   public static String getIBPageURL(int ib_page_id){
-    return IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id;
+    return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
   }
 
+  /**
+   *
+   */
   public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId){
     String src = IWMainApplication._IFRAME_CONTENT_URL+"?"+IC_OBJECT_INSTANCE_ID_PARAMETER+"="+ICObjectInstanceId;
     String query = iwc.getQueryString();
@@ -1170,6 +1176,12 @@ public class BuilderLogic {
     return src;
   }
 
+  /**
+   * Changes the name of the current page.
+   *
+   * @param name The new name for the page
+   * @param iwc The IdegeWeb Context object
+   */
   public void changeName(String name, IWContext iwc) {
     IBXMLPage xml = getCurrentIBXMLPage(iwc);
     if (xml != null) {
@@ -1192,6 +1204,11 @@ public class BuilderLogic {
   }
 
   /**
+   * Changes the template id for the current page.
+   *
+   * @param templateId The new template id for the current page.
+   * @param iwc The IdegeWeb Context object
+   *
    * @todo make this work for templates!
    */
   public void changeTemplateId(String templateId, IWContext iwc) {
@@ -1214,35 +1231,43 @@ public class BuilderLogic {
     }
   }
 
-
-
+  /**
+   *
+   */
   public void startBuilderSession(IWContext iwc){
     iwc.setSessionAttribute(IB_APPLICATION_RUNNING_SESSION,Boolean.TRUE);
   }
 
-
+  /**
+   *
+   */
   public void endBuilderSession(IWContext iwc){
     iwc.removeSessionAttribute(IB_APPLICATION_RUNNING_SESSION);
   }
 
+  /**
+   *
+   */
   public boolean isBuilderApplicationRunning(IWContext iwc){
     return !(iwc.getSessionAttribute(IB_APPLICATION_RUNNING_SESSION)==null);
   }
 
+  /**
+   *
+   */
   public PresentationObject getIFrameContent(int ibPageId, int instanceId, IWContext iwc){
-    //Page parentPage = BuilderLogic.getInstance().getIBXMLPage(ibPageId).getPopulatedPage();
-
-    //PresentationObject obj = parentPage.getContainedICObjectInstance(instanceId);
     PresentationObject obj = getPopulatedObjectInstance(instanceId,iwc);
     PresentationObject iframeContent = null;
 
-    if(obj instanceof IFrameContainer && obj != null){
+    if (obj instanceof IFrameContainer && obj != null) {
       iframeContent = ((IFrameContainer)obj).getIFrameContent();
     }
     return iframeContent;
   }
 
-
+  /**
+   *
+   */
   public PresentationObject[] getIWPOListeners(IWContext iwc){
     String prm = iwc.getParameter(this.IB_OBJECT_INSTANCE_COORDINATE);
     String[] coordinates = null;
@@ -1291,7 +1316,9 @@ public class BuilderLogic {
     }
   }
 
-
+  /**
+   *
+   */
   public PresentationObject getIWPOEventSource(IWContext iwc){
     String coordinates = iwc.getParameter(this.IB_OBJECT_INSTANCE_EVENT_SOURCE);
     if(coordinates != null){
@@ -1309,8 +1336,9 @@ public class BuilderLogic {
     return null;
   }
 
-
-
+  /**
+   *
+   */
   public void setICObjectInstanceListeners(Link l, int[] ibPageId, int[] instanceId){
     String prm = "";
     for (int i = 0; i < ibPageId.length; i++) {
@@ -1320,14 +1348,19 @@ public class BuilderLogic {
       prm += ibPageId[i]+"_"+instanceId[i];
     }
 
-
     l.addParameter(IB_OBJECT_INSTANCE_COORDINATE,prm);
   }
 
+  /**
+   *
+   */
   public void setICObjectInstanceListener(Link l, int ibPageId, int instanceId){
     l.addParameter(IB_OBJECT_INSTANCE_COORDINATE,ibPageId+"_"+instanceId);
   }
 
+  /**
+   *
+   */
   public void setICObjectInstanceEventSource(Link l, int ibPageId, int instanceId){
     l.addParameter(IB_OBJECT_INSTANCE_EVENT_SOURCE,ibPageId+"_"+instanceId);
   }
@@ -1352,23 +1385,51 @@ public class BuilderLogic {
     PageCacher.flagPageInvalid(linkParentPageId);
   }
 
+  /**
+   *
+   */
   public PresentationObject getPopulatedObjectInstance(int id, IWContext iwc){
     return ObjectInstanceCacher.getObjectInstanceClone(id,iwc);
   }
 
+  /**
+   *
+   */
   public PresentationObject getPopulatedObjectInstance(String key, IWContext iwc){
     return ObjectInstanceCacher.getObjectInstanceClone(key,iwc);
   }
 
+  /**
+   *
+   */
   public Map getCashedObjectInstancesForPage(int pageId){
     return ObjectInstanceCacher.getObjectInstancesCachedForPage(pageId);
   }
 
+  /**
+   *
+   */
   public Map getCashedObjectInstancesForPage(String pageKey){
     return ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
   }
 
-  public Set getInstanceIdsOnPage(String pageKey){
+  /**
+   *
+   */
+  public Set getInstanceIdsOnPage(String pageKey) {
+    Map m = ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
+    if (m != null) {
+      return m.keySet();
+    }
+    else {
+      return null;
+    }
+  }
+
+  /**
+   *
+   */
+  public Set getInstanceIdsOnPage(int pageKey) {
     Map m = ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
     if(m != null){
       return m.keySet();
@@ -1377,16 +1438,10 @@ public class BuilderLogic {
     }
   }
 
-  public Set getInstanceIdsOnPage(int pageKey){
-    Map m = ObjectInstanceCacher.getObjectInstancesCachedForPage(pageKey);
-    if(m != null){
-      return m.keySet();
-    }else{
-      return null;
-    }
-  }
-
-  public static int getStartPageId(IWContext iwc){
+  /**
+   *
+   */
+  public static int getStartPageId(IWContext iwc) {
     IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
     return domain.getStartPageID();
   }
