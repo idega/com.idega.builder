@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderPageFacetMap.java,v 1.1 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: BuilderPageFacetMap.java,v 1.2 2004/12/23 14:44:37 tryggvil Exp $
  * Created on 16.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.presentation.PresentationObjectContainer;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2004/12/23 14:44:37 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 
@@ -76,7 +76,27 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 	 */
 	public Object get(Object key) {
 		// TODO Auto-generated method stub
-		return super.get(key);
+		//return super.get(key);
+		String facetKey=(String)key;
+		String PREFIX="builder";
+		if(facetKey.startsWith(PREFIX)){
+			String regionKey = facetKey.substring(PREFIX.length(),facetKey.length());
+			UIComponent region = findRegionComponent(regionKey);
+			if(region!=null){
+				if(region.getChildren().size()>0){
+					return region.getChildren().get(0);
+				}
+			}
+			/*if(doesComponentContainChild(region,component)){
+				//
+			}else{
+				region.getChildren().add(value);
+			}*/
+			return null;
+		}
+		else{
+			return super.get(key);
+		}
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObjectComponentFacetMap#getComponent()
@@ -109,12 +129,34 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 		if(facetKey.startsWith(PREFIX)){
 			String regionKey = facetKey.substring(PREFIX.length(),facetKey.length());
 			UIComponent region = findRegionComponent(regionKey);
-			region.getChildren().add(value);
+			UIComponent component =(UIComponent)value;
+			if(doesComponentContainChild(region,component)){
+				//
+			}else{
+				region.getChildren().add(value);
+			}
+			
 			return null;
 		}
 		else{
 			return super.put(key,value);
 		}
+	}
+	
+	/**
+	 * Returns true if component already contains child
+	 * @param component
+	 * @param child
+	 * @return
+	 */
+	protected boolean doesComponentContainChild(UIComponent component,UIComponent child){
+		for (Iterator iter = component.getChildren().iterator(); iter.hasNext();) {
+			UIComponent element = (UIComponent) iter.next();
+			if(element.getId().equals(child.getId())){
+				return true;
+			}
+		}
+		return false;
 	}
 	/**
 	 * @param key
@@ -138,11 +180,6 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 			if(child instanceof PresentationObjectContainer){
 				PresentationObjectContainer poc = (PresentationObjectContainer)child;
 				String label = poc.getLabel();
-				int icoinstanceId = poc.getICObjectInstanceID();
-				//if(icoinstanceId==104){
-				//	return component.getFacet("1.2");
-//					boolean ok = true;
-				//}
 				if(key.equals(label)){
 					return poc;
 				}
@@ -166,8 +203,22 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 	 * @see java.util.Map#remove(java.lang.Object)
 	 */
 	public Object remove(Object key) {
-		// TODO Auto-generated method stub
-		return super.remove(key);
+		String facetKey = (String)key;
+		String PREFIX="builder";
+		if(facetKey.startsWith(PREFIX)){
+			String regionKey = facetKey.substring(PREFIX.length(),facetKey.length());
+			UIComponent region = findRegionComponent(regionKey);
+			if(region!=null){
+				region.getChildren().clear();
+				region.getFacets().clear();
+			}
+			//region.getChildren().add(value);
+			return null;
+		}
+		else{
+			return super.remove(key);
+		}
+		//return super.remove(key);
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObjectComponentFacetMap#setComponent(javax.faces.component.UIComponent)
