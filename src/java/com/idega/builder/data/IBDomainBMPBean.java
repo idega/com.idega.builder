@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.14 2004/07/16 10:05:38 gummi Exp $
+ * $Id: IBDomainBMPBean.java,v 1.15 2004/11/12 16:35:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -203,6 +203,14 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
 
   public void setName(String name) {
     setColumn(getColumnDomainName(),name);
+  }
+  
+  public void setServerName(String serverName){
+      setColumn(COLUMNNAME_SERVER_NAME,serverName);
+  }
+  
+  public String getServerName(){
+      return getStringColumnValue(COLUMNNAME_SERVER_NAME);
   }
 
   public Collection ejbFindAllDomains() throws FinderException {
