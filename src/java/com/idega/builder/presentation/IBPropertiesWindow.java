@@ -21,6 +21,7 @@ import com.idega.presentation.ui.*;
 import com.idega.util.reflect.MethodFinder;
 
 import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectInstance;
 
 import java.util.List;
 import java.util.Iterator;
@@ -46,26 +47,40 @@ public class IBPropertiesWindow extends FrameSet{
    final static String MIDDLE_FRAME = "ib_prop_win_middle";
    final static String BOTTOM_FRAME = "ib_prop_win_bottom";
 
+   private final static String HEADER_TEXT_PARAMETER = "ib_prop_win_header";
 
   public void main(IWContext iwc) throws Exception{
     super.setStatus(true);
     String title = "Properties";
 
+    String sICObjectInstanceID = iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
+    if(sICObjectInstanceID!=null){
+      title += " : ";
+      int iInstanceID = Integer.parseInt(sICObjectInstanceID);
+      ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getICObjectInstance(iInstanceID);
+      ICObject ico = instance.getObject();
+      String name = ico.getName();
+      title += name;
+    }
 
     super.setTitle(title);
     super.setWidth(600);
     super.setHeight(600);
-    add(IBPropertiesWindowTop.class);
 
+    //add(IBPropertiesWindowTop.class);
+    IWURL topURL = FrameSet.getFrameURL(IBPropertiesWindowTop.class);
+    topURL.addParameter(HEADER_TEXT_PARAMETER,title);
+    add(topURL.toString());
+
+    //add(IBPropertiesWindowMiddle.class);
     IWURL mURL = FrameSet.getFrameURL(IBPropertiesWindowMiddle.class);
     mURL.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
     add(mURL.toString());
-    //add(IBPropertiesWindowMiddle.class);
 
     add(IBPropertiesWindowBottom.class);
     this.setSpanPixels(1,30);
     this.setSpanAdaptive(2);
-    this.setSpanPixels(3,40);
+    this.setSpanPixels(3,35);
 
     this.setScrolling(1,false);
 
@@ -98,7 +113,7 @@ public class IBPropertiesWindow extends FrameSet{
 
   public static class IBPropertiesWindowBottom extends Page{
     public IBPropertiesWindowBottom(){
-      setBackgroundColor("gray");
+      setBackgroundColor(IWAdminWindow.HEADER_COLOR);
       setAllMargins(0);
       Script script = this.getAssociatedScript();
       script.addFunction("doClose","function doClose(){doUpdate();parent.opener.location.reload();parent.close();}");
@@ -130,8 +145,14 @@ public class IBPropertiesWindow extends FrameSet{
       //Text t = new Text("Properties");
       //t.setBold();
       //add(t);
-      IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
-      super.addTitle(iwrb.getLocalizedString("ib_properties_window_title","Properties"));
+      String title = iwc.getParameter(HEADER_TEXT_PARAMETER);
+      if(title!=null){
+        super.addTitle(title);
+      }
+      else{
+        IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
+        super.addTitle(iwrb.getLocalizedString("ib_properties_window_title","Properties"));
+      }
 
     }
   }
