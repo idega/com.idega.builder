@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.12 2004/07/06 10:33:10 gummi Exp $
+ * $Id: IBDomainBMPBean.java,v 1.13 2004/07/06 16:33:11 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -212,7 +212,8 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   
   public Collection ejbFindAllDomainsByServerURL(String serverURL) throws FinderException{
   	IDOQuery query = idoQueryGetSelect();
-  	query.appendWhereEquals(COLUMNNAME_SERVER_URL,serverURL);
+  	query.appendWhereEqualsWithSingleQuotes(COLUMNNAME_SERVER_URL,serverURL);
+  	System.out.println(query.toString());
   	return idoFindPKsByQuery(query);
   }
 }
