@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.14 2001/11/02 10:30:22 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.15 2001/11/02 10:35:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -205,10 +205,12 @@ public class IBCreatePageWindow extends IWAdminWindow {
         if (current.getType().equals(IBPage.TEMPLATE))
           chooser.setSelectedPage(current);
         else {
-          IBDomain domain = IBDomain.getDomain(1);
-          IBPage top = domain.getStartTemplate();
-          if (top != null)
-            chooser.setSelectedPage(top);
+          if (type.equals("2")) {
+            IBDomain domain = IBDomain.getDomain(1);
+            IBPage top = domain.getStartTemplate();
+            if (top != null)
+              chooser.setSelectedPage(top);
+          }
         }
       }
       else {
