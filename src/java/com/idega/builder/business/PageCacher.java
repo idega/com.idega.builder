@@ -169,4 +169,20 @@ public class PageCacher{
     return (IBXMLPage)getPageCacheMap().get(key);
   }
 
+  /**
+   * A function that gets the IBXMLPage if it exists in cache, otherwise it returns null.
+   *
+   * @param key The id of the IBXMLPage to get from cache.
+   *
+   * @return The IBXMLPage with id = key if it exists in cache, null otherwise.
+   */
+  public static IBXMLPage getXMLIfInCache(String key) {
+    if (isPageInvalid(key)) {
+      return null;
+    }
+    else {
+      IBXMLPage xml = getXMLPageCached(key);
+      return xml;
+    }
+  }
 }

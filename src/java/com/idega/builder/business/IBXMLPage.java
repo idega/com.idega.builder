@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.37 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.38 2002/04/23 16:33:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -181,10 +181,12 @@ public class IBXMLPage implements IBXMLAble {
       Iterator i = l.iterator();
       while (i.hasNext()) {
         String invalid = (String)i.next();
-        PageCacher.flagPageInvalid(invalid);
-        IBXMLPage child = PageCacher.getXML(invalid);
-        if (child.getType().equals(TYPE_TEMPLATE))
-          child.invalidateUsingTemplate();
+        IBXMLPage child = PageCacher.getXMLIfInCache(invalid);
+        if (child != null) {
+          if (child.getType().equals(TYPE_TEMPLATE))
+            child.invalidateUsingTemplate();
+          PageCacher.flagPageInvalid(invalid);
+        }
       }
     }
   }
