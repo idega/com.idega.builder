@@ -1,5 +1,5 @@
 /*
- * $Id: ColorHandler.java,v 1.5 2001/12/12 21:06:32 palli Exp $
+ * $Id: PageNameHandler.java,v 1.1 2001/12/12 21:06:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,18 +12,17 @@ package com.idega.builder.handler;
 import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 
 /**
- * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
+ * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ColorHandler implements PropertyHandler {
+public class PageNameHandler implements PropertyHandler {
   /**
    *
    */
-  public ColorHandler() {
+  public PageNameHandler() {
   }
 
   /**
@@ -36,13 +35,9 @@ public class ColorHandler implements PropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+  public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
     TextInput input = new TextInput(name);
-    input.setMaxlength(7);
-    input.setLength(7);
-    if (value != null) {
-      input.setValue(value);
-    }
+    input.setValue(stringValue);
 
     return(input);
   }
@@ -51,5 +46,7 @@ public class ColorHandler implements PropertyHandler {
    *
    */
   public void onUpdate(String values[], IWContext iwc) {
+    System.out.println("Getting to onUpdate in PageNameHandler");
+    System.out.println("values = " + values);
   }
 }

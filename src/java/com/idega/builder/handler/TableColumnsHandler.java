@@ -1,3 +1,12 @@
+/*
+ * $Id: TableColumnsHandler.java,v 1.2 2001/12/12 21:06:32 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.builder.handler;
 
 import java.util.List;
@@ -8,26 +17,34 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
 
 /**
- * Title:        idegaclasses
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-
 public class TableColumnsHandler implements PropertyHandler {
-
-  public TableColumnsHandler(){
+  /**
+   *
+   */
+  public TableColumnsHandler() {
   }
 
+  /**
+   *
+   */
   public List getDefaultHandlerTypes() {
-    return null;
+    return(null);
   }
 
-  public PresentationObject getHandlerObject(String name,String value,IWContext iwc){
+  /**
+   *
+   */
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
     TableRowColumnPropertyPresentation menu = new TableRowColumnPropertyPresentation(name,value,iwc);
-    return menu;
+    return(menu);
   }
 
+  /**
+   *
+   */
+  public void onUpdate(String values[], IWContext iwc) {
+  }
 }
