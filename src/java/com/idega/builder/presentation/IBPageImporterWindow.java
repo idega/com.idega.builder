@@ -35,7 +35,6 @@ public class IBPageImporterWindow extends IBPageWindow {
 
   public static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
   
-  public static final String IMPORT_KEY = "ib_page_import_key";
   public static final String TOP_LEVEL_PAGE_KEY = "ib_page_import_top_level_key";
   public static final String TOP_LEVEL_TEMPLATE_KEY = "ib_template_import_top-level_key";
   
@@ -150,7 +149,7 @@ public class IBPageImporterWindow extends IBPageWindow {
 
   
   private FileInput getFileInput() {
-  	FileInput fileInput = new FileInput(IMPORT_KEY);
+  	FileInput fileInput = new FileInput();
   	return fileInput;
   }
   	
