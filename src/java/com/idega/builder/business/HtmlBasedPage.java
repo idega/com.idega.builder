@@ -43,7 +43,7 @@ public class HtmlBasedPage extends IBXMLPage {
 		try {
 			String encoding = IWMainApplication.getDefaultIWApplicationContext().getApplicationSettings().getCharacterEncoding();
 			
-			InputStreamReader reader = new InputStreamReader(stream,encoding);
+			InputStreamReader reader = new InputStreamReader(stream,"UTF-8");//,encoding);
 			int bufferlength=1000;
 			char[] buf = new char[bufferlength];
 			StringBuffer sbuffer = new StringBuffer();			
