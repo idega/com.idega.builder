@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.22 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.23 2002/10/15 12:36:49 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,7 +24,6 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.EntityUpdater;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.data.EntityFinder;
