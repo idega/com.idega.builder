@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.8 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: TreeNodeFinder.java,v 1.9 2004/03/28 11:47:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -130,20 +130,21 @@ public class TreeNodeFinder {
 			 * á ekki heima þ.e. að childpage.getColumnType() = pages.PAGE
 			 */
 			sql.append("select * from ");
-			sql.append(pages.getEntityName() + "_tree t, ");
-			sql.append(pages.getEntityName() + " p ");
+			sql.append(pages.getEntityName() ).append( "_tree t, ");
+			sql.append(pages.getEntityName()).append( " p ");
 			sql.append(" where ");
-			sql.append("p." + pages.getIDColumnName());
+			sql.append("p." ).append( pages.getIDColumnName());
 			sql.append(" = ");
-			sql.append("t." + pages.getIDColumnName());
+			sql.append("t.").append( pages.getIDColumnName());
 			sql.append(" and (");
-			sql.append("p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
+			sql.append("p.").append( com.idega.builder.data.IBPageBMPBean.getColumnType());
 			sql.append(" = '");
 			sql.append(com.idega.builder.data.IBPageBMPBean.PAGE);
-			sql.append("' or p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
+			sql.append("' or p.").append( com.idega.builder.data.IBPageBMPBean.getColumnType());
 			sql.append(" = '");
 			sql.append(com.idega.builder.data.IBPageBMPBean.DPT_PAGE);
 			sql.append("')");
+			
 
 			ResultSet result = stmt.executeQuery(sql.toString());
 
@@ -187,20 +188,21 @@ public class TreeNodeFinder {
 
 			StringBuffer sql = new StringBuffer();
 			sql.append("select * from ");
-			sql.append(pages.getEntityName() + "_tree t, ");
-			sql.append(pages.getEntityName() + " p ");
+			sql.append(pages.getEntityName() ).append( "_tree t, ");
+			sql.append(pages.getEntityName() ).append( " p ");
 			sql.append(" where ");
-			sql.append("p." + pages.getIDColumnName());
+			sql.append("p." ).append( pages.getIDColumnName());
 			sql.append(" = ");
-			sql.append("t." + pages.getIDColumnName());
+			sql.append("t.").append( pages.getIDColumnName());
 			sql.append(" and (");
-			sql.append("p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
+			sql.append("p.").append( com.idega.builder.data.IBPageBMPBean.getColumnType());
 			sql.append(" = '");
 			sql.append(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
-			sql.append("' or p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
+			sql.append("' or p.").append( com.idega.builder.data.IBPageBMPBean.getColumnType());
 			sql.append(" = '");
 			sql.append(com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE);
 			sql.append("')");
+			
 
 			ResultSet result = stmt.executeQuery(sql.toString());
 
