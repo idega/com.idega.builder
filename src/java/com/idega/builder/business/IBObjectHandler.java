@@ -45,11 +45,11 @@ public class IBObjectHandler {
     int instID = getObjectID(obj);
     if(instID != -1){
       ICObjectInstance newInstance = new ICObjectInstance();
-      newInstance.setObjectID(instID);
+      newInstance.setICObjectID(instID);
       newInstance.insert();
       return newInstance.getID();
     }else{
-      throw new SQLException("ICObject is not known");
+      throw new Exception("ICObject is not known");
     }
   }
 
