@@ -441,6 +441,32 @@ public class BuilderLogic{
       }
   }
 
+   // add by Aron 20.sept 2001 01:49
+   public boolean deleteModule(String pageKey,String parentObjectInstanceID,int ICObjectInstanceID){
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    boolean blockDeleted = false;
+    /** @todo  */
+      ////////
+      try {
+        Object Block = ICObjectBusiness.getICObjectClass(ICObjectInstanceID);
+        if(Block instanceof IWBlock){
+          ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
+        }
+      }
+      catch (Exception ex) {
+        blockDeleted = false;
+      }
+
+    if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID) && blockDeleted){
+      xml.update();
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  /* old version
   public boolean deleteModule(String pageKey,String parentObjectInstanceID,int ICObjectInstanceID){
     IBXMLPage xml = getIBXMLPage(pageKey);
     if(XMLWriter.deleteModule(xml,parentObjectInstanceID,ICObjectInstanceID)){
@@ -451,6 +477,7 @@ public class BuilderLogic{
       return false;
     }
   }
+  */
 
   public boolean lockRegion(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
     IBXMLPage xml = getIBXMLPage(pageKey);
