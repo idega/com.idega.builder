@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.30 2002/01/11 12:33:12 palli Exp $
+ * $Id: XMLReader.java,v 1.31 2002/01/11 13:44:33 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -151,7 +151,6 @@ public class XMLReader {
         Iterator it2 = c.iterator();
         while(it2.hasNext()) {
           PresentationObject obj = (PresentationObject)it2.next();
-          System.out.println("Obj instance id = " + obj.getICObjectInstanceID());
         }
       }
 
@@ -491,7 +490,6 @@ public class XMLReader {
       intNewPage = newPageLink.getIntValue();
     }
     catch(com.idega.xml.XMLException e) {
-      System.out.println("Error in converting values to int");
       e.printStackTrace();
     }
     List li = parent.getAllContainedObjectsRecursive();
@@ -502,7 +500,6 @@ public class XMLReader {
         if (obj instanceof Link) {
           Link l = (Link)obj;
           if (intId == l.getICObjectInstanceID()) {
-            System.out.println("Found link");
             l.setPage(intNewPage);
           }
         }
