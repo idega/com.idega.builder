@@ -49,7 +49,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	 */
 	public String getPageURI(ICPage page)
 	{
-		return getPageURI(((Number)page.getPrimaryKey()).intValue());
+		if (page != null) {
+			return getPageURI(((Number)page.getPrimaryKey()).intValue());
+		}
+		else {
+			return getPageURI(-1);
+		}
 	}	
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getIBPageURL(int)
