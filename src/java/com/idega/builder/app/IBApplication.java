@@ -184,7 +184,6 @@ public class IBApplication extends IWApplication {
       }
 
       public void main(ModuleInfo modinfo){
-        System.out.println("Is in main()");
         int i_page_id = 1;
         int i_template_id = 2;
         try {
@@ -195,6 +194,7 @@ public class IBApplication extends IWApplication {
           Link l = new Link();
           l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
           viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+          viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 10pt; decoration: none;");
 
           //Link link = new Link();
           //link.addParameter("view","builder");
@@ -212,6 +212,7 @@ public class IBApplication extends IWApplication {
           Link l2 = new Link();
           l2.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
           viewer2.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
+          viewer2.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 10pt; decoration: none;");
 
           //Link link = new Link();
           //link.addParameter("view","builder");
