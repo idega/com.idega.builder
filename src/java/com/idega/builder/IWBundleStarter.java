@@ -1,6 +1,8 @@
 package com.idega.builder;
 
+import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
 import com.idega.builder.presentation.InvisibleInBuilder;
+import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.presentation.Applet;
@@ -24,6 +26,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.addImplementor(InvisibleInBuilder.class, Applet.class);
 		repository.addImplementor(InvisibleInBuilder.class, GenericPlugin.class);
 		repository.addImplementor(InvisibleInBuilder.class, DropdownMenu.class);
+		repository.addImplementor(ICDynamicPageTrigger.class, DynamicPageTrigger.class);
 	}
 
 	
