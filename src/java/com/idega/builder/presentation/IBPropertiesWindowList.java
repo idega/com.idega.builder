@@ -56,8 +56,8 @@ public class IBPropertiesWindowList extends Page{
   }
 
   public void main(IWContext iwc)throws Exception{
-    button = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
-    hoverButton = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button_hvr.gif");
+    button = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
+    hoverButton = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button_hvr.gif");
     String ic_object_id = getUsedICObjectInstanceID(iwc);
     setStyles();
     if(ic_object_id!=null){
@@ -95,7 +95,7 @@ public class IBPropertiesWindowList extends Page{
 	  link.setStyle(STYLE_NAME);
 
 	link.setURL("javascript:parent."+PROPERTY_FRAME+"."+IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME+"('"+methodIdentifier+"')");
-	if ( BuilderLogic.getInstance().isPropertySet(pageKey,Integer.parseInt(ic_object_instance_id),methodIdentifier,iwc.getApplication()) )
+	if ( BuilderLogic.getInstance().isPropertySet(pageKey,Integer.parseInt(ic_object_instance_id),methodIdentifier,iwc.getIWMainApplication()) )
 	  table.add(hoverButton,1,counter);
 	else
 	  table.add(button,1,counter);
@@ -118,7 +118,7 @@ public class IBPropertiesWindowList extends Page{
   private List getMethodListOrdered(IWContext iwc,String ICObjectInstanceID)throws Exception{
     List theReturn = new Vector();
     int iICObjectInstanceID = Integer.parseInt(ICObjectInstanceID);
-    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(iICObjectInstanceID,iwc.getApplication());
+    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(iICObjectInstanceID,iwc.getIWMainApplication());
     Iterator iter = methodList.iterator();
     while (iter.hasNext()) {
       IWProperty methodProp = (IWProperty)iter.next();

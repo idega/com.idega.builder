@@ -77,7 +77,7 @@ public class IBDeleteModuleWindow extends IBAdminWindow{
   }
 
   public PresentationObject getConfirmBox(IWContext iwc){
-    IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+    IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
     Table t = new Table(1,3);
     t.setCellpadding(6);

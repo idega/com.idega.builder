@@ -33,7 +33,7 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
       //}
     }
     String fileName = iwc.getRequestURI();
-    String prefix = iwc.getApplication().getApplicationRealPath();
+    String prefix = iwc.getIWMainApplication().getApplicationRealPath();
 
     Page page = null;
     String pageKey = null;

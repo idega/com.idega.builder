@@ -1,5 +1,5 @@
 /*
- * $Id: LanguageHandler.java,v 1.4 2003/06/23 17:01:13 tryggvil Exp $
+ * $Id: LanguageHandler.java,v 1.5 2004/02/20 16:37:44 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,7 +41,7 @@ public class LanguageHandler implements PropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-    DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(),name);
+    DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getIWMainApplication(),name);
     menu.addMenuElementFirst("","Select:");
     menu.setSelectedElement(value);
     return(menu);

@@ -351,7 +351,7 @@ public class IBObjectControl extends PresentationObjectContainer
 	 */
 	public static PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image labelImage = bundle.getImage("label.gif", "Put label on region");
 		Link link = new Link(labelImage);
 		link.setWindowToOpen(IBAddRegionLabelWindow.class);
@@ -364,7 +364,7 @@ public class IBObjectControl extends PresentationObjectContainer
 
 	public static PresentationObject getCutIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image cutImage = bundle.getImage("shared/menu/cut.gif", "Cut component");
 		Link link = new Link(cutImage);
 		link.setWindowToOpen(IBCutModuleWindow.class);
@@ -380,7 +380,7 @@ public class IBObjectControl extends PresentationObjectContainer
 	 */
 	public static PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image copyImage = bundle.getImage("shared/menu/copy.gif", "Copy component");
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(copyImage);
@@ -394,7 +394,7 @@ public class IBObjectControl extends PresentationObjectContainer
 
 	public static PresentationObject getDeleteIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image deleteImage = bundle.getImage("shared/menu/delete.gif", "Delete component");
 		Link link = new Link(deleteImage);
 		link.setWindowToOpen(IBDeleteModuleWindow.class);
@@ -407,7 +407,7 @@ public class IBObjectControl extends PresentationObjectContainer
 
 	public static PresentationObject getPermissionIcon(int key, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image editImage = bundle.getImage("shared/menu/permission.gif", "Set permissions");
 		Link link = new Link(editImage);
 		link.setWindowToOpen(IBPermissionWindow.class);
@@ -422,7 +422,7 @@ public class IBObjectControl extends PresentationObjectContainer
 
 	public static PresentationObject getEditIcon(int key, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image editImage = bundle.getImage("shared/menu/edit.gif", "Properties");
 		Link link = new Link(editImage);
 		link.setWindowToOpen(IBPropertiesWindow.class);
@@ -437,7 +437,7 @@ public class IBObjectControl extends PresentationObjectContainer
 	 */
 	public static PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image pasteImage = bundle.getImage("shared/menu/paste.gif", "Paste above component");
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(pasteImage);

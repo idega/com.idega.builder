@@ -35,7 +35,7 @@ public class StyledIBPageChooser extends AbstractChooser {
 
 	public void main(IWContext iwc) throws Exception {
 		this.empty();
-		IWBundle iwb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		setChooseButtonImage(iwb.getImage("open.gif","Choose"));
 	}
 

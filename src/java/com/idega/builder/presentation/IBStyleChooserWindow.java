@@ -60,7 +60,7 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 	}
 
 	private void drawForm(IWContext iwc) {
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
 		Form form = new Form();
 		Table formTable = new Table(1, 3);

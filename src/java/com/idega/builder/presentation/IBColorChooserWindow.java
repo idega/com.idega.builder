@@ -64,7 +64,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 	}
 
 	private PresentationObject drawForm(IWContext iwc) {
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
 		IWColor color = new IWColor(0, 0, 0);
 		IWColor iwColor = null;
@@ -287,7 +287,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 	}
 
 	private Table getColorPalette(IWContext iwc) {
-		IWPropertyList list = iwc.getApplication().getSettings().getIWPropertyList("color_palette");
+		IWPropertyList list = iwc.getIWMainApplication().getSettings().getIWPropertyList("color_palette");
 		if (list != null) {
 			Table table = new Table();
 			table.setCellpadding(0);
@@ -387,18 +387,18 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 	}
 
 	private void doBusiness(IWContext iwc, boolean remove) {
-		IWPropertyList list = iwc.getApplication().getSettings().getIWPropertyList("color_palette");
+		IWPropertyList list = iwc.getIWMainApplication().getSettings().getIWPropertyList("color_palette");
 		if (list != null)
 			if (remove)
 				list.removeProperty(_colorString);
 			else
 				list.setProperty(_colorString, _colorString);
 		else
-			iwc.getApplication().getSettings().getNewPropertyList("color_palette").setProperty(_colorString, _colorString);
+			iwc.getIWMainApplication().getSettings().getNewPropertyList("color_palette").setProperty(_colorString, _colorString);
 	}
 
 	private boolean isInCustomColors(IWContext iwc, String color) {
-		IWPropertyList list = iwc.getApplication().getSettings().getIWPropertyList("color_palette");
+		IWPropertyList list = iwc.getIWMainApplication().getSettings().getIWPropertyList("color_palette");
 		if (list != null) {
 			String returnString = list.getProperty(color);
 			if (returnString != null)

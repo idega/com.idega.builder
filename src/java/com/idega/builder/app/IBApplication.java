@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.74 2003/05/27 20:32:20 eiki Exp $
+ *  $Id: IBApplication.java,v 1.75 2004/02/20 16:37:42 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -75,14 +75,14 @@ public class IBApplication extends IWApplication {
 		super.setHeight(700);
 	}
 	protected static String getContentEditURL(IWContext iwc) {
-		return iwc.getApplication().getBuilderServletURI() + "?view=builder";
+		return iwc.getIWMainApplication().getBuilderServletURI() + "?view=builder";
 	}
 	protected static String getContentPreviewURL(IWContext iwc) {
-		return iwc.getApplication().getBuilderServletURI() + "?view=preview";
+		return iwc.getIWMainApplication().getBuilderServletURI() + "?view=preview";
 	}
 	
 	protected static String getContentPDFPreviewURL(IWContext iwc) {
-			return iwc.getApplication().getTranslatedURIWithContext("/servlet/IWPDFServlet?view=pdfpreview");
+			return iwc.getIWMainApplication().getTranslatedURIWithContext("/servlet/IWPDFServlet?view=pdfpreview");
 	}
 	/**
 	 * Description of the Method
@@ -244,9 +244,9 @@ public class IBApplication extends IWApplication {
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 			add(table);
-			Image image = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/logo.gif");
+			Image image = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/logo.gif");
 			table.add(image, 1, 1);
-			Image image2 = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/top_image.gif");
+			Image image2 = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/top_image.gif");
 			table.add(image2, 2, 1);
 			table.setWidth("100%");
 			table.setHeight("100%");
@@ -430,7 +430,7 @@ public class IBApplication extends IWApplication {
 			try {
 				Table menuTable = new Table();
 				menuTable.setAlignment(1, 1, "right");
-				Image closeImage = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("toolbar_remove.gif", "toolbar_remove_1.gif", "Hide Curtain", 16, 16);
+				Image closeImage = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("toolbar_remove.gif", "toolbar_remove_1.gif", "Hide Curtain", 16, 16);
 				closeImage.setAlignment("right");
 				Link closeLink = new Link(closeImage);
 				closeLink.setTarget(Link.TARGET_TOP_WINDOW);
@@ -491,7 +491,7 @@ public class IBApplication extends IWApplication {
 				//the tree reloading in done in the appropriate windows such as in the create new page window
 				super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
 			      }*/
-			IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
+			IWBundle iwb = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER);
 			String controlParameter = "builder_controlparameter";
 			setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
 			setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
@@ -655,7 +655,7 @@ public class IBApplication extends IWApplication {
 		 *@return      The propertiesIcon value
 		 */
 		public PresentationObject getPropertiesIcon(IWContext iwc) {
-			IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
+			IWBundle iwb = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER);
 			Image image = iwb.getImage("shared/toolbar/page_properties.gif", "shared/toolbar/page_properties1.gif", "Page Properties", 20, 20);
 			image.setHorizontalSpacing(2);
 			Link link = new Link(image);
@@ -674,7 +674,7 @@ public class IBApplication extends IWApplication {
 		 *@return      The permissionIcon value
 		 */
 		public PresentationObject getPermissionIcon(IWContext iwc) {
-			IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
+			IWBundle iwb = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER);
 			Image image = iwb.getImage("shared/toolbar/permissions.gif", "shared/toolbar/permissions1.gif", "Page Permissions", 20, 20);
 			image.setHorizontalSpacing(2);
 			Link link = new Link(image);

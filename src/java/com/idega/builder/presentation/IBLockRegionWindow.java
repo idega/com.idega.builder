@@ -1,5 +1,5 @@
 /*
- * $Id: IBLockRegionWindow.java,v 1.8 2003/08/05 19:45:36 tryggvil Exp $
+ * $Id: IBLockRegionWindow.java,v 1.9 2004/02/20 16:37:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -134,7 +134,7 @@ public class IBLockRegionWindow extends IBAdminWindow {
 	 */
 	public static PresentationObject getLockedIcon(String parentKey, IWContext iwc, String label)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image lockImage = bundle.getImage("las_close.gif", "Unlock region");
 		Link link = new Link(lockImage);
 		link.setWindowToOpen(IBLockRegionWindow.class);
@@ -150,7 +150,7 @@ public class IBLockRegionWindow extends IBAdminWindow {
 	 */
 	public static PresentationObject getUnlockedIcon(String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image lockImage = bundle.getImage("las_open.gif", "Lock region");
 		Link link = new Link(lockImage);
 		link.setWindowToOpen(IBLockRegionWindow.class);

@@ -58,7 +58,7 @@ public class LocalizedPageNameHandler implements PropertyHandler {
 		if (tok.hasMoreElements())
 			titleString = (String)tok.nextElement();
 		
-    DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(),name);
+    DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getIWMainApplication(),name);
     if (menuString != null)
 	    menu.setSelectedElement(menuString);
     

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.14 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBPageChooserWindow.java,v 1.15 2004/02/20 16:37:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -58,7 +58,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 			fromEditor = true;
 		}
 		
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		addTitle(iwrb.getLocalizedString("select_page", "Select page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.35 2003/10/05 18:45:39 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.36 2004/02/20 16:37:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -67,7 +67,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	 *
 	 */
 	public void main(IWContext iwc) throws Exception {
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		super.addTitle(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
 		//button = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
@@ -250,7 +250,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					//iconLink = new Link(getIconForObject(item, iwc));
 					iconLink = getIconForObject(item, iwc);
 					
-					String objectName = item.getBundle(iwc.getApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale());
+					String objectName = item.getBundle(iwc.getIWMainApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale());
 					link = new Link(objectName);
 					link.setStyle(STYLE_NAME);
 					//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
@@ -314,7 +314,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			 *@todo: Make support for dynamic icons
 			 */
 			if (elementImage == null)
-				elementImage = iwc.getApplication().getCoreBundle().getImage("elementicon16x16.gif");
+				elementImage = iwc.getIWMainApplication().getCoreBundle().getImage("elementicon16x16.gif");
 			return elementImage;
 		}
 		else if (obj.getObjectType().equals(com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK)) {
@@ -322,12 +322,12 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			  *@todo: Make support for dynamic icons
 			  */
 			if (blockImage == null)
-				blockImage = iwc.getApplication().getCoreBundle().getImage("blockicon16x16.gif");
+				blockImage = iwc.getIWMainApplication().getCoreBundle().getImage("blockicon16x16.gif");
 			return blockImage;
 		}
 		else {
 			if (elementImage == null)
-				elementImage = iwc.getApplication().getCoreBundle().getImage("elementicon16x16.gif");
+				elementImage = iwc.getIWMainApplication().getCoreBundle().getImage("elementicon16x16.gif");
 			return elementImage;
 		}
 	}
@@ -337,7 +337,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	 */
 	public static PresentationObject getAddIcon(String parentKey, IWContext iwc, String label)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image addImage = bundle.getImage("add.gif", "Add new component");
 		//addImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(addImage);

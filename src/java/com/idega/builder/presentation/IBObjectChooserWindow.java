@@ -55,7 +55,7 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 	 * @see com.idega.presentation.ui.AbstractChooserWindow#displaySelection(com.idega.presentation.IWContext)
 	 */
 	public void displaySelection(IWContext iwc) {
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		addTitle(iwrb.getLocalizedString("select_object", "Select object"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
 		debugParameters(iwc);
@@ -76,7 +76,7 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 					collection = getFilteredComponents(filters[i]);
 					for (Iterator iter = collection.iterator(); iter.hasNext();) {
 						ICObject item = (ICObject) iter.next();
-						icoLink  = new Link(item.getBundle(iwc.getApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale()));
+						icoLink  = new Link(item.getBundle(iwc.getIWMainApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale()));
 						//icoLink.setOnClick(getOnSelectionCode(  item.getPrimaryKey().toString(),item.getName()));
 						//icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
 						//icoLink.setOnClick(getOnSelectionCode(item.getPrimaryKey().toString()));

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.26 2003/10/03 01:41:55 tryggvil Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.27 2004/02/20 16:37:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -138,12 +138,12 @@ public class IBPropertiesWindowSetter extends Page {
 				if (remove) {
 					if (values != null) {
 						propertyChange = true;
-						removeProperty(iwc.getApplication(), propertyID, values, ic_object_id, pageKey);
+						removeProperty(iwc.getIWMainApplication(), propertyID, values, ic_object_id, pageKey);
 					}
 				}
 				else {
 					if (doSave) {
-						propertyChange = setProperty(propertyID, values, ic_object_id, pageKey, iwc.getApplication());
+						propertyChange = setProperty(propertyID, values, ic_object_id, pageKey, iwc.getIWMainApplication());
 						PropertyHandler handler = (PropertyHandler) iwc.getSessionAttribute(HANDLER_PARAMETER);
 
 						if (handler != null) {
@@ -239,7 +239,7 @@ public class IBPropertiesWindowSetter extends Page {
 		String selectedValues[] = parseValues(iwc);
 		String paramDescriptions[] = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc, icObjectInstanceID, methodIdentifier);
 		boolean isChangingProperty = isChangingProperty(iwc);
-		String realValues[] = BuilderLogic.getInstance().getPropertyValues(iwc.getApplication(), pageID, Integer.parseInt(icObjectInstanceID), methodIdentifier, selectedValues, !isChangingProperty);
+		String realValues[] = BuilderLogic.getInstance().getPropertyValues(iwc.getIWMainApplication(), pageID, Integer.parseInt(icObjectInstanceID), methodIdentifier, selectedValues, !isChangingProperty);
 
 		for (int i = 0; i < parameters.length; i++) {
 			Class parameterClass = parameters[i];

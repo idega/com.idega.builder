@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.38 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.39 2004/02/20 16:37:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -252,7 +252,7 @@ public class IBPropertyHandler {
 	 */
 	public String getMethodParameterProperty(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String paramKey) {
 		try {
-			IWBundle iwb = ICObjectBusiness.getInstance().getBundleForInstance(ICObjectInstanceID, iwc.getApplication());
+			IWBundle iwb = ICObjectBusiness.getInstance().getBundleForInstance(ICObjectInstanceID, iwc.getIWMainApplication());
 			Class objectClass = ICObjectBusiness.getInstance().getClassForInstance(ICObjectInstanceID);
 			//IWPropertyList component = iwb.getComponentList().getIWPropertyList(objectClass.getName());
 			IWPropertyList component = iwb.getComponentPropertyList(objectClass.getName());
@@ -423,7 +423,7 @@ public class IBPropertyHandler {
 			obj = new com.idega.builder.presentation.IBFileChooser(name);
 			try {
 				//extends block.media.presentation.FileChooser
-				Cache cache = MediaBusiness.getCachedFileInfo(Integer.parseInt(stringValue), iwc.getApplication());
+				Cache cache = MediaBusiness.getCachedFileInfo(Integer.parseInt(stringValue), iwc.getIWMainApplication());
 				((com.idega.builder.presentation.IBFileChooser) obj).setValue((com.idega.core.file.data.ICFile) cache.getEntity());
 			}
 			catch (Exception e) {
@@ -482,7 +482,7 @@ public class IBPropertyHandler {
 	 */
 	public String getMethodDescription(int icObjectInstanceID, String methodPropertyKey, IWContext iwc) {
 		try {
-			IWProperty methodProperty = getMethodProperty(icObjectInstanceID, methodPropertyKey, iwc.getApplication());
+			IWProperty methodProperty = getMethodProperty(icObjectInstanceID, methodPropertyKey, iwc.getIWMainApplication());
 			if (methodProperty != null) {
 				return (getMethodDescription(methodProperty, iwc));
 			}

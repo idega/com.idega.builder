@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.142 2004/01/17 23:06:22 eiki Exp $
+ * $Id: BuilderLogic.java,v 1.143 2004/02/20 16:37:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -158,7 +158,7 @@ public class BuilderLogic
 	 */
 	public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc)
 	{
-		List list = page.getAllContainingObjects();
+		List list = page.getChildren();
 		if (list != null)
 		{
 			ListIterator iter = list.listIterator();
@@ -228,7 +228,7 @@ public class BuilderLogic
 		{}
 		
 		
-		List list = page.getAllContainingObjects();
+		List list = page.getChildren();
 		if (list != null)
 		{
 			ListIterator iter = list.listIterator();
@@ -254,8 +254,8 @@ public class BuilderLogic
 		if (!iwc.hasViewPermission(groupIds, obj))
 		{
 			System.err.println(obj + ": removed");
-			parentObject.getAllContainingObjects().remove(index);
-			parentObject.getAllContainingObjects().add(index, PresentationObject.NULL_CLONE_OBJECT);
+			parentObject.getChildren().remove(index);
+			parentObject.getChildren().add(index, PresentationObject.NULL_CLONE_OBJECT);
 		}
 		else if (obj instanceof PresentationObjectContainer)
 		{
@@ -271,7 +271,7 @@ public class BuilderLogic
 						PresentationObjectContainer moc = tab.containerAt(x, y);
 						if (moc != null)
 						{
-							List l = moc.getAllContainingObjects();
+							List l = moc.getChildren();
 							if (l != null)
 							{
 								ListIterator iterT = l.listIterator();
@@ -291,7 +291,7 @@ public class BuilderLogic
 			}
 			else
 			{
-				List list = ((PresentationObjectContainer) obj).getAllContainingObjects();
+				List list = ((PresentationObjectContainer) obj).getChildren();
 				if (list != null)
 				{
 					ListIterator iter = list.listIterator();
@@ -336,7 +336,7 @@ public class BuilderLogic
 				 * @todo
 				 * Change this so that id is done in a more appropriate place, i.e. set the image_id permanently on the image
 				 */
-				processImageSet(pageKey, ICObjectIntanceID, image_id, iwc.getApplication());
+				processImageSet(pageKey, ICObjectIntanceID, image_id, iwc.getIWMainApplication());
 				iwc.removeSessionAttribute(sessionID);
 				imageObj.setImageID(image_id);
 			}
@@ -435,7 +435,7 @@ public class BuilderLogic
 			}
 			else
 			{
-				List list = ((PresentationObjectContainer) obj).getAllContainingObjects();
+				List list = ((PresentationObjectContainer) obj).getChildren();
 				if (list != null)
 				{
 					ListIterator iter = list.listIterator();
@@ -579,7 +579,7 @@ public class BuilderLogic
 	{
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
-		if (requestURI.startsWith(iwc.getApplication().getBuilderServletURI()))
+		if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderServletURI()))
 		{
 			int indexOfPage = requestURI.indexOf("/page/");
 			if (indexOfPage != -1)
@@ -1004,7 +1004,7 @@ public class BuilderLogic
 	 */
 	public PresentationObject getPasteIcon(String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		IWBundle bundle = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		Image pasteImage = bundle.getImage("paste.gif", "Paste component");
 		Link link = new Link(pasteImage);
 		link.setWindowToOpen(IBPasteModuleWindow.class);
@@ -1033,7 +1033,7 @@ public class BuilderLogic
 	{
 		//    return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
 		StringBuffer url = new StringBuffer();
-		url.append(iwc.getApplication().getBuilderServletURI());
+		url.append(iwc.getIWMainApplication().getBuilderServletURI());
 		url.append("?");
 		url.append(IB_PAGE_PARAMETER);
 		url.append("=");
@@ -1046,7 +1046,7 @@ public class BuilderLogic
 	public static String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId)
 	{
 		String src =
-			iwc.getApplication().getIFrameContentURI()
+			iwc.getIWMainApplication().getIFrameContentURI()
 				+ "?"
 				+ IC_OBJECT_INSTANCE_ID_PARAMETER
 				+ "="

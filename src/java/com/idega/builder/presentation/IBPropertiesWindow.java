@@ -125,7 +125,7 @@ public IBPropertiesWindow() {
       table.setCellpaddingAndCellspacing(0);
       table.setWidth(Table.HUNDRED_PERCENT);
       add(table);
-    	IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+    	IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
       Image b1 = iwrb.getLocalizedImageButton("close","CLOSE");
       b1.setOnClick("javascript:doClose()");

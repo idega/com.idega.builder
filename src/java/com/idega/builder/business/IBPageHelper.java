@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.29 2003/11/21 23:59:39 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.30 2004/02/20 16:37:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -218,7 +218,7 @@ public class IBPageHelper {
 //			System.out.println("Creating page = " + ibPage.getName());
 			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
 			Page current = currentXMLPage.getPopulatedPage();
-			List children = current.getAllContainedObjectsRecursive();
+			List children = current.getChildrenRecursive();
 //			System.out.println("children size = " + children.size());
 			if (children != null) {
 				Iterator it = children.iterator();
@@ -259,7 +259,7 @@ public class IBPageHelper {
 		if (templateObjInstID != null) {
 			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
 			Page current = currentXMLPage.getPopulatedPage();
-			List children = current.getAllContainedObjectsRecursive();
+			List children = current.getChildrenRecursive();
 			if (children != null) {
 				Iterator it = children.iterator();
 				while (it.hasNext()) {

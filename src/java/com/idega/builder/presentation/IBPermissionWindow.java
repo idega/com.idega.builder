@@ -225,7 +225,7 @@ public class IBPermissionWindow extends IBAdminWindow{
       Form myForm = new Form();
       myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
       myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
-      iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+      iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
       super.addTitle(iwrb.getLocalizedString("ib_permission_window","Permissions"),IWConstants.BUILDER_FONT_STYLE_TITLE);
 
       //System.out.println("_PARAMETERSTRING_PERMISSION_CATEGORY: "+iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)+" and _PARAMETERSTRING_IDENTIFIER: "+iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));

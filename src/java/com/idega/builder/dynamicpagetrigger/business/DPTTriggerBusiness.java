@@ -215,7 +215,7 @@ public class DPTTriggerBusiness {
 
     IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
     Page current = currentXMLPage.getPopulatedPage();
-    List children = current.getAllContainedObjectsRecursive();
+    List children = current.getChildrenRecursive();
 /*
     if (children != null) {
       Iterator it = children.iterator();

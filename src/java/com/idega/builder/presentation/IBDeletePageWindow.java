@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.16 2003/04/03 19:54:57 laddi Exp $
+ * $Id: IBDeletePageWindow.java,v 1.17 2004/02/20 16:37:42 tryggvil Exp $
 
  *
 
@@ -50,7 +50,7 @@ public class IBDeletePageWindow extends IWAdminWindow
 	{
 		boolean okToDelete = false;
 		boolean okToDeleteChildren = true;
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		Form form = new Form();
 		setTitle(iwrb.getLocalizedString("delete_page", "Delete page"));
 		addTitle(iwrb.getLocalizedString("delete_page", "Delete page"), IWConstants.BUILDER_FONT_STYLE_TITLE);

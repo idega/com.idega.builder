@@ -24,7 +24,7 @@ public class ModuleComparator implements Comparator {
 
   public ModuleComparator(IWContext iwc) {
      locale = iwc.getCurrentLocale();
-     iwma = iwc.getApplication();
+     iwma = iwc.getIWMainApplication();
   }
 
   public int compare(Object o1, Object o2) {

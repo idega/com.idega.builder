@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.47 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.48 2004/02/20 16:37:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ public class XMLReader {
 	 *
 	 */
 	private static void setAllBuilderControls(PresentationObjectContainer parent, boolean setTo) {
-		List list = parent.getAllContainingObjects();
+		List list = parent.getChildren();
 		if (list != null) {
 			Iterator it = list.iterator();
 			while (it.hasNext()) {
@@ -503,7 +503,7 @@ public class XMLReader {
 		catch (com.idega.xml.XMLException e) {
 			e.printStackTrace();
 		}
-		List li = parent.getAllContainedObjectsRecursive();
+		List li = parent.getChildrenRecursive();
 		if (li != null) {
 			Iterator it = li.iterator();
 			while (it.hasNext()) {
@@ -533,7 +533,7 @@ public class XMLReader {
 		}
 		
 		if (from != -1 && to != -1) {
-			List children = page.getAllContainedObjectsRecursive();
+			List children = page.getChildrenRecursive();
 			if (children != null) {
 				Iterator it = children.iterator();
 				while (it.hasNext()) {
