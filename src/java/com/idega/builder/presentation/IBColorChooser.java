@@ -36,7 +36,6 @@ public class IBColorChooser extends AbstractChooser {
   public void main(IWContext iwc){
     IWBundle iwb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
     setChooseButtonImage(iwb.getImage("open.gif","Choose"));
-    setDisabled(false);
   }
 
   public Class getChooserWindowClass() {
