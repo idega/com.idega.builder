@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.41 2004/08/24 14:03:38 thomas Exp $
+ * $Id: IBPageHelper.java,v 1.42 2004/09/02 07:47:34 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,7 +36,6 @@ import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
