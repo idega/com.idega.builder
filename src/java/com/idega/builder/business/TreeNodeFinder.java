@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.2 2001/10/30 17:41:40 palli Exp $
+ * $Id: TreeNodeFinder.java,v 1.3 2002/02/14 13:54:54 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,11 +29,15 @@ public class TreeNodeFinder {
       IBPage pages = new IBPage();
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(pages.getEntityName());
-      sql.append(" where ");
+      sql.append(" where (");
       sql.append(pages.getColumnType());
       sql.append(" = '");
       sql.append(pages.PAGE);
-      sql.append("' and (");
+      sql.append("' or ");
+      sql.append(pages.getColumnType());
+      sql.append(" = '");
+      sql.append(pages.DPT_PAGE);
+      sql.append("') and (");
       sql.append(pages.getColumnDeleted());
       sql.append(" = '");
       sql.append(pages.NOT_DELETED);
@@ -54,11 +58,15 @@ public class TreeNodeFinder {
       IBPage pages = new IBPage();
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(pages.getEntityName());
-      sql.append(" where ");
+      sql.append(" where (");
       sql.append(pages.getColumnType());
       sql.append(" = '");
       sql.append(pages.TEMPLATE);
-      sql.append("' and (");
+      sql.append("' or ");
+      sql.append(pages.getColumnType());
+      sql.append(" = '");
+      sql.append(pages.DPT_TEMPLATE);
+      sql.append("') and (");
       sql.append(pages.getColumnDeleted());
       sql.append(" = '");
       sql.append(pages.NOT_DELETED);
@@ -93,6 +101,10 @@ public class TreeNodeFinder {
 			stmt = conn.createStatement();
 
       StringBuffer sql = new StringBuffer();
+      /**
+       * @todo til að útiloka dpt_síður í famtíðinni þarf að sækja relationship útfrá child en ekki parent annar getur komið plúl í tréð þar sem hann á ekki heima
+       * þ.e. að childpage.getColumnType() = pages.PAGE
+       */
       sql.append("select * from ");
       sql.append(pages.getEntityName() + "_tree t, ");
       sql.append(pages.getEntityName() + " p ");
@@ -100,11 +112,14 @@ public class TreeNodeFinder {
       sql.append("p." + pages.getIDColumnName());
       sql.append(" = ");
       sql.append("t." + pages.getIDColumnName());
-      sql.append(" and ");
+      sql.append(" and (");
       sql.append("p." + pages.getColumnType());
       sql.append(" = '");
       sql.append(pages.PAGE);
-      sql.append("'");
+      sql.append("' or p." + pages.getColumnType());
+      sql.append(" = '");
+      sql.append(pages.DPT_PAGE);
+      sql.append("')");
 
       ResultSet result = stmt.executeQuery(sql.toString());
 
@@ -154,11 +169,14 @@ public class TreeNodeFinder {
       sql.append("p." + pages.getIDColumnName());
       sql.append(" = ");
       sql.append("t." + pages.getIDColumnName());
-      sql.append(" and ");
+      sql.append(" and (");
       sql.append("p." + pages.getColumnType());
       sql.append(" = '");
       sql.append(pages.TEMPLATE);
-      sql.append("'");
+      sql.append("' or p." + pages.getColumnType());
+      sql.append(" = '");
+      sql.append(pages.DPT_TEMPLATE);
+      sql.append("')");
 
       ResultSet result = stmt.executeQuery(sql.toString());
 
