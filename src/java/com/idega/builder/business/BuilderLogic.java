@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.109 2002/03/12 09:47:10 palli Exp $
+ * $Id: BuilderLogic.java,v 1.110 2002/03/12 21:29:34 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -505,7 +505,7 @@ public class BuilderLogic {
     try {
       String id = (String)iwc.getApplicationAttribute("current_domain_id");
       if (id != null) {
-        int test = Integer.parseInt(id);
+	int test = Integer.parseInt(id);
       }
       int domainID=1;
       return IBDomain.getDomain(domainID);
@@ -799,7 +799,7 @@ public class BuilderLogic {
 
     private void addToTable(PresentationObject obj,String textString,Class className,int col,int row) {
       Text text = new Text(textString);
-	text.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 8pt; text-decoration: none;");
+	text.setFontStyle("font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-size: 8pt; text-decoration: none; color: #000000");
       Link link = (Link) obj;
       link.setObject(text);
       if ( className != null ) link.setWindowToOpen(className);

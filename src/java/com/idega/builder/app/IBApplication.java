@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.55 2002/03/12 14:15:22 laddi Exp $
+ *  $Id: IBApplication.java,v 1.56 2002/03/12 21:29:29 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,6 +57,9 @@ public class IBApplication extends IWApplication {
   private final static String IB_CONTENT_FRAME = "ib_content";
   private final static String IB_STATUS_FRAME = "ib_status";
   private final static String IB_LEFT_MENU_FRAME = "ib_left_menu";
+
+  private final static String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
+  private final static String _linkHoverStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#FF8008;text-decoration:none;";
 
   private final static String ACTION_BUILDER = "builder";
   private final static String ACTION_TEMPLATES = "templates";
@@ -280,7 +283,7 @@ public class IBApplication extends IWApplication {
      *@param  iwc  Description of the Parameter
      */
     public void main(IWContext iwc) {
-
+      setStyles();
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress && iwc.getParameter("reload") != null) {
 	if (noCurtain) {
@@ -301,10 +304,11 @@ public class IBApplication extends IWApplication {
 	TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id, iwc), iwc);
 	viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
 	Link l = new Link();
+	l.setNoTextObject(true);
 	l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
 	l.addParameter("reload", "t");
 	viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-	viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
+	viewer.setTreeStyle(_linkStyle);
 
 	viewer.setLinkPrototype(l);
 	add(viewer);
@@ -318,6 +322,15 @@ public class IBApplication extends IWApplication {
 	e.printStackTrace(System.err);
       }
       endStartup(iwc, PageTree.class);
+    }
+
+    private void setStyles() {
+      if ( getParentPage() != null ) {
+	getParentPage().setStyleDefinition("A",_linkStyle);
+	//getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
+	//getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
+	getParentPage().setStyleDefinition("A:hover",_linkHoverStyle);
+      }
     }
   }
 
@@ -339,6 +352,7 @@ public class IBApplication extends IWApplication {
      *@param  iwc  Description of the Parameter
      */
     public void main(IWContext iwc) {
+      setStyles();
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress && iwc.getParameter("reload") != null) {
 	if (noCurtain) {
@@ -360,10 +374,11 @@ public class IBApplication extends IWApplication {
 	TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id, iwc), iwc);
 	viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
 	Link l = new Link();
+	l.setNoTextObject(true);
 	l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
 	l.addParameter("reload", "t");
 	viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-	viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
+	viewer.setTreeStyle(_linkStyle);
 
 	viewer.setLinkPrototype(l);
 	add(viewer);
@@ -377,6 +392,15 @@ public class IBApplication extends IWApplication {
 	e.printStackTrace(System.err);
       }
       endStartup(iwc, TemplateTree.class);
+    }
+
+    private void setStyles() {
+      if ( getParentPage() != null ) {
+	getParentPage().setStyleDefinition("A",_linkStyle);
+	//getParentPage().setStyleDefinition("A."+STYLE_NAME+":visited",_linkStyle);
+	//getParentPage().setStyleDefinition("A."+STYLE_NAME+":active",_linkStyle);
+	getParentPage().setStyleDefinition("A:hover",_linkHoverStyle);
+      }
     }
   }
 
@@ -417,11 +441,11 @@ public class IBApplication extends IWApplication {
 	menuTable.add(closeLink, 1, 1);
 
 	Text pageText = new Text("Page Tree:");
-	pageText.setFontSize(1);
+	pageText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 	Text templateText = new Text("Template Tree:");
-	templateText.setFontSize(1);
+	templateText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 	Text libraryText = new Text("Library Tree:");
-	libraryText.setFontSize(1);
+	libraryText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 
 	IFrame frame = new IFrame("PageTree", PageTree.class);
 	frame.setWidth(170);
@@ -815,7 +839,7 @@ public class IBApplication extends IWApplication {
 
 //        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
 	Text pageName = new Text(name);
-	pageName.setFontStyle("font-face: Geneva, Helvetica, sans-serif; font-weight: bold; font-size: 8pt;");
+	pageName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 	toolbarTable.add(tilerCell, 1, 1);
 	toolbarTable.add(pageName, 1, 1);
 	toolbarTable.add(toolTable, 2, 1);
