@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.13 2004/04/27 14:56:48 thomas Exp $
+ * $Id: IBPageBMPBean.java,v 1.14 2004/05/03 11:36:35 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,8 @@ import java.sql.Timestamp;
 
 import javax.ejb.CreateException;
 
+import com.idega.builder.business.IBXMLPage;
+import com.idega.builder.business.PageCacher;
 import com.idega.core.builder.data.*;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.net.data.ICProtocol;
@@ -28,6 +30,8 @@ import com.idega.io.export.ObjectWriter;
 import com.idega.io.export.Storable;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
+import com.idega.util.xml.XMLData;
+import com.idega.xml.XMLElement;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -583,7 +587,22 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	}
 	
 	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
-		return writer.write(this.getFile(), iwc);
+		ICFile file = getFile();
+		if (file.isEmpty()) {
+			// file value is empty get a xml description of the page
+			IBXMLPage xmlPage = PageCacher.getXML(this.getPrimaryKey().toString());
+			XMLElement rootElement = xmlPage.getRootElement();
+			// remove connection to document
+			rootElement.detach();
+			// convert to xml data, because for that class a writer already exists
+			XMLData pageData = XMLData.getInstanceWithoutExistingFile();
+			pageData.getDocument().setRootElement(rootElement);
+			pageData.setName(getName());
+			return writer.write(pageData, iwc);
+		}
+		else {
+			return writer.write(this.getFile(), iwc);
+		}
 	}
 	
 	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
