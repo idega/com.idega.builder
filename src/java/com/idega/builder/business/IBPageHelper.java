@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.22 2003/04/03 19:54:57 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.23 2003/05/03 00:36:25 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageHome;
 import com.idega.builder.data.IBStartPages;
@@ -303,8 +303,8 @@ public class IBPageHelper {
 				e.printStackTrace();
 				return false;
 			}
-			if (obj instanceof IWBlock) {
-				boolean ok = ((IWBlock) obj).copyBlock(instance.getID());
+			if (obj instanceof Builderaware) {
+				boolean ok = ((Builderaware) obj).copyBlock(instance.getID());
 				if (!ok) {
 					//					System.out.println("changeInstanceId - copyBlock failed");
 					return false;

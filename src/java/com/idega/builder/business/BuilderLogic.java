@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.136 2003/04/03 19:54:57 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.137 2003/05/03 00:36:25 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,7 +8,7 @@
  *
  */
 package com.idega.builder.business;
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.builder.data.IBDomain;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.presentation.IBAddModuleWindow;
@@ -1190,9 +1190,9 @@ public class BuilderLogic
 			PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(ICObjectInstanceID);
 			if (Block != null)
 			{
-				if (Block instanceof IWBlock)
+				if (Block instanceof Builderaware)
 				{
-					((IWBlock) Block).deleteBlock(ICObjectInstanceID);
+					((Builderaware) Block).deleteBlock(ICObjectInstanceID);
 				}
 			}
 		}
