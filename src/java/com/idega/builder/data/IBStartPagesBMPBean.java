@@ -1,5 +1,5 @@
 /*
- * $Id: IBStartPagesBMPBean.java,v 1.1 2002/05/10 15:55:26 palli Exp $
+ * $Id: IBStartPagesBMPBean.java,v 1.2 2002/05/10 16:09:49 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -101,7 +101,7 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
         if (id > 0) {
           start.setPageId(id);
           start.setPageTypePage();
-          start.insert();
+          start.store();
         }
 
         id = domain.getStartTemplateID();
@@ -110,7 +110,7 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
           start.setDomainId(domain.getID());
           start.setPageId(id);
           start.setPageTypeTemplate();
-          start.insert();
+          start.store();
         }
       }
     }
