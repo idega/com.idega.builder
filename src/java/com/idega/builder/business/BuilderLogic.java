@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.101 2002/02/22 12:39:01 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.102 2002/02/22 15:14:30 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -707,7 +707,12 @@ public class BuilderLogic {
 
       if(_theObject!=null){
 	//table.add(theObject.getClassName());
-	text.setText(Text.NON_BREAKING_SPACE+_theObject.getBuilderName(iwc));
+	StringBuffer buffer = new StringBuffer();
+	  buffer.append(Text.NON_BREAKING_SPACE);
+	  buffer.append(_theObject.getBuilderName(iwc));
+	  buffer.append(Text.NON_BREAKING_SPACE);
+
+	text.setText(buffer.toString());
 	_table.add(image);
 	_table.add(text);
 
