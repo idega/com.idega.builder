@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.14 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: XMLConstants.java,v 1.15 2004/03/12 18:43:23 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,4 +49,7 @@ public abstract class XMLConstants {
 
   public static final String FRAGMENT_TYPE_LIBRARY = "library";
   public static final String FRAGMENT_TYPE_CLIPBOARD = "clipboard";
+  
+  // for export
+  public static final String PAGES = "pages";
 }
