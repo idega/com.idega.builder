@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.4 2001/10/10 12:08:16 palli Exp $
+ * $Id: XMLConstants.java,v 1.5 2001/10/10 12:18:16 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ public abstract class XMLConstants {
   static final String ROOT_STRING = "xml";
   static final String PAGE_STRING = "page";
   static final String ID_STRING = "id";
+  static final String IC_OBJECT_ID_STRING = "ic_object_id";
   static final String METHOD_STRING = ":method";
   static final String TEMPLATE_STRING = "template";
   static final String REGION_STRING = "region";

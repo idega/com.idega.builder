@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.12 2001/10/08 21:04:18 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.13 2001/10/10 12:18:16 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -308,9 +308,18 @@ public class XMLWriter {
         instance.setICObjectID(newICObjectTypeID);
         instance.insert();
 
+        ICObject obj = new ICObject(newICObjectTypeID);
+        Class theClass = obj.getClass();
+
         Element newElement = new Element(XMLConstants.MODULE_STRING);
-        Attribute id = new Attribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
-        newElement.addAttribute(id);
+        Attribute aId = new Attribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
+        Attribute aIcObjectId = new Attribute(XMLConstants.IC_OBJECT_ID_STRING,Integer.toString(newICObjectTypeID));
+        Attribute aClass = new Attribute(XMLConstants.CLASS_STRING,theClass.getName());
+
+        newElement.addAttribute(aId);
+        newElement.addAttribute(aIcObjectId);
+        newElement.addAttribute(aClass);
+
         parent.addContent(newElement);
 
       }

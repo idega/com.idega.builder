@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.18 2001/10/08 16:34:00 palli Exp $
+ * $Id: XMLReader.java,v 1.19 2001/10/10 12:18:16 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -309,6 +309,7 @@ public class XMLReader {
     }
     String className = null;
     String id = null;
+    String ic_object_id = null;
     Iterator it = at.iterator();
     while (it.hasNext()) {
       Attribute attr = (Attribute)it.next();
@@ -317,6 +318,9 @@ public class XMLReader {
       }
       else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
         id = attr.getValue();
+      }
+      else if (attr.getName().equalsIgnoreCase(XMLConstants.IC_OBJECT_ID_STRING)) {
+        ic_object_id = attr.getValue();
       }
       else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
         if (attr.getValue().equals("false"))
@@ -334,6 +338,12 @@ public class XMLReader {
         ICObjectInstance ico = new ICObjectInstance(Integer.parseInt(id));
         inst = ico.getNewInstance();
         inst.setICObjectInstance(ico);
+        if(ic_object_id==null){
+          inst.setICObject(ico.getObject());
+        }
+        else{
+          inst.setICObjectID(Integer.parseInt(ic_object_id));
+        }
       }
 
       if (inst instanceof PresentationObjectContainer) {
