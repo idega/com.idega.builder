@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.174 2005/03/03 16:20:57 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.175 2005/03/06 00:57:58 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -384,7 +384,8 @@ public class BuilderLogic implements Singleton {
 		else if (obj.isContainer()) {
 			if (obj instanceof Table) {
 				Table tab = (Table) obj;
-				tab.setBorder(1);
+				//tab.setBorder(1);
+				tab.setStyleAttribute("border","1px dotted grey");
 				int cols = tab.getColumns();
 				int rows = tab.getRows();
 				for (int x = 1; x <= cols; x++) {
