@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.75 2004/02/20 16:37:42 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.76 2004/03/19 11:49:30 thomas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,39 +8,42 @@
  *
  */
 package com.idega.builder.app;
-import java.util.List;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 import java.util.Locale;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.presentation.Script;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWConstants;
-import com.idega.idegaweb.IWBundle;
-import com.idega.core.localisation.business.LocaleSwitcher;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.TreeViewer;
-import com.idega.presentation.ui.IFrame;
+import java.util.Vector;
+
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.presentation.IBCreatePageWindow;
-import com.idega.builder.presentation.IBMovePageWindow;
-import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBDeletePageWindow;
+import com.idega.builder.presentation.IBMovePageWindow;
+import com.idega.builder.presentation.IBPageExporterWindow;
+import com.idega.builder.presentation.IBPermissionWindow;
+import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBSaveAsPageWindow;
 import com.idega.builder.presentation.IBSavePageWindow;
 import com.idega.builder.presentation.IBSourceView;
+import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.presentation.FrameSet;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Script;
+import com.idega.presentation.Table;
 import com.idega.presentation.app.IWApplication;
 import com.idega.presentation.app.IWApplicationComponent;
-import com.idega.presentation.FrameSet;
-import com.idega.presentation.Page;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.builder.presentation.IBPermissionWindow;
-import com.idega.builder.business.PageTreeNode;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.IFrame;
+import com.idega.presentation.ui.TreeViewer;
 /**
  *@author     <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  *@created    11. mars 2002
@@ -59,9 +62,9 @@ public class IBApplication extends IWApplication {
 	private final static String ACTION_BUILDER = "builder";
 	private final static String ACTION_TEMPLATES = "templates";
 	private final static String ACTION_SETTINGS = "settings";
-	private final static String ACTION_HELP = "help";
-	private static boolean noCurtain = false;
-	private static String URL = "";
+	// unused private final static String ACTION_HELP = "help";
+	protected static boolean noCurtain = false;
+	// unused private static String URL = "";
 	private final static String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
 	//private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
 	//private final static String CONTENT_EDIT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
@@ -162,7 +165,7 @@ public class IBApplication extends IWApplication {
 				noCurtain = false;
 			}
 		}
-		URL = iwc.getRequestURI();
+		// unused URL = iwc.getRequestURI();
 		if (noCurtain) {
 			add(FrameSet2.class);
 			setScrolling(2, true);
@@ -536,6 +539,13 @@ public class IBApplication extends IWApplication {
 				Link link_move = new Link(tool_move);
 				link_move.setWindowToOpen(IBMovePageWindow.class);
 				toolbarTable.add(link_move, xpos, 1);
+				// export pages and templates
+				Image tool_export = iwb.getImage("shared/toolbar/move.gif", "shared/toolbar/move1.gif", "Export Pages", 20, 20);
+				tool_export.setHorizontalSpacing(2);
+				Link link_export = new Link(tool_export);
+				link_export.setWindowToOpen(IBPageExporterWindow.class);
+				toolbarTable.add(link_export, xpos, 1);
+
 				PresentationObject propertiesIcon = getPropertiesIcon(iwc);
 				toolbarTable.add(propertiesIcon, xpos, 1);
 				PresentationObject permissionIcon = getPermissionIcon(iwc);
@@ -660,7 +670,7 @@ public class IBApplication extends IWApplication {
 			image.setHorizontalSpacing(2);
 			Link link = new Link(image);
 			link.setWindowToOpen(IBPropertiesWindow.class);
-			link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getInstance().getCurrentIBPage(iwc));
+			link.addParameter(BuilderLogic.IB_PAGE_PARAMETER, BuilderLogic.getCurrentIBPage(iwc));
 			link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
 			//Hardcoded -1 for the top page
 			String pageICObjectInstanceID = "-1";
@@ -679,8 +689,8 @@ public class IBApplication extends IWApplication {
 			image.setHorizontalSpacing(2);
 			Link link = new Link(image);
 			link.setWindowToOpen(IBPermissionWindow.class);
-			link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, BuilderLogic.getInstance().getCurrentIBPage(iwc));
-			link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY, com.idega.core.accesscontrol.business.AccessControl.CATEGORY_PAGE_INSTANCE);
+			link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, BuilderLogic.getCurrentIBPage(iwc));
+			link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY, AccessController.CATEGORY_PAGE_INSTANCE);
 			return link;
 		}
 	}
@@ -771,7 +781,7 @@ public class IBApplication extends IWApplication {
 				
 				String id = (String) iwc.getSessionAttribute("ib_page_id");
 				if (id == null) {
-					int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
+					int i_page_id = BuilderLogic.getCurrentDomain(iwc).getStartPageID();
 					id = Integer.toString(i_page_id);
 				}
 				String name = null;
