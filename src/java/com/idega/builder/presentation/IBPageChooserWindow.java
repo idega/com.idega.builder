@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.10 2002/04/07 00:50:01 laddi Exp $
+ * $Id: IBPageChooserWindow.java,v 1.11 2002/05/10 15:55:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -55,9 +55,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
     add(text);
 
     try {
-      int i_page_id = BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID();
-
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc),iwc);
+      TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
 
       add(viewer);
       viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.15 2002/05/05 21:57:52 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.16 2002/05/10 15:55:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,9 @@ package com.idega.builder.business;
 
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBStartPages;
+import com.idega.builder.data.IBStartPagesHome;
+import com.idega.data.IDOLookup;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -18,12 +21,14 @@ import com.idega.block.IWBlock;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.TreeViewer;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Iterator;
-//import com.idega.presentation.IWContext;
 import java.util.Map;
 import com.idega.core.data.ICMimeType;
 import com.idega.idegaweb.IWUserContext;
@@ -39,6 +44,11 @@ public class IBPageHelper {
   public static final String FOLDER = com.idega.builder.data.IBPageBMPBean.FOLDER;
   public static final String DPT_PAGE = com.idega.builder.data.IBPageBMPBean.DPT_PAGE;
   public static final String DPT_TEMPLATE = com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE;
+
+  private final String LINK_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
+
+  private final int PAGEVIEWER = 0;
+  private final int TEMPLATEVIEWER = 1;
 
   private static IBPageHelper _instance = null;
 
@@ -104,6 +114,26 @@ public class IBPageHelper {
    * @return The id of the new IBPage
    */
   public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType) {
+    return createNewPage(parentId,name,type,templateId,tree,creatorContext,subType,-1);
+  }
+
+  /**
+   * Creates a new IBPage. Sets its name and type and stores it to the database.
+   * If the parentId and the tree parameter are valid it also stores the page in
+   * the cached IWContext tree.
+   *
+   * @param parentId The id of the parent of this page
+   * @param name The name this page is to be given
+   * @param type The type of the page, ie. PAGE, TEMPLATE, DRAFT, ...
+   * @param templateId The id of the page this page is extending, if any
+   * @param tree A map of PageTreeNode objects representing the whole page tree
+   * @param creatorContext the context of the User that created the page
+   * @param subType Subtype of the current page
+   * @param domainId The id of the domain if you are creating a top level page
+   *
+   * @return The id of the new IBPage
+   */
+  public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, int domainId) {
     IBPage ibPage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
 
     if (name == null)
@@ -151,10 +181,42 @@ public class IBPageHelper {
       if(creatorContext!=null){
         ibPage.setOwner(creatorContext);
       }
-      IBPage ibPageParent = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(parentId));
-      ibPageParent.addChild(ibPage);
+      if (parentId != null) {
+        IBPage ibPageParent = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(parentId));
+        ibPageParent.addChild(ibPage);
+      }
+      else {
+        IBStartPagesHome home = (IBStartPagesHome)IDOLookup.getHome(IBStartPages.class);
+        IBStartPages page = home.create();
+        page.setPageId(ibPage.getID());
+        if (type.equals(PAGE)) {
+          page.setPageTypePage();
+        }
+        else if (type.equals(TEMPLATE)) {
+          page.setPageTypeTemplate();
+        }
+        else if (type.equals(DRAFT)) {
+          page.setPageTypePage();
+        }
+        else if (type.equals(DPT_PAGE)) {
+          page.setPageTypePage();
+        }
+        else if (type.equals(DPT_TEMPLATE)) {
+          page.setPageTypeTemplate();
+        }
+        else if (type.equals(com.idega.builder.data.IBPageBMPBean.FOLDER)) {
+          page.setPageTypePage();
+        }
+        else {
+          page.setPageTypePage();
+        }
+
+        page.setDomainId(domainId);
+        page.store();
+      }
     }
-    catch(SQLException e) {
+    catch(Exception e) {
+      e.printStackTrace();
       return(-1);
     }
 
@@ -176,10 +238,12 @@ public class IBPageHelper {
     int id = ibPage.getID();
     if (tree != null) {
       PageTreeNode node = new PageTreeNode(id,name);
-      PageTreeNode parent = (PageTreeNode)tree.get(Integer.valueOf(parentId));
+      if (parentId != null) {
+        PageTreeNode parent = (PageTreeNode)tree.get(Integer.valueOf(parentId));
 
-      if (parent != null)
-        parent.addChild(node);
+        if (parent != null)
+          parent.addChild(node);
+      }
 
       tree.put(new Integer(node.getNodeID()),node);
     }
@@ -251,9 +315,8 @@ public class IBPageHelper {
         }
       }
       catch(SQLException e) {
-//        System.err.println("DPTTriggerBusiness: "+e.getMessage());
-//        e.printStackTrace();
-        return(false);
+        e.printStackTrace();
+        return false;
       }
 
       if(obj instanceof IWBlock){
@@ -339,7 +402,8 @@ public class IBPageHelper {
       }
     }
     catch(SQLException e) {
-      return(false);
+      e.printStackTrace();
+      return false;
     }
   }
 
@@ -390,8 +454,11 @@ public class IBPageHelper {
         t.rollback();
       }
       catch(javax.transaction.SystemException ex) {
+        ex.printStackTrace();
       }
-      return(false);
+
+      e.printStackTrace();
+      return false;
     }
     finally {
       try {
@@ -402,9 +469,11 @@ public class IBPageHelper {
           t.rollback();
         }
         catch(javax.transaction.SystemException ex) {
+          ex.printStackTrace();
         }
 
-        return(false);
+        e.printStackTrace();
+        return false;
       }
       return(true);
     }
@@ -435,5 +504,55 @@ public class IBPageHelper {
           tree.remove(child.getIDInteger());
       }
     }
+  }
+
+  public TreeViewer getPageTreeViewer(IWContext iwc) {
+    return getTreeViewer(iwc,PAGEVIEWER);
+  }
+
+  public TreeViewer getTemplateTreeViewer(IWContext iwc) {
+    return getTreeViewer(iwc,TEMPLATEVIEWER);
+  }
+
+  private TreeViewer getTreeViewer(IWContext iwc, int type) {
+    com.idega.builder.data.IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
+    int id = -1;
+    if (type == PAGEVIEWER) {
+      id = domain.getStartPageID();
+    }
+    else {
+      id = domain.getStartTemplateID();
+    }
+    TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(id, iwc), iwc);
+
+    try {
+      java.util.Collection coll = null;
+      if (type == PAGEVIEWER)
+        coll = ((com.idega.builder.data.IBStartPagesHome)com.idega.data.IDOLookup.getHome(com.idega.builder.data.IBStartPages.class)).findAllPagesByDomain(((Integer)domain.getPrimaryKeyValue()).intValue());
+      else
+        coll = ((com.idega.builder.data.IBStartPagesHome)com.idega.data.IDOLookup.getHome(com.idega.builder.data.IBStartPages.class)).findAllTemplatesByDomain(((Integer)domain.getPrimaryKeyValue()).intValue());
+      java.util.Iterator it = coll.iterator();
+      while (it.hasNext()) {
+        com.idega.builder.data.IBStartPages startPage = (com.idega.builder.data.IBStartPages)it.next();
+        if (startPage.getPageId() != id)
+          viewer.addFirstLevelNode(new PageTreeNode(startPage.getPageId(),iwc));
+      }
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
+    Link l = new Link();
+    l.setNoTextObject(true);
+    l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+    l.addParameter("reload", "t");
+    viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+    viewer.setTreeStyle(LINK_STYLE);
+
+    viewer.setLinkPrototype(l);
+
+    return viewer;
   }
 }

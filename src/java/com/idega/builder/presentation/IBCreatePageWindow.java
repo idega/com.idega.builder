@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.33 2002/04/17 09:11:50 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.34 2002/05/10 15:55:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Window;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import java.util.List;
@@ -45,9 +46,11 @@ public class IBCreatePageWindow extends IWAdminWindow {
   private static final String PAGE_TYPE             = "ib_page_type";
   private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
 
+  private static final String TOP_LEVEL = "top_level";
+
   public IBCreatePageWindow() {
     setWidth(280);
-    setHeight(160);
+    setHeight(180);
     setScrollbar(false);
   }
 
@@ -55,6 +58,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
     IWResourceBundle iwrb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
     Form form = new Form();
     String type = iwc.getParameter(PAGE_TYPE);
+    String topLevelString = iwc.getParameter(TOP_LEVEL);
 
     if (type == null) {
       String currPageType = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getType();
@@ -74,11 +78,11 @@ public class IBCreatePageWindow extends IWAdminWindow {
     }
 
     add(form);
-    Table tab = new Table(2,5);
+    Table tab = new Table(2,6);
     tab.setColumnAlignment(1,"right");
     tab.setWidth(1,"110");
     tab.setCellspacing(3);
-    tab.setAlignment(2,5,"right");
+    tab.setAlignment(2,6,"right");
     form.add(tab);
     TextInput inputName = new TextInput(PAGE_NAME_PARAMETER);
     inputName.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
@@ -106,23 +110,37 @@ public class IBCreatePageWindow extends IWAdminWindow {
 
     mnu.setToSubmit();
 
+    CheckBox topLevel = new CheckBox(TOP_LEVEL);
+    Text topLevelText = new Text(iwrb.getLocalizedString(TOP_LEVEL,"Top level")+":");
+    topLevelText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+    tab.add(topLevelText,1,3);
+    tab.add(topLevel,2,3);
+    topLevel.setOnClick("this.form.submit()");
+
+    IBPageChooser pageChooser = getPageChooser(PAGE_CHOOSER_NAME,iwc);
+
     if (!type.equals(IBPageHelper.TEMPLATE)) {
-      Text createUnderText = new Text(iwrb.getLocalizedString("parent_page","Create page under")+":");
-	    createUnderText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-      tab.add(createUnderText,1,3);
-      tab.add(getPageChooser(PAGE_CHOOSER_NAME,iwc),2,3);
+      if (topLevelString == null) {
+        Text createUnderText = new Text(iwrb.getLocalizedString("parent_page","Create page under")+":");
+	      createUnderText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+        tab.add(createUnderText,1,4);
+        tab.add(pageChooser,2,4);
+      }
     }
 
-    Text usingText = new Text(iwrb.getLocalizedString("using_template","Using template")+":");
-    usingText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-    tab.add(usingText,1,4);
-    tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME,iwc,type),2,4);
+    if ((topLevelString == null) || (topLevelString != null && type.equals(IBPageHelper.PAGE))) {
+      Text usingText = new Text(iwrb.getLocalizedString("using_template","Using template")+":");
+      usingText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+      tab.add(usingText,1,5);
+      IBTemplateChooser templateChooser = getTemplateChooser(TEMPLATE_CHOOSER_NAME,iwc,type);
+      tab.add(templateChooser,2,5);
+    }
 
     SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"submit");
     SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),"close");
-    tab.add(close,2,5);
-    tab.add(Text.getNonBrakingSpace(),2,5);
-    tab.add(button,2,5);
+    tab.add(close,2,6);
+    tab.add(Text.getNonBrakingSpace(),2,6);
+    tab.add(button,2,6);
 
     boolean submit = iwc.isParameterSet("submit");
     boolean quit = iwc.isParameterSet("close");
@@ -134,18 +152,27 @@ public class IBCreatePageWindow extends IWAdminWindow {
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       if (type.equals(IBPageHelper.TEMPLATE))
       	parentPageId = templateId;
+//      String topLevelString = iwc.getParameter(TOP_LEVEL);
 
-      if (parentPageId != null) {
-	      Map tree = PageTreeNode.getTree(iwc);
-      	int id = IBPageHelper.getInstance().createNewPage(parentPageId,name,type,templateId,tree,iwc);
-      	iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
-        /**@todo is this in the right place? -eiki**/
-//        setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
-        setOnUnLoad("window.opener.parent.parent.location.reload()");
-
-//        setParentToReload();
-	     // close();
+      Map tree = PageTreeNode.getTree(iwc);
+      int id = -1;
+      if (topLevelString == null) {
+        if (parentPageId != null) {
+          id = IBPageHelper.getInstance().createNewPage(parentPageId,name,type,templateId,tree,iwc);
+        }
       }
+      else {
+        int domainId = BuilderLogic.getInstance().getCurrentDomain(iwc).getID();
+        if (type.equals(IBPageHelper.TEMPLATE)) {
+          id = IBPageHelper.getInstance().createNewPage(null,name,type,null,tree,iwc,null,domainId);
+        }
+        else {
+          id = IBPageHelper.getInstance().createNewPage(null,name,type,templateId,tree,iwc,null,domainId);
+        }
+      }
+
+      iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
+      setOnUnLoad("window.opener.parent.parent.location.reload()");
     }
     else if (quit) {
       close();
@@ -155,6 +182,9 @@ public class IBCreatePageWindow extends IWAdminWindow {
       type = iwc.getParameter(PAGE_TYPE);
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       String templateName = iwc.getParameter(TEMPLATE_CHOOSER_NAME+"_displaystring");
+
+      if (topLevelString != null)
+        topLevel.setChecked(true);
 
       if (name != null)
       	inputName.setValue(name);
@@ -167,7 +197,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
   /*
    *
    */
-  private PresentationObject getPageChooser(String name, IWContext iwc) {
+  private IBPageChooser getPageChooser(String name, IWContext iwc) {
     IBPageChooser chooser = new IBPageChooser(name);
     chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 
@@ -183,7 +213,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
       }
     }
     catch(Exception e) {
-      //does nothing
+      e.printStackTrace();
     }
 
     return(chooser);
@@ -192,7 +222,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
   /**
    *
    */
-  private PresentationObject getTemplateChooser(String name, IWContext iwc, String type){
+  private IBTemplateChooser getTemplateChooser(String name, IWContext iwc, String type){
     IBTemplateChooser chooser = new IBTemplateChooser(name);
     chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 
@@ -218,7 +248,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
       }
     }
     catch(Exception e) {
-      //does nothing
+      e.printStackTrace();
     }
     return chooser;
   }

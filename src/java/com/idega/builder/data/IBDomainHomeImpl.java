@@ -7,9 +7,11 @@ public class IBDomainHomeImpl extends com.idega.data.IDOFactory implements IBDom
   return IBDomain.class;
  }
 
+
  public IBDomain create() throws javax.ejb.CreateException{
-  return (IBDomain) super.idoCreate();
+  return (IBDomain) super.createIDO();
  }
+
 
  public IBDomain createLegacy(){
 	try{
@@ -21,13 +23,23 @@ public class IBDomainHomeImpl extends com.idega.data.IDOFactory implements IBDom
 
  }
 
- public IBDomain findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (IBDomain) super.idoFindByPrimaryKey(id);
- }
+
+public java.util.Collection findAllDomains()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((IBDomainBMPBean)entity).ejbFindAllDomains();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public IBDomain findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (IBDomain) super.idoFindByPrimaryKey(pk);
+  return (IBDomain) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public IBDomain findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (IBDomain) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public IBDomain findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +50,7 @@ public class IBDomainHomeImpl extends com.idega.data.IDOFactory implements IBDom
 	}
 
  }
+
 
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.7 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.8 2002/05/10 15:55:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,8 @@ package com.idega.builder.business;
 
 import com.idega.builder.data.IBPage;
 import com.idega.core.ICTreeNode;
-import com.idega.presentation.IWContext;
+//import com.idega.presentation.IWContext;
+import com.idega.idegaweb.IWApplicationContext;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -46,7 +47,7 @@ public class PageTreeNode implements ICTreeNode {
   /**
    *
    */
-  public PageTreeNode(int id, IWContext iwc) {
+  public PageTreeNode(int id, IWApplicationContext iwc) {
     Map tree = PageTreeNode.getTree(iwc);
     PageTreeNode node = (PageTreeNode)tree.get(new Integer(id));
     if (node != null) {
@@ -276,7 +277,7 @@ public class PageTreeNode implements ICTreeNode {
   /**
    *
    */
-  public static Map getTree(IWContext iwc) {
+  public static Map getTree(IWApplicationContext iwc) {
     Map tree = (Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
 
     if (tree == null) {
