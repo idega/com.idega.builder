@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.28 2001/11/01 16:09:46 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.29 2001/11/01 16:17:02 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,6 +35,7 @@ import com.idega.builder.business.PageTreeNode;
 
 import java.util.Vector;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -82,7 +83,8 @@ public class IBApplication extends IWApplication {
     List l = (List)iwc.getSessionAttribute("ib_startup_class_list");
     if(l!=null){
       l.remove(c);
-      if(l.size()==0){
+      Iterator iter = l.iterator();
+      if(!iter.hasNext()){
         iwc.removeSessionAttribute("ib_startup_class_list");
       }
     }
