@@ -83,6 +83,7 @@ public class BuilderLogic{
     String theID=Integer.toString(id);
     IBXMLPage xml = PageCacher.getXML(theID);
     xml.update();
+    System.err.println("Invalidating page = " + theID);
     PageCacher.flagPageInvalid(theID);
     return true;
   }

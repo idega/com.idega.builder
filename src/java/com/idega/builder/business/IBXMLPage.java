@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.4 2001/09/18 22:28:16 palli Exp $
+ * $Id: IBXMLPage.java,v 1.5 2001/09/19 01:06:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,6 +44,12 @@ public class IBXMLPage {
   private Element rootElement = null;
   private Page populatedPage = null;
   private String key;
+
+  /**
+   * @todo Verð að gera þetta öðru vísi (á morgun).
+   */
+  private java.util.Hashtable _children = null;
+
 
   private IBXMLPage(boolean verify) {
     builder = new SAXBuilder(verify);
@@ -95,12 +101,50 @@ public class IBXMLPage {
       setPopulatedPage(XMLReader.getPopulatedPage(this));
   }
 
+  public void addChild(String id) {
+    if (_children == null)
+      _children = new java.util.Hashtable();
+
+    _children.put(id,null);
+  }
+
+  public java.util.Map getChildren() {
+System.out.println("Getting children");
+    if (_children == null)
+      findAllChildren();
+    return(_children);
+  }
+
+  private void findAllChildren() {
+    _children = new java.util.Hashtable();
+    try {
+      String templateId = key;
+      java.util.List l = com.idega.data.EntityFinder.findAllByColumn(new com.idega.builder.data.IBPage(),com.idega.builder.data.IBPage.getColumnTemplateID(),Integer.parseInt(templateId));
+      java.util.Iterator i = l.iterator();
+      while (i.hasNext()) {
+        com.idega.builder.data.IBPage p = (com.idega.builder.data.IBPage)i.next();
+        System.out.println("id = " + p.getID());
+        _children.put(Integer.toString(p.getID()),new String(""));
+      }
+    }
+    catch(java.sql.SQLException e) {}
+  }
+
+
   public boolean update(){
       try{
         IBPage ibpage = new IBPage(Integer.parseInt(key));
         OutputStream stream = ibpage.getPageValueForWrite();
         store(stream);
         ibpage.update();
+System.out.println("Getting children!!!");
+        java.util.Hashtable h = (java.util.Hashtable)getChildren();
+        if (h != null) {
+          java.util.Enumeration e = h.keys();
+          while (e.hasMoreElements()) {
+            PageCacher.flagPageInvalid((String)e.nextElement());
+          }
+        }
         //ibpage.setPageValue(xmlDocument.);
         //setXMLPageDescriptionFile(ibpage.getPageValue());
       }

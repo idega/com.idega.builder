@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.7 2001/09/18 17:19:45 palli Exp $
+ * $Id: XMLReader.java,v 1.8 2001/09/19 01:06:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,15 +37,20 @@ public class XMLReader {
     Iterator attr = pageAttr.iterator();
 
     boolean hasTemplate = false;
+    boolean isTemplate = false;
 
     // Parse the page attributes
     while(attr.hasNext()) {
       Attribute at = (Attribute)attr.next();
-      if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
+      if (at.getName().equals(XMLConstants.TEMPLATE_STRING)) {
         hasTemplate = true;
         parentContainer = PageCacher.getPage(at.getValue());
-        ((Page)parentContainer).setIsTemplate();
+//        parentContainer._children.put(ibxml.getPopulatedPage().getID(),null);
+//        ((Page)parentContainer).setIsTemplate();
         //parseXML(at.getValue(),verifyPage,parent);
+      }
+      if (at.getName().equals(XMLConstants.PAGE_TYPE_TEMPLATE)) {
+        isTemplate = true;
       }
       else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
         pageKey = (String)at.getValue();
@@ -54,6 +59,11 @@ public class XMLReader {
 
     if (!hasTemplate) {
       parentContainer = new Page();
+    }
+
+    if (isTemplate) {
+      if (parentContainer != null)
+        parentContainer.setIsTemplate();
     }
 
     if (pageXML.hasChildren()) {
