@@ -1,5 +1,5 @@
 /*
- * $Id: IBObjectLibraryBMPBean.java,v 1.2 2002/08/12 12:15:24 palli Exp $
+ * $Id: IBObjectLibraryBMPBean.java,v 1.3 2002/08/12 12:59:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,7 @@ import com.idega.core.data.ICObject;
 import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.presentation.IWContext;
 
 /**
