@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.150 2004/06/15 15:21:59 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.151 2004/06/15 18:26:25 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -16,9 +16,7 @@ import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.builder.business.BuilderClassesFactory;
 import com.idega.core.builder.business.BuilderConstants;
-import com.idega.core.builder.business.BuilderImageInserter;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.business.ICObjectBusiness;
@@ -320,14 +318,8 @@ public class BuilderLogic {
 				iwc.removeSessionAttribute(sessionID);
 				imageObj.setImageID(image_id);
 			}
-			BuilderImageInserter inserter = null;
-			try {
-				BuilderClassesFactory builderClassesFactory = (BuilderClassesFactory) ImplementorRepository.getInstance().getImplementor(BuilderClassesFactory.class, this.getClass());
-				inserter = builderClassesFactory.createImageInserterImpl();
-			}
-			catch (ClassNotFoundException ex) {
-				// do nothings
-			}
+			IBImageInserter inserter = null;
+			inserter = (new IBClassesFactory()).createImageInserterImpl();
 			inserter.setHasUseBox(false);
 			String width = imageObj.getWidth();
 			String height = imageObj.getHeight();

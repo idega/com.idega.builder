@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.41 2004/06/15 15:22:27 thomas Exp $
+ * $Id: IBPropertyHandler.java,v 1.42 2004/06/15 18:26:25 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,9 +22,6 @@ import com.idega.builder.handler.SpecifiedChoiceProvider;
 import com.idega.builder.handler.TableColumnsHandler;
 import com.idega.builder.handler.TableRowsHandler;
 import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
-import com.idega.core.builder.business.BuilderClassesFactory;
-import com.idega.core.builder.business.BuilderFileChooser;
-import com.idega.core.builder.business.BuilderImageInserter;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
@@ -43,7 +40,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.TextInput;
-import com.idega.repository.data.ImplementorRepository;
 import com.idega.util.caching.Cache;
 import com.idega.util.reflect.MethodFinder;
 /**
@@ -67,7 +63,7 @@ public class IBPropertyHandler {
 	private static final String PROPERTYWINDOW_VALUE_FIND = "iw_propw_val_find";
 	private static IBPropertyHandler instance;
 	private Map propertyHandlers;
-	private BuilderClassesFactory builderClassesFactory;
+	private IBClassesFactory builderClassesFactory;
 
 	private IBPropertyHandler() {
 	}
@@ -406,14 +402,9 @@ public class IBPropertyHandler {
 			}
 		}
 		else if (parameterClass.equals(com.idega.presentation.Image.class)) {
-			BuilderImageInserter inserter = null;
-			try {
-				BuilderClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
-				inserter = builderClassesFactoryTemp.createImageInserterImpl();
-			}
-			catch (ClassNotFoundException ex) {
-				// do nothing
-			}
+			IBImageInserter inserter = null;
+			IBClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
+			inserter = builderClassesFactoryTemp.createImageInserterImpl();
 			inserter.setImSessionImageName(name);
 			inserter.setHasUseBox(false);
 			inserter.setNullImageIDDefault();
@@ -423,7 +414,7 @@ public class IBPropertyHandler {
 			catch (NumberFormatException e) {
 				// do nothing
 			}
-			// BuilderImageInserter extends PresentationObjectType
+			// IBImageInserter extends PresentationObjectType
 			obj = (PresentationObject) inserter;
 		}
 		/**
@@ -432,14 +423,9 @@ public class IBPropertyHandler {
 		
 		 */
 		else if (parameterClass.equals(com.idega.core.file.data.ICFile.class)) {
-			BuilderFileChooser fileChooser = null;
-			try {
-				BuilderClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
-				fileChooser = builderClassesFactoryTemp.createFileChooserImpl();
-			}
-			catch (ClassNotFoundException ex) {
-				// do nothing
-			}
+			IBFileChooser fileChooser = null;
+			IBClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
+			fileChooser = builderClassesFactoryTemp.createFileChooserImpl();
 			fileChooser.setChooserParameter(name);
 			try {
 				//extends block.media.presentation.FileChooser
@@ -451,7 +437,7 @@ public class IBPropertyHandler {
 			catch (Exception e) {
 				//throw new RuntimeException(e.getMessage());
 			}
-			// BuilderImageInserter extends PresentationObjectType
+			// IBImageInserter extends PresentationObjectType
 			obj = (PresentationObject) fileChooser;
 		}
 		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
@@ -694,9 +680,9 @@ public class IBPropertyHandler {
 		drop.setOnChange(com.idega.builder.presentation.IBPropertiesWindowSetter.MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME + "()");
 	}
 	
-	private BuilderClassesFactory getBuilderClassesFactory() throws ClassNotFoundException {
+	private IBClassesFactory getBuilderClassesFactory() {
 		if (builderClassesFactory == null) {
-			builderClassesFactory = (BuilderClassesFactory) ImplementorRepository.getInstance().getImplementor(BuilderClassesFactory.class, this.getClass());
+			builderClassesFactory = new IBClassesFactory();
 		}
 		return builderClassesFactory;
 	}
