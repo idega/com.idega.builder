@@ -1,5 +1,5 @@
 /*
- * $Id: LibraryTreeNode.java,v 1.4 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: LibraryTreeNode.java,v 1.5 2004/03/29 14:02:38 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.business;
 
 import com.idega.core.data.ICTreeNode;
+import com.idega.idegaweb.IWApplicationContext;
 
 import java.util.Iterator;
 import java.util.Locale;
@@ -92,6 +93,10 @@ public class LibraryTreeNode implements ICTreeNode {
   public String getNodeName(Locale locale) {
 	return getNodeName();
   }
+  
+	public String getNodeName(Locale locale, IWApplicationContext iwac) {
+		return getNodeName(locale);
+	}
 
   /**
    *
@@ -108,4 +113,5 @@ public class LibraryTreeNode implements ICTreeNode {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
     throw new java.lang.UnsupportedOperationException("Method getSiblingCount() not yet implemented.");
   }
+  
 }

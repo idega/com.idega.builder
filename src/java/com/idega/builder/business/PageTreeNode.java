@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.15 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.16 2004/03/29 14:02:38 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -287,6 +287,10 @@ public class PageTreeNode implements ICTreeNode {
 	public String getNodeName(Locale locale) {
 		IWApplicationContext iwac = getIWApplicationContext();
 		return getLocalizedNodeName(iwac,locale);
+	}
+	
+	public String getNodeName(Locale locale, IWApplicationContext iwac){
+		return getNodeName(locale);
 	}
 	
 	public String getLocalizedNodeName(IWContext iwc) {
