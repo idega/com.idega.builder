@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.42 2004/09/02 07:47:34 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.43 2004/09/06 19:45:27 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -444,7 +444,7 @@ public class IBPageHelper {
 			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DPT_PAGE))
 				return true;
 			else {
-				Iterator it = page.getChildren();
+				Iterator it = page.getChildrenIterator();
 				if (it != null) {
 					while (it.hasNext()) {
 						ICPage child = (ICPage) it.next();
@@ -593,7 +593,7 @@ public class IBPageHelper {
 				newParentForChildren.moveChildrenFrom(ibpage);
 				// handle tree
 				if (tree != null) {
-					Iterator it = childNode.getChildren();
+					Iterator it = childNode.getChildrenIterator();
 					if (it != null) {
 						while (it.hasNext()) {
 							parentNode.addChild((PageTreeNode) it.next());
@@ -637,7 +637,7 @@ public class IBPageHelper {
 	 *
 	 */
 	private void deleteAllChildren(ICPage page, Map tree, int userId) throws java.sql.SQLException {
-		Iterator it = page.getChildren();
+		Iterator it = page.getChildrenIterator();
 		if (it != null) {
 			while (it.hasNext()) {
 				ICPage child = (ICPage) it.next();

@@ -154,7 +154,7 @@ public class IBExportImportData implements Storable {
 			XMLElement pageElement = new XMLElement(XMLConstants.PAGE_TREE_PAGE);
 			pageElement.addContent(XMLConstants.PAGE_TREE_NAME, name);
 			pageElement.addContent(XMLConstants.PAGE_TREE_ID, id);
-			Iterator iterator = node.getChildren();
+			Iterator iterator = node.getChildrenIterator();
 			addPages(iterator, pageElement);
 			element.addContent(pageElement);
 		}

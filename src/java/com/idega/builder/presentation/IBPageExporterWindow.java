@@ -205,7 +205,7 @@ public class IBPageExporterWindow extends IBPageWindow {
 		buffer.append(nodeName);
 		String nodeNameDescription = buffer.toString();
 		selectionBox.addMenuElement(id, nodeNameDescription);
-		Iterator childrenIterator = node.getChildren();
+		Iterator childrenIterator = node.getChildrenIterator();
 		if (childrenIterator == null) {
 			return;
 		}
