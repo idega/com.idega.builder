@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.52 2004/07/12 10:48:50 palli Exp $
+ * $Id: IBXMLPage.java,v 1.53 2004/07/14 02:24:13 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -422,6 +422,9 @@ public class IBXMLPage implements IBXMLAble {
 	
 		boolean streamopen = true;
 		try {
+			if(stream==null){
+				throw new PageDoesNotExist("Page contains no data");
+			}
 			InputStreamReader reader = new InputStreamReader(stream,"UTF-8");
 			this.setXMLDocument(getParser().parse(stream));
 			//_xmlDocument = _parser.parse(stream);
