@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.2 2001/12/17 16:05:14 palli Exp $
+ * $Id: IBCopyModuleWindow.java,v 1.3 2001/12/17 16:11:30 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ public class IBCopyModuleWindow extends IBAdminWindow {
   private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String ACTION_COPY = BuilderLogic.ACTION_COPY;
   private static final String ACTION_LIBRARY = BuilderLogic.ACTION_LIBRARY;
-  private static final String IB_LIBRARY_NAME = BuilderLogic.IB_LIBRARY_NAME;
+//  private static final String IB_LIBRARY_NAME = BuilderLogic.IB_LIBRARY_NAME;
 //  private static final String CLIPBOARD = IBObjectLibrary.CLIPBOARD;
 //  private static final String LIBRARY = IBObjectLibrary.LIBRARY;
 
