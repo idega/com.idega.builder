@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.10 2002/03/19 19:52:13 eiki Exp $
+ * $Id: IBDeletePageWindow.java,v 1.11 2002/03/21 11:23:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,9 +69,10 @@ public class IBDeletePageWindow extends IWAdminWindow {
 
       iwc.setSessionAttribute("ib_page_id",Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
        /**@todo is this in the right place? -eiki**/
-      setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
+//      setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
+      setOnUnLoad("window.opener.parent.parent.location.reload()");
 
-      setParentToReload();
+//      setParentToReload();
       close();
     }
     else if (quit) {

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.27 2002/03/19 19:52:13 eiki Exp $
+ * $Id: IBCreatePageWindow.java,v 1.28 2002/03/21 11:23:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,11 +57,10 @@ public class IBCreatePageWindow extends IWAdminWindow {
     String type = iwc.getParameter(PAGE_TYPE);
     if (type == null) {
       String currPageType = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getType();
-      System.out.println("Test");
       if (currPageType.equals(IBXMLPage.TYPE_TEMPLATE))
-	type = IBPageHelper.TEMPLATE;
+      	type = IBPageHelper.TEMPLATE;
       else
-	type = IBPageHelper.PAGE;
+      	type = IBPageHelper.PAGE;
     }
 
     if (type.equals(IBPageHelper.TEMPLATE)) {
@@ -75,13 +74,13 @@ public class IBCreatePageWindow extends IWAdminWindow {
 
     add(form);
     Table tab = new Table(2,5);
-      tab.setColumnAlignment(1,"right");
-      tab.setWidth(1,"110");
-      tab.setCellspacing(3);
-      tab.setAlignment(2,5,"right");
+    tab.setColumnAlignment(1,"right");
+    tab.setWidth(1,"110");
+    tab.setCellspacing(3);
+    tab.setAlignment(2,5,"right");
     form.add(tab);
     TextInput inputName = new TextInput(PAGE_NAME_PARAMETER);
-      inputName.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
+    inputName.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
     Text inputText = new Text();
     if (type.equals(IBPageHelper.TEMPLATE)) {
       inputText.setText(iwrb.getLocalizedString("template_name","Template name")+":");
@@ -100,7 +99,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
     mnu.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 
     Text typeText = new Text(iwrb.getLocalizedString("select_type","Select type")+":");
-      typeText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+    typeText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
     tab.add(typeText,1,2);
     tab.add(mnu,2,2);
 
@@ -108,13 +107,13 @@ public class IBCreatePageWindow extends IWAdminWindow {
 
     if (!type.equals(IBPageHelper.TEMPLATE)) {
       Text createUnderText = new Text(iwrb.getLocalizedString("parent_page","Create page under")+":");
-	createUnderText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+	    createUnderText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
       tab.add(createUnderText,1,3);
       tab.add(getPageChooser(PAGE_CHOOSER_NAME,iwc),2,3);
     }
 
     Text usingText = new Text(iwrb.getLocalizedString("using_template","Using template")+":");
-      usingText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+    usingText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
     tab.add(usingText,1,4);
     tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME,iwc,type),2,4);
 
@@ -133,17 +132,18 @@ public class IBCreatePageWindow extends IWAdminWindow {
       type = iwc.getParameter(PAGE_TYPE);
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       if (type.equals(IBPageHelper.TEMPLATE))
-	parentPageId = templateId;
+      	parentPageId = templateId;
 
       if (parentPageId != null) {
-	Map tree = PageTreeNode.getTree(iwc);
-	int id = IBPageHelper.createNewPage(parentPageId,name,type,templateId,tree);
-	iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
+	      Map tree = PageTreeNode.getTree(iwc);
+      	int id = IBPageHelper.createNewPage(parentPageId,name,type,templateId,tree);
+      	iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
         /**@todo is this in the right place? -eiki**/
-        setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
+//        setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
+        setOnUnLoad("window.opener.parent.parent.location.reload()");
 
-        setParentToReload();
-	close();
+//        setParentToReload();
+	      close();
       }
     }
     else if (quit) {
@@ -156,10 +156,10 @@ public class IBCreatePageWindow extends IWAdminWindow {
       String templateName = iwc.getParameter(TEMPLATE_CHOOSER_NAME+"_displaystring");
 
       if (name != null)
-	inputName.setValue(name);
+      	inputName.setValue(name);
 
       if (type != null)
-	mnu.setSelectedElement(type);
+      	mnu.setSelectedElement(type);
     }
   }
 
@@ -172,12 +172,12 @@ public class IBCreatePageWindow extends IWAdminWindow {
     try {
       IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
       if (current.getType().equals(IBPage.PAGE))
-	chooser.setSelectedPage(current);
+      	chooser.setSelectedPage(current.getID(),current.getName());
       else {
-	IBDomain domain = IBDomain.getDomain(1);
-	IBPage top = domain.getStartPage();
-	if (top != null)
-	  chooser.setSelectedPage(top);
+      	IBDomain domain = IBDomain.getDomain(1);
+      	IBPage top = domain.getStartPage();
+      	if (top != null)
+      	  chooser.setSelectedPage(top.getID(),top.getName());
       }
     }
     catch(Exception e) {
@@ -195,31 +195,34 @@ public class IBCreatePageWindow extends IWAdminWindow {
     try {
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       if (templateId == null || templateId.equals("")) {
-	IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
-	if (current.getType().equals(IBPage.TEMPLATE))
-	  chooser.setSelectedPage(current);
-	else {
-	  if (type.equals(IBPageHelper.TEMPLATE)) {
-	    IBDomain domain = IBDomain.getDomain(1);
-	    IBPage top = domain.getStartTemplate();
-	    if (top != null)
-	      chooser.setSelectedPage(top);
-	  }
-	}
+      	IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
+      	if (current.getType().equals(IBPage.TEMPLATE))
+      	  chooser.setSelectedPage(current);
+      	else {
+      	  if (type.equals(IBPageHelper.TEMPLATE)) {
+	          IBDomain domain = IBDomain.getDomain(1);
+    	      IBPage top = domain.getStartTemplate();
+    	      if (top != null)
+	            chooser.setSelectedPage(top);
+      	  }
+      	}
       }
       else {
-	IBPage top = new IBPage(Integer.parseInt(templateId));
-	if (top != null)
-	  chooser.setSelectedPage(top);
+      	IBPage top = new IBPage(Integer.parseInt(templateId));
+      	if (top != null)
+      	  chooser.setSelectedPage(top);
       }
     }
     catch(Exception e) {
       //does nothing
     }
-    return(chooser);
+    return chooser;
   }
 
-  public String getBundleIdentifier(){
+  /**
+   *
+   */
+  public String getBundleIdentifier() {
     return IW_BUNDLE_IDENTIFIER;
   }
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.60 2002/03/19 19:52:04 eiki Exp $
+ *  $Id: IBApplication.java,v 1.61 2002/03/21 11:23:16 palli Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -82,7 +82,6 @@ public class IBApplication extends IWApplication {
     super.setResizable(true);
     super.setWidth(900);
     super.setHeight(700);
-    super.setOnLoad("moveTo(0,0);");
   }
 
 
@@ -510,11 +509,11 @@ public class IBApplication extends IWApplication {
      */
     public void main(IWContext iwc) {
       boolean startupInProgress = startupInProgress(iwc);
-      if (!startupInProgress) {
+/*      if (!startupInProgress) {
 	//super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
         //the tree reloading in done in the appropriate windows such as in the create new page window
         super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-      }
+      }*/
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
       setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
