@@ -152,16 +152,19 @@ public class IBPropertyHandler{
           }
       }
       else if(parameterClass.equals(com.idega.jmodule.object.Image.class)){
-          obj = new com.idega.block.media.presentation.ImageInserter();
+          obj = new com.idega.block.media.presentation.ImageInserter(name);
       }
+      /**@todo : handle page,template,file if the inputs already hava a value
+       *
+       */
       else if(parameterClass.equals(com.idega.core.data.ICFile.class)){
-          obj = new com.idega.builder.presentation.IBFileChooser(FILE_CHOOSER_NAME);
+          obj = new com.idega.builder.presentation.IBFileChooser(name);
       }
       else if(parameterClass.equals(com.idega.builder.data.IBPage.class)){
-          obj = new com.idega.builder.presentation.IBPageChooser(PAGE_CHOOSER_NAME);
+          obj = new com.idega.builder.presentation.IBPageChooser(name);
       }
       else if(parameterClass.equals(com.idega.builder.data.IBTemplatePage.class)){
-          obj = new com.idega.builder.presentation.IBTemplateChooser(TEMPLATE_CHOOSER_NAME);
+          obj = new com.idega.builder.presentation.IBTemplateChooser(name);
       }
       else{
         obj = new TextInput(name);

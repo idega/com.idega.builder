@@ -24,6 +24,11 @@ import org.jdom.Attribute;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.interfaceobject.*;
 
+import com.idega.core.data.ICFile;
+import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBTemplatePage;
+import com.idega.jmodule.object.Image;
+
 public class ComponentPropertyHandler {
 
   private static ComponentPropertyHandler instance;
@@ -111,9 +116,38 @@ public class ComponentPropertyHandler {
         else if(parameterType.equals(Float.class) || parameterType.equals(Float.TYPE)){
           argument = new Float(stringValue);
         }
-        /*else if(parameterType.equals(IBPage.class)){
-          argument = new IBPage(Integer.parseInt(stringValue));
-        }*/
+        else if(parameterType.equals(IBPage.class)){
+          try {
+            argument = new IBPage(Integer.parseInt(stringValue));
+          }
+          catch (Exception ex) {
+            ex.printStackTrace(System.err);
+          }
+        }
+        else if(parameterType.equals(ICFile.class)){
+          try {
+            argument = new ICFile(Integer.parseInt(stringValue));
+          }
+          catch (Exception ex) {
+            ex.printStackTrace(System.err);
+          }
+        }
+        else if(parameterType.equals(IBTemplatePage.class)){
+          try {
+            argument = new IBTemplatePage(Integer.parseInt(stringValue));
+          }
+          catch (Exception ex) {
+            ex.printStackTrace(System.err);
+          }
+        }
+        else if(parameterType.equals(Image.class)){
+          try {
+            argument = new Image(Integer.parseInt(stringValue));
+          }
+          catch (Exception ex) {
+            ex.printStackTrace(System.err);
+          }
+        }
         return argument;
     }
 
