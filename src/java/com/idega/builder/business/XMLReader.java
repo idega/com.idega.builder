@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.28 2002/01/07 10:26:05 gummi Exp $
+ * $Id: XMLReader.java,v 1.29 2002/01/09 16:18:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -463,17 +463,14 @@ public class XMLReader {
    *
    */
   static void changeLinkProperty(XMLElement change, PresentationObjectContainer parent) {
-System.out.println("Entering changeLinkProperty");
     List regionAttrList = change.getAttributes();
     if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
       System.err.println("Table region has no attributes");
       return;
     }
 
-    XMLAttribute id = change.getAttribute(XMLConstants.ID_STRING);
-    XMLAttribute newPageLink = change.getAttribute(XMLConstants.IC_OBJECT_ID_to);
-System.out.println("id = " + id.getValue());
-System.out.println("newPageLink = "+ newPageLink.getValue());
+    XMLAttribute id = change.getAttribute(XMLConstants.LINK_ID_STRING);
+    XMLAttribute newPageLink = change.getAttribute(XMLConstants.LINK_TO);
 
     int intId = -1;
     int intNewPage = -1;

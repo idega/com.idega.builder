@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLFragment.java,v 1.4 2001/12/17 16:05:41 palli Exp $
+ * $Id: IBXMLFragment.java,v 1.5 2002/01/09 16:18:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,41 +31,21 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
   public final static String FRAGMENT_TYPE_LIBRARY = XMLConstants.FRAGMENT_TYPE_LIBRARY;
   private final static String EMPTY = "";
 
-/*  private String _key;
-  private String _type = FRAGMENT_TYPE_LIBRARY;
-  private XMLParser _parser = null;
-  private XMLDocument _xmlDocument = null;
-  private XMLElement _rootElement = null;*/
-
   /**
    *
    */
-  protected IBXMLFragment(boolean verify) {
+  public IBXMLFragment(boolean verify) {
     _parser = new XMLParser(verify);
-  }
-
-  /**
-   *
-   */
-  public IBXMLFragment(boolean verify, String key) {
-    this(verify);
-    _key = key;
 
     IBObjectLibrary lib = null;
     try {
-      lib = new IBObjectLibrary(Integer.parseInt(key));
+      lib = new IBObjectLibrary();
       setXMLLibraryDescriptionFile(lib.getPageValue());
-/*      if (lib.getType().equals(lib.LIBRARY))
-        setType(FRAGMENT_TYPE_LIBRARY);
-      else if (lib.getType().equals(lib.CLIPBOARD))
-        setType(FRAGMENT_TYPE_CLIPBOARD);
-      else
-        setType(FRAGMENT_TYPE_LIBRARY);*/
     }
     catch(LibraryDoesNotExist ldne) {
     }
     catch(NumberFormatException ne) {
-      try {
+/*      try {
         InputStream stream = new FileInputStream(key);
         setXMLLibraryDescriptionFile(stream);
       }
@@ -73,7 +53,7 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
       }
       catch(FileNotFoundException fnfe) {
         fnfe.printStackTrace();
-      }
+      }*/
     }
     catch(Exception e) {
       e.printStackTrace();

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.20 2002/01/02 12:14:37 palli Exp $
+ * $Id: XMLWriter.java,v 1.21 2002/01/09 16:18:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,11 +12,14 @@ package com.idega.builder.business;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
+import java.sql.SQLException;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
+import com.idega.xml.XMLException;
+import com.idega.core.data.ICObjectInstance;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -343,16 +346,13 @@ public class XMLWriter {
     }
 
     if(property==null){
-//      System.out.println("XMLWriter, property==null");
       property = getNewProperty(propertyName,propertyValues);
       module.addContent(property);
       changed=true;
     }
     else{
-//      System.out.println("XMLWriter, property!=null");
       List values = property.getChildren(XMLConstants.VALUE_STRING);
       if(values!=null){
-//        System.out.println("XMLWriter, values!=null");
         Iterator iter = values.iterator();
         int index = 0;
         while (iter.hasNext()) {
@@ -360,7 +360,6 @@ public class XMLWriter {
           String propertyValue = propertyValues[index];
           XMLElement value = (XMLElement)iter.next();
           String currentValue = value.getText();
-//          System.out.println("XMLWriter, propertyValues["+index+"]="+propertyValue+",currentValue="+currentValue);
           if(!currentValue.equals(propertyValue)){
             value.setText(propertyValue);
             changed=true;
@@ -369,7 +368,6 @@ public class XMLWriter {
         }
       }
       else{
-//        System.out.println("XMLWriter, values==null");
         for (int index = 0; index < propertyValues.length; index++) {
             String propertyValue = propertyValues[index];
             XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
@@ -779,6 +777,97 @@ public class XMLWriter {
       parent.addContent(element);
 
     return true;
+  }
+
+  /**
+   *
+   */
+  static boolean pasteElement(IBXMLAble xml, String parentObjectInstanceID, XMLElement element) {
+    changeModuleIds(element);
+    XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
+    if (parent != null) {
+      parent.addContent(element);
+
+      return(true);
+    }
+    else {
+      int index = parentObjectInstanceID.indexOf(".");
+      if (index != -1) {
+        XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+        XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+        region.setAttribute(id);
+
+        int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+        XMLElement regionParent = findModule(xml,parentID);
+        if (regionParent != null)
+          regionParent.addContent(region);
+
+        region.addContent(element);
+
+        return(true);
+      }
+    }
+
+    return(false);
+  }
+
+  /**
+   *
+   */
+  private static boolean changeModuleIds(XMLElement element) {
+    try {
+      XMLAttribute attribute = element.getAttribute(XMLConstants.ID_STRING);
+      XMLAttribute object_id = element.getAttribute(XMLConstants.IC_OBJECT_ID_STRING);
+
+      ICObjectInstance instance = new ICObjectInstance();
+      instance.setICObjectID(object_id.getIntValue());
+      instance.insert();
+
+      attribute = new XMLAttribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
+      element.setAttribute(attribute);
+
+      List childs = element.getChildren(XMLConstants.MODULE_STRING);
+      if (childs != null) {
+        Iterator it = childs.iterator();
+        while (it.hasNext()) {
+          XMLElement child = (XMLElement)it.next();
+          if (!changeModuleIds(child))
+            return(false);
+        }
+      }
+
+      childs = element.getChildren(XMLConstants.REGION_STRING);
+      if (childs != null) {
+        Iterator it = childs.iterator();
+        while (it.hasNext()) {
+          XMLElement el = (XMLElement)it.next();
+          List childs2 = el.getChildren(XMLConstants.MODULE_STRING);
+          if (childs2 != null) {
+            Iterator it2 = childs2.iterator();
+            while (it2.hasNext()) {
+              XMLElement child = (XMLElement)it2.next();
+              if (!changeModuleIds(child))
+                return(false);
+            }
+          }
+        }
+      }
+
+      return(true);
+    }
+    catch(SQLException e) {
+      return(false);
+    }
+    catch(XMLException e) {
+      return(false);
+    }
+  }
+
+  /**
+   *
+   */
+  static XMLElement copyModule(IBXMLAble xml, int id) {
+    return(findXMLElement(xml,Integer.toString(id),XMLConstants.MODULE_STRING));
   }
 
 }

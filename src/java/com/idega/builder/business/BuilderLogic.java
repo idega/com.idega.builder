@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.91 2002/01/09 12:44:39 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.92 2002/01/09 16:18:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
+import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.core.data.ICObject;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICObjectInstance;
@@ -96,6 +97,8 @@ public class BuilderLogic {
   private static final String IB_APPLICATION_RUNNING_SESSION = "ib_application_running";
 
   private static final String DEFAULT_PAGE = "1";
+
+  private static final String CLIPBOARD = "user_clipboard";
 
   private static BuilderLogic _instance;
 
@@ -184,13 +187,13 @@ public class BuilderLogic {
     if (page.getIsExtendingTemplate()) {
       if (!page.isLocked()) {
         page.add(getAddIcon(Integer.toString(-1),iwc,null));
-//        page.add(getPasteIcon(Integer.toString(-1),iwc));
+        page.add(getPasteIcon(Integer.toString(-1),iwc));
         //page.add(layer);
       }
     }
     else {
       page.add(getAddIcon(Integer.toString(-1),iwc,null));
-//      page.add(getPasteIcon(Integer.toString(-1),iwc));
+      page.add(getPasteIcon(Integer.toString(-1),iwc));
       if (page.getIsTemplate())
         if (page.isLocked())
           page.add(getLockedIcon(Integer.toString(-1),iwc,null));
@@ -337,12 +340,12 @@ public class BuilderLogic {
               if (tab.getBelongsToParent()) {
                 if (!tab.isLocked(x,y)) {
                   tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-//                  tab.add(getPasteIcon(newParentKey,iwc),x,y);
+                  tab.add(getPasteIcon(newParentKey,iwc),x,y);
                 }
               }
               else {
                 tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-//                tab.add(getPasteIcon(newParentKey,iwc),x,y);
+                tab.add(getPasteIcon(newParentKey,iwc),x,y);
                 if (curr.getIsTemplate()) {
                   tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                   if (tab.isLocked(x,y))
@@ -354,7 +357,7 @@ public class BuilderLogic {
             }
             else {
               tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-//              tab.add(getPasteIcon(newParentKey,iwc),x,y);
+              tab.add(getPasteIcon(newParentKey,iwc),x,y);
               if (curr.getIsTemplate()) {
                 tab.add(getLabelIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
                 if (tab.isLocked(x,y))
@@ -392,12 +395,12 @@ public class BuilderLogic {
             if (obj.getBelongsToParent()) {
               if (!((PresentationObjectContainer)obj).isLocked()) {
                 ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-//                ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+                ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               }
             }
             else {
               ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-//              ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+              ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (curr.getIsTemplate()) {
                 ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
                 if (!((PresentationObjectContainer)obj).isLocked())
@@ -409,7 +412,7 @@ public class BuilderLogic {
           }
           else {
             ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-//            ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
+            ((PresentationObjectContainer)obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             if (curr.getIsTemplate()) {
               ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
               if (!((PresentationObjectContainer)obj).isLocked())
@@ -846,21 +849,39 @@ public class BuilderLogic {
   /**
    *
    */
-  public boolean copyModule(String parentObjectInstanceID, int ICObjectInstanceID, String name) {
-//    IBXMLPage xml = getIBXMLPage(pageKey);
-//    IBXMLFragment fragment = new IBXMLFragment(true);
+  public boolean copyModule(IWContext iwc, String pageKey, int ICObjectInstanceID) {
+    IBXMLPage xml = getIBXMLPage(pageKey);
 
-    System.out.println("parentObjectInstanceID = " + parentObjectInstanceID);
-    System.out.println("ICObjectInstanceID = " + ICObjectInstanceID);
-    System.out.println("name = " + name);
-/*    if (XMLWriter.copyModule(xml,parentObjectInstanceID,ICObjectInstanceID,String name)) {
-      return(true);
-    }
-    else {
+    XMLElement element = xml.copyModule(pageKey,ICObjectInstanceID);
+
+    if (element == null)
       return(false);
-    }*/
+    else {
+      XMLElement el = (XMLElement)element.clone();
+      iwc.setSessionAttribute(CLIPBOARD,el);
+    }
 
     return(true);
+  }
+
+  /**
+   *
+   */
+  public boolean pasteModule(IWContext iwc, String pageKey, String parentID) {
+    IBXMLPage xml = getIBXMLPage(pageKey);
+
+    XMLElement element = (XMLElement)iwc.getSessionAttribute(CLIPBOARD);
+    if (element == null)
+      return(false);
+
+    XMLElement toPaste = (XMLElement)element.clone();
+
+    if (XMLWriter.pasteElement(xml,parentID,toPaste)) {
+      xml.update();
+      return(true);
+    }
+
+    return(false);
   }
 
   public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
@@ -1032,7 +1053,7 @@ public class BuilderLogic {
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image pasteImage = bundle.getImage("paste.gif","Paste component");
     Link link = new Link(pasteImage);
-//    link.setWindowToOpen(IBPasteModuleWindow.class);
+    link.setWindowToOpen(IBPasteModuleWindow.class);
 //    link.setWindowToOpen(IBAddRegionLabelWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_PASTE);
@@ -1236,8 +1257,8 @@ public class BuilderLogic {
     //IBXMLPage page = getIBXMLPage(pageId);
     IBXMLPage page = getIBXMLPage(linkParentPageId);
     XMLElement element = new XMLElement(XMLConstants.CHANGE_PAGE_LINK);
-    XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,Integer.toString(moduleId));
-    XMLAttribute newPageLink = new XMLAttribute(XMLConstants.IC_OBJECT_ID_to,newPageId);
+    XMLAttribute id = new XMLAttribute(XMLConstants.LINK_ID_STRING,Integer.toString(moduleId));
+    XMLAttribute newPageLink = new XMLAttribute(XMLConstants.LINK_TO,newPageId);
     element.setAttribute(id);
     element.setAttribute(newPageLink);
     XMLWriter.addNewElement(page,-1,element);

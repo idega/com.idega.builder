@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.33 2002/01/07 10:24:30 gummi Exp $
+ * $Id: IBXMLPage.java,v 1.34 2002/01/09 16:18:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -498,5 +498,12 @@ public class IBXMLPage implements IBXMLAble {
       }
     }
     return(super.toString());
+  }
+
+  /**
+   *
+   */
+  public XMLElement copyModule(String pageKey, int ICObjectInstanceID) {
+    return(XMLWriter.copyModule(this,ICObjectInstanceID));
   }
 }

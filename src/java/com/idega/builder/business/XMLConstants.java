@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.10 2002/01/02 12:14:37 palli Exp $
+ * $Id: XMLConstants.java,v 1.11 2002/01/09 16:18:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,6 +38,8 @@ public abstract class XMLConstants {
   static final String IC_OBJECT_ID_FROM = "from";
   static final String IC_OBJECT_ID_to = "to";
   static final String CHANGE_PAGE_LINK = "changelink";
+  static final String LINK_ID_STRING = "id";
+  static final String LINK_TO = "to";
 
   static final String PAGE_TYPE_PAGE = "page";
   static final String PAGE_TYPE_DRAFT = "draft";

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.4 2002/01/09 16:18:32 palli Exp $
+ * $Id: IBPasteModuleWindow.java,v 1.1 2002/01/09 16:18:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,19 +23,17 @@ import com.idega.presentation.ui.CheckBox;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class IBCopyModuleWindow extends IBAdminWindow {
+public class IBPasteModuleWindow extends IBAdminWindow {
   private static final String IC_OBJECT_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
-  private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
   private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
-  private static final String ACTION_COPY = BuilderLogic.ACTION_COPY;
-  private static final String ACTION_LIBRARY = BuilderLogic.ACTION_LIBRARY;
-  private static final String IB_LIBRARY_NAME = BuilderLogic.IB_LIBRARY_NAME;
+  private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
+  private static final String ACTION_PASTE = BuilderLogic.ACTION_PASTE;
 
   /**
    *
    */
-  public IBCopyModuleWindow() {
+  public IBPasteModuleWindow() {
     setWidth(300);
     setHeight(200);
   }
@@ -44,24 +42,19 @@ public class IBCopyModuleWindow extends IBAdminWindow {
    *
    */
   public void main(IWContext iwc) {
-    setTitle("Copy module");
+    setTitle("Paste module");
 
     String control = iwc.getParameter(IB_CONTROL_PARAMETER);
-    String ic_object_id = iwc.getParameter(IC_OBJECT_ID_PARAMETER);
-    String libraryName = iwc.getParameter(IB_LIBRARY_NAME);
     String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
-
+    String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
 
     if (control == null)
       close();
 
     setParentToReload();
 
-    if (control.equals(ACTION_COPY)) {
-      copyObject(iwc,ib_page_id,ic_object_id);
-    }
-    else if (control.equals(ACTION_LIBRARY)) {
-      copyObjectToLibrary(iwc,ic_object_id,iwc.getUserId(),libraryName);
+    if (control.equals(ACTION_PASTE)) {
+      pasteObject(iwc,ib_page_id,ib_parent_id);
     }
 
     close();
@@ -70,14 +63,7 @@ public class IBCopyModuleWindow extends IBAdminWindow {
   /**
    *
    */
-  public void copyObject(IWContext iwc, String pageKey, String objectID) {
-    BuilderLogic.getInstance().copyModule(iwc,pageKey,Integer.parseInt(objectID));
-  }
-
-  /**
-   *
-   */
-  public void copyObjectToLibrary(IWContext iwc, String objectID, int userId, String name) {
-//    BuilderLogic.getInstance().copyModule(parentID,Integer.parseInt(objectID),name);
+  public void pasteObject(IWContext iwc, String pageKey, String parentID) {
+    BuilderLogic.getInstance().pasteModule(iwc,pageKey,parentID);
   }
 }
