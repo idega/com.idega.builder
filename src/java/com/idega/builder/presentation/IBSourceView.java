@@ -74,7 +74,7 @@ public class IBSourceView extends Window {
       //form.addParameter(IB_SOURCE_ACTION,"update");
       add(form);
       TextArea area = new TextArea(SOURCE_PARAMETER);
-      area.setWidth("600");
+      area.setWidth("100%");
       area.setHeight("500");
       area.setWrap(false);
       setSource(area,iwc);
