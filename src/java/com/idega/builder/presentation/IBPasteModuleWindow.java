@@ -1,5 +1,5 @@
 /*
- * $Id: IBPasteModuleWindow.java,v 1.2 2002/01/09 17:49:38 palli Exp $
+ * $Id: IBPasteModuleWindow.java,v 1.3 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

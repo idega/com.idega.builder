@@ -26,7 +26,7 @@ import com.idega.builder.business.PageTreeNode;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
 
-import com.idega.business.GenericEntityComparator;
+import com.idega.business.IDOLegacyEntityComparator;
 import java.util.Collections;
 
 
@@ -57,7 +57,7 @@ public class DPTTriggerBusiness {
   }
 
   public int createTriggerRule(ICObject source, int defaultTemplateId,int[] objectInstanceIds, IBPage[] templatesAllowed) throws SQLException{
-    PageTriggerInfo pti = new PageTriggerInfo();
+    PageTriggerInfo pti = ((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PageTriggerInfo.class)).createLegacy();
 
     pti.setICObject(source);
     pti.setDefaultTemplateId(defaultTemplateId);
@@ -125,7 +125,7 @@ public class DPTTriggerBusiness {
 
 
   public PageLink createPageLink(IWContext iwc, PageTriggerInfo pti, String referencedDataId, String defaultLinkText, String standardParameters, Integer imageFileId, Integer onMouseOverImageFileId, Integer onClickImageFileId) throws SQLException {
-    PageLink pl = new PageLink();
+    PageLink pl = ((com.idega.builder.dynamicpagetrigger.data.PageLinkHome)com.idega.data.IDOLookup.getHomeLegacy(PageLink.class)).createLegacy();
 
     pl.setPageTriggerInfoId(pti.getID());
     pl.setReferencedDataId(referencedDataId);
@@ -151,20 +151,20 @@ public class DPTTriggerBusiness {
   }
 
   public List getPageLinkRecords(ICObjectInstance instance) throws SQLException{
-    List listOfCopyRules = EntityFinder.findRelated(instance,((PageLink)PageLink.getStaticInstance(PageLink.class)));
+    List listOfCopyRules = EntityFinder.findRelated(instance,((PageLink)com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class)));
 
     if (listOfCopyRules != null) {
       List toReturn = new Vector();
       Iterator iter = listOfCopyRules.iterator();
       while (iter.hasNext()) {
         PageTriggerInfo item = (PageTriggerInfo)iter.next();
-        List linkList = EntityFinder.findAllByColumn(PageLink.getStaticInstance(PageLink.class),PageLink._COLUMNNAME_PAGE_TRIGGER_INFO_ID,item.getID());
+        List linkList = EntityFinder.findAllByColumn(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class),com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_PAGE_TRIGGER_INFO_ID,item.getID());
         if(linkList != null){
           toReturn.addAll(linkList);
         }
       }
 /*
-      GenericEntityComparator c = new GenericEntityComparator(PageLink._COLUMNNAME_DEFAULT_LINK_TEXT);
+      IDOLegacyEntityComparator c = new IDOLegacyEntityComparator(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_DEFAULT_LINK_TEXT);
       Collections.sort(toReturn,c);
 */
       return toReturn;
@@ -194,22 +194,22 @@ public class DPTTriggerBusiness {
 
     IBPage page = null;
     try {
-      page = new IBPage(id);
+      page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(id);
     }
     catch(SQLException e) {
       return (-1);
     }
-/*    IBPage page = new IBPage();
+/*    IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
     if (name == null){
       name = "Untitled";
     }
     page.setName(name);
-    page.setType(IBPage.PAGE);
+    page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
     page.setTemplateId(dptTemplateId);
 
     try {
       page.insert();
-      IBPage ibPageParent = new IBPage(parentId);
+      IBPage ibPageParent = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(parentId);
       ibPageParent.addChild(page);
     }
     catch(SQLException e) {
@@ -331,7 +331,7 @@ public class DPTTriggerBusiness {
       ICObjectInstance instance = null;
 
       try {
-        instance = new ICObjectInstance();
+        instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
         instance.setICObjectID(object_id);
         instance.insert();
         if(copyPermissions){
@@ -365,11 +365,11 @@ public class DPTTriggerBusiness {
 */
 
   public static List getDPTPermissionGroups(PageTriggerInfo pti) throws SQLException{
-    return EntityFinder.findRelated(pti, GenericGroup.getStaticInstance());
+    return EntityFinder.findRelated(pti, com.idega.core.data.GenericGroupBMPBean.getStaticInstance());
   }
 
   public static void createDPTPermissionGroup(PageTriggerInfo pti, String name, String description) throws SQLException {
-    DPTPermissionGroup newGroup = new DPTPermissionGroup();
+    DPTPermissionGroup newGroup = ((com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroupHome)com.idega.data.IDOLookup.getHomeLegacy(DPTPermissionGroup.class)).createLegacy();
     newGroup.setName(name);
     newGroup.setDescription(description);
 

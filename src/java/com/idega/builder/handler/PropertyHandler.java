@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyHandler.java,v 1.2 2001/12/12 21:06:32 palli Exp $
+ * $Id: PropertyHandler.java,v 1.3 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageUpdater.java,v 1.1 2001/12/13 11:23:20 palli Exp $
+ * $Id: IBPageUpdater.java,v 1.2 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ public class IBPageUpdater {
    */
   public static void updatePageName(int pageId, String pageName) {
     try {
-      IBPage page = new IBPage(pageId);
+      IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageId);
 
       page.setName(pageName);
       page.update();
@@ -37,7 +37,7 @@ public class IBPageUpdater {
    */
   public static void updateTemplateId(int pageId, int templateId) {
     try {
-      IBPage page = new IBPage(pageId);
+      IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageId);
 
       page.setTemplateId(templateId);
       page.update();

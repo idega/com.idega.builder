@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.13 2002/01/15 16:08:30 gummi Exp $
+ * $Id: XMLConstants.java,v 1.14 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

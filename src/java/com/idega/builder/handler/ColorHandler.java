@@ -1,5 +1,5 @@
 /*
- * $Id: ColorHandler.java,v 1.6 2002/03/15 03:11:18 laddi Exp $
+ * $Id: ColorHandler.java,v 1.7 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

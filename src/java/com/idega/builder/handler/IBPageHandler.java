@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.3 2002/03/12 18:43:39 laddi Exp $
+ * $Id: IBPageHandler.java,v 1.4 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

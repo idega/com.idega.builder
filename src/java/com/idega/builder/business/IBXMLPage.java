@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.36 2002/03/26 20:43:36 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.37 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,7 +70,7 @@ public class IBXMLPage implements IBXMLAble {
 
     IBPage ibpage = null;
     try {
-      ibpage = new IBPage(Integer.parseInt(key));
+      ibpage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(key));
       setXMLPageDescriptionFile(ibpage.getPageValue());
       if (ibpage.isPage())
         setType(TYPE_PAGE);
@@ -194,7 +194,7 @@ public class IBXMLPage implements IBXMLAble {
    */
   public synchronized boolean update() {
     try {
-      IBPage ibpage = new IBPage(Integer.parseInt(_key));
+      IBPage ibpage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
       OutputStream stream = ibpage.getPageValueForWrite();
       store(stream);
       ibpage.update();
@@ -327,10 +327,10 @@ public class IBXMLPage implements IBXMLAble {
 
   IBPage getIBPage()throws Exception{
     /*if(_ibPage==null){
-      _ibPage=new IBPage(Integer.parseInt(_key));
+      _ibPage=((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
     }
     return _ibPage;*/
-    return new IBPage(Integer.parseInt(_key));
+    return ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
   }
 
 

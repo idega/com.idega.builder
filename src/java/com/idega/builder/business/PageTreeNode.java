@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.6 2001/12/14 11:23:00 gummi Exp $
+ * $Id: PageTreeNode.java,v 1.7 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

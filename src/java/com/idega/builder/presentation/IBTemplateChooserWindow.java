@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.9 2002/03/09 18:53:12 laddi Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.10 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

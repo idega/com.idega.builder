@@ -1,5 +1,5 @@
 /*
- * $Id: PageNameHandler.java,v 1.2 2001/12/13 11:23:46 palli Exp $
+ * $Id: PageNameHandler.java,v 1.3 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

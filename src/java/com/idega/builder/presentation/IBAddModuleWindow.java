@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.21 2002/03/28 15:59:39 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.22 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -154,7 +154,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
     theReturn.setColor(2,1,"#ECECEC");
     String listColor = com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR;
 
-    ICObject staticICO = (ICObject)ICObject.getStaticInstance(ICObject.class);
+    ICObject staticICO = (ICObject)com.idega.core.data.ICObjectBMPBean.getStaticInstance(ICObject.class);
     try {
       List elements = null;
       List blocks = null;
@@ -169,8 +169,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
       }
 
       if ( elements == null && blocks == null ) {
-	elements = EntityFinder.findAllByColumn(staticICO,ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_ELEMENT);
-	blocks = EntityFinder.findAllByColumn(staticICO,ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_BLOCK);
+	elements = EntityFinder.findAllByColumn(staticICO,com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(),com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
+	blocks = EntityFinder.findAllByColumn(staticICO,com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(),com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
 
 	if ( elements != null ) {
 	  java.util.Collections.sort(elements,new ModuleComparator(iwc));
@@ -268,13 +268,13 @@ public class IBAddModuleWindow extends IBAdminWindow {
   }
 
   private Image getIconForObject(ICObject obj,IWContext iwc){
-   if(obj.getObjectType().equals(ICObject.COMPONENT_TYPE_ELEMENT)){
+   if(obj.getObjectType().equals(com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT)){
      /**
       *@todo: Make support for dynamic icons
       */
      return iwc.getApplication().getCoreBundle().getImage("elementicon16x16.gif");
    }
-   else if(obj.getObjectType().equals(ICObject.COMPONENT_TYPE_BLOCK)){
+   else if(obj.getObjectType().equals(com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK)){
      /**
        *@todo: Make support for dynamic icons
        */

@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.4 2002/04/03 12:29:32 tryggvil Exp $
+ * $Id: TreeNodeFinder.java,v 1.5 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,23 +26,23 @@ import java.util.Vector;
 public class TreeNodeFinder {
   public static List listOfAllPages() {
     try {
-      IBPage pages = new IBPage();
+      IBPage pages = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(pages.getEntityName());
       sql.append(" where (");
-      sql.append(IBPage.getColumnType());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.PAGE);
+      sql.append(com.idega.builder.data.IBPageBMPBean.PAGE);
       sql.append("' or ");
-      sql.append(IBPage.getColumnType());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.DPT_PAGE);
+      sql.append(com.idega.builder.data.IBPageBMPBean.DPT_PAGE);
       sql.append("') and (");
-      sql.append(IBPage.getColumnDeleted());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
       sql.append(" = '");
-      sql.append(IBPage.NOT_DELETED);
+      sql.append(com.idega.builder.data.IBPageBMPBean.NOT_DELETED);
       sql.append("' or ");
-      sql.append(IBPage.getColumnDeleted());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
       sql.append(" is null)");
 
       return(EntityFinder.findAll(pages,sql.toString()));
@@ -55,23 +55,23 @@ public class TreeNodeFinder {
 
   public static List listOfAllTemplates() {
     try {
-      IBPage pages = new IBPage();
+      IBPage pages = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(pages.getEntityName());
       sql.append(" where (");
-      sql.append(IBPage.getColumnType());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.TEMPLATE);
+      sql.append(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
       sql.append("' or ");
-      sql.append(IBPage.getColumnType());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.DPT_TEMPLATE);
+      sql.append(com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE);
       sql.append("') and (");
-      sql.append(IBPage.getColumnDeleted());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
       sql.append(" = '");
-      sql.append(IBPage.NOT_DELETED);
+      sql.append(com.idega.builder.data.IBPageBMPBean.NOT_DELETED);
       sql.append("' or ");
-      sql.append(IBPage.getColumnDeleted());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
       sql.append(" is null)");
 
       return(EntityFinder.findAll(pages,sql.toString()));
@@ -96,7 +96,7 @@ public class TreeNodeFinder {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-      pages = new IBPage();
+      pages = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
 			conn = pages.getConnection();
 			stmt = conn.createStatement();
 
@@ -113,12 +113,12 @@ public class TreeNodeFinder {
       sql.append(" = ");
       sql.append("t." + pages.getIDColumnName());
       sql.append(" and (");
-      sql.append("p." + IBPage.getColumnType());
+      sql.append("p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.PAGE);
-      sql.append("' or p." + IBPage.getColumnType());
+      sql.append(com.idega.builder.data.IBPageBMPBean.PAGE);
+      sql.append("' or p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.DPT_PAGE);
+      sql.append(com.idega.builder.data.IBPageBMPBean.DPT_PAGE);
       sql.append("')");
 
       ResultSet result = stmt.executeQuery(sql.toString());
@@ -157,7 +157,7 @@ public class TreeNodeFinder {
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-      pages = new IBPage();
+      pages = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
 			conn = pages.getConnection();
 			stmt = conn.createStatement();
 
@@ -170,12 +170,12 @@ public class TreeNodeFinder {
       sql.append(" = ");
       sql.append("t." + pages.getIDColumnName());
       sql.append(" and (");
-      sql.append("p." + IBPage.getColumnType());
+      sql.append("p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.TEMPLATE);
-      sql.append("' or p." + IBPage.getColumnType());
+      sql.append(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
+      sql.append("' or p." + com.idega.builder.data.IBPageBMPBean.getColumnType());
       sql.append(" = '");
-      sql.append(IBPage.DPT_TEMPLATE);
+      sql.append(com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE);
       sql.append("')");
 
       ResultSet result = stmt.executeQuery(sql.toString());

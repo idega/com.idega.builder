@@ -1,35 +1,8 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
-import com.idega.core.data.GenericGroup;
-import java.sql.*;
+import javax.ejb.*;
 
-/**
- * Title:        IW Project
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
- * @version 1.0
- */
-
-public class DPTPermissionGroup extends GenericGroup {
-
-  public DPTPermissionGroup() {
-    super();
-  }
-
-  public DPTPermissionGroup(int id) throws SQLException{
-    super(id);
-  }
-
-  public String getGroupTypeValue(){
-    return "dpt_permission";
-  }
-
-  public static DPTPermissionGroup getStaticGroupInstance(){
-    return (DPTPermissionGroup)getStaticInstance(DPTPermissionGroup.class);
-  }
-
-
-
+public interface DPTPermissionGroup extends com.idega.core.data.GenericGroup
+{
+ public java.lang.String getGroupTypeValue();
 }

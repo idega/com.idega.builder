@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.5 2002/02/14 16:51:48 palli Exp $
+ * $Id: IBCopyModuleWindow.java,v 1.6 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageFinder.java,v 1.3 2002/04/03 12:29:37 tryggvil Exp $
+ * $Id: IBPageFinder.java,v 1.4 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,17 +22,17 @@ public class IBPageFinder {
 
   public static List getAllPagesExtendingTemplate(int templateId) {
     try {
-      IBPage page = new IBPage();
+      IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(page.getEntityName());
       sql.append(" where ");
-      sql.append(IBPage.getColumnTemplateID());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnTemplateID());
       sql.append(" = ");
       sql.append(templateId);
       sql.append(" and (");
-      sql.append(IBPage.getColumnDeleted());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
       sql.append(" is null or ");
-      sql.append(IBPage.getColumnDeleted());
+      sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
       sql.append(" = 'N')");
 
       return(EntityFinder.findAll(page,sql.toString()));

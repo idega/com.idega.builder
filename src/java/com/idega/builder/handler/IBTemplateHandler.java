@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateHandler.java,v 1.6 2001/12/17 10:17:13 palli Exp $
+ * $Id: IBTemplateHandler.java,v 1.7 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.34 2002/02/17 23:04:58 gummi Exp $
+ * $Id: XMLReader.java,v 1.35 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -375,7 +375,7 @@ public class XMLReader {
         }
       }
       else {
-        ICObjectInstance ico = new ICObjectInstance(Integer.parseInt(id));
+        ICObjectInstance ico = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(id));
         inst = ico.getNewInstance();
         inst.setICObjectInstance(ico);
         if (ic_object_id == null) {

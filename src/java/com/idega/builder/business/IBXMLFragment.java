@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLFragment.java,v 1.5 2002/01/09 16:18:31 palli Exp $
+ * $Id: IBXMLFragment.java,v 1.6 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,7 +39,7 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
 
     IBObjectLibrary lib = null;
     try {
-      lib = new IBObjectLibrary();
+      lib = ((com.idega.builder.data.IBObjectLibraryHome)com.idega.data.IDOLookup.getHomeLegacy(IBObjectLibrary.class)).createLegacy();
       setXMLLibraryDescriptionFile(lib.getPageValue());
     }
     catch(LibraryDoesNotExist ldne) {

@@ -10,7 +10,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.data.IPProject;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 

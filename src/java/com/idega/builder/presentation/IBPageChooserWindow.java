@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.8 2002/03/09 17:42:40 laddi Exp $
+ * $Id: IBPageChooserWindow.java,v 1.9 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

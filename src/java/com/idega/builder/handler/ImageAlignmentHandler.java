@@ -1,5 +1,5 @@
 /*
- * $Id: ImageAlignmentHandler.java,v 1.1 2002/03/13 17:09:19 laddi Exp $
+ * $Id: ImageAlignmentHandler.java,v 1.2 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBPropertyHandler.java,v 1.33 2002/03/26 21:58:42 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.34 2002/04/06 19:07:38 tryggvil Exp $
 
  *
 
@@ -265,7 +265,7 @@ public class IBPropertyHandler {
 
     else {
 
-      ICObjectInstance icoi = new ICObjectInstance(ic_object_instance_id);
+      ICObjectInstance icoi = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ic_object_instance_id);
 
       ICObject obj = icoi.getObject();
 
@@ -823,7 +823,7 @@ public class IBPropertyHandler {
 
       try{
 
-          IBPage page = new IBPage(Integer.parseInt(stringValue));
+          IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
 
           chooser.setValue(page);
 
@@ -1081,7 +1081,7 @@ public class IBPropertyHandler {
 
     try {
 
-      return(EntityFinder.findAllByColumn(new ICObject(),ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_PROPERTYHANDLER));
+      return(EntityFinder.findAllByColumn(((com.idega.core.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy(),com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(),com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_PROPERTYHANDLER));
 
     }
 

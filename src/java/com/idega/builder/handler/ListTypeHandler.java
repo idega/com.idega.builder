@@ -1,5 +1,5 @@
 /*
- * $Id: ListTypeHandler.java,v 1.1 2002/03/10 21:45:02 laddi Exp $
+ * $Id: ListTypeHandler.java,v 1.2 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

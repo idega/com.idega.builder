@@ -109,7 +109,7 @@ public class PageCacher{
     /*
     if (isPageInvalid(key)){
       try{
-        IBPage ibpage = new IBPage(Integer.parseInt(key));
+        IBPage ibpage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(key));
         xml = getXML(key,ibpage.getPageValue());
       }
       catch(PageDoesNotExist pe){

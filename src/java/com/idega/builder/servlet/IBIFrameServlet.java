@@ -53,7 +53,7 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
     //if(page_id == null){
       if(page_id==null){
         //try{
-          //IBDomain domain = IBDomain.getDomain(domain_id);
+          //IBDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(domain_id);
           IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwc);
           i_page_id = domain.getStartPageID();
         //}
@@ -176,7 +176,7 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
       language = "IS";
     }
 
-    //IBPage ib_page = new IBPage(id);
+    //IBPage ib_page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(id);
     //IBAdminWindow window = new IBAdminWindow();
 
     try {

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.15 2002/04/05 19:52:32 laddi Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.16 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

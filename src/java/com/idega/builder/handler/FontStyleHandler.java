@@ -1,5 +1,5 @@
 /*
- * $Id: FontStyleHandler.java,v 1.4 2001/12/12 21:06:32 palli Exp $
+ * $Id: FontStyleHandler.java,v 1.5 2002/04/06 19:07:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

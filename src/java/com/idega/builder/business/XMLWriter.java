@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.29 2002/03/26 13:30:19 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.30 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -453,12 +453,12 @@ public class XMLWriter {
     //XMLElement parent = findModule(parentObjectInstanceID);
     if(parent!=null){
       try{
-	ICObjectInstance instance = new ICObjectInstance();
+	ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
 	instance.setICObjectID(newICObjectTypeID);
     instance.setIBPageByKey(pageKey);
 	instance.insert();
 
-	ICObject obj = new ICObject(newICObjectTypeID);
+	ICObject obj = ((com.idega.core.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).findByPrimaryKeyLegacy(newICObjectTypeID);
 	Class theClass = obj.getObjectClass();
 
 	XMLElement newElement = new XMLElement(XMLConstants.MODULE_STRING);
@@ -684,7 +684,7 @@ public class XMLWriter {
 	  if(attribute!=null){
 	    String ICObjectInstanceID = attribute.getValue();
 	    try{
-	      ICObjectInstance instance = new ICObjectInstance(Integer.parseInt(ICObjectInstanceID));
+	      ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
 	      instance.delete();
 	    }
 	    catch(NumberFormatException e){
@@ -800,7 +800,7 @@ public class XMLWriter {
       if (attribute != null) {
 	String ICObjectInstanceID = attribute.getValue();
 	try {
-	  ICObjectInstance instance = new ICObjectInstance(Integer.parseInt(ICObjectInstanceID));
+	  ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
 	  instance.delete();
 	}
 	catch(NumberFormatException e){
@@ -927,7 +927,7 @@ public class XMLWriter {
       XMLAttribute attribute = element.getAttribute(XMLConstants.ID_STRING);
       XMLAttribute object_id = element.getAttribute(XMLConstants.IC_OBJECT_ID_STRING);
 
-      ICObjectInstance instance = new ICObjectInstance();
+      ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
       instance.setICObjectID(object_id.getIntValue());
       instance.setIBPageByKey(pageKey);
       instance.insert();

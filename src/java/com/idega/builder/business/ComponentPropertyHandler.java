@@ -122,7 +122,7 @@ public class ComponentPropertyHandler {
         }
         else if(parameterType.equals(IBPage.class)){
           //try {
-            argument = new IBPage(Integer.parseInt(stringValue));
+            argument = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
           //}
           //catch (Exception ex) {
           //  ex.printStackTrace(System.err);
@@ -130,7 +130,7 @@ public class ComponentPropertyHandler {
         }
         else if(parameterType.equals(ICFile.class)){
           try {
-            argument = new ICFile(Integer.parseInt(stringValue));
+            argument = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
           }
           catch (Exception ex) {
             ex.printStackTrace(System.err);

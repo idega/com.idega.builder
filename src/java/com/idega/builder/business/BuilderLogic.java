@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.121 2002/04/03 10:40:55 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.122 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -216,7 +216,7 @@ public class BuilderLogic {
       List groupIds = new Vector();
       groupIds.add(Integer.toString(groupId));
       try {
-	List groups = AccessControl.getPermissionGroups(new GenericGroup(groupId));
+	List groups = AccessControl.getPermissionGroups(((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId));
 	if(groups != null){
 	  Iterator iter = groups.iterator();
 	  while (iter.hasNext()) {
@@ -454,7 +454,7 @@ public class BuilderLogic {
   public IBPage getCurrentIBPageEntity(IWContext iwc)throws Exception{
       String sID = getCurrentIBPage(iwc);
       //if(sID!=null){
-      return new IBPage(Integer.parseInt(sID));
+      return ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(sID));
       //}
   }
 
@@ -527,7 +527,7 @@ public class BuilderLogic {
 	int test = Integer.parseInt(id);
       }
       int domainID=1;
-      return IBDomain.getDomain(domainID);
+      return com.idega.builder.data.IBDomainBMPBean.getDomain(domainID);
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -1135,7 +1135,7 @@ public class BuilderLogic {
 
     public Class getObjectClass(int icObjectInstanceID){
       try{
-	ICObjectInstance instance = new ICObjectInstance(icObjectInstanceID);
+	ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceID);
 	return instance.getObject().getObjectClass();
       }
       catch(Exception e){
@@ -1153,7 +1153,7 @@ public class BuilderLogic {
 	  iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
 	}
 	else{
-	  ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
+	  ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjecctInstanceID);
 	  c = instance.getObject().getObjectClass();
 	  iwb = instance.getObject().getBundle(iwma);
 	}

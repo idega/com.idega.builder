@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.13 2002/04/04 13:04:20 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.14 2002/04/06 19:07:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,12 +33,12 @@ import com.idega.idegaweb.IWUserContext;
  * @version 1.0
  */
 public class IBPageHelper {
-  public static final String PAGE = IBPage.PAGE;
-  public static final String TEMPLATE = IBPage.TEMPLATE;
-  public static final String DRAFT = IBPage.DRAFT;
-  public static final String FOLDER = IBPage.FOLDER;
-  public static final String DPT_PAGE = IBPage.DPT_PAGE;
-  public static final String DPT_TEMPLATE = IBPage.DPT_TEMPLATE;
+  public static final String PAGE = com.idega.builder.data.IBPageBMPBean.PAGE;
+  public static final String TEMPLATE = com.idega.builder.data.IBPageBMPBean.TEMPLATE;
+  public static final String DRAFT = com.idega.builder.data.IBPageBMPBean.DRAFT;
+  public static final String FOLDER = com.idega.builder.data.IBPageBMPBean.FOLDER;
+  public static final String DPT_PAGE = com.idega.builder.data.IBPageBMPBean.DPT_PAGE;
+  public static final String DPT_TEMPLATE = com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE;
 
   private static IBPageHelper _instance = null;
 
@@ -104,35 +104,35 @@ public class IBPageHelper {
    * @return The id of the new IBPage
    */
   public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType) {
-    IBPage ibPage = new IBPage();
+    IBPage ibPage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
 
     if (name == null)
       name = "Untitled";
     ibPage.setName(name);
-    ICFile file = new ICFile();
-    file.setMimeType(ICMimeType.IC_MIME_TYPE_XML);
+    ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+    file.setMimeType(com.idega.core.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
     ibPage.setFile(file);
 
     if (type.equals(PAGE)) {
-      ibPage.setType(IBPage.PAGE);
+      ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
     }
     else if (type.equals(TEMPLATE)) {
-      ibPage.setType(IBPage.TEMPLATE);
+      ibPage.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
     }
     else if (type.equals(DRAFT)) {
-      ibPage.setType(IBPage.DRAFT);
+      ibPage.setType(com.idega.builder.data.IBPageBMPBean.DRAFT);
     }
     else if (type.equals(DPT_PAGE)) {
-      ibPage.setType(IBPage.DPT_PAGE);
+      ibPage.setType(com.idega.builder.data.IBPageBMPBean.DPT_PAGE);
     }
     else if (type.equals(DPT_TEMPLATE)) {
-      ibPage.setType(IBPage.DPT_TEMPLATE);
+      ibPage.setType(com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE);
     }
-    else if (type.equals(IBPage.FOLDER)) {
-      ibPage.setType(IBPage.FOLDER);
+    else if (type.equals(com.idega.builder.data.IBPageBMPBean.FOLDER)) {
+      ibPage.setType(com.idega.builder.data.IBPageBMPBean.FOLDER);
     }
     else {
-      ibPage.setType(IBPage.PAGE);
+      ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
     }
 
     int tid = -1;
@@ -151,7 +151,7 @@ public class IBPageHelper {
       if(creatorContext!=null){
         ibPage.setOwner(creatorContext);
       }
-      IBPage ibPageParent = new IBPage(Integer.parseInt(parentId));
+      IBPage ibPageParent = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(parentId));
       ibPageParent.addChild(ibPage);
     }
     catch(SQLException e) {
@@ -204,7 +204,7 @@ public class IBPageHelper {
 
       try {
         ICObjectInstance inst = obj.getICObjectInstance();
-        instance = new ICObjectInstance();
+        instance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
         instance.setICObjectID(object_id);
         if(inst != null){
           instance.setParentInstanceID(inst.getID());
@@ -270,14 +270,14 @@ public class IBPageHelper {
    */
   public boolean checkDeleteChildrenOfPage(String pageId) {
     try {
-      IBPage page = new IBPage(Integer.parseInt(pageId));
+      IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
       boolean okToDelete = true;
 
-      if (page.getType().equals(IBPage.PAGE))
+      if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE))
         return(true);
-      else if (page.getType().equals(IBPage.DRAFT))
+      else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DRAFT))
         return(true);
-      else if (page.getType().equals(IBPage.DPT_PAGE))
+      else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DPT_PAGE))
         return(true);
       else {
         Iterator it = page.getChildren();
@@ -316,7 +316,7 @@ public class IBPageHelper {
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
       t.begin();
-      IBPage ibpage = new IBPage(Integer.parseInt(pageId));
+      IBPage ibpage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
       IBPage parent = (IBPage)ibpage.getParentNode();
 
       parent.removeChild(ibpage);
