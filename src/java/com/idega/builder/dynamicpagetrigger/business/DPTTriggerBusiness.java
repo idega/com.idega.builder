@@ -402,14 +402,22 @@ public class DPTTriggerBusiness {
 
 
   public static boolean addObjectInstancToSubPages(ICObjectInstance objectTemplate){
+    System.out.println("addObjectInstancToSubPages begins");
     List pages = IBPageFinder.getAllPagesExtendingTemplate(objectTemplate.getIBPageID());
     if(pages != null){
+      System.out.println("addObjectInstancToSubPages - pages != null");
       Iterator iter = pages.iterator();
+      int counter = 1;
       while (iter.hasNext()) {
+        System.out.println("-----------");
+        System.out.println("addObjectInstancToSubPages - addElementToPage : "+counter++);
         IBPage item = (IBPage)iter.next();
         IBPageHelper.getInstance().addElementToPage(item,objectTemplate.getID());
       }
+    }else {
+      System.out.println("addObjectInstancToSubPages - pages == null");
     }
+    System.out.println("addObjectInstancToSubPages ends");
     return(true);
   }
 

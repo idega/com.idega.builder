@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.16 2002/05/10 15:55:26 palli Exp $
+ * $Id: IBPageHelper.java,v 1.17 2002/05/22 15:05:11 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -262,6 +262,7 @@ public class IBPageHelper {
 
 
   public boolean addElementToPage(IBPage ibPage, int[] templateObjInstID ){
+    System.out.println("addElementToPage begins");
     if (templateObjInstID != null) {
       IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
       Page current = currentXMLPage.getPopulatedPage();
@@ -273,17 +274,23 @@ public class IBPageHelper {
           for (int i = 0; i < templateObjInstID.length; i++) {
             if(obj.getICObjectInstanceID() == templateObjInstID[i] ){
               boolean ok = changeInstanceId(obj,currentXMLPage, true);
-              if (!ok)
+              if (!ok){
+                System.out.println("addElementToPage - changeInstanceId failed");
                 return(false);
+              }
             }
           }
         }
       }else {
+        System.out.println("addElementToPage - children null");
         return(false);
       }
+
     } else {
+      System.out.println("addElementToPage - templateObjInstID null");
       return(false);
     }
+    System.out.println("addElementToPage ends");
     return(true);
   }
 
@@ -295,6 +302,11 @@ public class IBPageHelper {
 
 
   private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
+    System.out.println("changeInstanceId begins");
+    System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
+    System.out.println("obj.getId = " + obj.getICObjectID());
+    System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
+
     if (obj.getChangeInstanceIDOnInheritance()) {
       int object_id = obj.getICObjectID();
       int ic_instance_id = obj.getICObjectInstanceID();
@@ -315,6 +327,7 @@ public class IBPageHelper {
         }
       }
       catch(SQLException e) {
+        System.out.println("changeInstanceId - exception");
         e.printStackTrace();
         return false;
       }
@@ -322,6 +335,7 @@ public class IBPageHelper {
       if(obj instanceof IWBlock){
         boolean ok = ((IWBlock)obj).copyBlock(instance.getID());
         if (!ok){
+          System.out.println("changeInstanceId - copyBlock failed");
           return(false);
         }
       }
@@ -334,7 +348,7 @@ public class IBPageHelper {
 
       XMLWriter.addNewElement(xmlpage,-1,element);
     }
-
+    System.out.println("changeInstanceId ends");
     return(true);
   }
 
