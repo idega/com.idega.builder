@@ -117,8 +117,10 @@ public class IBPermissionWindow extends IBAdminWindow{
         Object o = objectClass.newInstance();
         if(o instanceof Block){
           String[] blockKeys = ( (Block) o ).getPermissionKeys();
-          for (int i = 0; i < blockKeys.length; i++) {
-            permissionTypes.addMenuElement(blockKeys[i],blockKeys[i]);
+          if(blockKeys !=null){
+            for (int i = 0; i < blockKeys.length; i++) {
+              permissionTypes.addMenuElement(blockKeys[i],blockKeys[i]);
+            }
           }
         }
 
