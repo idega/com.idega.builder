@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.23 2005/03/01 23:25:03 tryggvil Exp $
+ * $Id: IBPageBMPBean.java,v 1.24 2005/03/02 09:19:33 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,7 +20,6 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLPage;
-import com.idega.builder.business.PageUrl;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
