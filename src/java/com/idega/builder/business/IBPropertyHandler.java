@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.40 2004/02/25 16:57:42 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.41 2004/06/15 15:22:27 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,42 +9,43 @@
  */
 package com.idega.builder.business;
 
-import com.idega.util.caching.Cache;
-import com.idega.block.media.business.MediaBusiness;
-import com.idega.block.media.presentation.ImageInserter;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.IntegerInput;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.BooleanInput;
-import com.idega.presentation.ui.FloatInput;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.idegaweb.IWProperty;
-import com.idega.idegaweb.IWPropertyList;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.util.reflect.MethodFinder;
-import com.idega.core.component.business.ICObjectBusiness;
-import com.idega.core.component.data.ICObject;
-import com.idega.core.component.data.ICObjectInstance;
-import com.idega.core.builder.data.ICPage;
-import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
-import com.idega.builder.handler.SpecifiedChoiceProvider;
-import com.idega.builder.handler.PropertyHandler;
-import com.idega.builder.handler.TableColumnsHandler;
-import com.idega.builder.handler.TableRowsHandler;
-import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
-import com.idega.data.EntityFinder;
-
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.Iterator;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
+import com.idega.builder.handler.PropertyHandler;
+import com.idega.builder.handler.SpecifiedChoiceProvider;
+import com.idega.builder.handler.TableColumnsHandler;
+import com.idega.builder.handler.TableRowsHandler;
+import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
+import com.idega.core.builder.business.BuilderClassesFactory;
+import com.idega.core.builder.business.BuilderFileChooser;
+import com.idega.core.builder.business.BuilderImageInserter;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.component.business.ICObjectBusiness;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.file.data.ICFile;
+import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWProperty;
+import com.idega.idegaweb.IWPropertyList;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.BooleanInput;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.FloatInput;
+import com.idega.presentation.ui.IntegerInput;
+import com.idega.presentation.ui.TextInput;
+import com.idega.repository.data.ImplementorRepository;
+import com.idega.util.caching.Cache;
+import com.idega.util.reflect.MethodFinder;
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0 beta
@@ -66,6 +67,7 @@ public class IBPropertyHandler {
 	private static final String PROPERTYWINDOW_VALUE_FIND = "iw_propw_val_find";
 	private static IBPropertyHandler instance;
 	private Map propertyHandlers;
+	private BuilderClassesFactory builderClassesFactory;
 
 	private IBPropertyHandler() {
 	}
@@ -404,14 +406,25 @@ public class IBPropertyHandler {
 			}
 		}
 		else if (parameterClass.equals(com.idega.presentation.Image.class)) {
-			obj = new ImageInserter(name, false);
-			ImageInserter inserter = ((ImageInserter) obj);
+			BuilderImageInserter inserter = null;
+			try {
+				BuilderClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
+				inserter = builderClassesFactoryTemp.createImageInserterImpl();
+			}
+			catch (ClassNotFoundException ex) {
+				// do nothing
+			}
+			inserter.setImSessionImageName(name);
+			inserter.setHasUseBox(false);
 			inserter.setNullImageIDDefault();
 			try {
-				((ImageInserter) obj).setImageId(Integer.parseInt(stringValue));
+				inserter.setImageId(Integer.parseInt(stringValue));
 			}
 			catch (NumberFormatException e) {
+				// do nothing
 			}
+			// BuilderImageInserter extends PresentationObjectType
+			obj = (PresentationObject) inserter;
 		}
 		/**
 		
@@ -419,15 +432,27 @@ public class IBPropertyHandler {
 		
 		 */
 		else if (parameterClass.equals(com.idega.core.file.data.ICFile.class)) {
-			obj = new com.idega.builder.presentation.IBFileChooser(name);
+			BuilderFileChooser fileChooser = null;
+			try {
+				BuilderClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
+				fileChooser = builderClassesFactoryTemp.createFileChooserImpl();
+			}
+			catch (ClassNotFoundException ex) {
+				// do nothing
+			}
+			fileChooser.setChooserParameter(name);
 			try {
 				//extends block.media.presentation.FileChooser
-				Cache cache = MediaBusiness.getCachedFileInfo(Integer.parseInt(stringValue), iwc.getIWMainApplication());
-				((com.idega.builder.presentation.IBFileChooser) obj).setValue((com.idega.core.file.data.ICFile) cache.getEntity());
+				int id = Integer.parseInt(stringValue);
+				IWMainApplication iwma = iwc.getIWMainApplication();
+				Cache cache = IWMainApplication.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
+				fileChooser.setValue(cache.getEntity());
 			}
 			catch (Exception e) {
 				//throw new RuntimeException(e.getMessage());
 			}
+			// BuilderImageInserter extends PresentationObjectType
+			obj = (PresentationObject) fileChooser;
 		}
 		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
 			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name);
@@ -668,4 +693,12 @@ public class IBPropertyHandler {
 	public void setDropdownToChangeValue(DropdownMenu drop) {
 		drop.setOnChange(com.idega.builder.presentation.IBPropertiesWindowSetter.MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME + "()");
 	}
+	
+	private BuilderClassesFactory getBuilderClassesFactory() throws ClassNotFoundException {
+		if (builderClassesFactory == null) {
+			builderClassesFactory = (BuilderClassesFactory) ImplementorRepository.getInstance().getImplementor(BuilderClassesFactory.class, this.getClass());
+		}
+		return builderClassesFactory;
+	}
+	
 }

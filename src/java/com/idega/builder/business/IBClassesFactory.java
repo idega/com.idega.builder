@@ -1,8 +1,9 @@
 package com.idega.builder.business;
 
-import com.idega.block.media.presentation.ImageInserter;
-import com.idega.core.builder.business.BuilderClassesImplFactory;
+import com.idega.core.builder.business.BuilderClassesFactory;
+import com.idega.core.builder.business.BuilderFileChooser;
 import com.idega.core.builder.business.BuilderImageInserter;
+import com.idega.repository.data.ImplementorRepository;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -13,12 +14,32 @@ import com.idega.core.builder.business.BuilderImageInserter;
  * @version 1.0
  * Created on Jun 10, 2004
  */
-public class IBClassesFactory implements BuilderClassesImplFactory {
+public class IBClassesFactory implements BuilderClassesFactory {
 	
 	/* (non-Javadoc)
-	 * @see com.idega.core.builder.business.BuilderClassesImplFactory#createImageInserterImpl()
+	 * @see com.idega.core.builder.business.BuilderClassesFactory#createImageInserterImpl()
 	 */
 	public BuilderImageInserter createImageInserterImpl() {
-		return new ImageInserter();
+		try {
+			BuilderImageInserter inserter = (BuilderImageInserter) ImplementorRepository.getInstance().getImplementor(BuilderImageInserter.class, this.getClass());
+			return inserter;
+		}
+		catch (ClassNotFoundException ex) {
+			throw new RuntimeException("[IBClassesFactory] A BuilderImageInserter could not be created");
+		}
 	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.business.BuilderClassesFactory#createFileChooserImpl()
+	 */
+	public BuilderFileChooser createFileChooserImpl() {
+		try {
+			BuilderFileChooser fileChooser = (BuilderFileChooser) ImplementorRepository.getInstance().getImplementor(BuilderFileChooser.class, this.getClass());
+			return fileChooser;
+		}
+		catch (ClassNotFoundException ex) {
+			throw new RuntimeException("[IBClassesFactory] A BuilderFileChooser could not be created");
+		}
+	}
+
 }
