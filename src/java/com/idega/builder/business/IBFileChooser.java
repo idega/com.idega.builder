@@ -1,6 +1,7 @@
 package com.idega.builder.business;
 
 import com.idega.presentation.PresentationObjectType;
+import com.idega.repository.data.ImplementorPlaceholder;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -11,7 +12,7 @@ import com.idega.presentation.PresentationObjectType;
  * @version 1.0
  * Created on Jun 15, 2004
  */
-public interface IBFileChooser extends PresentationObjectType {
+public interface IBFileChooser extends PresentationObjectType, ImplementorPlaceholder {
 
 	 void setChooserParameter(String parameterName);
 	 

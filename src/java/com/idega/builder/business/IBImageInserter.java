@@ -1,6 +1,7 @@
 package com.idega.builder.business;
 
 import com.idega.presentation.PresentationObjectType;
+import com.idega.repository.data.ImplementorPlaceholder;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -11,7 +12,7 @@ import com.idega.presentation.PresentationObjectType;
  * @version 1.0
  * Created on Jun 10, 2004
  */
-public interface IBImageInserter extends PresentationObjectType {
+public interface IBImageInserter extends PresentationObjectType, ImplementorPlaceholder {
 	
 	void setHasUseBox(boolean hasUseBox);
 
