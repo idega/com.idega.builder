@@ -12,15 +12,16 @@ import java.sql.*;
  * @version 1.0
  */
 
-public class DPTPermissionGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup {
+public class DPTPermissionGroupBMPBean extends com.idega.core.data.GenericGroupBMPBean implements com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup {
+//public class DPTPermissionGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup {
 
-  public DPTPermissionGroupBMPBean() {
+  /*public DPTPermissionGroupBMPBean() {
     super();
   }
 
   public DPTPermissionGroupBMPBean(int id) throws SQLException{
     super(id);
-  }
+  }*/
 
   public String getGroupTypeValue(){
     return "dpt_permission";
