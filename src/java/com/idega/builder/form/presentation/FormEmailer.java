@@ -6,6 +6,9 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+
 import com.idega.idegaweb.IWGenericFormHandler;
 
 /**
@@ -21,10 +24,13 @@ public class FormEmailer extends Block {
 
   private IWGenericFormHandler handler;
 
+  private static final String BUILDER_BUNDLE_IDENTIFIER = "com.idega.builder";
+
   private String emailServer;
   private String emailToSendTo;
-  private boolean displayConfirmation=false;
-  private String subject = "From idegaWeb Builder";
+  private boolean displayConfirmation=true;
+  private final static String SUBJECT_CONSTANT = "From idegaWeb Builder";
+  private String subject = SUBJECT_CONSTANT;
   private String _beginningText;
 
 
@@ -37,11 +43,15 @@ public class FormEmailer extends Block {
   }
 
   public void main(IWContext iwc){
-
+    IWResourceBundle iwrb = super.getBundle(iwc).getResourceBundle(iwc);
+    if(subject==SUBJECT_CONSTANT){
+      subject = iwrb.getLocalizedString("formemailer.defaultsubject","From idegaWeb Builder");
+    }
     if(doDisplayConfirmation(iwc)){
       String sentText=this.getSentText(iwc);
-      String confirmationText = "Confirm send of supplied information:";
-      String sendText="Send";
+      String confirmationText = iwrb.getLocalizedString("formemailer.confirmationtext","Confirm send of supplied information:");
+      String sendText = iwrb.getLocalizedString("formemailer.send","Send");
+
       Table t = new Table();
       add(t);
       t.add(confirmationText,1,1);
@@ -55,10 +65,12 @@ public class FormEmailer extends Block {
     else{
       try{
         sendEmail(iwc);
-        add("Email sent successfully");
+        String successfully = iwrb.getLocalizedString("formemailer.successfully","Email sent successfully");
+        add(successfully);
       }
       catch(Exception e){
-        add("There was an error sending the mail: "+e.getMessage());
+        String error1 = iwrb.getLocalizedString("formemailer.error1","There was an error sending the mail: ");
+        add(error1+e.getMessage());
         e.printStackTrace();
       }
     }
@@ -94,6 +106,7 @@ public class FormEmailer extends Block {
   }
 
   public void sendEmail(IWContext iwc)throws Exception{
+    IWResourceBundle iwrb = super.getBundle(iwc).getResourceBundle(iwc);
     String formText = getSentText(iwc);
     String bodyText;
     if(_beginningText==null){
@@ -104,14 +117,16 @@ public class FormEmailer extends Block {
     }
 
     if(formText==null){
-      System.out.println("formText==null");
-      formText="Ekkert";
+      //System.out.println("formText==null");
+      formText="Error-Nothing";
     }
     if(emailServer==null){
-      throw new Exception("Email Server not specified");
+      String error2 = iwrb.getLocalizedString("formemailer.error2","Email Server not specified");
+      throw new Exception(error2);
     }
     if(emailToSendTo==null){
-      throw new Exception("No email to send to");
+      String error3 = iwrb.getLocalizedString("formemailer.error3","No email to send to");
+      throw new Exception(error3);
     }
     //com.idega.util.SendMail.send("idega@idega.is",emailToSendTo,"","",emailServer,subject,bodyText);
     cleanUpFromSession(iwc);
@@ -152,6 +167,10 @@ public class FormEmailer extends Block {
       newEmailer.handler=(IWGenericFormHandler)this.handler.clone();
     }
     return newObject;
+  }
+
+  public String getBundleIdentifier(){
+    return BUILDER_BUNDLE_IDENTIFIER;
   }
 
 
