@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.167 2005/02/10 10:42:49 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.168 2005/02/22 23:03:08 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1139,9 +1139,12 @@ public class BuilderLogic implements Singleton {
 	}
 
 	/**
-	 * Invalidates cache for all pages
+	 * Invalidates cache for all pages and the cached page tree
 	 */
 	public void clearAllCachedPages() {
+		System.out.println("Clearing all BuilderPageTree Cache");
+		PageTreeNode.clearTree(IWMainApplication.getDefaultIWApplicationContext());
+		System.out.println("Clearing all BuilderPage Cache");
 		getPageCacher().flagAllPagesInvalid();
 	}
 

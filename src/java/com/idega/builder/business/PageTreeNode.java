@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.20 2004/12/20 14:03:38 sigtryggur Exp $
+ * $Id: PageTreeNode.java,v 1.21 2005/02/22 23:03:08 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -440,7 +440,7 @@ public class PageTreeNode implements ICTreeNode {
 	}
 
 	/**
-	 *
+	 * Gets the tree and preloads it and stores in cache
 	 */
 	public static Map getTree(IWApplicationContext iwc) {
 		Map tree = (Map) iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
@@ -455,6 +455,15 @@ public class PageTreeNode implements ICTreeNode {
 		return tree;
 	}
 
+	/**
+	 * Clears the tree from cache
+	 * @param iwc
+	 */
+	public static void clearTree(IWApplicationContext iwc){
+		iwc.removeApplicationAttribute(PageTreeNode.PAGE_TREE);
+		iwc.removeApplicationAttribute(PageTreeNode.NAME_TREE);
+	}
+	
 	/**
 	 *
 	 */
