@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.57 2002/03/13 12:21:37 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.58 2002/03/15 16:48:11 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -163,6 +163,7 @@ public class IBApplication extends IWApplication {
    *@param  iwc  Description of the Parameter
    */
   public void main(IWContext iwc) {
+    setOnLoad("moveTo(0,0);");
     startIBApplication(iwc);
     add(IBBanner.class);
     if (iwc.getParameter("toolbar") != null) {
