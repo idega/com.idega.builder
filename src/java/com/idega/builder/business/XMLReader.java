@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.49 2004/05/05 15:14:00 gummi Exp $
+ * $Id: XMLReader.java,v 1.50 2004/05/05 17:16:50 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -67,10 +67,12 @@ public class XMLReader {
 		boolean hasTemplate = false;
 		boolean isTemplate = false;
 		boolean isLocked = true;
+		String dptRootPage = null;
 
 		// Parse the page attributes
 		while (attr.hasNext()) {
 			XMLAttribute at = (XMLAttribute) attr.next();
+			System.out.println("Page attribute: " + at.getName()+ " - "+at.getValue());
 			if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
 				hasTemplate = true;
 				parentContainer = PageCacher.getPage(at.getValue());
@@ -92,10 +94,9 @@ public class XMLReader {
 					isLocked = false;
 				else
 					isLocked = true;
-			} else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
-				hasTemplate = true;
-				parentContainer = PageCacher.getPage(at.getValue());
-				parentContainer.setTemplateId(at.getValue());
+			} 
+			else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
+				dptRootPage = (String)at.getValue();
 			}
 		}
 
@@ -134,6 +135,16 @@ public class XMLReader {
 			catch (NumberFormatException ex) {
 				//      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
 			}
+		}
+		
+		//sets dptRootpageID
+		try {
+			if(dptRootPage!=null) {
+				parentContainer.setDPTRootPage(dptRootPage);
+			}
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
 		}
 		
 		parentContainer.setTitle(ibxml.getName());
