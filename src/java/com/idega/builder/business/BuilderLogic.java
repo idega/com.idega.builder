@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.130 2002/09/24 10:26:16 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.131 2002/09/30 08:28:08 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.Block;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.IFrameContainer;
 import com.idega.util.FileUtil;
@@ -808,8 +809,9 @@ public class BuilderLogic
 		{
 			_layer = new Layer();
 			_tableLayer = new Layer();
-			_tableLayer.setZIndex(-1);
-			_layer.setPositionType(Layer.RELATIVE);
+			_tableLayer.setZIndex(0);
+			//_tableLayer.setPositionType(Layer.RELATIVE);
+			//_layer.setPositionType(Layer.RELATIVE);
 			/** To work around layer stacking in Opera browser version 5, revise for newer versions */
 			boolean hideLayer = iwc.isOpera();
 			/** @todo Make a plug-in presentation/interface object which all plug-ins inherit */
@@ -818,6 +820,8 @@ public class BuilderLogic
 			if (_theObject instanceof com.idega.presentation.Applet)
 				hideLayer = true;
 			if (_theObject instanceof com.idega.presentation.GenericPlugin)
+				hideLayer = true;
+			if (_theObject instanceof DropdownMenu)
 				hideLayer = true;
 			/*Layer controlLayer = new Layer(Layer.DIV);
 			controlLayer.setPositionType(Layer.RELATIVE);
