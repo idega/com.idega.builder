@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.123 2002/05/10 18:02:03 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.124 2002/05/10 18:02:44 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -518,17 +518,7 @@ public class BuilderLogic {
   }
 
   public IBDomain getCurrentDomain(IWApplicationContext iwac){
-    /**
-     * @todo: Change from hardcoded DomainID:
-     */
     try {
-      /*String id = (String)iwc.getApplicationAttribute("current_domain_id");
-      if (id != null) {
-	int test = Integer.parseInt(id);
-      }
-      int domainID=1;
-      return com.idega.builder.data.IBDomainBMPBean.getDomain(domainID);
-      */
       return iwac.getDomain();
     }
     catch(Exception e) {
