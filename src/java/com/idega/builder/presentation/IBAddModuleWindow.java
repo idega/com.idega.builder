@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.37 2004/06/03 12:53:00 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.38 2004/06/03 12:54:32 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -257,7 +257,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					link.setStyle(STYLE_NAME);
 					//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
 					link.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
-					link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
+					link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getPrimaryKey().toString());
 					/*link.maintainParameter(IB_PAGE_PARAMETER, iwc);
 					link.maintainParameter(IB_PARENT_PARAMETER, iwc);
 					link.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
