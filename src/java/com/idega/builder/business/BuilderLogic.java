@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.41 2001/10/10 12:08:16 palli Exp $
+ * $Id: BuilderLogic.java,v 1.42 2001/10/11 15:35:38 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -252,9 +252,6 @@ public class BuilderLogic {
     }
   }
 
-
-
-
   private void processImageSet(String pageKey,int ICObjectInstanceID,int imageID,IWMainApplication iwma){
     setProperty(pageKey,ICObjectInstanceID,"image_id",Integer.toString(imageID),iwma);
   }
@@ -415,7 +412,7 @@ public class BuilderLogic {
     return null;
   }
 
-  public  PresentationObject getAddIcon(String parentKey,IWContext iwc){
+  public PresentationObject getAddIcon(String parentKey,IWContext iwc){
     IWBundle bundle = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     Image addImage = bundle.getImage("add.gif","Add new component");
     Link link = new Link(addImage);
@@ -596,27 +593,26 @@ public class BuilderLogic {
       return setProperty(pageKey,ObjectInstanceId,propertyName,values,iwma);
   }
 
-
   /**
    * Returns true if properties changed, or error, else false
    */
   public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String[] propertyValues,IWMainApplication iwma){
-      try{
-        IBXMLPage xml = getIBXMLPage(pageKey);
-        boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
-        //System.out.println("AllowMultiValued="+allowMultivalued);
-        if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)){
-          xml.update();
-          return true;
-        }
-        else{
-          return false;
-        }
+    try {
+      IBXMLPage xml = getIBXMLPage(pageKey);
+      boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
+      //System.out.println("AllowMultiValued="+allowMultivalued);
+      if (XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)) {
+        xml.update();
+        return(true);
       }
-      catch(Exception e){
-        e.printStackTrace();
-        return false;
+      else {
+        return(false);
       }
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+      return(false);
+    }
   }
 
    // add by Aron 20.sept 2001 01:49
