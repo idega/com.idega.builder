@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.28 2001/09/25 13:33:16 palli Exp $
+ * $Id: BuilderLogic.java,v 1.29 2001/09/25 15:42:50 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -169,10 +169,9 @@ public class BuilderLogic {
   }
 
   private void transformObject(String pageKey,ModuleObject obj,int index, ModuleObjectContainer parent,String parentKey,ModuleInfo modinfo){
-    boolean useBuilderObjectControl=true;
-
     if(obj instanceof Image){
       Image imageObj = (Image)obj;
+      boolean useBuilderObjectControl = obj.getUseBuilderObjectControl();
       ImageInserter inserter = null;
       int ICObjectIntanceID = imageObj.getICObjectInstanceID();
       String sessionID="ic_"+ICObjectIntanceID;
@@ -201,6 +200,7 @@ public class BuilderLogic {
 
       obj = inserter;
       obj.setICObjectInstanceID(ICObjectIntanceID);
+      obj.setUseBuilderObjectControl(useBuilderObjectControl);
     }
     else
     if(obj instanceof JModuleObject){
