@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.4 2002/06/28 16:43:50 gummi Exp $
+ * $Id: IBDomainBMPBean.java,v 1.5 2002/07/24 17:19:23 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -170,7 +170,8 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
     Collection groups = new Vector();
     while (iter.hasNext()) {
       GroupDomainRelation item = (GroupDomainRelation)iter.next();
-      if(!type.isIdentical(item.getRelationship())){
+      //if(!type.isIdentical(item.getRelationship())){
+      if(!type.equals(item.getRelationship())){
 //        iter.remove();
       } else {
         groups.add(item.getRelatedGroup());
