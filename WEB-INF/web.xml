@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+  <servlet>
+    <servlet-name>IBMainServlet</servlet-name>
+    <display-name>IBMainServlet</display-name>
+    <servlet-class>com.idega.builder.servlet.IBMainServlet</servlet-class>
+    <load-on-startup>-2</load-on-startup>
+  </servlet>
+  <servlet>
+    <servlet-name>IBIFrameServlet</servlet-name>
+    <display-name>IBIFrameServlet</display-name>
+    <servlet-class>com.idega.builder.servlet.IBIFrameServlet</servlet-class>
+    <load-on-startup>-1</load-on-startup>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>IBMainServlet</servlet-name>
+    <url-pattern>/servlet/builder</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>IBMainServlet</servlet-name>
+    <url-pattern>/servlet/builder/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>IBMainServlet</servlet-name>
+    <url-pattern>/servlet/builder/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>IBMainServlet</servlet-name>
+    <url-pattern>/servlet/IBMainServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>IBMainServlet</servlet-name>
+    <url-pattern>/servlet/IBMainServlet/</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>IBMainServlet</servlet-name>
+    <url-pattern>/servlet/IBMainServlet/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>IBIFrameServlet</servlet-name>
+    <url-pattern>/servlet/IBIFrameServlet</url-pattern>
+  </servlet-mapping>
+  
+</web-app>
