@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.22 2002/01/09 17:49:38 palli Exp $
+ * $Id: XMLWriter.java,v 1.23 2002/01/10 16:57:21 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -801,6 +801,8 @@ public class XMLWriter {
         XMLElement regionParent = findModule(xml,parentID);
         if (regionParent != null)
           regionParent.addContent(region);
+        else
+          xml.getPageRootElement().addContent(region);
 
         region.addContent(element);
 
