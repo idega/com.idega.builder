@@ -72,6 +72,7 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       DropdownMenu permissionTypes = new DropdownMenu(permissionKeyParameterString);
       permissionTypes.keepStatusOnAction();
+      permissionTypes.setOnChange("selectAllInSelectionBox(this.form."+permissionGroupParameterString+"_left);selectAllInSelectionBox(this.form."+permissionGroupParameterString+")");
       permissionTypes.setToSubmit();
 
       String[] keys = null;
