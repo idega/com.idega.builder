@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.23 2003/05/03 00:36:25 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.24 2003/05/13 10:59:13 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -277,10 +277,10 @@ public class IBPageHelper {
 		return addElementToPage(ibPage, ids);
 	}
 	private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
-		//		System.out.println("changeInstanceId begins");
-		//		System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
-		//		System.out.println("obj.getId = " + obj.getICObjectID());
-		//		System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
+				System.out.println("changeInstanceId begins");
+				System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
+				System.out.println("obj.getId = " + obj.getICObjectID());
+				System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
 		if (obj.getChangeInstanceIDOnInheritance()) {
 			int object_id = obj.getICObjectID();
 			int ic_instance_id = obj.getICObjectInstanceID();
@@ -299,14 +299,14 @@ public class IBPageHelper {
 				}
 			}
 			catch (SQLException e) {
-				//				System.out.println("changeInstanceId - exception");
+								System.out.println("changeInstanceId - exception");
 				e.printStackTrace();
 				return false;
 			}
 			if (obj instanceof Builderaware) {
 				boolean ok = ((Builderaware) obj).copyBlock(instance.getID());
 				if (!ok) {
-					//					System.out.println("changeInstanceId - copyBlock failed");
+										System.out.println("changeInstanceId - copyBlock failed");
 					return false;
 				}
 			}
