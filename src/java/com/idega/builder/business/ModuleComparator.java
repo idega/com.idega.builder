@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Comparator;
 
 import com.idega.core.component.data.ICObject;
+import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.util.IsCollator;
 
 /**
@@ -33,7 +34,12 @@ public class ModuleComparator implements Comparator {
 
     String one = obj1.getName();
 		try {
-			one = obj1.getBundle(iwma).getComponentName(obj1.getClassName(), locale);
+			try{
+				one = obj1.getBundle(iwma).getComponentName(obj1.getClassName(), locale);
+			}
+			catch(IWBundleDoesNotExist iwbne){
+				System.err.println("com.idega.builder.business.ModuleComparator: "+iwbne.getLocalizedMessage()+". Please remove all references in the IC_OBJECT table");
+			}
 		}
 		catch (NullPointerException e) {
 			one = obj1.getName();
@@ -41,7 +47,12 @@ public class ModuleComparator implements Comparator {
 
 		String two = obj2.getName();
 		try {
-    	two = obj2.getBundle(iwma).getComponentName(obj2.getClassName(),locale);
+			try{
+				two = obj2.getBundle(iwma).getComponentName(obj2.getClassName(),locale);
+			}
+			catch(IWBundleDoesNotExist iwbne){
+				System.err.println("com.idega.builder.business.ModuleComparator: "+iwbne.getLocalizedMessage()+". Please remove all references in the IC_OBJECT table");
+			}
 		}
 		catch (NullPointerException e) {
 			two = obj2.getName();
