@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.52 2001/10/19 13:56:51 palli Exp $
+ * $Id: BuilderLogic.java,v 1.53 2001/10/23 14:48:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -314,8 +314,8 @@ public class BuilderLogic {
               }
               else {
                 tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-                tab.add(getLabelIcon(newParentKey,iwc),x,y);
                 if (curr.getIsTemplate()) {
+                  tab.add(getLabelIcon(newParentKey,iwc),x,y);
                   if (tab.isLocked(x,y))
                     tab.add(getLockedIcon(newParentKey,iwc),x,y);
                   else
@@ -325,8 +325,8 @@ public class BuilderLogic {
             }
             else {
               tab.add(getAddIcon(newParentKey,iwc,tab.getLabel(x,y)),x,y);
-              tab.add(getLabelIcon(newParentKey,iwc),x,y);
               if (curr.getIsTemplate()) {
+                tab.add(getLabelIcon(newParentKey,iwc),x,y);
                 if (tab.isLocked(x,y))
                   tab.add(getLockedIcon(newParentKey,iwc),x,y);
                 else
@@ -365,8 +365,8 @@ public class BuilderLogic {
             }
             else {
               ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-              ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (curr.getIsTemplate()) {
+                ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
                 if (!((PresentationObjectContainer)obj).isLocked())
                   ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
                 else
@@ -376,8 +376,8 @@ public class BuilderLogic {
           }
           else {
             ((PresentationObjectContainer)obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()),iwc,((PresentationObjectContainer)obj).getLabel()));
-            ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
             if (curr.getIsTemplate()) {
+              ((PresentationObjectContainer)obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               if (!((PresentationObjectContainer)obj).isLocked())
                 ((PresentationObjectContainer)obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()),iwc));
               else
