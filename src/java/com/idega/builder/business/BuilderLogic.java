@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.129 2002/09/20 13:37:36 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.130 2002/09/24 10:26:16 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -823,7 +823,13 @@ public class BuilderLogic
 			controlLayer.setPositionType(Layer.RELATIVE);
 			controlLayer.setWidth(1);
 			controlLayer.setHeight(1);*/
+			Layer layer2 = new Layer(Layer.DIV);
+			layer2.setZIndex(37999);
+			layer2.setPositionType(Layer.RELATIVE);
+			layer2.setWidth(0);
+			layer2.setHeight(0);
 			Layer layer = new Layer(Layer.DIV);
+			layer2.add(layer);
 			layer.setID(_layer.getID() + "a");
 			layer.setPositionType(Layer.ABSOLUTE);
 			layer.setTopPosition(-1);
@@ -843,7 +849,7 @@ public class BuilderLogic
 			//controlLayer.add(layer);
 			_table = new Table(3, 5);
 			//_table.add(controlLayer);
-			_table.add(layer);
+			super.add(layer2);
 			_table.add(_tableLayer, 2, 4);
 			_layer.add(_table);
 			_layer.setZIndex(number);
