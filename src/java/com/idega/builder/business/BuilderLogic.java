@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.116 2002/03/21 01:24:42 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.117 2002/03/21 16:21:04 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -744,13 +744,14 @@ public class BuilderLogic {
       _table.setRowColor(5,"#000000");
       _table.setColumnColor(1,"#000000");
       _table.setColumnColor(3,"#000000");
+      _table.setVerticalAlignment(2,4,"top");
       /*_table.setLineFrame(true);
       _table.setLineAfterRow(1);
       _table.setLineWidth("1");
       _table.setLineHeight("1");
       _table.setLineColor("#000000");*/
 
-      _table.setHeight(2,2,"11");
+      _table.setHeight(2,"11");
 
       Image image = getBundle(iwc).getImage("menuicon.gif","Component menu");
       image.setHorizontalSpacing(1);
@@ -853,9 +854,11 @@ public class BuilderLogic {
     public void add(PresentationObject obj){
       if ( obj.isAttributeSet(obj.WIDTH) ) {
         _layer.setWidth(obj.getWidth());
+        _table.setWidth(obj.getWidth());
       }
       if ( obj.isAttributeSet(obj.HEIGHT) ) {
         _layer.setHeight(obj.getHeight());
+        _table.setHeight(obj.getHeight());
       }
       if ( obj.isAttributeSet(obj.HORIZONTAL_ALIGNMENT) ) {
         _layer.setHorizontalAlignment(obj.getHorizontalAlignment());
