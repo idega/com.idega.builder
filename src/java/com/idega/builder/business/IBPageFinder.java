@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageFinder.java,v 1.2 2001/10/11 16:23:26 palli Exp $
+ * $Id: IBPageFinder.java,v 1.3 2002/04/03 12:29:37 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,13 +26,13 @@ public class IBPageFinder {
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(page.getEntityName());
       sql.append(" where ");
-      sql.append(page.getColumnTemplateID());
+      sql.append(IBPage.getColumnTemplateID());
       sql.append(" = ");
       sql.append(templateId);
       sql.append(" and (");
-      sql.append(page.getColumnDeleted());
+      sql.append(IBPage.getColumnDeleted());
       sql.append(" is null or ");
-      sql.append(page.getColumnDeleted());
+      sql.append(IBPage.getColumnDeleted());
       sql.append(" = 'N')");
 
       return(EntityFinder.findAll(page,sql.toString()));

@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.3 2002/02/14 13:54:54 gummi Exp $
+ * $Id: TreeNodeFinder.java,v 1.4 2002/04/03 12:29:32 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,19 +30,19 @@ public class TreeNodeFinder {
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(pages.getEntityName());
       sql.append(" where (");
-      sql.append(pages.getColumnType());
+      sql.append(IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.PAGE);
+      sql.append(IBPage.PAGE);
       sql.append("' or ");
-      sql.append(pages.getColumnType());
+      sql.append(IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.DPT_PAGE);
+      sql.append(IBPage.DPT_PAGE);
       sql.append("') and (");
-      sql.append(pages.getColumnDeleted());
+      sql.append(IBPage.getColumnDeleted());
       sql.append(" = '");
-      sql.append(pages.NOT_DELETED);
+      sql.append(IBPage.NOT_DELETED);
       sql.append("' or ");
-      sql.append(pages.getColumnDeleted());
+      sql.append(IBPage.getColumnDeleted());
       sql.append(" is null)");
 
       return(EntityFinder.findAll(pages,sql.toString()));
@@ -59,19 +59,19 @@ public class TreeNodeFinder {
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(pages.getEntityName());
       sql.append(" where (");
-      sql.append(pages.getColumnType());
+      sql.append(IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.TEMPLATE);
+      sql.append(IBPage.TEMPLATE);
       sql.append("' or ");
-      sql.append(pages.getColumnType());
+      sql.append(IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.DPT_TEMPLATE);
+      sql.append(IBPage.DPT_TEMPLATE);
       sql.append("') and (");
-      sql.append(pages.getColumnDeleted());
+      sql.append(IBPage.getColumnDeleted());
       sql.append(" = '");
-      sql.append(pages.NOT_DELETED);
+      sql.append(IBPage.NOT_DELETED);
       sql.append("' or ");
-      sql.append(pages.getColumnDeleted());
+      sql.append(IBPage.getColumnDeleted());
       sql.append(" is null)");
 
       return(EntityFinder.findAll(pages,sql.toString()));
@@ -113,12 +113,12 @@ public class TreeNodeFinder {
       sql.append(" = ");
       sql.append("t." + pages.getIDColumnName());
       sql.append(" and (");
-      sql.append("p." + pages.getColumnType());
+      sql.append("p." + IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.PAGE);
-      sql.append("' or p." + pages.getColumnType());
+      sql.append(IBPage.PAGE);
+      sql.append("' or p." + IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.DPT_PAGE);
+      sql.append(IBPage.DPT_PAGE);
       sql.append("')");
 
       ResultSet result = stmt.executeQuery(sql.toString());
@@ -170,12 +170,12 @@ public class TreeNodeFinder {
       sql.append(" = ");
       sql.append("t." + pages.getIDColumnName());
       sql.append(" and (");
-      sql.append("p." + pages.getColumnType());
+      sql.append("p." + IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.TEMPLATE);
-      sql.append("' or p." + pages.getColumnType());
+      sql.append(IBPage.TEMPLATE);
+      sql.append("' or p." + IBPage.getColumnType());
       sql.append(" = '");
-      sql.append(pages.DPT_TEMPLATE);
+      sql.append(IBPage.DPT_TEMPLATE);
       sql.append("')");
 
       ResultSet result = stmt.executeQuery(sql.toString());
