@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.5 2001/08/23 18:00:52 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.6 2001/08/28 13:19:28 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ import com.idega.builder.data.*;
 
 public class IBMainServlet extends JSPModule {
 
+  private static final String SESSION_PAGE_KEY = "ib_page_id";
 
 
   public void initializePage(){
@@ -34,12 +35,18 @@ public class IBMainServlet extends JSPModule {
     int i_page_id=1;
     String page_id = modinfo.getParameter("iw_page_id");
     if(page_id == null){
-      try{
-        IBDomain domain = IBDomain.getDomain(domain_id);
-        i_page_id = domain.getStartPageID();
+      page_id = (String) modinfo.getSessionAttribute(SESSION_PAGE_KEY);
+      if(page_id==null){
+        try{
+          IBDomain domain = IBDomain.getDomain(domain_id);
+          i_page_id = domain.getStartPageID();
+        }
+        catch(java.sql.SQLException e){
+          e.printStackTrace();
+        }
       }
-      catch(java.sql.SQLException e){
-        e.printStackTrace();
+      else{
+        i_page_id = Integer.parseInt(page_id);
       }
     }
     else {
