@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.15 2001/10/02 19:47:02 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.16 2001/10/03 12:51:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -212,11 +212,15 @@ public class XMLReader {
       if (((Page)regionParent).getIsExtendingTemplate()) {
         newRegionParent = (ModuleObjectContainer)regionParent.getContainedObject(regionID);
 
-        if ((newRegionParent.getBelongsToParent()) && (newRegionParent.isLocked()))
+        if (newRegionParent == null) {
           parseChildren = false;
-        else
-          emptyParent = true;
-
+        }
+        else {
+          if ((newRegionParent.getBelongsToParent()) && (newRegionParent.isLocked()))
+            parseChildren = false;
+          else
+            emptyParent = true;
+        }
       }
     }
     else if (regionParent instanceof com.idega.jmodule.object.Table) {
