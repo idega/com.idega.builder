@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.132 2002/09/30 12:39:41 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.133 2002/12/11 18:59:04 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,52 +8,55 @@
  *
  */
 package com.idega.builder.business;
-import com.idega.builder.presentation.*;
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBDomain;
-import com.idega.core.data.ICObject;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.business.ICObjectBusiness;
 import com.idega.block.IWBlock;
+import com.idega.builder.data.IBDomain;
+import com.idega.builder.data.IBPage;
+import com.idega.builder.presentation.IBAddModuleWindow;
+import com.idega.builder.presentation.IBAddRegionLabelWindow;
+import com.idega.builder.presentation.IBAdminWindow;
+import com.idega.builder.presentation.IBCopyModuleWindow;
+import com.idega.builder.presentation.IBCutModuleWindow;
+import com.idega.builder.presentation.IBDeleteModuleWindow;
+import com.idega.builder.presentation.IBLockRegionWindow;
+import com.idega.builder.presentation.IBPasteModuleWindow;
+import com.idega.builder.presentation.IBPermissionWindow;
+import com.idega.builder.presentation.IBPropertiesWindow;
+import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectInstance;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.RaisedTable;
+import com.idega.presentation.Block;
+import com.idega.presentation.IFrameContainer;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Layer;
+import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.Page;
-import com.idega.presentation.Image;
 import com.idega.presentation.Script;
-import com.idega.presentation.Layer;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.Block;
+import com.idega.presentation.Table;
+import com.idega.presentation.help.Help;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.IFrameContainer;
 import com.idega.util.FileUtil;
-import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
-import java.util.ListIterator;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import com.idega.core.data.GenericGroup;
-import java.util.Vector;
+import com.idega.xml.XMLElement;
+
 import java.util.Iterator;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
-import com.idega.core.localisation.business.ICLocaleBusiness;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -361,6 +364,8 @@ public class BuilderLogic
 			obj.setUseBuilderObjectControl(useBuilderObjectControl);
 		}
 		else if (obj instanceof Block)
+		{}
+		else if (obj instanceof Help) 
 		{}
 		else if (obj instanceof PresentationObjectContainer)
 		{
