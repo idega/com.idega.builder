@@ -28,7 +28,36 @@ public class IBEntity extends GenericEntity{
 		addAttribute(getIDColumnName());
 		addAttribute("class_name","Nafn klasa",true,true,"java.lang.String");
 		addAttribute("entity_class_name","Nafn entity",true,true, "java.lang.String");
+                this.addManyToManyRelationShip(IBObject.class,"ib_object_ib_entity");
+
 	}
+
+        public void insertStartData()throws Exception{
+          IBEntity obj;
+          Class textReaderClass = com.idega.jmodule.text.presentation.TextReader.class;
+          Class newsModuleClass = com.idega.jmodule.news.presentation.NewsReader.class;
+
+          IBObject[] newsRecords = (IBObject[]) (new IBEntity()).findAllByColumn("class_name",newsModuleClass.getName());
+          if(newsRecords.length>0){
+            IBObject newsRecord = newsRecords[0];
+            IBEntity entity = new IBEntity();
+            entity.setClassName("Fréttir");
+            entity.setEntityClassName(com.idega.jmodule.news.data.NewsCategory.class.getName());
+            entity.insert();
+            entity.addTo(newsRecord);
+          }
+
+          IBObject[] textRecords = (IBObject[]) (new IBEntity()).findAllByColumn("class_name",textReaderClass.getName());
+          if(textRecords.length>0){
+            IBObject textRecord = textRecords[0];
+            IBEntity entity = new IBEntity();
+            entity.setClassName("Texti");
+            entity.setEntityClassName(com.idega.jmodule.text.data.TextModule.class.getName());
+            entity.insert();
+            entity.addTo(textRecord);
+          }
+
+        }
 
 	public String getEntityName(){
 		return "ib_entity";
