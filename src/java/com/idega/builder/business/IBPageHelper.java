@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.12 2002/04/04 04:39:23 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.13 2002/04/04 13:04:20 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -206,11 +206,12 @@ public class IBPageHelper {
         ICObjectInstance inst = obj.getICObjectInstance();
         instance = new ICObjectInstance();
         instance.setICObjectID(object_id);
+        if(inst != null){
+          instance.setParentInstanceID(inst.getID());
+        }
         instance.setIBPageByKey(xmlpage.getKey());
         instance.insert();
-        if(inst != null){
-          inst.addChild(instance);
-        }
+
         if(copyPermissions){
           AccessControl.copyObjectInstancePermissions(Integer.toString(ic_instance_id),Integer.toString(instance.getID()));
         }

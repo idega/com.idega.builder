@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.38 2002/04/03 12:44:22 palli Exp $
+ * $Id: IBPage.java,v 1.39 2002/04/04 13:04:20 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -544,7 +544,6 @@ public class IBPage extends TreeableEntity {
 
   public void setOwner(IWUserContext iwuc){
     try{
-      System.out.println("------------------  setOwner()  ----------------");
       iwuc.getAccessController().setCurrentUserAsOwner(this,iwuc);
     }
     catch(Exception e){
