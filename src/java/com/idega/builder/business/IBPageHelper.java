@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.24 2003/05/13 10:59:13 palli Exp $
+ * $Id: IBPageHelper.java,v 1.25 2003/05/27 11:43:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -155,7 +155,7 @@ public class IBPageHelper {
 			ibPage.setTemplateId(tid);
 		}
 		catch (java.lang.NumberFormatException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		if (subType != null)
 			ibPage.setSubType(subType);
@@ -203,16 +203,20 @@ public class IBPageHelper {
 		}
 		
 		if (tid != -1) {
+//			System.out.println("Creating page = " + ibPage.getName());
 			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getID());
 			Page current = currentXMLPage.getPopulatedPage();
 			List children = current.getAllContainedObjectsRecursive();
+//			System.out.println("children size = " + children.size());
 			if (children != null) {
 				Iterator it = children.iterator();
 				while (it.hasNext()) {
 					PresentationObject obj = (PresentationObject) it.next();
 					boolean ok = changeInstanceId(obj, currentXMLPage, true);
-					if (!ok)
+					if (!ok) {
+//						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
 						return (-1);
+					}
 				}
 			}
 			
@@ -277,10 +281,11 @@ public class IBPageHelper {
 		return addElementToPage(ibPage, ids);
 	}
 	private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions) {
-				System.out.println("changeInstanceId begins");
-				System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
-				System.out.println("obj.getId = " + obj.getICObjectID());
-				System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
+//		System.out.println("changeInstanceId begins");
+//		System.out.println("obj.name = " + obj.getName());
+//		System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
+//		System.out.println("obj.getId = " + obj.getICObjectID());
+//		System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
 		if (obj.getChangeInstanceIDOnInheritance()) {
 			int object_id = obj.getICObjectID();
 			int ic_instance_id = obj.getICObjectInstanceID();
@@ -299,14 +304,14 @@ public class IBPageHelper {
 				}
 			}
 			catch (SQLException e) {
-								System.out.println("changeInstanceId - exception");
+//				System.out.println("changeInstanceId - exception");
 				e.printStackTrace();
 				return false;
 			}
 			if (obj instanceof Builderaware) {
 				boolean ok = ((Builderaware) obj).copyBlock(instance.getID());
 				if (!ok) {
-										System.out.println("changeInstanceId - copyBlock failed");
+//					System.out.println("changeInstanceId - copyBlock failed");
 					return false;
 				}
 			}
