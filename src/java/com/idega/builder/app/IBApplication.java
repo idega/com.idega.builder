@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.87 2005/03/03 08:48:36 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.88 2005/03/05 23:33:21 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -510,9 +510,9 @@ public class IBApplication extends IWApplication {
 			startLeftMenu(iwc);
 			setAlignment("left");
 			setVerticalAlignment("top");
-			setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
-			setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-			setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
+			//setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
+			//setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+			//setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 			try {
 				Table menuTable = new Table();
 				menuTable.setAlignment(1, 1, "right");
@@ -525,12 +525,16 @@ public class IBApplication extends IWApplication {
 				closeLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER, IBApplication.class);
 				menuTable.add(closeLink, 1, 1);
 				Text pageText = new Text("Page Tree:");
+				pageText.setStyleAttribute("margin","3px");
 				pageText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 				Text templateText = new Text("Template Tree:");
+				templateText.setStyleAttribute("margin","3px");
+				
 				templateText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
-				Text libraryText = new Text("Library Tree:");
-				libraryText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
+				//Text libraryText = new Text("Library Tree:");
+				//libraryText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 				IFrame frame = new IFrame("PageTree", PageTree.class);
+				frame.setStyleAttribute("margin","3px");
 				frame.setWidth(170);
 				frame.setHeight(200);
 				frame.setScrolling(IFrame.SCROLLING_YES);
@@ -538,6 +542,7 @@ public class IBApplication extends IWApplication {
 				menuTable.add(Text.getBreak(), 1, 2);
 				menuTable.add(frame, 1, 2);
 				IFrame frame2 = new IFrame("TemplateTree", TemplateTree.class);
+				frame2.setStyleAttribute("margin","3px");
 				frame2.setWidth(170);
 				frame2.setHeight(200);
 				frame2.setScrolling(IFrame.SCROLLING_YES);
@@ -580,9 +585,9 @@ public class IBApplication extends IWApplication {
 			      }*/
 			IWBundle iwb = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER);
 			String controlParameter = "builder_controlparameter";
-			setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
-			setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-			setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
+			//setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
+			//setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+			//setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 			setAllMargins(0);
 			String action = iwc.getParameter(controlParameter);
 			if (action == null) {
@@ -803,9 +808,9 @@ public class IBApplication extends IWApplication {
 		public void main(IWContext iwc) {
 			IWBundle _iwrb = getBundle(iwc);
 			String controlParameter = "builder_controlparameter";
-			setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
-			setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-			setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
+			//setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
+			//setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+			//setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 			Image tilerCell = Table.getTransparentCell(iwc);
 			tilerCell.setHeight("100%");
 			tilerCell.setWidth(5);
