@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.131 2002/09/30 08:28:08 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.132 2002/09/30 12:39:41 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -807,10 +807,10 @@ public class BuilderLogic
 		}
 		private void init(IWContext iwc)
 		{
-			_layer = new Layer();
-			_tableLayer = new Layer();
+			_layer = new Layer(Layer.DIV);
+			_tableLayer = new Layer(Layer.DIV);
 			_tableLayer.setZIndex(0);
-			//_tableLayer.setPositionType(Layer.RELATIVE);
+			//_tableLayer.setPositionType(Layer.ABSOLUTE);
 			//_layer.setPositionType(Layer.RELATIVE);
 			/** To work around layer stacking in Opera browser version 5, revise for newer versions */
 			boolean hideLayer = iwc.isOpera();
@@ -829,7 +829,7 @@ public class BuilderLogic
 			controlLayer.setHeight(1);*/
 			Layer layer2 = new Layer(Layer.DIV);
 			layer2.setZIndex(37999);
-			layer2.setPositionType(Layer.RELATIVE);
+			layer2.setPositionType(Layer.ABSOLUTE);
 			layer2.setWidth(0);
 			layer2.setHeight(0);
 			Layer layer = new Layer(Layer.DIV);
