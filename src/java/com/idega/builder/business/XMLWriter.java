@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.6 2001/09/18 17:19:45 palli Exp $
+ * $Id: XMLWriter.java,v 1.7 2001/09/19 23:31:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -312,7 +312,11 @@ public class XMLWriter {
       System.out.println("x="+xpos);
       System.out.println("y="+ypos);
       Element parent = findModule(xml,parentObjectInstanceID);
-      parent.addContent(region);
+      if (parent != null)
+        parent.addContent(region);
+      else { //Þetta er í síðu sem extendar template
+        xml.getPageRootElement().addContent(region);
+      }
     }
     else{
       addNewModule(region,newICObjectID);

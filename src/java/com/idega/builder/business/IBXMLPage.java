@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.6 2001/09/19 13:36:37 palli Exp $
+ * $Id: IBXMLPage.java,v 1.7 2001/09/19 23:31:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -139,19 +139,15 @@ public class IBXMLPage {
 
   public boolean update() {
     try {
-      System.out.println("starting update");
       IBPage ibpage = new IBPage(Integer.parseInt(_key));
       OutputStream stream = ibpage.getPageValueForWrite();
       store(stream);
       ibpage.update();
-      System.out.println("Getting children");
       java.util.Hashtable h = (java.util.Hashtable)getChildren();
       if (h != null) {
-        System.out.println("Got children hashtable");
         java.util.Enumeration e = h.keys();
         while (e.hasMoreElements()) {
           String invalid = (String)e.nextElement();
-          System.out.println("invalidating page " + invalid);
           PageCacher.flagPageInvalid(invalid);
         }
       }

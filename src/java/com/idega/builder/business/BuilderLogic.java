@@ -427,8 +427,6 @@ public class BuilderLogic{
         IBXMLPage xml = getIBXMLPage(pageKey);
         boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
         if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)){
-          //System.out.println("propertyName="+propertyName);
-          //System.out.println("propertyValue="+propertyValue);
           xml.update();
           return true;
         }

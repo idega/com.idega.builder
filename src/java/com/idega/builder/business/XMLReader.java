@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.8 2001/09/19 01:06:19 palli Exp $
+ * $Id: XMLReader.java,v 1.9 2001/09/19 23:31:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,11 +46,13 @@ public class XMLReader {
         hasTemplate = true;
         parentContainer = PageCacher.getPage(at.getValue());
 //        parentContainer._children.put(ibxml.getPopulatedPage().getID(),null);
-//        ((Page)parentContainer).setIsTemplate();
+        ((Page)parentContainer).setIsTemplate();
         //parseXML(at.getValue(),verifyPage,parent);
       }
-      if (at.getName().equals(XMLConstants.PAGE_TYPE_TEMPLATE)) {
-        isTemplate = true;
+      else if (at.getName().equals(XMLConstants.PAGE_TYPE)) {
+        if (at.getValue().equals(XMLConstants.PAGE_TYPE_TEMPLATE)) {
+          isTemplate = true;
+        }
       }
       else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
         pageKey = (String)at.getValue();
@@ -61,10 +63,14 @@ public class XMLReader {
       parentContainer = new Page();
     }
 
-    if (isTemplate) {
+/*    if (isTemplate) {
       if (parentContainer != null)
         parentContainer.setIsTemplate();
     }
+    else {
+      if (parentContainer != null)
+        parentContainer.setIsPage();
+    }*/
 
     if (pageXML.hasChildren()) {
       List children = pageXML.getChildren();
@@ -72,6 +78,7 @@ public class XMLReader {
 
       while (it.hasNext()) {
         Element child = (Element)it.next();
+
         if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)){
           setProperties(child,parentContainer);
         }
@@ -145,8 +152,6 @@ public class XMLReader {
           }
         }
 
-
-
         if (regionParent instanceof com.idega.jmodule.object.Page) {
             if ((regionID == null) || (regionID.equals(""))) {
                 System.err.println("Missing id attribute for region tag");
@@ -156,33 +161,16 @@ public class XMLReader {
                 newRegionParent = (ModuleObjectContainer)regionParent.getContainedObject(regionID);
             }
         }
-        if (regionParent instanceof com.idega.jmodule.object.Table) {
+        else if (regionParent instanceof com.idega.jmodule.object.Table) {
             newRegionParent = ((Table)regionParent).containerAt(x,y);
         }
 
-        //Map regions = getRegions(regionParent);
-        //if (regions.containsKey(regionId)) {
-        //  regionParent = (ModuleObjectContainer)regions.get(regionId);
-        //}
-        //}
-        //else {
-        //Region region = new Region(regionId,x,y,true);
-        //regions.put(regionId,regionParent);
-        //if (regionParent instanceof com.idega.jmodule.object.Table) {
-        //  com.idega.jmodule.object.Table tab = (com.idega.jmodule.object.Table)regionParent;
-        //  tab.add(region,x,y);
-        //}
-        //else
-        //  regionParent.add(region);
-        //}
-
         if (reg.hasChildren()) {
-            List children = reg.getChildren();
-            Iterator childrenIt = children.iterator();
+          List children = reg.getChildren();
+          Iterator childrenIt = children.iterator();
 
-            while (childrenIt.hasNext())
-                //parseElement((Element)childrenIt.next(),regionParent,regionId);
-                parseElement((Element)childrenIt.next(),newRegionParent);
+          while (childrenIt.hasNext())
+            parseElement((Element)childrenIt.next(),newRegionParent);
         }
     }
 
