@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.29 2001/12/18 18:38:40 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.30 2002/02/22 16:26:55 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -259,8 +259,8 @@ public class IBPropertyHandler {
      */
     public String getMethodParameterProperty(IWContext iwc,String ICObjectInstanceID,String methodIdentifier,int parameterIndex,String paramKey){
       try {
-        IWBundle iwb = ICObjectBusiness.getBundleForInstance(ICObjectInstanceID,iwc.getApplication());
-        Class objectClass = ICObjectBusiness.getClassForInstance(ICObjectInstanceID);
+        IWBundle iwb = ICObjectBusiness.getInstance().getBundleForInstance(ICObjectInstanceID,iwc.getApplication());
+        Class objectClass = ICObjectBusiness.getInstance().getClassForInstance(ICObjectInstanceID);
         IWPropertyList component = iwb.getComponentList().getIWPropertyList(objectClass.getName());
         IWPropertyList methodList = component.getIWPropertyList(METHODS_KEY);
         IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);

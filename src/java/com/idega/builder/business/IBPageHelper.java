@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.7 2002/02/18 00:16:44 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.8 2002/02/22 16:27:50 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ import com.idega.xml.XMLAttribute;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Iterator;
+import com.idega.presentation.IWContext;
 import java.util.Map;
 
 /**
@@ -49,8 +50,11 @@ public class IBPageHelper {
    *
    * @return The id of the new IBPage
    */
+
   public static int createNewPage(String parentId, String name, String type, String templateId, Map tree) {
+
     IBPage ibPage = new IBPage();
+
     if (name == null)
       name = "Untitled";
     ibPage.setName(name);

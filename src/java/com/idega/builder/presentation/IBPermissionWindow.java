@@ -80,10 +80,10 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       switch (intPermissionCategory) {
         case AccessControl._CATEGORY_OBJECT_INSTANCE :
-          keys = iwc.getAccessController().getICObjectPermissionKeys(ICObjectBusiness.getICObjectClassForInstance(Integer.parseInt(identifier)));
+          keys = iwc.getAccessController().getICObjectPermissionKeys(ICObjectBusiness.getInstance().getICObjectClassForInstance(Integer.parseInt(identifier)));
           break;
         case AccessControl._CATEGORY_OBJECT :
-          keys = iwc.getAccessController().getICObjectPermissionKeys(ICObjectBusiness.getICObjectClass(Integer.parseInt(identifier)));
+          keys = iwc.getAccessController().getICObjectPermissionKeys(ICObjectBusiness.getInstance().getICObjectClass(Integer.parseInt(identifier)));
           break;
         case AccessControl._CATEGORY_BUNDLE :
           keys = iwc.getAccessController().getBundlePermissionKeys(identifier);

@@ -78,6 +78,7 @@ public class PageCacher{
     xml = getXML(key);
     if(xml!=null){
       return (Page)xml.getPopulatedPage().clone();
+      //return (Page)xml.getPopulatedPage();
     }
     return null;
   }

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.102 2002/02/22 15:14:30 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.103 2002/02/22 16:27:32 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -872,7 +872,7 @@ public class BuilderLogic {
     IBXMLPage xml = getIBXMLPage(pageKey);
     boolean blockDeleted = false;
     try {
-      PresentationObject Block = ICObjectBusiness.getNewObjectInstance(ICObjectInstanceID);
+      PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(ICObjectInstanceID);
       if (Block != null) {
 	if (Block instanceof IWBlock) {
 	  blockDeleted = ((IWBlock)Block).deleteBlock(ICObjectInstanceID);
