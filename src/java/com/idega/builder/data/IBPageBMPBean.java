@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.18 2004/09/20 17:43:55 eiki Exp $
+ * $Id: IBPageBMPBean.java,v 1.19 2004/09/27 13:51:36 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,10 @@ import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookupException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectReader;
 import com.idega.io.serialization.ObjectWriter;
@@ -657,5 +661,13 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		}	
 		
 		return super.getEntityState();
+	}
+	
+	public java.util.Collection ejbFindByTemplate(Integer templateID)throws javax.ejb.FinderException{
+	    Table table = new Table(this);
+	    	SelectQuery query = new SelectQuery(table);
+	    	query.addColumn(new WildCardColumn());
+	    	query.addCriteria(new MatchCriteria(table,getColumnTemplateID(),MatchCriteria.EQUALS,templateID));
+	    	return idoFindPKsByQuery(query);
 	}
 }

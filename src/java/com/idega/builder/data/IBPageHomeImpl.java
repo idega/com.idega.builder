@@ -1,5 +1,9 @@
 package com.idega.builder.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 
@@ -43,4 +47,10 @@ public class IBPageHomeImpl extends com.idega.data.IDOFactory implements ICPageH
  }
 
 
+    public Collection findByTemplate(Integer templateID) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids  = ((IBPageBMPBean)entity).ejbFindByTemplate(templateID);
+    		this.idoCheckInPooledEntity(entity);
+    		return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 }
