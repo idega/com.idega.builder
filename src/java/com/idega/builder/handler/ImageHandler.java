@@ -1,5 +1,5 @@
 /*
- * $Id: ImageHandler.java,v 1.8 2004/06/28 14:07:21 thomas Exp $
+ * $Id: ImageHandler.java,v 1.9 2004/09/01 17:19:33 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,6 +49,7 @@ public class ImageHandler implements ICPropertyHandler {
     }
     catch(NumberFormatException e) {
     	// thomas: can we really ignore this?
+    	//yes this case is handled in the inserter
     }
     // IBImageInserter extends PresentationObjectType
     return (PresentationObject) inserter;
