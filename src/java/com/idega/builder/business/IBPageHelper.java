@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.47 2005/03/01 23:25:03 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.48 2005/03/03 09:16:49 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -176,7 +176,8 @@ public class IBPageHelper implements Singleton  {
 	 * @return The id of the new IBPage
 	 */
 	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, int domainId){
-		return createNewPage(parentId,name,type,templateId,tree,creatorContext,subType,domainId);
+		String pageUri = null;
+		return createNewPage(parentId,name,type,templateId,pageUri,tree,creatorContext,subType,domainId);
 	}
 	
 	
