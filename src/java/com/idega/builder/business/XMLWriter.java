@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.34 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.35 2004/06/09 16:12:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,11 +9,9 @@
  */
 package com.idega.builder.business;
 
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.idegaweb.IWMainApplication;
@@ -444,13 +442,13 @@ public class XMLWriter {
 				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
 				instance.setICObjectID(newICObjectTypeID);
 				instance.setIBPageByKey(pageKey);
-				instance.insert();
+				instance.store();
 
-				ICObject obj = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).findByPrimaryKeyLegacy(newICObjectTypeID);
+				ICObject obj = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHome(ICObject.class)).findByPrimaryKey(newICObjectTypeID);
 				Class theClass = obj.getObjectClass();
 
 				XMLElement newElement = new XMLElement(XMLConstants.MODULE_STRING);
-				XMLAttribute aId = new XMLAttribute(XMLConstants.ID_STRING, Integer.toString(instance.getID()));
+				XMLAttribute aId = new XMLAttribute(XMLConstants.ID_STRING, instance.getPrimaryKey().toString());
 				XMLAttribute aIcObjectId = new XMLAttribute(XMLConstants.IC_OBJECT_ID_STRING, Integer.toString(newICObjectTypeID));
 				XMLAttribute aClass = new XMLAttribute(XMLConstants.CLASS_STRING, theClass.getName());
 
@@ -487,21 +485,23 @@ public class XMLWriter {
 	 */
 	public static boolean addNewModule(IBXMLAble xml, String pageKey, int parentObjectInstanceID, int newICObjectID, int xpos, int ypos, String label) {
 		String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
+		return addNewModule(xml,pageKey,parentObjectInstanceID,newICObjectID,regionId,label);
+	}
+	
+	public static boolean addNewModule(IBXMLAble xml, String pageKey, int parentObjectInstanceID, int newICObjectID, String regionId, String label) {
+		
 		XMLElement region = findRegion(xml, regionId);
 
 		if (region == null) {
-			region = new XMLElement(XMLConstants.REGION_STRING);
-			XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING, regionId);
-			region.setAttribute(id);
+			region = createRegion(regionId,label);
 			addNewModule(region, pageKey, newICObjectID);
-			XMLElement parent = findModule(xml, parentObjectInstanceID);
-			if (parent != null)
+			XMLElement parent = findModule(xml, parentObjectInstanceID);		
+			if (parent != null){
+				//This is in a page that is NOT extending a template (is a template itself)
 				parent.addContent(region);
-			else { //Þetta er í síðu sem extendar template
-				if (label != null) {
-					XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING, label);
-					region.setAttribute(labelAttribute);
-				}
+			}
+			else { 
+				//This is in a page that is extending a template
 				xml.getPageRootElement().addContent(region);
 			}
 		}
@@ -510,6 +510,17 @@ public class XMLWriter {
 		}
 		return true;
 
+	}
+	
+	protected static XMLElement createRegion(String regionId,String label){
+		XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
+		XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING, regionId);
+		region.setAttribute(id);
+		if (label != null) {
+			XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING, label);
+			region.setAttribute(labelAttribute);
+		}
+		return region;
 	}
 
 	/**
@@ -523,18 +534,28 @@ public class XMLWriter {
 	 *
 	 */
 	public static boolean addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
-		try {
-			return addNewModule(findModule(xml, Integer.parseInt(parentObjectInstanceID)), pageKey, newICObjectID);
+		if(label==null){
+			try {
+				return addNewModule(findModule(xml, Integer.parseInt(parentObjectInstanceID)), pageKey, newICObjectID);
+			}
+			catch (NumberFormatException nfe) {
+	
+				int parentID = Integer.parseInt(parentObjectInstanceID.substring(0, parentObjectInstanceID.indexOf(".")));
+				String theRest = parentObjectInstanceID.substring(parentObjectInstanceID.indexOf(".") + 1, parentObjectInstanceID.length());
+	
+				int xpos = Integer.parseInt(theRest.substring(0, theRest.indexOf(".")));
+				int ypos = Integer.parseInt(theRest.substring(theRest.indexOf(".") + 1, theRest.length()));
+	
+				return addNewModule(xml, pageKey, parentID, newICObjectID, xpos, ypos, label);
+			}
 		}
-		catch (NumberFormatException nfe) {
-
-			int parentID = Integer.parseInt(parentObjectInstanceID.substring(0, parentObjectInstanceID.indexOf(".")));
-			String theRest = parentObjectInstanceID.substring(parentObjectInstanceID.indexOf(".") + 1, parentObjectInstanceID.length());
-
-			int xpos = Integer.parseInt(theRest.substring(0, theRest.indexOf(".")));
-			int ypos = Integer.parseInt(theRest.substring(theRest.indexOf(".") + 1, theRest.length()));
-
-			return addNewModule(xml, pageKey, parentID, newICObjectID, xpos, ypos, label);
+		else{
+			int parentID=-1;
+			try{
+				parentID = Integer.parseInt(parentObjectInstanceID);
+			}
+			catch(NumberFormatException nfe){}
+			return addNewModule(xml, pageKey, parentID, newICObjectID, label, label);
 		}
 	}
 
@@ -542,7 +563,8 @@ public class XMLWriter {
 	 *
 	 */
 	public static boolean addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
-		return addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType.getID(), label);
+		int icObjectId = ((Number)newObjectType.getPrimaryKey()).intValue();
+		return addNewModule(xml, pageKey, parentObjectInstanceID, icObjectId, label);
 	}
 
 	/**
@@ -669,8 +691,8 @@ public class XMLWriter {
 			if (attribute != null) {
 				String ICObjectInstanceID = attribute.getValue();
 				try {
-					ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
-					instance.delete();
+					ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHome(ICObjectInstance.class)).findByPrimaryKey(Integer.parseInt(ICObjectInstanceID));
+					instance.remove();
 				}
 				catch (NumberFormatException e) {
 				}
@@ -786,7 +808,7 @@ public class XMLWriter {
 				String ICObjectInstanceID = attribute.getValue();
 				try {
 					ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
-					instance.delete();
+					instance.remove();
 				}
 				catch (NumberFormatException e) {
 				}
@@ -912,12 +934,12 @@ public class XMLWriter {
 			XMLAttribute attribute = element.getAttribute(XMLConstants.ID_STRING);
 			XMLAttribute object_id = element.getAttribute(XMLConstants.IC_OBJECT_ID_STRING);
 
-			ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
+			ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHome(ICObjectInstance.class)).create();
 			instance.setICObjectID(object_id.getIntValue());
 			instance.setIBPageByKey(pageKey);
-			instance.insert();
+			instance.store();
 
-			String moduleId = Integer.toString(instance.getID());
+			String moduleId = instance.getPrimaryKey().toString();
 			attribute = new XMLAttribute(XMLConstants.ID_STRING, moduleId);
 			element.setAttribute(attribute);
 
@@ -961,12 +983,13 @@ public class XMLWriter {
 
 			return (true);
 		}
-		catch (SQLException e) {
-			return (false);
-		}
 		catch (XMLException e) {
 			return (false);
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return (false);
+		}		
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.41 2004/02/02 12:12:39 aron Exp $
+ * $Id: IBCreatePageWindow.java,v 1.42 2004/06/09 16:12:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 		String topLevelString = iwc.getParameter(TOP_LEVEL);
 
 		if (type == null) {
-			String currPageType = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getType();
+			String currPageType = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc).getType();
 			if (currPageType.equals(IBXMLPage.TYPE_TEMPLATE))
 				type = IBPageHelper.TEMPLATE;
 			else

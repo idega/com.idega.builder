@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.146 2004/05/11 14:22:28 gummi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.147 2004/06/09 16:12:58 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -8,8 +8,8 @@ package com.idega.builder.business;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.Vector;
-
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
@@ -31,6 +31,8 @@ import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.presentation.HtmlPage;
+import com.idega.presentation.HtmlPageRegion;
 import com.idega.presentation.IFrameContainer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -39,6 +41,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.util.FileUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -93,7 +96,7 @@ public class BuilderLogic {
 	public boolean updatePage(int id) {
 		String theID = Integer.toString(id);
 		IBXMLPage xml = PageCacher.getXML(theID);
-		xml.update();
+		xml.store();
 		PageCacher.flagPageInvalid(theID);
 		return (true);
 	}
@@ -148,6 +151,8 @@ public class BuilderLogic {
 	 *  	 *
 	 */
 	public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc) {
+
+		//Begin with transforming the objects on a normal Page object (constructed from IBXML)
 		List list = page.getChildren();
 		if (list != null) {
 			ListIterator iter = list.listIterator();
@@ -155,9 +160,10 @@ public class BuilderLogic {
 			while (iter.hasNext()) {
 				int index = iter.nextIndex();
 				PresentationObject item = (PresentationObject) iter.next();
-				transformObject(pageKey, item, index, parent, "-1", iwc);
+				transformObject(page,pageKey, item, index, parent, "-1", iwc);
 			}
 		}
+		
 
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		boolean clipboardEmpty = true;
@@ -172,10 +178,35 @@ public class BuilderLogic {
 					page.add(getPasteIcon(Integer.toString(-1), iwc));
 				//page.add(layer);
 			}
+			if(page instanceof HtmlPage){
+				HtmlPage hPage = (HtmlPage)page;
+				Set regions = hPage.getRegionIds();
+				for (Iterator iter = regions.iterator(); iter.hasNext();) {
+					String regionKey = (String) iter.next();
+					hPage.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, regionKey),regionKey);
+				}
+			}
 		}
 		else {
-			page.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, null));
-			if (!clipboardEmpty)
+			boolean mayAddButtonsInPage=true;
+			IBXMLPage iPage = this.getIBXMLPage(pageKey);
+			if(iPage.getPageFormat().equals("HTML")){
+				mayAddButtonsInPage=false;
+				if(page instanceof HtmlPage){
+					HtmlPage hPage = (HtmlPage)page;
+					Set regions = hPage.getRegionIds();
+					for (Iterator iter = regions.iterator(); iter.hasNext();) {
+						String regionKey = (String) iter.next();
+						Text regionText = new Text(regionKey);
+						regionText.setFontColor("red");
+						hPage.add(regionText,regionKey);
+					}
+				}
+			}
+			if(mayAddButtonsInPage){
+				page.add(IBAddModuleWindow.getAddIcon(Integer.toString(-1), iwc, null));
+			}
+			if ((!clipboardEmpty)&&mayAddButtonsInPage)
 				page.add(getPasteIcon(Integer.toString(-1), iwc));
 			if (page.getIsTemplate())
 				if (page.isLocked())
@@ -265,7 +296,7 @@ public class BuilderLogic {
 		setProperty(pageKey, ICObjectInstanceID, "image_id", Integer.toString(imageID), iwma);
 	}
 
-	private void transformObject(String pageKey, PresentationObject obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
+	private void transformObject(Page currentPage,String pageKey, PresentationObject obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		boolean clipboardEmpty = true;
 		if (pasted != null)
@@ -326,10 +357,10 @@ public class BuilderLogic {
 						PresentationObjectContainer moc = tab.containerAt(x, y);
 						String newParentKey = obj.getICObjectInstanceID() + "." + x + "." + y;
 						if (moc != null) {
-							transformObject(pageKey, moc, -1, tab, newParentKey, iwc);
+							transformObject(currentPage,pageKey, moc, -1, tab, newParentKey, iwc);
 						}
-						Page curr = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
-						if (curr.getIsExtendingTemplate()) {
+						//Page currentPage = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
+						if (currentPage.getIsExtendingTemplate()) {
 							if (tab.getBelongsToParent()) {
 								if (!tab.isLocked(x, y)) {
 									tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
@@ -341,7 +372,7 @@ public class BuilderLogic {
 								tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 								if (!clipboardEmpty)
 									tab.add(getPasteIcon(newParentKey, iwc), x, y);
-								if (curr.getIsTemplate()) {
+								if (currentPage.getIsTemplate()) {
 									tab.add(IBObjectControl.getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 									if (tab.isLocked(x, y))
 										tab.add(IBLockRegionWindow.getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
@@ -354,7 +385,7 @@ public class BuilderLogic {
 							tab.add(IBAddModuleWindow.getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 							if (!clipboardEmpty)
 								tab.add(getPasteIcon(newParentKey, iwc), x, y);
-							if (curr.getIsTemplate()) {
+							if (currentPage.getIsTemplate()) {
 								tab.add(IBObjectControl.getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
 								if (tab.isLocked(x, y))
 									tab.add(IBLockRegionWindow.getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
@@ -376,11 +407,23 @@ public class BuilderLogic {
 						 * If parent is Table
 						 */
 						if (index == -1) {
-							transformObject(pageKey, item, index2, (PresentationObjectContainer) obj, parentKey, iwc);
+							transformObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, parentKey, iwc);
 						}
 						else {
-							String newParentKey = Integer.toString(obj.getICObjectInstanceID());
-							transformObject(pageKey, item, index2, (PresentationObjectContainer) obj, newParentKey, iwc);
+							String newParentKey = null;
+							//Ugly Hack of handling the regions inside HTML template based pages. This needs to change.
+							//TODO: Remove this instanceof case, to make that possible then the getICObjectInstanceID 
+							//		method needs to be changed to return String
+							if(obj instanceof HtmlPageRegion){
+								HtmlPageRegion region = (HtmlPageRegion)obj;
+								//newParentKey is normally an ICObjectInstanceId or -1 to mark the top page 
+								//but here we make a workaround.
+								newParentKey = region.getRegionId();
+							}
+							else{
+								newParentKey = Integer.toString(obj.getICObjectInstanceID());
+							}
+							transformObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, newParentKey, iwc);
 						}
 					}
 				}
@@ -425,7 +468,7 @@ public class BuilderLogic {
 		if (obj.getUseBuilderObjectControl()) {
 			if (index != -1) {
 				//parent.remove(obj);
-				//parent.add(new BuilderObjectControl(obj,parent));
+				//parent.add(new IBObjectControl(obj,parent,parentKey,iwc,index));
 				parent.set(index, new IBObjectControl(obj, parent, parentKey, iwc, index));
 			}
 		}
@@ -502,7 +545,58 @@ public class BuilderLogic {
 			return theReturn;
 	}
 
-	public IBXMLPage getCurrentIBXMLPage(IWContext iwc) {
+	
+	/**
+	 * Sets the source and pageFormat for current page and stores to the datastore
+	 * @param iwc IWContext to get the current page
+	 * @param pageFormat
+	 * @param stringSourceMarkup
+	 */
+	public boolean setPageSource(IWContext iwc,String pageFormat,String stringSourceMarkup){
+		String pageKey = getCurrentIBPage(iwc);
+		return setPageSource(pageKey,pageFormat,stringSourceMarkup);
+	}
+	
+	/**
+	 * Sets the source and pageFormat for the page with key pageKey and stores to the datastore
+	 * @param pageKey
+	 * @param pageFormat
+	 * @param stringSourceMarkup
+	 */
+	public boolean setPageSource(String pageKey,String pageFormat,String stringSourceMarkup){
+		try{
+			PageCacher.storePage(pageKey,pageFormat,stringSourceMarkup);
+			return true;
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * Gets the source code (IBXML,HTML) as a String for the current page
+	 * @param iwc IWContext to get the current page
+	 * @param pageFormat
+	 * @param stringSourceMarkup
+	 */
+	public String getPageSource(IWContext iwc){
+		String pageKey = getCurrentIBPage(iwc);
+		return getPageSource(pageKey);
+	}
+	
+	/**
+	 * Gets the source code (IBXML,HTML) as a String for the page with key pageKey
+	 * @param iwc IWContext to get the current page
+	 * @param pageFormat
+	 * @param stringSourceMarkup
+	 */
+	public String getPageSource(String pageKey){
+		return getIBXMLPage(pageKey).toString();
+	}	
+	
+	IBXMLPage getCurrentIBXMLPage(IWContext iwc) {
 		String key = getCurrentIBPage(iwc);
 		if (key != null) {
 			return (getIBXMLPage(key));
@@ -533,7 +627,7 @@ public class BuilderLogic {
 	public boolean removeProperty(IWMainApplication iwma, String pageKey, int ObjectInstanceId, String propertyName, String[] values) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (XMLWriter.removeProperty(iwma, xml, ObjectInstanceId, propertyName, values)) {
-			xml.update();
+			xml.store();
 			return true;
 		}
 		else {
@@ -565,7 +659,7 @@ public class BuilderLogic {
 			IBXMLPage xml = getIBXMLPage(pageKey);
 			boolean allowMultivalued = isPropertyMultivalued(propertyName, ObjectInstanceId, iwma);
 			if (XMLWriter.setProperty(iwma, xml, ObjectInstanceId, propertyName, propertyValues, allowMultivalued)) {
-				xml.update();
+				xml.store();
 				return (true);
 			}
 			else {
@@ -607,7 +701,7 @@ public class BuilderLogic {
 			ex.printStackTrace();
 		}
 		if (XMLWriter.deleteModule(xml, parentObjectInstanceID, ICObjectInstanceID)) {
-			xml.update();
+			xml.store();
 			return (true);
 		}
 		else {
@@ -640,7 +734,7 @@ public class BuilderLogic {
 			return (false);
 		XMLElement toPaste = (XMLElement) element.clone();
 		if (XMLWriter.pasteElement(xml, pageKey, parentID, toPaste)) {
-			xml.update();
+			xml.store();
 			return (true);
 		}
 		return (false);
@@ -659,7 +753,7 @@ public class BuilderLogic {
 			return (false);
 		XMLElement toPaste = (XMLElement) element.clone();
 		if (XMLWriter.pasteElementAbove(xml, pageKey, parentID, objectID, toPaste)) {
-			xml.update();
+			xml.store();
 			return (true);
 		}
 		return (false);
@@ -668,9 +762,9 @@ public class BuilderLogic {
 	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (XMLWriter.lockRegion(xml, parentObjectInstanceID)) {
-			xml.update();
+			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
-				if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
+				if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
 					List extend = xml.getUsingTemplate();
 					if (extend != null) {
 						Iterator i = extend.iterator();
@@ -687,9 +781,9 @@ public class BuilderLogic {
 	public boolean unlockRegion(String pageKey, String parentObjectInstanceID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (XMLWriter.unlockRegion(xml, parentObjectInstanceID)) {
-			xml.update();
+			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
-				if (xml.getType().equals(xml.TYPE_TEMPLATE)) {
+				if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
 					List extend = xml.getUsingTemplate();
 					if (extend != null) {
 						Iterator i = extend.iterator();
@@ -712,7 +806,7 @@ public class BuilderLogic {
 	public boolean addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label)) {
-			xml.update();
+			xml.store();
 			return (true);
 		}
 		else {
@@ -726,7 +820,7 @@ public class BuilderLogic {
 	public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label)) {
-			xml.update();
+			xml.store();
 			return true;
 		}
 		else {
@@ -783,7 +877,7 @@ public class BuilderLogic {
 	public boolean setTemplateId(String pageKey, String id) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (XMLWriter.setAttribute(xml, "-1", XMLConstants.TEMPLATE_STRING, id)) {
-			xml.update();
+			xml.store();
 			return true;
 		}
 		return (false);
@@ -809,7 +903,7 @@ public class BuilderLogic {
 	public boolean labelRegion(String pageKey, String parentObjectInstanceID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (XMLWriter.labelRegion(xml, parentObjectInstanceID, label)) {
-			xml.update();
+			xml.store();
 			return true;
 		}
 		return (false);
@@ -940,7 +1034,7 @@ public class BuilderLogic {
 		element.setAttribute(id);
 		element.setAttribute(newPageLink);
 		XMLWriter.addNewElement(page, -1, element);
-		page.update();
+		page.store();
 		PageCacher.flagPageInvalid(currentPageID);
 	}
 

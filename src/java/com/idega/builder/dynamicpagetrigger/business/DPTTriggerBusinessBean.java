@@ -302,7 +302,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     
     IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
 	currentXMLPage.getPageRootElement().setAttribute(XMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(((rootPageID!=-1)?rootPageID:id)));
-	currentXMLPage.update();
+	currentXMLPage.store();
     Page current = currentXMLPage.getPopulatedPage();
     List children = current.getChildrenRecursive();
 

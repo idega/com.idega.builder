@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.37 2004/06/01 15:20:57 thomas Exp $
+ * $Id: IBPageHelper.java,v 1.38 2004/06/09 16:12:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -288,7 +288,7 @@ public class IBPageHelper {
 				}
 			}
 			
-			currentXMLPage.update();
+			currentXMLPage.store();
 		}
 		int id = ibPage.getID();
 		if (tree != null) {
@@ -374,7 +374,7 @@ public class IBPageHelper {
 						if (inst != null) {
 							instance.setParentInstanceID(inst.getID());
 						}
-						instance.setIBPageByKey(xmlpage.getKey());
+						instance.setIBPageByKey(xmlpage.getPageKey());
 						instance.insert();
 						instancePK = instance.getPrimaryKey();
 						cSession.setNewValue(ICObjectInstance.class,instanceKey,instancePK);
@@ -388,7 +388,7 @@ public class IBPageHelper {
 						return false;
 					}
 					if (obj instanceof DPTInheritable) {
-							boolean ok = ((DPTInheritable) obj).copyICObjectInstance(xmlpage.getKey(),instance.getID(),cSession);
+							boolean ok = ((DPTInheritable) obj).copyICObjectInstance(xmlpage.getPageKey(),instance.getID(),cSession);
 							if (!ok) {
 								System.err.println("changeInstanceId - copyICObjectInstance failed");
 								return false;

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.44 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.45 2004/06/09 16:12:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,18 +11,22 @@ package com.idega.builder.business;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
+import javax.ejb.FinderException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.data.IDOLookupException;
 import com.idega.exception.PageDoesNotExist;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
 import com.idega.presentation.Page;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -34,7 +38,9 @@ import com.idega.xml.XMLParser;
  * A class that reads XML page descriptions from the database and returns
  * the elements/modules/applications it contains.
  *
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>, <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
+ * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>, 
+ * <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * 
  * @version 1.0
  */
 public class IBXMLPage implements IBXMLAble {
@@ -43,31 +49,102 @@ public class IBXMLPage implements IBXMLAble {
 	public final static String TYPE_DRAFT = XMLConstants.PAGE_TYPE_DRAFT;
 	public final static String TYPE_DPT_TEMPLATE = XMLConstants.PAGE_TYPE_DPT_TEMPLATE;
 	public final static String TYPE_DPT_PAGE = XMLConstants.PAGE_TYPE_DPT_PAGE;
-	private XMLParser _parser = null;
-	private XMLDocument _xmlDocument = null;
-	private XMLElement _rootElement = null;
-	private Page _populatedPage = null;
+	private XMLParser parser = null;
+	private XMLDocument xmlDocument = null;
+	private XMLElement rootElement = null;
+	protected Page _populatedPage = null;
 	private String _key;
 	private ICPage _ibPage;
-
 	private String _type = TYPE_PAGE;
-
 	private List _usingTemplate = null;
+	private String pageFormat;
+	private boolean verifyXML=false;
+	protected String stringSourceXML;
+	
+	/**
+	 * Default constructor.
+	 * Does nothing but set default values.
+	 */
+	public IBXMLPage(){
+		//Default constructor
+	}
 
+	
 	private IBXMLPage(boolean verify) {
-		_parser = new XMLParser(verify);
+		setVerifyXML(verify);
+		//_parser = new XMLParser(verify);
 	}
 
 	public IBXMLPage(boolean verify, String key) {
 		this(verify);
-		_key = key;
+		setPageKey(key);
+	}
 
+	/**
+	 * Sets the key for the page for this instance to represent.
+	 * This is typically an id to a ICPage or ib_page.
+	 */
+	public void setPageKey(String key){
+		_key = key;
 		ICPage ibpage = null;
 		try {
 			ICPageHome pHome = (ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class);
 			int pageId = Integer.parseInt(key);
 			ibpage = pHome.findByPrimaryKey(pageId);
-			readXMLDocument(ibpage.getPageValue());
+			setICPage(ibpage);
+		}
+		/*catch (PageDoesNotExist pe) {
+			int template = ibpage.getTemplateId();
+			String templateString = null;
+			if (template != -1)
+				templateString = Integer.toString(template);
+			if (ibpage.isPage())
+				setPageAsEmptyPage(TYPE_PAGE, templateString);
+			else if (ibpage.isDraft())
+				setPageAsEmptyPage(TYPE_DRAFT, templateString);
+			else if (ibpage.isTemplate())
+				setPageAsEmptyPage(TYPE_TEMPLATE, templateString);
+			else if (ibpage.isDynamicTriggeredTemplate())
+				setPageAsEmptyPage(TYPE_DPT_TEMPLATE, templateString);
+			else if (ibpage.isDynamicTriggeredPage())
+				setPageAsEmptyPage(TYPE_DPT_PAGE, templateString);
+			else
+				setPageAsEmptyPage(TYPE_PAGE, templateString);
+		}*/
+		catch (NumberFormatException ne) {
+			try {
+				InputStream stream = new FileInputStream(key);
+				readPageStream(stream);
+			}
+			catch (FileNotFoundException fnfe) {
+				fnfe.printStackTrace();
+			}
+			catch (PageDoesNotExist pe) {
+				setPageAsEmptyPage(null, null);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+/*		String tmp = ibpage.getType();
+		String tmp2 = IBPageBMPBean.PAGE;
+		if (ibpage.getType().equals(IBPageBMPBean.PAGE)) {
+			Page p = getPopulatedPage();
+			if (p.getTitle() == null || p.getTitle().trim().equals("")) {
+				p.setTitle(ibpage.getName());
+			}
+		}*/
+	}
+	
+	/** 
+	 * This method is called from setPageKey to initialize the page document.
+	 * @return
+	 * @throws PageDoesNotExist
+	 */
+	protected void setICPage(ICPage ibpage){
+		try{
+			setPageFormat(ibpage.getFormat());
+			readPageStream(ibpage.getPageValue());
 			if (ibpage.isPage())
 				setType(TYPE_PAGE);
 			else if (ibpage.isDraft())
@@ -99,33 +176,23 @@ public class IBXMLPage implements IBXMLAble {
 			else
 				setPageAsEmptyPage(TYPE_PAGE, templateString);
 		}
-		catch (NumberFormatException ne) {
-			try {
-				InputStream stream = new FileInputStream(key);
-				readXMLDocument(stream);
-			}
-			catch (FileNotFoundException fnfe) {
-				fnfe.printStackTrace();
-			}
-			catch (PageDoesNotExist pe) {
-				setPageAsEmptyPage(null, null);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		setPopulatedPage(XMLReader.getPopulatedPage(this));
-/*		String tmp = ibpage.getType();
-		String tmp2 = IBPageBMPBean.PAGE;
-		if (ibpage.getType().equals(IBPageBMPBean.PAGE)) {
-			Page p = getPopulatedPage();
-			if (p.getTitle() == null || p.getTitle().trim().equals("")) {
-				p.setTitle(ibpage.getName());
-			}
-		}*/
 	}
-
-	public String getKey() {
+	
+	/** 
+	 * This method is called from setICPage to read into this page 
+	 * from the page stream (from the database).
+	 * @return
+	 * @throws PageDoesNotExist
+	 */
+	protected void readPageStream(InputStream stream) throws PageDoesNotExist{
+		readXMLDocument(stream);
+	}
+	
+	/**
+	 * Gets the key for the page that this instance represents.
+	 * This is typically an id to a ICPage or ib_page.
+	 */
+	public String getPageKey() {
 		return _key;
 	}
 
@@ -160,7 +227,7 @@ public class IBXMLPage implements IBXMLAble {
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			ICPage p = (ICPage) i.next();
-			addUsingTemplate(Integer.toString(p.getID()));
+			addUsingTemplate(p.getPrimaryKey().toString());
 		}
 	}
 
@@ -180,40 +247,67 @@ public class IBXMLPage implements IBXMLAble {
 		}
 	}
 
-	public synchronized boolean update() {
+	public synchronized boolean store() {
 		try {
-			ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
+			ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(new Integer(_key));
+			ibpage.setFormat(this.getPageFormat());
 			OutputStream stream = ibpage.getPageValueForWrite();
-			store(stream);
-			ibpage.update();
+			storeStream(stream);
+			ibpage.store();
 		}
 		catch (NumberFormatException ne) {
-			try {
+			/*try {
 				OutputStream stream = new FileOutputStream(_key);
 				store(stream);
 			}
 			catch (FileNotFoundException fnfe) {
 				fnfe.printStackTrace();
-			}
+			}*/
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
-		setPopulatedPage(XMLReader.getPopulatedPage(this));
+		//setPopulatedPage(XMLReader.getPopulatedPage(this));
+		setPopulatedPage(null);
 		if (_type.equals(TYPE_TEMPLATE))
 			invalidateUsingTemplate();
-
+		
 		return true;
 	}
 
-	private synchronized void store(OutputStream stream) {
-		try {
-			XMLOutput output = new XMLOutput("  ", true);
-			output.setLineSeparator(System.getProperty("line.separator"));
-			output.setTextNormalize(true);
-			//      output.setEncoding("UTF-16");
-			output.output(_xmlDocument, stream);
-			stream.close();
+	/**
+	 * Writes this page to the given OutputStream stream.
+	 * Called from the update method
+	 * @param stream
+	 */
+	protected synchronized void storeStream(OutputStream stream) {
+	try {
+		
+		if(this.getPageFormat().equals("IBXML")){
+				
+				XMLOutput output = new XMLOutput("  ", true);
+				output.setLineSeparator(System.getProperty("line.separator"));
+				output.setTextNormalize(true);
+				//output.setEncoding("UTF-16");
+				output.output(getXMLDocument(), stream);
+				stream.close();
+			}
+			else if(this.getPageFormat().equals("HTML")){
+				
+				String theString = this.toString();
+				StringReader sr = new StringReader(theString);
+				OutputStreamWriter out = new OutputStreamWriter(stream);
+				int bufferlength=1000;
+				char[] buf = new char[bufferlength];
+				int read = sr.read(buf);
+				while (read!=-1){
+					out.write(buf,0,read);
+					read = sr.read(buf);
+				}
+				sr.close();
+				out.close();
+				stream.close();
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.err);
@@ -224,7 +318,17 @@ public class IBXMLPage implements IBXMLAble {
 		_populatedPage = page;
 	}
 
+	/**
+	 * Gets the com.idega.presentation.Page document instanciated for this page.
+	 * @return
+	 */
 	public Page getPopulatedPage() {
+		//Lazily load
+		if(_populatedPage==null){
+			synchronized(BuilderLogic.getInstance()){
+				setPopulatedPage(XMLReader.getPopulatedPage(this));
+			}
+		}
 		return _populatedPage;
 	}
 
@@ -239,16 +343,23 @@ public class IBXMLPage implements IBXMLAble {
 		try {
 			//_xmlDocument = _parser.parse(URI);
 			//_rootElement = _xmlDocument.getRootElement();
-			this.setXMLDocument(_parser.parse(URI));
+			this.setXMLDocument(getParser().parse(URI));
 		}
 		catch (XMLException e) {
 			throw new PageDoesNotExist();
 		}
 	}
 
+	private XMLDocument getXMLDocument(){
+		if(xmlDocument==null){
+			throw new RuntimeException(this.getClass()+": xmlDocument is not initialized");
+		}
+		return xmlDocument;
+	}
+	
 	private void setXMLDocument(XMLDocument document) {
-		this._xmlDocument = document;
-		this._rootElement = document.getRootElement();
+		this.xmlDocument = document;
+		this.rootElement = document.getRootElement();
 	}
 
 	public String getName() {
@@ -273,7 +384,7 @@ public class IBXMLPage implements IBXMLAble {
 		try {
 			ICPage page = getIBPage();
 			page.setTemplateId(id);
-			page.update();
+			page.store();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -284,15 +395,15 @@ public class IBXMLPage implements IBXMLAble {
 		try {
 			ICPage page = getIBPage();
 			page.setName(name);
-			page.update();
+			page.store();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	ICPage getIBPage() throws Exception {
-		return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
+	ICPage getIBPage() throws IDOLookupException, NumberFormatException, FinderException{
+		return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(Integer.parseInt(_key));
 	}
 
 	/**
@@ -305,7 +416,7 @@ public class IBXMLPage implements IBXMLAble {
 	public void readXMLDocument(InputStream stream) throws PageDoesNotExist {
 		boolean streamopen = true;
 		try {
-			this.setXMLDocument(_parser.parse(stream));
+			this.setXMLDocument(getParser().parse(stream));
 			//_xmlDocument = _parser.parse(stream);
 			stream.close();
 			//_rootElement = _xmlDocument.getRootElement();
@@ -333,7 +444,8 @@ public class IBXMLPage implements IBXMLAble {
 	}
 
 	public void setPageAsEmptyPage(String type, String template) {
-		_rootElement = new XMLElement(XMLConstants.ROOT_STRING);
+		XMLElement _rootElement = new XMLElement(XMLConstants.ROOT_STRING);
+		setRootElement(_rootElement);
 		XMLElement pageElement = new XMLElement(XMLConstants.PAGE_STRING);
 
 		if (type == null)
@@ -357,18 +469,28 @@ public class IBXMLPage implements IBXMLAble {
 	}
 
 	/**
+	 * A function that sets the root element for the given page xml document.
+	 */
+	public void setRootElement(XMLElement rootElement){
+		this.rootElement=rootElement;
+	}
+	
+	/**
 	 * A function that returns the root element for the given page description file.
 	 *
 	 * @return The root element. Null if the page description file is not set.
 	 * @todo Wrap the Element class to hide all implementation of the XML parser.
 	 */
 	public XMLElement getRootElement() {
-		return _rootElement;
+		if(rootElement==null){
+			rootElement=getXMLDocument().getRootElement();
+		}
+		return rootElement;
 	}
 
 	public XMLElement getPageRootElement() {
-		if (_rootElement != null) {
-			return _rootElement.getChild(XMLConstants.PAGE_STRING);
+		if (getRootElement() != null) {
+			return getRootElement().getChild(XMLConstants.PAGE_STRING);
 		}
 		return null;
 	}
@@ -412,17 +534,30 @@ public class IBXMLPage implements IBXMLAble {
 		return _type;
 	}
 
+	public String getSourceAsString(){
+		return stringSourceXML;
+	}
+	
 	public void setSourceFromString(String xmlRepresentation) throws Exception {
-		StringReader reader = new StringReader(xmlRepresentation);
-		XMLParser parser = new XMLParser();
-		XMLDocument doc = parser.parse(reader);
-		setXMLDocument(doc);
-		update();
+		stringSourceXML=xmlRepresentation;
+		try{
+			StringReader reader = new StringReader(xmlRepresentation);
+			XMLParser parser = new XMLParser();
+			XMLDocument doc = parser.parse(reader);
+			setXMLDocument(doc);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		//update();
 	}
 
 	public String toString() {
-		XMLElement root = getRootElement();
-		if (root != null) {
+		if(getSourceAsString()!=null){
+			return getSourceAsString();
+		}
+		else if (getRootElement() != null) {
+			XMLElement root = getRootElement();
 			try {
 				XMLOutput output = new XMLOutput();
 				return output.outputString(root);
@@ -437,5 +572,41 @@ public class IBXMLPage implements IBXMLAble {
 
 	public XMLElement copyModule(String pageKey, int ICObjectInstanceID) {
 		return XMLWriter.copyModule(this, ICObjectInstanceID);
+	}
+	/**
+	 * @return Returns the pageFormat.
+	 */
+	public String getPageFormat() {
+		return pageFormat;
+	}
+	/**
+	 * @param pageFormat The pageFormat to set.
+	 */
+	public void setPageFormat(String pageFormat) {
+		this.pageFormat = pageFormat;
+	}
+	/**
+	 * Gets if the XML parser should verify the XML source.
+	 * Default is false.
+	 * @return Returns the verifyXML.
+	 */
+	public boolean getIfVerifyXML() {
+		return verifyXML;
+	}
+	/**
+	 * Sets if the XML parser should verify the XML source.
+	 * Default is false.
+	 * 	 * @param verifyXML The verifyXML to set.
+	 */
+	public void setVerifyXML(boolean verifyXML) {
+		this.verifyXML = verifyXML;
+	}
+	
+	
+	protected XMLParser getParser(){
+		if(parser==null){
+			parser=new XMLParser(this.getIfVerifyXML());
+		}
+		return parser;
 	}
 }

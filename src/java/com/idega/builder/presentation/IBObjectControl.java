@@ -15,6 +15,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
+import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
@@ -62,7 +63,8 @@ public class IBObjectControl extends PresentationObjectContainer
 	{
 		try
 		{
-			Script script = getParentPage().getAssociatedScript();
+			Page page = getParentPage();
+			Script script = page.getAssociatedScript();
 			script.addFunction(
 				"findObj(n, d)",
 				"function findObj(n, d) { \n\t var p,i,x;  if(!d) d=document; \n\t if((p=n.indexOf(\"?\"))>0&&parent.frames.length) { \n\t     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p); \n\t } \n\t  if(!(x=d[n])&&d.all) x=d.all[n]; \n\t for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n]; \n\t  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); \n\t if(!x && document.getElementById) x=document.getElementById(n); return x; \n }");
@@ -332,7 +334,7 @@ public class IBObjectControl extends PresentationObjectContainer
 			_layer.setHeight(obj.getHeight());
 			_table.setHeight(obj.getHeight());
 		}
-		if (obj.isMarkupAttributeSet(obj.HORIZONTAL_ALIGNMENT))
+		if (obj.isMarkupAttributeSet(PresentationObject.HORIZONTAL_ALIGNMENT))
 		{
 			_layer.setHorizontalAlignment(obj.getHorizontalAlignment());
 		}

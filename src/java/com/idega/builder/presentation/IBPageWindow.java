@@ -34,9 +34,10 @@ public class IBPageWindow extends IWAdminWindow {
   private static final String TOP_LEVEL = "top_level";
 
   public IBPageWindow() {
-    setWidth(280);
-    setHeight(180);
+    setWidth(300);
+    setHeight(200);
     setScrollbar(false);
+    this.setResizable(true);
   }
 
 

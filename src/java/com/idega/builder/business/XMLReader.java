@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.52 2004/05/11 14:35:04 gummi Exp $
+ * $Id: XMLReader.java,v 1.53 2004/06/09 16:12:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,10 +12,11 @@ package com.idega.builder.business;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.event.ObjectInstanceCacher;
+import com.idega.presentation.HtmlPage;
+import com.idega.presentation.HtmlPageRegion;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
@@ -25,7 +26,8 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
 
 /**
- * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>,<a href="palli@idega.is">Pall Helgason</a>
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>,
+ * <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class XMLReader {
@@ -129,7 +131,7 @@ public class XMLReader {
 		}
 		catch (NumberFormatException e) {
 			try {
-				parentContainer.setPageID(Integer.parseInt(ibxml.getKey()));
+				parentContainer.setPageID(Integer.parseInt(ibxml.getPageKey()));
 			}
 			catch (NumberFormatException ex) {
 				//      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
@@ -236,23 +238,35 @@ public class XMLReader {
 			}
 			catch (NumberFormatException e) {
 				//Integer.parseInt(regionID.substring(0, regionID.indexOf(".")));
-				String theRest = regionID.substring(regionID.indexOf(".") + 1, regionID.length());
-				x = Integer.parseInt(theRest.substring(0, theRest.indexOf(".")));
-				y = Integer.parseInt(theRest.substring(theRest.indexOf(".") + 1, theRest.length()));
+				int indexOfDot = regionID.indexOf(".");
+				if(indexOfDot!=-1){
+					String theRest = regionID.substring(indexOfDot + 1, regionID.length());
+					x = Integer.parseInt(theRest.substring(0, theRest.indexOf(".")));
+					y = Integer.parseInt(theRest.substring(theRest.indexOf(".") + 1, theRest.length()));
+				}
 			}
 		}
 
 		boolean parseChildren = true;
 		boolean emptyParent = false;
-
+		/*if (regionParent instanceof HtmlPage) {
+			HtmlPage hPage = (HtmlPage)regionParent;
+			HtmlPageRegion regionContainer = hPage.getRegion(regionID);
+			newRegionParent = regionContainer;
+			//regionContainer.setRegionId(regionID);
+			//hPage.add(newRegionParent,regionID);
+		}
+		else 
+		*/
 		if (regionParent instanceof com.idega.presentation.Page) {
 			if ((regionID == null) || (regionID.equals(""))) {
 				System.err.println("Missing id attribute for region tag");
 				return;
 			}
 			if (((Page) regionParent).getIsExtendingTemplate()) {
+				
 				newRegionParent = (PresentationObjectContainer) regionParent.getContainedObject(regionID);
-
+					
 				if (newRegionParent == null) {
 					if (label != null) {
 						newRegionParent = (PresentationObjectContainer) regionParent.getContainedLabeledObject(label.getValue());
@@ -572,14 +586,14 @@ public class XMLReader {
 		ObjectInstanceCacher.putObjectIntanceInCache(instanceKey,objectInstance);
 	  }
 	  //System.err.println("Cashing objectInstance: "+instanceKey);
-	  String pageKey = ibxml.getKey();
+	  String pageKey = ibxml.getPageKey();
 	  String templatePageKey = Integer.toString(ibxml.getTemplateId());
 	  
 	  ObjectInstanceCacher.copyInstancesFromPageToPage(templatePageKey,pageKey);
 
 	  //System.err.println("Cashing objectInstance: "+instanceKey+" on page "+ ibxml.getKey()+" extending: "+ibxml.getTemplateId());
 	  if(instanceKey != null){
-		ObjectInstanceCacher.getObjectInstancesCachedForPage(ibxml.getKey()).put(instanceKey,objectInstance);
+		ObjectInstanceCacher.getObjectInstancesCachedForPage(ibxml.getPageKey()).put(instanceKey,objectInstance);
 	  }
 	}
 	

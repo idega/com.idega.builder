@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import javax.ejb.FinderException;
+
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 public class PageCacher
@@ -82,19 +87,52 @@ public class PageCacher
 	  }
 	  return null;
 	}*/
+	
+	public static void storePage(String key,String format,String stringRepresentation)throws Exception{
+		IBXMLPage bPage = getXML(key);
+		//flagPageInvalid(key);
+		bPage.setPageFormat(format);
+		bPage.setSourceFromString(stringRepresentation);
+		bPage.store();
+		flagPageInvalid(key);
+	}
+	
+	
 	public static IBXMLPage getXML(String key)
 	{
-		IBXMLPage xml = null;
+		IBXMLPage bPage = null;
 		if (isPageInvalid(key))
 		{
-			xml = new IBXMLPage(false, key);
-			setPage(key, xml);
+			ICPageHome pHome;
+			try {
+				pHome = (ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class);
+				int pageId = Integer.parseInt(key);
+				ICPage ibpage = pHome.findByPrimaryKey(pageId);
+				
+				if(ibpage.getIsFormattedInIBXML()){
+					bPage = new IBXMLPage();
+				}
+				else if (ibpage.getIsFormattedInHTML()){
+					bPage= new HtmlBasedPage();
+				}
+				bPage.setPageKey(key);
+				setPage(key, bPage);
+				
+			} catch (IDOLookupException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FinderException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			
 		}
 		else
 		{
-			xml = getXMLPageCached(key);
+			bPage = getXMLPageCached(key);
 		}
-		return xml;
+		return bPage;
 		/*
 		if (isPageInvalid(key)){
 		  try{

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.15 2004/06/04 12:28:29 thomas Exp $
+ * $Id: IBPageBMPBean.java,v 1.16 2004/06/09 16:12:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,6 +50,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	private final static String DELETED_WHEN_COLUMN = "DELETED_WHEN";
 	private final static String TREE_ORDER = "TREE_ORDER";
 	private final static String IS_CATEGORY = "IS_CATEGORY";
+	private final static String PAGE_FORMAT="PAGE_FORMAT";
 	private ICFile _file;
 
 	public final static String PAGE = "P";
@@ -61,6 +62,10 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 
 	public final static String DELETED = "Y";
 	public final static String NOT_DELETED = "N";
+	
+	public final static String FORMAT_IBXML="IBXML";
+	public final static String FORMAT_HTML="HTML";
+	
 
 	/**
 	 *
@@ -93,6 +98,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		addAttribute(TREE_ORDER, "Ordering of pages in a level in the page tree", true, true, Integer.class);
 		addAttribute(IS_CATEGORY, "Is used as a page category", true, true, Boolean.class);
 		addManyToManyRelationShip(ICProtocol.class, "ib_page_ic_protocol");
+		addAttribute(PAGE_FORMAT, "Format", true, true, String.class, 30);
 	}
 
 	/**
@@ -608,5 +614,34 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
 		return reader.read(this, iwc);
 	}
-		
+	
+	public void setFormat(String format){
+		this.setColumn(PAGE_FORMAT,format);
+	}
+	
+	public String getFormat(){
+		String format = getStringColumnValue(PAGE_FORMAT);
+		//This is to maintain backwards compatabilty, default is IBXML:
+		if(format==null)
+			format=FORMAT_IBXML;
+		setFormat(format);
+		return format;
+	}
+	
+	public boolean getIsFormattedInIBXML(){
+		String format = getFormat();
+		if(format!=null){
+			return format.equals(FORMAT_IBXML);
+		}
+		return true;
+	}
+	
+	public boolean getIsFormattedInHTML(){
+		String format = getFormat();
+		if(format!=null){
+			return format.equals(FORMAT_HTML);
+		}
+		return false;
+	}
+	
 }
