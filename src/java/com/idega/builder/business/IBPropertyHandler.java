@@ -13,15 +13,23 @@ import com.idega.idegaweb.*;
 import com.idega.util.reflect.*;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
+import com.idega.core.business.ICObjectBusiness;
+
+import com.idega.builder.handler.PropertyHandler;
+import com.idega.builder.handler.TableColumnsHandler;
+import com.idega.builder.handler.TableRowsHandler;
+import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
 
 import com.idega.data.EntityFinder;
 
 import com.idega.block.media.presentation.ImageInserter;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.Hashtable;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -42,8 +50,18 @@ public class IBPropertyHandler{
     public static final String METHOD_PARAMETERS_KEY = "iw_method_params";
     public static final String METHOD_PARAMETER_PROPERTY_DESCRIPTION = "iw_method_param_desc";
     public static final String METHOD_PARAMETER_PROPERTY_HANDLER_CLASS = "iw_method_param_handler";
+    public static final String METHOD_PARAMETER_PROPERTY_PRIMARY_KEY = "iw_method_param_prim_key";
+
+
+    private static final String TABLE_ROWS_PROPERTY = ":method:1:implied:void:setRows:int:";
+    private static final String TABLE_COLUMNS_PROPERTY = ":method:1:implied:void:setColumns:int:";
+
+
+    private static final String PROPERTYWINDOW_VALUE_FIND = "iw_propw_val_find";
 
     private static IBPropertyHandler instance;
+
+    private Map propertyHandlers;
 
     private IBPropertyHandler(){}
 
@@ -76,6 +94,9 @@ public class IBPropertyHandler{
       }
     }
 
+    /**
+     * Returns the IWProperty standing for the Method in in the list of registered properties for the component
+     */
     public IWProperty getMethodProperty(int ic_object_instance_id,String methodPropertyKey,IWMainApplication iwma)throws Exception{
       IWPropertyList list = getMethods(ic_object_instance_id,iwma);
       if(list!=null){
@@ -156,8 +177,175 @@ public class IBPropertyHandler{
       return objects;
     }*/
 
-    public static PresentationObject getPropertySetterComponent(Class parameterClass,String name,String stringValue){
-      PresentationObject obj =null;
+    public int getColumnCountForTable(IWContext iwc, String ICObjectInstanceID){
+      String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+      String theReturn = BuilderLogic.getInstance().getProperty(pageKey,Integer.parseInt(ICObjectInstanceID),TABLE_COLUMNS_PROPERTY);
+      if(theReturn!=null){
+        try{
+          return Integer.parseInt(theReturn);
+        }
+        catch(Exception e){
+
+        }
+      }
+      return 1;
+    }
+
+    /**
+     * Returns true if the Method Parameter property is a Primary Key
+     */
+    boolean isMethodParameterPrimaryKey(IWMainApplication iwma,int ICObjectInstanceId,String methodIdentifier,int parameterIndex){
+      try{
+        IWProperty methodProperty = this.getMethodProperty(ICObjectInstanceId,methodIdentifier,iwma);
+        String sValue = this.getMethodParameterProperty(methodProperty,parameterIndex,this.METHOD_PARAMETER_PROPERTY_PRIMARY_KEY);
+        if(sValue!=null){
+          if(sValue.equalsIgnoreCase("true")){
+            return true;
+          }
+          else if(sValue.equalsIgnoreCase("false")){
+            return false;
+          }
+          else if(sValue.equalsIgnoreCase("y")){
+            return true;
+          }
+          else if(sValue.equalsIgnoreCase("n")){
+            return false;
+          }
+        }
+      }
+      catch(Exception e){
+        return false;
+      }
+      return false;
+    }
+
+    /**
+     * Returns the real properties set for the property if the property is set with the specified keys
+     * Returns the selectedValues[] if nothing found
+     */
+    public String[] getPropertyValues(IWMainApplication iwma,IBXMLPage xml,int ICObjectInstanceId,String methodIdentifier,String[] selectedValues){
+      //if(selectedValues!=null){
+        List availableValues = XMLWriter.getPropertyValues(xml,ICObjectInstanceId,methodIdentifier);
+        if(selectedValues!=null){
+          for (int i = 0; i < selectedValues.length; i++) {
+              String selectedValue = selectedValues[i];
+              boolean isPrimaryKey = isMethodParameterPrimaryKey(iwma,ICObjectInstanceId,methodIdentifier,i);
+                if(isPrimaryKey){
+                  Iterator iter = availableValues.iterator();
+                  while (iter.hasNext()) {
+                    String[] item = (String[])iter.next();
+                    if(item[i].equals(selectedValue)){
+                      //keep in list
+                    }
+                    else{
+                      //throw out of list
+                      iter.remove();
+                    }
+                  }
+                }
+          }
+        }
+        if(availableValues.size() > 0){
+          //Return the first element
+          System.out.println("availableValues.size() > 0");
+          return (String[])availableValues.get(0);
+        }
+        else{
+          System.out.println("availableValues.size() == 0");
+        }
+      //}
+      return selectedValues;
+    }
+
+
+
+    public int getRowCountForTable(IWContext iwc, String ICObjectInstanceID){
+      String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+      String theReturn = BuilderLogic.getInstance().getProperty(pageKey,Integer.parseInt(ICObjectInstanceID),TABLE_ROWS_PROPERTY);
+      if(theReturn!=null){
+        try{
+          return Integer.parseInt(theReturn);
+        }
+        catch(Exception e){
+
+        }
+      }
+      return 1;
+    }
+
+    /**
+     * Returns a property of a Method Parameter, Returns null if nothing set
+     */
+    public String getMethodParameterProperty(IWContext iwc,String ICObjectInstanceID,String methodIdentifier,int parameterIndex,String paramKey){
+      try{
+        IWBundle iwb = ICObjectBusiness.getBundleForInstance(ICObjectInstanceID,iwc.getApplication());
+        Class objectClass = ICObjectBusiness.getClassForInstance(ICObjectInstanceID);
+        IWPropertyList component = iwb.getComponentList().getIWPropertyList(objectClass.getName());
+        IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
+        IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
+
+        IWPropertyList parameterOptions = method.getPropertyList(this.METHOD_PARAMETERS_KEY);
+        IWPropertyList parameter = parameterOptions.getIWPropertyList(Integer.toString(parameterIndex));
+        return parameter.getProperty(paramKey);
+      }
+      catch(Exception e){
+        return null;
+      }
+    }
+
+    public PresentationObject getHandlerInstance(IWContext iwc,String ICObjectInstanceID,String methodIdentifier,int parameterIndex,String name,String stringValue)throws Exception{
+      String handlerClass = getMethodParameterProperty(iwc,ICObjectInstanceID,methodIdentifier,parameterIndex,METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);;
+      if(handlerClass.equals("")){
+        return null;
+      }
+
+      PropertyHandler handler = this.getPropertyHandler(handlerClass);
+      PresentationObject handlerPresentation = handler.getHandlerObject(name,stringValue,iwc);
+      /*
+      *Special treatment for tables
+      */
+      if(handler instanceof TableRowsHandler){
+        int numberOfRows = getRowCountForTable(iwc,ICObjectInstanceID);
+        ((TableRowColumnPropertyPresentation)handlerPresentation).setRowOrColumnCount(numberOfRows,iwc);
+      }
+      else if (handler instanceof TableColumnsHandler){
+        int numberOfColumns = getColumnCountForTable(iwc,ICObjectInstanceID);
+        ((TableRowColumnPropertyPresentation)handlerPresentation).setRowOrColumnCount(numberOfColumns,iwc);
+      }
+
+      return handlerPresentation;
+    }
+
+
+    public String[] getPropertyDescriptions(IWContext iwc,String icObjectInstanceID,String methodIdentifier){
+        try{
+          int numberOfParametersForMethod = MethodFinder.getInstance().getArgumentClasses(methodIdentifier).length;
+          String[] theReturn = new String[numberOfParametersForMethod];
+          for (int i = 0; i < theReturn.length; i++) {
+              theReturn[i]=getMethodParameterProperty(iwc,icObjectInstanceID,methodIdentifier,i,this.METHOD_PARAMETER_PROPERTY_DESCRIPTION);
+          }
+          return theReturn;
+        }
+        catch(Exception e){
+          String[] theReturn = {this.getMethodDescription(Integer.parseInt(icObjectInstanceID),methodIdentifier,iwc)};
+          return theReturn;
+        }
+    }
+
+
+    public PresentationObject getPropertySetterComponent(IWContext iwc,String ICObjectInstanceID,String methodIdentifier,int parameterIndex,Class parameterClass,String name,String stringValue){
+      PresentationObject obj = null;
+      try{
+        obj = getHandlerInstance(iwc,ICObjectInstanceID,methodIdentifier,parameterIndex,name,stringValue);
+      }
+      catch(Exception e){
+        e.printStackTrace();
+      }
+
+      if(obj!=null){
+        return obj;
+      }
+
       //String className = parameterClass.getName();
       if(parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)){
           obj = new IntegerInput(name);
@@ -276,6 +464,9 @@ public class IBPropertyHandler{
     }
 
 
+    /**
+     * Returns a property of a Method Parameter, Returns null if nothing set
+     */
     public String getMethodParameterProperty(IWProperty methodProperty,int parameterIndex, String propertyKey){
       IWPropertyList parameter = getMethodParameterPropertyList(methodProperty,parameterIndex);
       if(parameter!=null){
@@ -326,4 +517,80 @@ public class IBPropertyHandler{
         return null;
       }
     }
+
+    void preLoadPropertyHandlers(){
+      List l = getAvailablePropertyHandlers();
+      Iterator iter = l.iterator();
+      while (iter.hasNext()) {
+        ICObject item = (ICObject)iter.next();
+        try{
+          Class objectClass = item.getObjectClass();
+          Object instance = objectClass.newInstance();
+          putPropertyHandler(objectClass.getName(),instance);
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
+      }
+
+    }
+
+    void putPropertyHandler(String key,Object handler){
+        getPropertyHandlersMap().put(key,handler);
+    }
+
+    private Map getPropertyHandlersMap(){
+      if(propertyHandlers==null){
+        propertyHandlers = new HashMap();
+      }
+      return propertyHandlers;
+    }
+
+    public PropertyHandler getPropertyHandler(String handlerClassName){
+      PropertyHandler theReturn = (PropertyHandler)getPropertyHandlersMap().get(handlerClassName);
+      if(theReturn == null){
+        try{
+          Class theClass = Class.forName(handlerClassName);
+          theReturn = (PropertyHandler) theClass.newInstance();
+          putPropertyHandler(handlerClassName,theReturn);
+        }
+        catch(Exception e){
+          e.printStackTrace();
+        }
+      }
+      return theReturn;
+    }
+
+  public void saveNewProperty(IWBundle iwb,String componentIdentifier,String methodIdentifier,String description,boolean isMultivalued,String[] handlers, String[] descriptions,boolean[] primaryKeys)throws Exception{
+      IWPropertyList complist = iwb.getComponentList();
+      IWPropertyList component = complist.getIWPropertyList(componentIdentifier);
+      IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
+      IWPropertyList method = methodList.getNewPropertyList(methodIdentifier);
+
+      Map options = new Hashtable();
+      options.put(this.METHOD_PROPERTY_DESCRIPTION,description);
+      options.put(METHOD_PROPERTY_ALLOW_MULTIVALUED,new Boolean(isMultivalued));
+      options.put(METHOD_PROPERTY_IDENTIFIER,methodIdentifier);
+      Map parameters = new Hashtable();
+      options.put(this.METHOD_PARAMETERS_KEY,parameters);
+      for (int i = 0; i < handlers.length; i++) {
+        String handler = handlers[i];
+        String desc = descriptions[i];
+        Map paramMap = new Hashtable();
+        parameters.put(new Integer(i),paramMap);
+        paramMap.put(this.METHOD_PARAMETER_PROPERTY_DESCRIPTION,desc);
+        paramMap.put(this.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS,handler);
+        boolean primaryKey = primaryKeys[i];
+        if(primaryKey){
+          paramMap.put(this.METHOD_PARAMETER_PROPERTY_PRIMARY_KEY,Boolean.TRUE);
+        }
+      }
+      method.setProperties(options);
+  }
+
+
+  public void setDropdownToChangeValue(DropdownMenu drop){
+    drop.setOnChange(com.idega.builder.presentation.IBPropertiesWindowSetter.MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME+"()");
+  }
+
 }

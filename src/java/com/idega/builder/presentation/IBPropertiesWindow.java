@@ -45,6 +45,7 @@ public class IBPropertiesWindow extends FrameSet{
 
 
   public void main(IWContext iwc) throws Exception{
+    super.setStatus(true);
     super.setTitle("Properties");
     super.setWidth(600);
     super.setHeight(600);
@@ -66,9 +67,6 @@ public class IBPropertiesWindow extends FrameSet{
     this.setFrameName(2,MIDDLE_FRAME);
     this.setFrameName(3,BOTTOM_FRAME);
   }
-
-
-
 
 
   public static class IBPropertiesWindowMiddle extends FrameSet{

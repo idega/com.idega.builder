@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.53 2001/10/23 14:48:40 palli Exp $
+ * $Id: BuilderLogic.java,v 1.54 2001/10/24 08:29:08 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -573,16 +573,18 @@ public class BuilderLogic {
   }
 
   /**
-   * Returns a List of Strings
+   * Returns the real properties set for the property if the property is set with the specified keys
+   * Returns the selectedValues[] if nothing found
    */
-  public List getPropertyValues(String pageKey,int ObjectInstanceId,String propertyName){
+  public String[] getPropertyValues(IWMainApplication iwma,String pageKey,int ObjectInstanceId,String propertyName,String[] selectedValues){
       IBXMLPage xml = getIBXMLPage(pageKey);
-      return XMLWriter.getPropertyValues(xml,ObjectInstanceId,propertyName);
+      return IBPropertyHandler.getInstance().getPropertyValues(iwma,xml,ObjectInstanceId,propertyName,selectedValues);
+      //return XMLWriter.getPropertyValues(xml,ObjectInstanceId,propertyName);
   }
 
-  public boolean removeProperty(String pageKey,int ObjectInstanceId,String propertyName,String value){
+  public boolean removeProperty(IWMainApplication iwma,String pageKey,int ObjectInstanceId,String propertyName,String[] values){
       IBXMLPage xml = getIBXMLPage(pageKey);
-      if(XMLWriter.removeProperty(xml,ObjectInstanceId,propertyName,value)){
+      if(XMLWriter.removeProperty(iwma,xml,ObjectInstanceId,propertyName,values)){
         xml.update();
         return true;
       }
@@ -614,7 +616,7 @@ public class BuilderLogic {
     try {
       IBXMLPage xml = getIBXMLPage(pageKey);
       boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
-      if (XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)) {
+      if (XMLWriter.setProperty(iwma,xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)) {
         xml.update();
         return(true);
       }

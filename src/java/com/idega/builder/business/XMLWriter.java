@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.16 2001/10/19 12:50:13 palli Exp $
+ * $Id: XMLWriter.java,v 1.17 2001/10/24 08:29:08 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.Vector;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
+
+import com.idega.idegaweb.IWMainApplication;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -141,6 +143,94 @@ public class XMLWriter {
   }
 
   /**
+   * Returns null if nothing found
+   */
+  private static Element findProperty(IWMainApplication iwma,int ICObjectInstanceID,Element parentElement,String propertyName,String[] values){
+    List elementList = findProperties(parentElement,propertyName);
+    if(elementList!=null){
+      Iterator iter = elementList.iterator();
+      while (iter.hasNext()) {
+        Element item = (Element)iter.next();
+        if(hasPropertyElementSpecifiedValues(iwma,ICObjectInstanceID,item,values,true)) return item;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns true if a propertyElement has the specified values, else false
+   */
+  static boolean hasPropertyElementSpecifiedValues(IWMainApplication iwma,int ICObjectInstanceID,Element propertyElement,String[] values,boolean withPrimaryKeyCheck){
+    boolean check = true;
+    int counter = 0;
+    List valueList = propertyElement.getChildren(XMLConstants.VALUE_STRING);
+    Iterator iter = valueList.iterator();
+    while(check && counter < values.length ){
+      try{
+        String methodIdentifier = getPropertyNameForElement(propertyElement);
+        boolean isPrimaryKey = IBPropertyHandler.getInstance().isMethodParameterPrimaryKey(iwma,ICObjectInstanceID,methodIdentifier,counter);
+        Element eValue = (Element)iter.next();
+        if(withPrimaryKeyCheck){
+          if(isPrimaryKey){
+            if( ! eValue.getText().equals(values[counter])) check = false;
+          }
+        }
+        else{
+          if( ! eValue.getText().equals(values[counter])) check = false;
+        }
+      }
+      catch(Exception e){
+        return false;
+      }
+      counter++;
+    }
+    return check;
+  }
+
+
+  static String getPropertyNameForElement(Element propertyElement){
+    if(propertyElement!=null){
+      return propertyElement.getChild(XMLConstants.NAME_STRING).getText();
+    }
+    return null;
+
+  }
+
+
+  /**
+   *Returns a List of Element objects corresponding to the specified propertyName
+   *Returns null if no match
+   */
+  private static List findProperties(Element parentElement,String propertyName){
+    Element elem = parentElement;
+    List theReturn = null;
+    if(elem != null){
+      List properties = elem.getChildren();
+      if(properties != null){
+        Iterator iter = properties.iterator();
+        while (iter.hasNext()) {
+          Element pElement = (Element)iter.next();
+          if(pElement!=null){
+            if(pElement.getName().equals(XMLConstants.PROPERTY_STRING)){
+              Element name = pElement.getChild(XMLConstants.NAME_STRING);
+              if(name!=null){
+                if(name.getText().equals(propertyName)){
+                  if(theReturn==null){
+                    theReturn = new Vector();
+                  }
+                  theReturn.add(pElement);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return theReturn;
+  }
+
+
+  /**
    *
    */
   private static Element findProperty(Element parentElement,String propertyName){
@@ -168,21 +258,31 @@ public class XMLWriter {
   }
 
   /**
-   * Returns a List of Strings
+   * Returns a List of String[]
    */
   static List getPropertyValues(IBXMLPage xml,int ObjectInstanceId,String propertyName){
     Element module = findModule(xml,ObjectInstanceId);
-    Element property = findProperty(module,propertyName);
-    List theReturn = new Vector();
-    if(property!=null){
-      List list = property.getChildren(XMLConstants.VALUE_STRING);
-      Iterator iter = list.iterator();
+    List theReturn = com.idega.util.ListUtil.getEmptyList();
+    List propertyList = findProperties(module,propertyName);
+    if(propertyList!=null){
+      theReturn = new Vector();
+      Iterator iter = propertyList.iterator();
       while (iter.hasNext()) {
-        Element el = (Element)iter.next();
-        theReturn.add(el.getText());
+        Element property = (Element)iter.next();
+        if(property!=null){
+          List list = property.getChildren(XMLConstants.VALUE_STRING);
+          String[] array = new String[list.size()];
+          Iterator iter2 = list.iterator();
+          int counter = 0;
+          while (iter2.hasNext()) {
+            Element el = (Element)iter2.next();
+            String theString = el.getText();
+            array[counter]=theString;
+            counter++;
+          }
+          theReturn.add(array);
+        }
       }
-      //Element value = property.getChild(VALUE_STRING);
-      //return value.getText();
     }
     return theReturn;
   }
@@ -203,10 +303,10 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean removeProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String value){
-      Element module = findModule(xml,ObjectInstanceId);
+  static boolean removeProperty(IWMainApplication iwma,IBXMLPage xml,int ICObjectInstanceId,String propertyName,String[] values){
+      Element module = findModule(xml,ICObjectInstanceId);
       if(module!=null){
-        Element property = findProperty(module,propertyName);
+        Element property = findProperty(iwma,ICObjectInstanceId,module,propertyName,values);
         if(property!=null){
           return module.removeContent(property);
         }
@@ -222,9 +322,9 @@ public class XMLWriter {
   /**
    *
    */
-  static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String propertyValue){
+  static boolean setProperty(IWMainApplication iwma,IBXMLPage xml,int ObjectInstanceId,String propertyName,String propertyValue){
       String[] values = {propertyValue};
-      return setProperty(xml,ObjectInstanceId,propertyName,values,false);
+      return setProperty(iwma,xml,ObjectInstanceId,propertyName,values,false);
   }
 
 
@@ -232,27 +332,36 @@ public class XMLWriter {
   /**
    * Returns true if properties changed, else false
    */
-  static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String[] propertyValues,boolean allowMultiValued){
+  static boolean setProperty(IWMainApplication iwma,IBXMLPage xml,int ICObjectInstanceId,String propertyName,String[] propertyValues,boolean allowMultiValued){
     boolean changed = false;
-    Element module = findModule(xml,ObjectInstanceId);
+    Element module = findModule(xml,ICObjectInstanceId);
     Element property = null;
-    if(!allowMultiValued){
+    if(allowMultiValued){
+      property = findProperty(iwma,ICObjectInstanceId,module,propertyName,propertyValues);
+    }
+    else{
       property = findProperty(module,propertyName);
     }
+
     if(property==null){
+      System.out.println("XMLWriter, property==null");
       property = getNewProperty(propertyName,propertyValues);
       module.addContent(property);
       changed=true;
     }
     else{
+      System.out.println("XMLWriter, property!=null");
       List values = property.getChildren(XMLConstants.VALUE_STRING);
       if(values!=null){
+        System.out.println("XMLWriter, values!=null");
         Iterator iter = values.iterator();
         int index = 0;
         while (iter.hasNext()) {
+
           String propertyValue = propertyValues[index];
           Element value = (Element)iter.next();
           String currentValue = value.getText();
+          System.out.println("XMLWriter, propertyValues["+index+"]="+propertyValue+",currentValue="+currentValue);
           if(!currentValue.equals(propertyValue)){
             value.setText(propertyValue);
             changed=true;
@@ -261,6 +370,7 @@ public class XMLWriter {
         }
       }
       else{
+        System.out.println("XMLWriter, values==null");
         for (int index = 0; index < propertyValues.length; index++) {
             String propertyValue = propertyValues[index];
             Element value = new Element(XMLConstants.VALUE_STRING);
