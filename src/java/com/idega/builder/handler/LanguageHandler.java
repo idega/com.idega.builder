@@ -1,5 +1,5 @@
 /*
- * $Id: LanguageHandler.java,v 1.6 2004/06/28 11:18:12 thomas Exp $
+ * $Id: LanguageHandler.java,v 1.7 2004/06/28 14:07:04 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package com.idega.builder.handler;
 
 import java.util.List;
 
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.localisation.presentation.LocalePresentationUtil;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;

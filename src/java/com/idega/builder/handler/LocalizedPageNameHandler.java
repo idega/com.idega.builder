@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageUpdater;
 import com.idega.builder.business.PageTreeNode;
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.LocalePresentationUtil;
 import com.idega.presentation.IWContext;
@@ -38,14 +38,14 @@ public class LocalizedPageNameHandler implements ICPropertyHandler {
 	}
 	
 	/**
-	 * @see com.idega.core.builder.data.ICPropertyHandler#getDefaultHandlerTypes()
+	 * @see com.idega.core.builder.presentation.ICPropertyHandler#getDefaultHandlerTypes()
 	 */
 	public List getDefaultHandlerTypes() {
 		return null;
 	}
 
 	/**
-	 * @see com.idega.core.builder.data.ICPropertyHandler#getHandlerObject(String, String, IWContext)
+	 * @see com.idega.core.builder.presentation.ICPropertyHandler#getHandlerObject(String, String, IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
 		System.out.println("Entering LocalizedPageNameHandler.getHandlerObject");
@@ -73,7 +73,7 @@ public class LocalizedPageNameHandler implements ICPropertyHandler {
 	}
 
 	/**
-	 * @see com.idega.core.builder.data.ICPropertyHandler#onUpdate(String[], IWContext)
+	 * @see com.idega.core.builder.presentation.ICPropertyHandler#onUpdate(String[], IWContext)
 	 */
 	public void onUpdate(String[] values, IWContext iwc) {
 		if (values != null) {

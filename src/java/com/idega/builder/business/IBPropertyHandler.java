@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.43 2004/06/28 11:18:35 thomas Exp $
+ * $Id: IBPropertyHandler.java,v 1.44 2004/06/28 14:07:44 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.builder.handler.TableColumnsHandler;
 import com.idega.builder.handler.TableRowsHandler;
 import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;

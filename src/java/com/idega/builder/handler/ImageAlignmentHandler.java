@@ -1,5 +1,5 @@
 /*
- * $Id: ImageAlignmentHandler.java,v 1.3 2004/06/28 11:18:12 thomas Exp $
+ * $Id: ImageAlignmentHandler.java,v 1.4 2004/06/28 14:07:21 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.builder.handler;
 
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.idegaweb.IWConstants;
 import java.util.List;
 import com.idega.presentation.PresentationObject;

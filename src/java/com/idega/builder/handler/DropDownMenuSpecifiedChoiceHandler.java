@@ -1,7 +1,7 @@
 package com.idega.builder.handler;
 
 import java.util.List;
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -23,14 +23,14 @@ public class DropDownMenuSpecifiedChoiceHandler implements ICPropertyHandler {
   private DropdownMenu menu;
   	
   /**
-	 * @see com.idega.core.builder.data.ICPropertyHandler#getDefaultHandlerTypes()
+	 * @see com.idega.core.builder.presentation.ICPropertyHandler#getDefaultHandlerTypes()
 	 */
 	public List getDefaultHandlerTypes() {
 		return null;
 	}
   
 	/**
-	 * @see com.idega.core.builder.data.ICPropertyHandler#getHandlerObject(String, String, IWContext)
+	 * @see com.idega.core.builder.presentation.ICPropertyHandler#getHandlerObject(String, String, IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
     menu = new DropdownMenu(name);
@@ -41,7 +41,7 @@ public class DropDownMenuSpecifiedChoiceHandler implements ICPropertyHandler {
     
 
 	/**
-	 * @see com.idega.core.builder.data.ICPropertyHandler#onUpdate(String[], IWContext)
+	 * @see com.idega.core.builder.presentation.ICPropertyHandler#onUpdate(String[], IWContext)
 	 */
 	public void onUpdate(String[] values, IWContext iwc) {
 	}

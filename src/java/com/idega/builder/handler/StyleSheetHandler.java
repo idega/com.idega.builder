@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.builder.business.IBPropertyHandler;
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.idegaweb.IWStyleManager;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;

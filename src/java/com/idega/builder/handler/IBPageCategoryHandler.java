@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageUpdater;
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.BooleanInput;

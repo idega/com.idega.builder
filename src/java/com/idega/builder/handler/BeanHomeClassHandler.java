@@ -10,7 +10,7 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.builder.presentation.IBObjectChooser;
-import com.idega.core.builder.data.ICPropertyHandler;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.component.data.ICObjectHome;
