@@ -26,7 +26,7 @@ import com.idega.jmodule.object.interfaceobject.*;
 
 import com.idega.core.data.ICFile;
 import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBTemplatePage;
+//import com.idega.builder.data.IBTemplatePage;
 import com.idega.jmodule.object.Image;
 
 public class ComponentPropertyHandler {
