@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.30 2002/02/22 16:26:55 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.31 2002/03/11 18:18:10 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -347,6 +347,7 @@ public class IBPropertyHandler {
     }
     else if (parameterClass.equals(java.lang.Boolean.class) || parameterClass.equals(Boolean.TYPE)) {
       obj = new BooleanInput(name);
+      ((BooleanInput)obj).displaySelectOption();
       if (stringValue != null) {
         if(stringValue.equalsIgnoreCase("Y")) {
           ((BooleanInput)obj).setSelected(true);
