@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSaveAsPageWindow.java,v 1.6 2003/07/01 14:07:18 gummi Exp $
+ * $Id: IBSaveAsPageWindow.java,v 1.7 2003/10/03 01:41:55 tryggvil Exp $
 
  *
 
@@ -21,8 +21,8 @@ package com.idega.builder.presentation;
 
 
 import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.data.IBPage;
-import com.idega.core.data.ICFile;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.file.data.ICFile;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
@@ -158,7 +158,7 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
       if (pageId != null) {
 
-        IBPage ibPage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+        ICPage ibPage = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 
         if (name == null)
 
@@ -166,7 +166,7 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
         ibPage.setName(name);
 
-        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+        ICFile file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 
         ibPage.setFile(file);
 
@@ -204,7 +204,7 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
         ibPage.insert();
 
-        IBPage ibPageParent = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
+        ICPage ibPageParent = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
 
         ibPageParent.addChild(ibPage);
 

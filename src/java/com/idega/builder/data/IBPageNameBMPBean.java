@@ -9,7 +9,8 @@
  */
 package com.idega.builder.data;
 
-import com.idega.core.data.ICLocale;
+import com.idega.core.builder.data.*;
+import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.GenericEntity;
 
 import java.sql.SQLException;
@@ -49,7 +50,7 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addManyToOneRelationship(PAGE_ID, "page id", IBPage.class);
+		addManyToOneRelationship(PAGE_ID, "page id", ICPage.class);
 		addManyToOneRelationship(LOCALE_ID, "Locale id", ICLocale.class);
 		addAttribute(PAGE_NAME, "Localized page name", true, true, String.class);
 	}
@@ -94,11 +95,11 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
 		setColumn(PAGE_ID, id);
 	}
 
-	public IBPage getPage() {
-		return (IBPage) getColumnValue(PAGE_ID);
+	public ICPage getPage() {
+		return (ICPage) getColumnValue(PAGE_ID);
 	}
 
-	public void setPage(IBPage page) {
+	public void setPage(ICPage page) {
 		setColumn(PAGE_ID, page);
 	}
 	

@@ -1,6 +1,6 @@
 package com.idega.builder.form.presentation;
 
-import com.idega.idegaweb.IWGenericFormHandler;
+import com.idega.builder.handler.IBGenericFormHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -20,7 +20,7 @@ import com.idega.presentation.ui.SubmitButton;
 
 public class FormEmailer extends Block {
 
-  private IWGenericFormHandler handler;
+  private IBGenericFormHandler handler;
 
   private static final String BUILDER_BUNDLE_IDENTIFIER = "com.idega.builder";
 
@@ -39,7 +39,7 @@ public class FormEmailer extends Block {
 
 
   public FormEmailer(){
-    handler=new IWGenericFormHandler();
+    handler=new IBGenericFormHandler();
   }
 
   public void main(IWContext iwc){
@@ -192,7 +192,7 @@ public class FormEmailer extends Block {
     Object newObject = super.clone();
     FormEmailer newEmailer = (FormEmailer)newObject;
     if(this.handler!=null){
-      newEmailer.handler=(IWGenericFormHandler)this.handler.clone();
+      newEmailer.handler=(IBGenericFormHandler)this.handler.clone();
     }
     return newObject;
   }

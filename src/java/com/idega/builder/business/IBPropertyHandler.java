@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.37 2003/02/03 11:48:15 thomas Exp $
+ * $Id: IBPropertyHandler.java,v 1.38 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,9 +24,10 @@ import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.reflect.MethodFinder;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.component.business.ICObjectBusiness;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.builder.data.ICPage;
 import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
 import com.idega.builder.handler.SpecifiedChoiceProvider;
 import com.idega.builder.handler.PropertyHandler;
@@ -43,7 +44,6 @@ import java.util.Map;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Hashtable;
-import com.idega.builder.data.IBPage;
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0 beta
@@ -120,7 +120,7 @@ public class IBPropertyHandler {
 			iwb = iwma.getBundle(com.idega.presentation.Page.IW_BUNDLE_IDENTIFIER);
 		}
 		else {
-			ICObjectInstance icoi = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ic_object_instance_id);
+			ICObjectInstance icoi = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ic_object_instance_id);
 			ICObject obj = icoi.getObject();
 			iwb = obj.getBundle(iwma);
 			componentKey = obj.getClassName();
@@ -129,8 +129,9 @@ public class IBPropertyHandler {
 	}
 
 	public IWPropertyList getMethods(IWBundle iwb, String componentKey) {
-		IWPropertyList compList = iwb.getComponentList();
-		IWPropertyList componentProperties = compList.getPropertyList(componentKey);
+		//IWPropertyList compList = iwb.getComponentList();
+		//IWPropertyList componentProperties = compList.getPropertyList(componentKey);
+		IWPropertyList componentProperties = iwb.getComponentPropertyList(componentKey);
 		if (componentProperties != null) {
 			IWPropertyList methodList = componentProperties.getPropertyList(METHODS_KEY);
 			if (methodList == null) {
@@ -253,7 +254,8 @@ public class IBPropertyHandler {
 		try {
 			IWBundle iwb = ICObjectBusiness.getInstance().getBundleForInstance(ICObjectInstanceID, iwc.getApplication());
 			Class objectClass = ICObjectBusiness.getInstance().getClassForInstance(ICObjectInstanceID);
-			IWPropertyList component = iwb.getComponentList().getIWPropertyList(objectClass.getName());
+			//IWPropertyList component = iwb.getComponentList().getIWPropertyList(objectClass.getName());
+			IWPropertyList component = iwb.getComponentPropertyList(objectClass.getName());
 			IWPropertyList methodList = component.getIWPropertyList(METHODS_KEY);
 			IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
 			IWPropertyList parameterOptions = method.getPropertyList(METHOD_PARAMETERS_KEY);
@@ -417,21 +419,21 @@ public class IBPropertyHandler {
 		 * @todo handle page, template, file if the inputs already hava a value
 		
 		 */
-		else if (parameterClass.equals(com.idega.core.data.ICFile.class)) {
+		else if (parameterClass.equals(com.idega.core.file.data.ICFile.class)) {
 			obj = new com.idega.builder.presentation.IBFileChooser(name);
 			try {
 				//extends block.media.presentation.FileChooser
 				Cache cache = MediaBusiness.getCachedFileInfo(Integer.parseInt(stringValue), iwc.getApplication());
-				((com.idega.builder.presentation.IBFileChooser) obj).setValue((com.idega.core.data.ICFile) cache.getEntity());
+				((com.idega.builder.presentation.IBFileChooser) obj).setValue((com.idega.core.file.data.ICFile) cache.getEntity());
 			}
 			catch (Exception e) {
 				//throw new RuntimeException(e.getMessage());
 			}
 		}
-		else if (parameterClass.equals(com.idega.builder.data.IBPage.class)) {
+		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
 			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name);
 			try {
-				IBPage page = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
+				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
 				chooser.setValue(page);
 			}
 			catch (Exception e) {
@@ -567,7 +569,7 @@ public class IBPropertyHandler {
 	 */
 	public List getAvailablePropertyHandlers() {
 		try {
-			return (EntityFinder.findAllByColumn(((com.idega.core.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy(), com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_PROPERTYHANDLER));
+			return (EntityFinder.findAllByColumn(((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy(), com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_PROPERTYHANDLER));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -633,8 +635,9 @@ public class IBPropertyHandler {
 	 * @return false if property already set
 	 */
 	public boolean saveNewProperty(IWBundle iwb, String componentIdentifier, String methodIdentifier, String description, boolean isMultivalued, String[] handlers, String[] descriptions, boolean[] primaryKeys) throws Exception {
-		IWPropertyList complist = iwb.getComponentList();
-		IWPropertyList component = complist.getIWPropertyList(componentIdentifier);
+		//IWPropertyList complist = iwb.getComponentList();
+		//IWPropertyList component = complist.getIWPropertyList(componentIdentifier);
+		IWPropertyList component = iwb.getComponentPropertyList(componentIdentifier);
 		IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
 		IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
 		if (method != null) {

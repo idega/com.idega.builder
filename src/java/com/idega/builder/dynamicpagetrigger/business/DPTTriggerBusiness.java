@@ -12,13 +12,13 @@ import com.idega.builder.business.IBPageFinder;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.data.IBPage;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -43,7 +43,7 @@ public class DPTTriggerBusiness {
     return new DPTTriggerBusiness();
   }
 
-  public int createTriggerRule(ICObject source, int defaultTemplateId,int[] objectInstanceIds, IBPage[] templatesAllowed) throws SQLException{
+  public int createTriggerRule(ICObject source, int defaultTemplateId,int[] objectInstanceIds, ICPage[] templatesAllowed) throws SQLException{
     PageTriggerInfo pti = ((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PageTriggerInfo.class)).createLegacy();
 
     pti.setICObject(source);
@@ -58,7 +58,7 @@ public class DPTTriggerBusiness {
 
     if(templatesAllowed != null){
       for (int i = 0; i < templatesAllowed.length; i++) {
-        pti.addTo(IBPage.class,templatesAllowed[i].getID());
+        pti.addTo(ICPage.class,templatesAllowed[i].getID());
       }
     }
 
@@ -76,10 +76,10 @@ public class DPTTriggerBusiness {
 */
 
   public void addTemplateToRule(PageTriggerInfo pti, int ibPageId) throws SQLException{
-    pti.addTo(IBPage.class,ibPageId);
+    pti.addTo(ICPage.class,ibPageId);
   }
 
-  public void addTemplateToRule(IBPage ibp, int ptiId) throws SQLException{
+  public void addTemplateToRule(ICPage ibp, int ptiId) throws SQLException{
     ibp.addTo(PageTriggerInfo.class,ptiId);
   }
 
@@ -95,10 +95,10 @@ public class DPTTriggerBusiness {
 
 
   public void removeTemplateFromRule(PageTriggerInfo pti, int ibPageId) throws SQLException{
-    pti.removeFrom(IBPage.class,ibPageId);
+    pti.removeFrom(ICPage.class,ibPageId);
   }
 
-  public void removeTemplateFromRule(IBPage ibp, int ptiId) throws SQLException{
+  public void removeTemplateFromRule(ICPage ibp, int ptiId) throws SQLException{
     ibp.removeFrom(PageTriggerInfo.class,ptiId);
   }
 
@@ -180,7 +180,7 @@ public class DPTTriggerBusiness {
     }
 
     try {
-      ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(id);
+      ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(id);
     }
     catch(SQLException e) {
       return (-1);
@@ -396,7 +396,7 @@ public class DPTTriggerBusiness {
       while (iter.hasNext()) {
         System.out.println("-----------");
         System.out.println("addObjectInstancToSubPages - addElementToPage : "+counter++);
-        IBPage item = (IBPage)iter.next();
+        ICPage item = (ICPage)iter.next();
         IBPageHelper.getInstance().addElementToPage(item,objectTemplate.getID());
       }
     }else {

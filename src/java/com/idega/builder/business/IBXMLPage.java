@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.43 2003/08/05 19:45:36 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.44 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,8 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBPageHome;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.Page;
 import com.idega.xml.XMLDocument;
@@ -48,7 +48,7 @@ public class IBXMLPage implements IBXMLAble {
 	private XMLElement _rootElement = null;
 	private Page _populatedPage = null;
 	private String _key;
-	private IBPage _ibPage;
+	private ICPage _ibPage;
 
 	private String _type = TYPE_PAGE;
 
@@ -62,9 +62,9 @@ public class IBXMLPage implements IBXMLAble {
 		this(verify);
 		_key = key;
 
-		IBPage ibpage = null;
+		ICPage ibpage = null;
 		try {
-			IBPageHome pHome = (IBPageHome) com.idega.data.IDOLookup.getHome(IBPage.class);
+			ICPageHome pHome = (ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class);
 			int pageId = Integer.parseInt(key);
 			ibpage = pHome.findByPrimaryKey(pageId);
 			readXMLDocument(ibpage.getPageValue());
@@ -159,7 +159,7 @@ public class IBXMLPage implements IBXMLAble {
 			return;
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
-			IBPage p = (IBPage) i.next();
+			ICPage p = (ICPage) i.next();
 			addUsingTemplate(Integer.toString(p.getID()));
 		}
 	}
@@ -182,7 +182,7 @@ public class IBXMLPage implements IBXMLAble {
 
 	public synchronized boolean update() {
 		try {
-			IBPage ibpage = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
+			ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
 			OutputStream stream = ibpage.getPageValueForWrite();
 			store(stream);
 			ibpage.update();
@@ -271,7 +271,7 @@ public class IBXMLPage implements IBXMLAble {
 
 	public void setTemplateId(int id) {
 		try {
-			IBPage page = getIBPage();
+			ICPage page = getIBPage();
 			page.setTemplateId(id);
 			page.update();
 		}
@@ -282,7 +282,7 @@ public class IBXMLPage implements IBXMLAble {
 
 	public void setName(String name) {
 		try {
-			IBPage page = getIBPage();
+			ICPage page = getIBPage();
 			page.setName(name);
 			page.update();
 		}
@@ -291,8 +291,8 @@ public class IBXMLPage implements IBXMLAble {
 		}
 	}
 
-	IBPage getIBPage() throws Exception {
-		return ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
+	ICPage getIBPage() throws Exception {
+		return ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(_key));
 	}
 
 	/**

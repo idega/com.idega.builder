@@ -1,17 +1,20 @@
 package com.idega.builder.data;
 
+import com.idega.core.builder.data.*;
+import com.idega.core.builder.data.*;
 
-public class IBPageHomeImpl extends com.idega.data.IDOFactory implements IBPageHome
+
+public class IBPageHomeImpl extends com.idega.data.IDOFactory implements ICPageHome
 {
  protected Class getEntityInterfaceClass(){
-  return IBPage.class;
+  return ICPage.class;
  }
 
- public IBPage create() throws javax.ejb.CreateException{
-  return (IBPage) super.idoCreate();
+ public ICPage create() throws javax.ejb.CreateException{
+  return (ICPage) super.idoCreate();
  }
 
- public IBPage createLegacy(){
+ public ICPage createLegacy(){
 	try{
 		return create();
 	}
@@ -21,15 +24,15 @@ public class IBPageHomeImpl extends com.idega.data.IDOFactory implements IBPageH
 
  }
 
- public IBPage findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (IBPage) super.idoFindByPrimaryKey(id);
+ public ICPage findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (ICPage) super.idoFindByPrimaryKey(id);
  }
 
- public IBPage findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (IBPage) super.idoFindByPrimaryKey(pk);
+ public ICPage findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+  return (ICPage) super.idoFindByPrimaryKey(pk);
  }
 
- public IBPage findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
+ public ICPage findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
 		return findByPrimaryKey(id);
 	}

@@ -14,8 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.idega.builder.data.IBPage;
-import com.idega.core.data.ICFile;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.file.data.ICFile;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.BooleanInput;
@@ -118,9 +118,9 @@ public class ComponentPropertyHandler {
         else if(parameterType.equals(Float.class) || parameterType.equals(Float.TYPE)){
           argument = new Float(stringValue);
         }
-        else if(parameterType.equals(IBPage.class)){
+        else if(parameterType.equals(ICPage.class)){
           //try {
-            argument = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
+            argument = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
           //}
           //catch (Exception ex) {
           //  ex.printStackTrace(System.err);
@@ -128,7 +128,7 @@ public class ComponentPropertyHandler {
         }
         else if(parameterType.equals(ICFile.class)){
           try {
-            argument = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(stringValue));
+            argument = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(stringValue));
           }
           catch (Exception ex) {
             ex.printStackTrace(System.err);

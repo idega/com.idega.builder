@@ -1,7 +1,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.idegaweb.IWConstants;
-import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import javax.servlet.http.Cookie;
 import com.idega.presentation.ui.*;

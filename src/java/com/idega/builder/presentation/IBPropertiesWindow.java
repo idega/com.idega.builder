@@ -1,7 +1,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWURL;
 import com.idega.idegaweb.presentation.IWAdminWindow;

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.7 2003/09/18 11:43:00 laddi Exp $
+ * $Id: IBPageBMPBean.java,v 1.8 2003/10/03 01:41:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,8 +16,9 @@ import java.sql.Timestamp;
 
 import javax.ejb.CreateException;
 
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICProtocol;
+import com.idega.core.builder.data.*;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
@@ -27,7 +28,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.3
  */
-public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.builder.data.IBPage {
+public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.core.builder.data.ICPage {
 	private final static String ENTITY_NAME = "ib_page";
 	private final static String FILE_COLUMN = "file_id";
 	private final static String NAME_COLUMN = "name";
@@ -73,7 +74,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnName(), "Nafn", true, true, String.class);
 		addAttribute(getColumnFile(), "File", true, true, Integer.class, "many-to-one", ICFile.class);
-		addAttribute(getColumnTemplateID(), "Template", true, true, Integer.class, "many-to-one", IBPage.class);
+		addAttribute(getColumnTemplateID(), "Template", true, true, Integer.class, "many-to-one", ICPage.class);
 		addAttribute(getColumnType(), "Type", true, true, String.class, 1);
 		addAttribute(getColumnSubType(), "Sub type", true, true, String.class);
 		addAttribute(getColumnLockedBy(), "Locked by", true, true, Integer.class, "many-to-one", User.class);
@@ -271,7 +272,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	 *
 	 */
 	public void setFile(ICFile file) {
-		file.setMimeType(com.idega.core.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
+		file.setMimeType(com.idega.core.file.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
 		setColumn(getColumnFile(), file);
 		_file = file;
 	}
@@ -283,7 +284,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		ICFile file = getFile();
 		if (file == null) {
 			try {
-				file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 				setFile(file);
 			} catch (IDOLookupException e) {
 				e.printStackTrace();
@@ -317,7 +318,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		ICFile file = getFile();
 		if (file == null) {
 			try {
-				file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 				setFile(file);
 			} catch (IDOLookupException e) {
 				e.printStackTrace();

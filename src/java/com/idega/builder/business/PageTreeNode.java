@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.14 2003/09/18 11:28:05 laddi Exp $
+ * $Id: PageTreeNode.java,v 1.15 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,9 @@
  */
 package com.idega.builder.business;
 
-import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageName;
-import com.idega.core.ICTreeNode;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.data.ICTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
@@ -154,7 +154,7 @@ public class PageTreeNode implements ICTreeNode {
 		if (page != null) {
 			it = page.iterator();
 			while (it.hasNext()) {
-				IBPage pages = (IBPage) it.next();
+				ICPage pages = (ICPage) it.next();
 				PageTreeNode node = null;
 				int order = pages.getTreeOrder();
 				if (order == -1)
@@ -168,7 +168,7 @@ public class PageTreeNode implements ICTreeNode {
 		if (template != null) {
 			it = template.iterator();
 			while (it.hasNext()) {
-				IBPage pages = (IBPage) it.next();
+				ICPage pages = (ICPage) it.next();
 				PageTreeNode node = null;
 				int order = pages.getTreeOrder();
 				if (order == -1)

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageUpdater.java,v 1.4 2003/09/18 11:41:57 laddi Exp $
+ * $Id: IBPageUpdater.java,v 1.5 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,9 @@
  */
 package com.idega.builder.business;
 
-import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageName;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -30,7 +31,7 @@ public class IBPageUpdater {
 	 */
 	public static void updatePageName(int pageId, String pageName) {
 		try {
-			IBPage page = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageId);
+			ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(pageId);
 
 			page.setName(pageName);
 			page.update();
@@ -42,7 +43,7 @@ public class IBPageUpdater {
 
 	public static void setAsCategory(int pageID, boolean isCategory) {
 		try {
-			IBPage page = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageID);
+			ICPage page = ((ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(pageID);
 
 			page.setIsCategory(isCategory);
 			page.update();
@@ -57,7 +58,7 @@ public class IBPageUpdater {
 	 */
 	public static void updateTemplateId(int pageId, int templateId) {
 		try {
-			IBPage page = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(pageId);
+			ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(pageId);
 
 			page.setTemplateId(templateId);
 			page.update();

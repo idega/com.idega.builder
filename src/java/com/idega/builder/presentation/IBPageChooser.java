@@ -1,7 +1,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.AbstractChooser;
@@ -54,7 +54,7 @@ public class IBPageChooser extends AbstractChooser {
   /**
    * @deprecated Replaced by {@link #setSelectedPage(int,String)}
    */
-  public void setSelectedPage(IBPage page){
+  public void setSelectedPage(ICPage page){
     super.setChooserValue(page.getName(),page.getID());
   }
 
@@ -62,6 +62,6 @@ public class IBPageChooser extends AbstractChooser {
    * @deprecated Replaced by {@link #setSelectedPage(int,String)}
    */
   public void setValue(Object page){
-    setSelectedPage((IBPage)page);
+    setSelectedPage((ICPage)page);
   }
 }

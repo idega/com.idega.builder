@@ -3,8 +3,8 @@ package com.idega.builder.dynamicpagetrigger.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import com.idega.builder.data.IBPage;
-import com.idega.core.data.ICFile;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 
 /**
@@ -45,7 +45,7 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
     this.addAttribute(_COLUMNNAME_LINK_IMAGE,"link image",true,true,Integer.class,"one-to-many",ICFile.class);
     this.addAttribute(_COLUMNNAME_ONCLICK_IMAGE,"onClick image",true,true,Integer.class,"one-to-many",ICFile.class);
     this.addAttribute(_COLUMNNAME_ONMOUSEOVER_IMAGE,"onMouseOver image",true,true,Integer.class,"one-to-many",ICFile.class);
-    this.addAttribute(_COLUMNNAME_PAGE_ID,"síðu id",true,true,Integer.class,"one-to-many",IBPage.class);
+    this.addAttribute(_COLUMNNAME_PAGE_ID,"síðu id",true,true,Integer.class,"one-to-many",ICPage.class);
     this.addAttribute(_COLUMNNAME_PAGE_TRIGGER_INFO_ID,"trigger upplýsingar",true,true,Integer.class,"one-to-many",PageTriggerInfo.class);
     addAttribute(_COLUMN_DELETED,"Deleted",true,true,Boolean.class);
     addAttribute(_COLUMN_DELETED_BY,"Deleted by",true,true,Integer.class,"many-to-one",User.class);

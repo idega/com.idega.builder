@@ -2,7 +2,7 @@ package com.idega.builder.dynamicpagetrigger.data;
 
 import java.sql.SQLException;
 
-import com.idega.builder.data.IBDomain;
+import com.idega.core.builder.data.ICDomain;
 
 /**
  * Title:        IW Project
@@ -31,8 +31,8 @@ public class DPTDomainBMPBean extends com.idega.data.GenericEntity implements co
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(COLUMN_DPTDOMAIN_NAME,"domain name",true,true,String.class,255);
-    this.addAttribute(COLUMN_IBDOMAIN_ID,"ib_domain_id",true,true,Integer.class,MANY_TO_ONE,IBDomain.class);
-    this.addAttribute(COLUMN_IBPAGE_ID,"ib_page_id",true,true,Integer.class,MANY_TO_ONE,IBDomain.class);
+    this.addAttribute(COLUMN_IBDOMAIN_ID,"ib_domain_id",true,true,Integer.class,MANY_TO_ONE,ICDomain.class);
+    this.addAttribute(COLUMN_IBPAGE_ID,"ib_page_id",true,true,Integer.class,MANY_TO_ONE,ICDomain.class);
     this.addAttribute(COLUMN_DPT_PAGE_TYPE,"dpt_page_type",true,true,String.class,100);
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.33 2003/09/22 16:48:22 eiki Exp $
+ * $Id: IBAddModuleWindow.java,v 1.34 2003/10/03 01:41:55 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,9 +15,9 @@ import java.util.Locale;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
-import com.idega.core.data.ICLocale;
-import com.idega.core.data.ICObject;
+import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
@@ -182,7 +182,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		theReturn.setColor(1, 1, "#ECECEC");
 		theReturn.setColor(2, 1, "#ECECEC");
 
-		ICObject staticICO = (ICObject) com.idega.core.data.ICObjectBMPBean.getStaticInstance(ICObject.class);
+		ICObject staticICO = (ICObject) com.idega.core.component.data.ICObjectBMPBean.getStaticInstance(ICObject.class);
 		try {
 			List elements = null;
 			List blocks = null;
@@ -197,8 +197,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			}
 
 			if (elements == null && blocks == null) {
-				elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
-				blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
+				elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
+				blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
 
 				if (elements != null) {
 					java.util.Collections.sort(elements, new ModuleComparator(iwc));
@@ -304,7 +304,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	}
 
 	private Image getIconForObject(ICObject obj, IWContext iwc) {
-		if (obj.getObjectType().equals(com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT)) {
+		if (obj.getObjectType().equals(com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT)) {
 			/**
 			 *@todo: Make support for dynamic icons
 			 */
@@ -312,7 +312,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				elementImage = iwc.getApplication().getCoreBundle().getImage("elementicon16x16.gif");
 			return elementImage;
 		}
-		else if (obj.getObjectType().equals(com.idega.core.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK)) {
+		else if (obj.getObjectType().equals(com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK)) {
 			/**
 			  *@todo: Make support for dynamic icons
 			  */

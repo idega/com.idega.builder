@@ -1,5 +1,5 @@
 /*
- * $Id: LibraryTreeNode.java,v 1.3 2003/07/30 03:20:34 tryggvil Exp $
+ * $Id: LibraryTreeNode.java,v 1.4 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,8 @@
  */
 package com.idega.builder.business;
 
-import com.idega.core.ICTreeNode;
+import com.idega.core.data.ICTreeNode;
+
 import java.util.Iterator;
 import java.util.Locale;
 

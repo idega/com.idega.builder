@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.8 2003/08/05 19:45:36 tryggvil Exp $
+ * $Id: IBDomainBMPBean.java,v 1.9 2003/10/03 01:41:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,10 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICDomainHome;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
@@ -31,7 +35,7 @@ import com.idega.user.data.GroupDomainRelationTypeBMPBean;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class IBDomainBMPBean extends GenericEntity implements IBDomain {
+public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   public static final String tableName = "ib_domain";
   public static final String domain_name = "domain_name";
   public static final String domain_url = "url";
@@ -54,18 +58,18 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
 
     addAttribute(getColumnDomainName(),"Domain name",true,true,String.class);
     addAttribute(getColumnURL(),"Domain URL",true,true,String.class,1000);
-    addAttribute(getColumnStartPage(),"Start Page",true,true,Integer.class,"many-to-one",IBPage.class);
-    addAttribute(getColumnStartTemplate(),"Start Template",true,true,Integer.class,"many-to-one",IBPage.class);
+    addAttribute(getColumnStartPage(),"Start Page",true,true,Integer.class,"many-to-one",ICPage.class);
+    addAttribute(getColumnStartTemplate(),"Start Template",true,true,Integer.class,"many-to-one",ICPage.class);
 //    this.addManyToManyRelationShip(Group.class);
 //    addAttribute(COLUMNNAME_GROUP_ID,"Group ID",true,true,Integer.class,"one-to-one",Group.class);
 
   }
 
-  public static IBDomain getDomain(int id)throws SQLException {
-    IBDomain theReturn;
-    theReturn = (IBDomain)getDomainsMap().get(new Integer(id));
+  public static ICDomain getDomain(int id)throws SQLException {
+    ICDomain theReturn;
+    theReturn = (ICDomain)getDomainsMap().get(new Integer(id));
     if (theReturn == null) {
-      theReturn = ((IBDomainHome)IDOLookup.getHomeLegacy(IBDomain.class)).findByPrimaryKeyLegacy(id);
+      theReturn = ((ICDomainHome)IDOLookup.getHomeLegacy(ICDomain.class)).findByPrimaryKeyLegacy(id);
       if (theReturn != null) {
         getDomainsMap().put(new Integer(id),theReturn);
       }
@@ -82,19 +86,19 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
 
   public void insertStartData() throws Exception {
     BuilderLogic instance = BuilderLogic.getInstance();
-    IBDomainHome dHome = (IBDomainHome)getIDOHome(IBDomain.class);
-    IBDomain domain = dHome.create();
+    ICDomainHome dHome = (ICDomainHome)getIDOHome(ICDomain.class);
+    ICDomain domain = dHome.create();
     domain.setName("Default Site");
 
-	IBPageHome pageHome = (IBPageHome)getIDOHome(IBPage.class);
+	ICPageHome pageHome = (ICPageHome)getIDOHome(ICPage.class);
 
-    IBPage page = pageHome.create();
+    ICPage page = pageHome.create();
     page.setName("Web root");
     page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
     page.store();
     instance.unlockRegion(Integer.toString(page.getID()),"-1",null);
 
-    IBPage page2 = pageHome.create();
+    ICPage page2 = pageHome.create();
     page2.setName("Default Template");
     page2.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
     page2.store();
@@ -132,16 +136,16 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
     return(start_template);
   }
 
-  public IBPage getStartPage() {
-    return((IBPage)getColumnValue(getColumnStartPage()));
+  public ICPage getStartPage() {
+    return((ICPage)getColumnValue(getColumnStartPage()));
   }
 
   public int getStartPageID() {
     return(getIntColumnValue(getColumnStartPage()));
   }
 
-  public IBPage getStartTemplate() {
-    return((IBPage)getColumnValue(getColumnStartTemplate()));
+  public ICPage getStartTemplate() {
+    return((ICPage)getColumnValue(getColumnStartTemplate()));
   }
 
   public int getStartTemplateID() {
@@ -182,11 +186,11 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
     return groups;
   }
 
-  public void setIBPage(IBPage page) {
+  public void setIBPage(ICPage page) {
      setColumn(getColumnStartPage(),page);
   }
 
-  public void setStartTemplate(IBPage template) {
+  public void setStartTemplate(ICPage template) {
     setColumn(getColumnStartTemplate(),template);
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.46 2003/08/06 12:24:46 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.47 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.event.ObjectInstanceCacher;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
@@ -384,7 +384,7 @@ public class XMLReader {
 				}
 			}
 			else {
-				ICObjectInstance ico = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(id));
+				ICObjectInstance ico = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(id));
 				inst = ico.getNewInstance();
 				inst.setICObjectInstance(ico);
 				if (ic_object_id == null) {

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageFinder.java,v 1.4 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: IBPageFinder.java,v 1.5 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.builder.business;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.EntityFinder;
 import java.util.List;
 import java.sql.SQLException;
@@ -22,7 +22,7 @@ public class IBPageFinder {
 
   public static List getAllPagesExtendingTemplate(int templateId) {
     try {
-      IBPage page = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+      ICPage page = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(page.getEntityName());
       sql.append(" where ");

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.25 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.26 2003/10/03 01:41:55 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.handler.PropertyHandler;
-import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;

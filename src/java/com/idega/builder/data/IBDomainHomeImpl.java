@@ -1,19 +1,22 @@
 package com.idega.builder.data;
 
+import com.idega.core.builder.data.*;
+import com.idega.core.builder.data.*;
 
-public class IBDomainHomeImpl extends com.idega.data.IDOFactory implements IBDomainHome
+
+public class IBDomainHomeImpl extends com.idega.data.IDOFactory implements ICDomainHome
 {
  protected Class getEntityInterfaceClass(){
-  return IBDomain.class;
+  return ICDomain.class;
  }
 
 
- public IBDomain create() throws javax.ejb.CreateException{
-  return (IBDomain) super.createIDO();
+ public ICDomain create() throws javax.ejb.CreateException{
+  return (ICDomain) super.createIDO();
  }
 
 
- public IBDomain createLegacy(){
+ public ICDomain createLegacy(){
 	try{
 		return create();
 	}
@@ -31,17 +34,17 @@ public java.util.Collection findAllDomains()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
- public IBDomain findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (IBDomain) super.findByPrimaryKeyIDO(pk);
+ public ICDomain findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+  return (ICDomain) super.findByPrimaryKeyIDO(pk);
  }
 
 
- public IBDomain findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (IBDomain) super.findByPrimaryKeyIDO(id);
+ public ICDomain findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (ICDomain) super.findByPrimaryKeyIDO(id);
  }
 
 
- public IBDomain findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
+ public ICDomain findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
 		return findByPrimaryKey(id);
 	}

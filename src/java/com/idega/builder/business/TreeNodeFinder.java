@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.7 2002/12/20 15:39:37 palli Exp $
+ * $Id: TreeNodeFinder.java,v 1.8 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,9 @@
  */
 package com.idega.builder.business;
 
-import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageName;
 import com.idega.builder.data.IBPageNameHome;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 
@@ -49,7 +49,7 @@ public class TreeNodeFinder {
 	
 	public static List listOfAllPages() {
 		try {
-			IBPage pages = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+			ICPage pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			StringBuffer sql = new StringBuffer("select * from ");
 			sql.append(pages.getEntityName());
 			sql.append(" where (");
@@ -78,7 +78,7 @@ public class TreeNodeFinder {
 
 	public static List listOfAllTemplates() {
 		try {
-			IBPage pages = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+			ICPage pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			StringBuffer sql = new StringBuffer("select * from ");
 			sql.append(pages.getEntityName());
 			sql.append(" where (");
@@ -115,11 +115,11 @@ public class TreeNodeFinder {
 	 */
 	public static List listOfAllPageRelationships() throws SQLException {
 		List ret = null;
-		IBPage pages = null;
+		ICPage pages = null;
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-			pages = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+			pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			conn = pages.getConnection();
 			stmt = conn.createStatement();
 
@@ -177,11 +177,11 @@ public class TreeNodeFinder {
 
 	public static List listOfAllTemplateRelationships() throws SQLException {
 		List ret = null;
-		IBPage pages = null;
+		ICPage pages = null;
 		Connection conn = null;
 		Statement stmt = null;
 		try {
-			pages = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
+			pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			conn = pages.getConnection();
 			stmt = conn.createStatement();
 

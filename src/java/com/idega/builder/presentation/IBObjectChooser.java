@@ -7,7 +7,7 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.core.data.ICObject;
+import com.idega.core.component.data.ICObject;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.AbstractChooser;

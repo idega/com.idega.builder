@@ -2,10 +2,10 @@ package com.idega.builder.dynamicpagetrigger.data;
 
 import java.sql.SQLException;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectInstance;
 
 
 /**
@@ -41,11 +41,11 @@ public class PageTriggerInfoBMPBean extends com.idega.data.GenericEntity impleme
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(_COLUMNNAME_REFERENCED_IC_OBJECT_ID,"ICObject sem tengst er við",true,true,Integer.class,ONE_TO_MANY,ICObject.class);
-    this.addAttribute(_COLUMNNAME_DEFAULT_TEMPLATE_ID,"default tempalte",true,true,Integer.class,ONE_TO_MANY,IBPage.class);
-    this.addAttribute(_COLUMNNAME_ROOT_PAGE_ID,"root page",true,true,Integer.class,ONE_TO_MANY,IBPage.class);
+    this.addAttribute(_COLUMNNAME_DEFAULT_TEMPLATE_ID,"default tempalte",true,true,Integer.class,ONE_TO_MANY,ICPage.class);
+    this.addAttribute(_COLUMNNAME_ROOT_PAGE_ID,"root page",true,true,Integer.class,ONE_TO_MANY,ICPage.class);
 
     this.addManyToManyRelationShip(ICObjectInstance.class, _TABLENAME_THIS_ICOBJECTINSTANCE);
-    this.addManyToManyRelationShip(IBPage.class, _TABLENAME_THIS_IBPAGE);
+    this.addManyToManyRelationShip(ICPage.class, _TABLENAME_THIS_IBPAGE);
     this.addManyToManyRelationShip(GenericGroup.class, _TABLENAME_THIS_IC_GROUP);
   }
 

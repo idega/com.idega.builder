@@ -7,12 +7,12 @@ import java.rmi.RemoteException;
 
 import javax.ejb.FinderException;
 
-import com.idega.builder.data.IBDomain;
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBPageHome;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.ICTreeNode;
 import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.data.ICTreeNode;
 import com.idega.presentation.IWContext;
 
 /**
@@ -26,7 +26,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getCurrentDomain()
 	 */
-	public IBDomain getCurrentDomain()
+	public ICDomain getCurrentDomain()
 	{
 		return getBuilderLogic().getCurrentDomain(this.getIWApplicationContext());
 	}
@@ -47,7 +47,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getRootPage()
 	 */
-	public IBPage getRootPage()throws RemoteException
+	public ICPage getRootPage()throws RemoteException
 	{
 		int pageId = getRootPageId();
 		try
@@ -70,7 +70,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getCurrentPage(com.idega.presentation.IWContext)
 	 */
-	public IBPage getCurrentPage(IWContext iwc)throws RemoteException
+	public ICPage getCurrentPage(IWContext iwc)throws RemoteException
 	{
 		int pageId = getCurrentPageId(iwc);
 		try
@@ -88,8 +88,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 		return BuilderLogic.getInstance();
 	}
 	
-	private IBPageHome getIBPageHome() throws RemoteException{
-		return (IBPageHome)this.getIDOHome(IBPage.class);
+	private ICPageHome getIBPageHome() throws RemoteException{
+		return (ICPageHome)this.getIDOHome(ICPage.class);
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getPageTree(int, int)

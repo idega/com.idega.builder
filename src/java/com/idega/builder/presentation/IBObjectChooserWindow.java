@@ -12,9 +12,9 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectBMPBean;
-import com.idega.core.data.ICObjectHome;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectBMPBean;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWConstants;

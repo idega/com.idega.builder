@@ -1,5 +1,5 @@
 /*
- * $Id: IBStartPagesBMPBean.java,v 1.3 2002/06/25 16:08:00 palli Exp $
+ * $Id: IBStartPagesBMPBean.java,v 1.4 2003/10/03 01:41:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,7 @@
  */
 package com.idega.builder.data;
 
-import com.idega.builder.data.IBStartPages;
-import com.idega.builder.data.IBStartPagesHome;
+import com.idega.core.builder.data.*;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
 import java.sql.SQLException;
@@ -50,8 +49,8 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
    */
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getColumnDomainId(),"Domain id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,IBDomain.class);
-    addAttribute(getColumnPageId(),"Page id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,IBPage.class);
+    addAttribute(getColumnDomainId(),"Domain id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,ICDomain.class);
+    addAttribute(getColumnPageId(),"Page id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,ICPage.class);
     addAttribute(getColumnPageType(),"Page type",true,true,String.class);
     setMaxLength(getColumnPageType(),1);
   }
@@ -89,13 +88,13 @@ public class IBStartPagesBMPBean extends GenericEntity implements IBStartPages {
    */
   public void insertStartData() throws Exception {
   try {
-    IBDomainHome dhome = (IBDomainHome)IDOLookup.getHome(IBDomain.class);
+    ICDomainHome dhome = (ICDomainHome)IDOLookup.getHome(ICDomain.class);
 
     Collection domains = dhome.findAllDomains();
     if (domains != null && !domains.isEmpty()) {
       Iterator it = domains.iterator();
       while (it.hasNext()) {
-        IBDomain domain = (IBDomain)it.next();
+        ICDomain domain = (ICDomain)it.next();
         IBStartPages start = null;
         int id = domain.getStartPageID();
         if (id > 0) {

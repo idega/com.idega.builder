@@ -8,9 +8,9 @@ import java.util.Vector;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.business.ICObjectBusiness;
-import com.idega.core.business.UserGroupBusiness;
+import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.data.GenericGroup;
+import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;

@@ -4,6 +4,7 @@ package com.idega.builder.business;
 
 import java.sql.*;
 
+import com.idega.core.component.data.*;
 import com.idega.core.data.*;
 
 import com.idega.data.EntityFinder;
@@ -44,9 +45,9 @@ public class IBObjectHandler {
 
   public IBObjectHandler()throws SQLException {
 
-    arObject = ((com.idega.core.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
+    arObject = ((com.idega.core.component.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
 
-    arObjectInstance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
+    arObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
 
   }
 
@@ -60,7 +61,7 @@ public class IBObjectHandler {
 
     if(objID == -1){
 
-      ICObject newObj = ((com.idega.core.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
+      ICObject newObj = ((com.idega.core.component.data.ICObjectHome)com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
 
         newObj.setClassName(obj.getClass().getName());
 
@@ -92,7 +93,7 @@ public class IBObjectHandler {
 
     if(instID != -1){
 
-      ICObjectInstance newInstance = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
+      ICObjectInstance newInstance = ((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
 
       newInstance.setICObjectID(instID);
 
@@ -114,7 +115,7 @@ public class IBObjectHandler {
 
   public int getObjectID(Object obj)throws Exception{
 
-    List myList = EntityFinder.findAllByColumn(arObject,com.idega.core.data.ICObjectBMPBean.getClassNameColumnName(),obj.getClass().getName());
+    List myList = EntityFinder.findAllByColumn(arObject,com.idega.core.component.data.ICObjectBMPBean.getClassNameColumnName(),obj.getClass().getName());
 
     if(myList != null){
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IBObjectLibraryBMPBean.java,v 1.5 2003/07/01 14:07:21 gummi Exp $
+ * $Id: IBObjectLibraryBMPBean.java,v 1.6 2003/10/03 01:41:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 import javax.ejb.CreateException;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookupException;
 
@@ -105,7 +105,7 @@ public class IBObjectLibraryBMPBean extends com.idega.data.TreeableEntityBMPBean
 		ICFile file = getFile();
 		if (file == null) {
 			try {
-				file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 				setFile(file);
 			} catch (IDOLookupException e) {
 				e.printStackTrace();
@@ -138,7 +138,7 @@ public class IBObjectLibraryBMPBean extends com.idega.data.TreeableEntityBMPBean
 		ICFile file = getFile();
 		if (file == null) {
 			try {
-				file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 				setFile(file);
 			} catch (IDOLookupException e) {
 				e.printStackTrace();

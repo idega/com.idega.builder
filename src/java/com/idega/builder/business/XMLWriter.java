@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.33 2003/04/03 19:54:57 laddi Exp $
+ * $Id: XMLWriter.java,v 1.34 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,8 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectInstance;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -441,12 +441,12 @@ public class XMLWriter {
 		//XMLElement parent = findModule(parentObjectInstanceID);
 		if (parent != null) {
 			try {
-				ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
+				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
 				instance.setICObjectID(newICObjectTypeID);
 				instance.setIBPageByKey(pageKey);
 				instance.insert();
 
-				ICObject obj = ((com.idega.core.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).findByPrimaryKeyLegacy(newICObjectTypeID);
+				ICObject obj = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).findByPrimaryKeyLegacy(newICObjectTypeID);
 				Class theClass = obj.getObjectClass();
 
 				XMLElement newElement = new XMLElement(XMLConstants.MODULE_STRING);
@@ -669,7 +669,7 @@ public class XMLWriter {
 			if (attribute != null) {
 				String ICObjectInstanceID = attribute.getValue();
 				try {
-					ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
+					ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
 					instance.delete();
 				}
 				catch (NumberFormatException e) {
@@ -785,7 +785,7 @@ public class XMLWriter {
 			if (attribute != null) {
 				String ICObjectInstanceID = attribute.getValue();
 				try {
-					ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
+					ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(ICObjectInstanceID));
 					instance.delete();
 				}
 				catch (NumberFormatException e) {
@@ -912,7 +912,7 @@ public class XMLWriter {
 			XMLAttribute attribute = element.getAttribute(XMLConstants.ID_STRING);
 			XMLAttribute object_id = element.getAttribute(XMLConstants.IC_OBJECT_ID_STRING);
 
-			ICObjectInstance instance = ((com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
+			ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
 			instance.setICObjectID(object_id.getIntValue());
 			instance.setIBPageByKey(pageKey);
 			instance.insert();

@@ -4,7 +4,8 @@ import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWMainApplication;
 import java.util.Locale;
 import java.util.Comparator;
-import com.idega.core.data.ICObject;
+
+import com.idega.core.component.data.ICObject;
 import com.idega.util.IsCollator;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.140 2003/08/06 09:42:44 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.141 2003/10/03 01:41:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
-import com.idega.builder.data.IBDomain;
-import com.idega.builder.data.IBPage;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.builder.business.BuilderConstants;
-import com.idega.core.business.ICObjectBusiness;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.component.business.ICObjectBusiness;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.data.GenericGroup;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectInstance;
 import com.idega.event.EventLogic;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -547,13 +547,13 @@ public class BuilderLogic
 			}
 		}
 	}
-	public IBPage getCurrentIBPageEntity(IWContext iwc) throws Exception
+	public ICPage getCurrentIBPageEntity(IWContext iwc) throws Exception
 	{
 		String sID = getCurrentIBPage(iwc);
 		//if(sID!=null){
 		return (
-			(com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(
-				IBPage.class)).findByPrimaryKeyLegacy(
+			(com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(
+				ICPage.class)).findByPrimaryKeyLegacy(
 			Integer.parseInt(sID));
 		//}
 	}
@@ -639,7 +639,7 @@ public class BuilderLogic
 		}
 		return null;
 	}
-	public static IBDomain getCurrentDomain(IWApplicationContext iwac)
+	public static ICDomain getCurrentDomain(IWApplicationContext iwac)
 	{
 		try
 		{
@@ -928,7 +928,7 @@ public class BuilderLogic
 		{
 			ICObjectInstance instance =
 				(
-					(com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
+					(com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
 						ICObjectInstance.class)).findByPrimaryKeyLegacy(
 					icObjectInstanceID);
 			return instance.getObject().getObjectClass();
@@ -955,14 +955,14 @@ public class BuilderLogic
 			{
 				ICObjectInstance instance =
 					(
-						(com.idega.core.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
+						(com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(
 							ICObjectInstance.class)).findByPrimaryKeyLegacy(
 						icObjecctInstanceID);
 				c = instance.getObject().getObjectClass();
 				iwb = instance.getObject().getBundle(iwma);
 			}
-			IWPropertyList complist = iwb.getComponentList();
-			IWPropertyList component = complist.getPropertyList(c.getName());
+			//IWPropertyList complist = iwb.getComponentList();
+			IWPropertyList component = iwb.getComponentPropertyList(c.getName());
 			IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHODS_KEY);
 			if (methodlist == null)
 				return (false);
@@ -1174,7 +1174,7 @@ public class BuilderLogic
 	 */
 	public static int getStartPageId(IWApplicationContext iwac)
 	{
-		IBDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwac);
+		ICDomain domain = BuilderLogic.getInstance().getCurrentDomain(iwac);
 		return domain.getStartPageID();
 	}
 	/**
@@ -1183,7 +1183,7 @@ public class BuilderLogic
 	public String getCurrentPageHtml(IWContext iwc)
 	{
 		String ibpage = getCurrentIBPage(iwc);
-		IBDomain domain = getCurrentDomain(iwc);
+		ICDomain domain = getCurrentDomain(iwc);
 		StringBuffer url = new StringBuffer(domain.getURL());
 		//    url.append(IWMainApplication.BUILDER_SERVLET_URL);
 		//    url.append(iwc.getApplication().getBuilderServletURI());

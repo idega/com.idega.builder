@@ -8,6 +8,6 @@ public interface PageTriggerInfo extends com.idega.data.IDOLegacyEntity
  public int getRootPageId();
  public void setDefaultTemplateId(int p0);
  public void setICObject(int p0);
- public void setICObject(com.idega.core.data.ICObject p0);
+ public void setICObject(com.idega.core.component.data.ICObject p0);
  public void setRootPageId(int p0);
 }

@@ -10,8 +10,8 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.builder.presentation.IBObjectChooser;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectHome;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;

@@ -12,8 +12,8 @@ package com.idega.builder.presentation;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.data.IBDomain;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
@@ -48,12 +48,12 @@ public class IBPageWindow extends IWAdminWindow {
     chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 
     try {
-      IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
+      ICPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
       if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE))
       	chooser.setSelectedPage(current.getID(),current.getName());
       else {
-      	IBDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
-      	IBPage top = domain.getStartPage();
+      	ICDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
+      	ICPage top = domain.getStartPage();
       	if (top != null)
       	  chooser.setSelectedPage(top.getID(),top.getName());
       }
@@ -75,20 +75,20 @@ public class IBPageWindow extends IWAdminWindow {
     try {
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       if (templateId == null || templateId.equals("")) {
-      	IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
+      	ICPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
       	if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.TEMPLATE))
       	  chooser.setSelectedPage(current);
       	else {
       	  if (type.equals(IBPageHelper.TEMPLATE)) {
-	          IBDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
-    	      IBPage top = domain.getStartTemplate();
+	          ICDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
+    	      ICPage top = domain.getStartTemplate();
     	      if (top != null)
 	            chooser.setSelectedPage(top);
       	  }
       	}
       }
       else {
-      	IBPage top = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(templateId));
+      	ICPage top = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(templateId));
       	if (top != null)
       	  chooser.setSelectedPage(top);
       }
