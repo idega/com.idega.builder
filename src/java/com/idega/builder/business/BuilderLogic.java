@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.81 2001/12/04 23:40:13 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.82 2001/12/13 12:13:32 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1095,8 +1095,10 @@ public class BuilderLogic {
 
           String currentPageId = getCurrentIBPage(iwc);
           setTemplateId(currentPageId,Integer.toString(newId));
-          getIBXMLPage(newId).addUsingTemplate(currentPageId);
-          getIBXMLPage(oldId).removeUsingTemplate(currentPageId);
+          if (newId > 0)
+            getIBXMLPage(newId).addUsingTemplate(currentPageId);
+          if (oldId > 0)
+            getIBXMLPage(oldId).removeUsingTemplate(currentPageId);
         }
       }
     }
