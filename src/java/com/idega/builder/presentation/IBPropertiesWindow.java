@@ -32,7 +32,7 @@ public class IBPropertiesWindow extends IBAdminWindow{
   private final static String VALUE_PARAMETER = "ib_method_value";
 
   public void main(ModuleInfo modinfo)throws Exception{
-      super.setTitle("IBPropertiesWindow");
+      super.addTitle("IBPropertiesWindow");
       setParentToReload();
       String ib_page_id = modinfo.getParameter(ib_page_parameter);
       String ic_objectinstance_id = modinfo.getParameter(ic_object_id_parameter);

@@ -29,7 +29,7 @@ public class IBApplication extends IWApplication {
     add(IBBanner.class);
     //add(IBMenu.class);
     add(FrameSet1.class);
-    this.setSpanPixels(1,24);
+    this.setSpanPixels(1,29);
     setScrolling(1,false);
     this.setSpanAdaptive(2);
     setScrolling(2,false);
@@ -73,12 +73,15 @@ public class IBApplication extends IWApplication {
       public IBBanner(){
 
         setBackgroundColor("#0E2456");
-        Table table = new Table(1,1);
+        Table table = new Table(2,1);
+          table.setAlignment(2,1,"right");
         add(table);
-        //table.add(new Image("/common/pics/arachnea/Builderheader1.gif"),1,1);
-        Text text = new Text("idegaWeb Builder");
-        text.setFontColor("white");
-        table.add(text);
+        table.add(new Image("/common/pics/arachnea/idegaweb.gif"),1,1);
+        Text text = new Text("idegaWeb Builder&nbsp;&nbsp;");
+          text.setBold();
+          text.setFontSize(3);
+          text.setFontColor("#FFFFFF");
+        table.add(text,2,1);
         table.setWidth("100%");
         table.setHeight("100%");
         //table.setHeight(1,"57");

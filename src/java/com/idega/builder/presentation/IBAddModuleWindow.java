@@ -53,7 +53,7 @@ public class IBAddModuleWindow extends IBAdminWindow{
 
   public void main(ModuleInfo modinfo)throws Exception{
     //empty();
-      super.setTitle("IBAddModuleWindow");
+      super.addTitle("IBAddModuleWindow");
 
     String action = modinfo.getParameter(ib_control_parameter);
     if(action.equals(ACTION_ADD)){
