@@ -1,13 +1,19 @@
 package com.idega.builder.data;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.builder.business.XMLConstants;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -25,16 +31,38 @@ import com.idega.xml.XMLElement;
  */
 public class IBReference {
 	
-	private List entries = null;
+	private Map nameEntries = null;
 	protected String moduleClass = null;
 
+	// this method is a shortcut because ICPage is a very special class 
+	public static StorableHolder createPage() throws IOException {
+			try {
+				ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
+				ICPage page = home.create();
+				page.store();
+				StorableHolder holder = new StorableHolder();
+				holder.setStorable((Storable) page);
+				holder.setValue(page.getPrimaryKey().toString());
+				return holder;
+			}
+			catch (IDOLookupException ex) {
+				throw new IOException("[IBReference] Provider class could not be found (Look up problem)");
+			}
+			catch (CreateException ex) {
+				throw new IOException("[IBReference] Identifier is not a number");
+			}
+		}
 	
 	public IBReference(XMLElement moduleElement) {
 		initialize(moduleElement);
 	}
 	
-	public List getEntries() {
-		return (List) ((ArrayList) entries).clone();
+	public Collection getEntries() {
+		return (nameEntries == null) ? null : nameEntries.values();
+	}
+	
+	public IBReference.Entry getReferenceByName(String name) {
+		return (IBReference.Entry) ((nameEntries == null) ? null : nameEntries.get(name));
 	}
 	
 	public String getModuleClass() {
@@ -43,7 +71,7 @@ public class IBReference {
 
 	
 	private void initialize(XMLElement moduleElement) {
-		entries = new ArrayList();
+		nameEntries = new HashMap();
 		moduleClass = moduleElement.getAttributeValue(XMLConstants.EXPORT_MODULE_CLASS);
 		List properties = moduleElement.getChildren(XMLConstants.EXPORT_PROPERTY);
 		Iterator propertiesIterator = properties.iterator(); 
@@ -51,7 +79,7 @@ public class IBReference {
 			XMLElement propertyElement = (XMLElement) propertiesIterator.next();
 			IBReference.Entry entry = new IBReference.Entry();
 			entry.initialize(propertyElement);
-			entries.add(entry);
+			nameEntries.put(entry.getValueName(), entry);
 		}
 	}
 	
@@ -74,6 +102,9 @@ public class IBReference {
 			//providerMethodName = providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_METHOD);
 		}
 		
+		public String getModuleClass() {
+			return moduleClass;
+		}
 		
 		public void addSource(XMLElement moduleElement, IBExportImportData metadata) throws IOException {
 			List properties = moduleElement.getChildren(XMLConstants.PROPERTY_STRING);
@@ -96,12 +127,7 @@ public class IBReference {
 			}
 			throw new IOException("[IBReference] Source could not be found");
 		}
-		
 
-
-			
-			
-		
 		private Storable getSourceFromPropertyElementUsingEjb(String value) throws IOException {
 			try {
 				Class providerClass = Class.forName(providerClassName);
@@ -139,8 +165,39 @@ public class IBReference {
 //			return (Storable) method.invoke(home, parameters);
 //		}
 			
+		public StorableHolder createSource() throws IOException {
+			if (isEjb) {
+				return createSourceUsingEjb();
+			}
+			else {
+				// not yet implemented
+			}
+			throw new IOException("[IBReference] Source could not be found");
+		}
 		
+		private StorableHolder createSourceUsingEjb() throws IOException {
+			try {
+				Class providerClass = Class.forName(providerClassName);
+				IDOHome home = IDOLookup.getHome(providerClass);
+				IDOEntity entity = home.createIDO();
+				entity.store();
+				StorableHolder holder = new StorableHolder();
+				holder.setStorable((Storable)entity);
+				holder.setValue(entity.getPrimaryKey().toString());
+				return holder;
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IOException("[IBReference] Provider class doesn't exist");
+			}
+			catch (IDOLookupException ex) {
+				throw new IOException("[IBReference] Provider class could not be found (Look up problem)");
+			}
+			catch (CreateException ex) {
+				throw new IOException("[IBReference] Identifier is not a number");
+			}
+		}
 			
+
 			
 		
 		/**
