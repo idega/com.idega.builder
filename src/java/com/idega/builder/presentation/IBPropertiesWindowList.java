@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 public class IBPropertiesWindowList extends Page{
 
-  public static final String IC_OBJECT_ID_PARAMETER = IBPropertiesWindow.IC_OBJECT_ID_PARAMETER;
+  public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = IBPropertiesWindow.IC_OBJECT_INSTANCE_ID_PARAMETER;
   public static final String IB_PAGE_PARAMETER = IBPropertiesWindow.IB_PAGE_PARAMETER;
   final static String METHOD_ID_PARAMETER= IBPropertiesWindow.METHOD_ID_PARAMETER;
   final static String VALUE_SAVE_PARAMETER = IBPropertiesWindow.VALUE_SAVE_PARAMETER;
@@ -41,7 +41,7 @@ public class IBPropertiesWindowList extends Page{
   }
 
   public void main(IWContext iwc)throws Exception{
-    String ic_object_id = getICObjectID(iwc);
+    String ic_object_id = getUsedICObjectInstanceID(iwc);
     if(ic_object_id!=null){
       add(getPropertiesList(ic_object_id,iwc));
       System.out.println("IBPropertiesWindowList: Getting IC_OBJECT_ID");
@@ -51,20 +51,20 @@ public class IBPropertiesWindowList extends Page{
     }
   }
 
-  public String getICObjectID(IWContext iwc){
-    return iwc.getParameter(IC_OBJECT_ID_PARAMETER);
+  public String getUsedICObjectInstanceID(IWContext iwc){
+    return iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
   }
 
   public PresentationObject getPropertiesList(String ic_object_id,IWContext iwc)throws Exception{
     Table table = new Table();
     int icObjectInstanceID = Integer.parseInt(ic_object_id);
-    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(icObjectInstanceID,iwc.getApplication());
-    IWPropertyListIterator iter = methodList.getIWPropertyListIterator();
+    List methodList = IBPropertyHandler.getInstance().getMethodsListOrdered(icObjectInstanceID,iwc);
+    Iterator iter = methodList.iterator();
     int counter=1;
     while (iter.hasNext()) {
-      IWProperty methodProp = iter.nextProperty();
+      IWProperty methodProp = (IWProperty)iter.next();
       String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
-      String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp);
+      String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp,iwc);
       Link link = new Link(methodDescr);
       /*link.setTarget(PROPERTY_FRAME);
       link.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);

@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 public class IBPropertiesWindowSetter extends Page {
 
-  public static final String IC_OBJECT_ID_PARAMETER = IBPropertiesWindow.IC_OBJECT_ID_PARAMETER;
+  public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = IBPropertiesWindow.IC_OBJECT_INSTANCE_ID_PARAMETER;
   public static final String IB_PAGE_PARAMETER = IBPropertiesWindow.IB_PAGE_PARAMETER;
   final static String METHOD_ID_PARAMETER= IBPropertiesWindow.METHOD_ID_PARAMETER;
   final static String VALUE_SAVE_PARAMETER = IBPropertiesWindow.VALUE_SAVE_PARAMETER;
@@ -42,12 +42,20 @@ public class IBPropertiesWindowSetter extends Page {
   public IBPropertiesWindowSetter(){
   }
 
-  public String getICObjectID(IWContext iwc){
-    return iwc.getParameter(IC_OBJECT_ID_PARAMETER);
+  public String getUsedICObjectInstanceID(IWContext iwc){
+    return iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
+  }
+
+
+  public int getUsedICObjectInstanceIDInt(IWContext iwc){
+    String s = getUsedICObjectInstanceID(iwc);
+    return Integer.parseInt(s);
   }
 
   public void main(IWContext iwc)throws Exception{
     boolean propertyChange = false;
+
+
 
     Script script = this.getAssociatedScript();
     script.addFunction(CHANGE_PROPERTY_FUNCTION_NAME,"function "+CHANGE_PROPERTY_FUNCTION_NAME+"(method){var form = document.forms[0];form."+CHANGE_PROPERTY_PARAMETER+".value=method;"+UPDATE_PROPERTY_FUNCTION_NAME+"();}");
@@ -57,7 +65,7 @@ public class IBPropertiesWindowSetter extends Page {
 
     Form form = new Form();
     add(form);
-    form.maintainParameter(IC_OBJECT_ID_PARAMETER);
+    form.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
 
     Parameter param = new Parameter(CHANGE_PROPERTY_PARAMETER);
     String newPropertyID = iwc.getParameter(CHANGE_PROPERTY_PARAMETER);
@@ -83,24 +91,24 @@ public class IBPropertiesWindowSetter extends Page {
       }
     }
 
-    String ic_object_id = getICObjectID(iwc);
+    String ic_object_id = getUsedICObjectInstanceID(iwc);
     if(ic_object_id!=null){
       String propertyID = iwc.getParameter(METHOD_ID_PARAMETER);
       if(propertyID!=null){
           boolean remove = iwc.isParameterSet(REMOVE_PARAMETER);
           if(remove){
-            System.out.println("Trying to remove");
+            //System.out.println("Trying to remove");
             propertyChange=true;
             removeProperty(propertyID,ic_object_id,pageKey);
           }
           else{
             String[] values = parseValues(iwc);
             if(values!=null){
-              System.out.println("Trying to save");
+              //System.out.println("Trying to save");
               propertyChange = this.setProperty(propertyID,values,ic_object_id,pageKey,iwc.getApplication());
             }
             else{
-              System.out.println("Not Trying to save - values == null");
+              //System.out.println("Not Trying to save - values == null");
             }
           }
       }
@@ -110,6 +118,11 @@ public class IBPropertiesWindowSetter extends Page {
       }
       else{
         if(newPropertyID!=null){
+          int iICObjectInstanceID = this.getUsedICObjectInstanceIDInt(iwc);
+          Text description = new Text(IBPropertyHandler.getInstance().getMethodDescription(iICObjectInstanceID,newPropertyID,iwc));
+          description.setBold();
+          description.setFontSize(Text.FONT_SIZE_14_HTML_4);
+          form.add(description);
           form.add(getPropertySetterBox(newPropertyID,iwc,null,ic_object_id));
           form.add(getRemoveButton());
         }

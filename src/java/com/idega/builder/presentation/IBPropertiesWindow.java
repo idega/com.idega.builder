@@ -33,7 +33,7 @@ import java.util.Iterator;
 
 public class IBPropertiesWindow extends FrameSet{
 
-   static final String IC_OBJECT_ID_PARAMETER = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+   static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
    static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
    final static String METHOD_ID_PARAMETER="iw_method_identifier";
    final static String VALUE_SAVE_PARAMETER = "ib_method_save";
@@ -51,14 +51,16 @@ public class IBPropertiesWindow extends FrameSet{
     add(IBPropertiesWindowTop.class);
 
     IWURL mURL = FrameSet.getFrameURL(IBPropertiesWindowMiddle.class);
-    mURL.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
+    mURL.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
     add(mURL.toString());
     //add(IBPropertiesWindowMiddle.class);
 
     add(IBPropertiesWindowBottom.class);
-    this.setSpanPixels(1,40);
+    this.setSpanPixels(1,30);
     this.setSpanAdaptive(2);
-    this.setSpanPixels(3,50);
+    this.setSpanPixels(3,40);
+
+    this.setScrolling(1,false);
 
     this.setFrameName(1,TOP_FRAME);
     this.setFrameName(2,MIDDLE_FRAME);
@@ -66,129 +68,7 @@ public class IBPropertiesWindow extends FrameSet{
   }
 
 
-  public void main2(IWContext iwc)throws Exception{
-      //super.addTitle("IBPropertiesWindow");
-      //setParentToReload();
-      String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
-      String ic_objectinstance_id = iwc.getParameter(IC_OBJECT_ID_PARAMETER);
-      if(ic_objectinstance_id!=null){
-        String methodIdentifier = iwc.getParameter(METHOD_ID_PARAMETER);
-        if(methodIdentifier==null){
-          add(getPropertiesList(ic_objectinstance_id,iwc));
-        }
-        else{
-          if(iwc.isParameterSet(VALUE_SAVE_PARAMETER)){
-            String[] valueParams = iwc.getParameterValues(VALUE_PARAMETER);
-            //add("value="+value);
-            if(valueParams!=null){
-              boolean deleteProperty=true;
-              String[] values = new String[valueParams.length];
-              for (int i = 0; i < valueParams.length; i++) {
-                values[i]=iwc.getParameter(valueParams[i]);
-                if(!values[i].equals("")){deleteProperty=false;}
-              }
-              //System.out.println("setting property 1");
-              if(deleteProperty){
-                removeProperty(methodIdentifier,ic_objectinstance_id,ib_page_id);
-              }
-              else{
-                setProperty(methodIdentifier,values,ic_objectinstance_id,ib_page_id,iwc.getApplication());
-                setParentToReload();
-                close();
-              }
-            }
-          }
-          else{
-            Form form = new Form();
-            add(form);
-            form.maintainAllParameters();
-            form.add(getPropertySetterBox(methodIdentifier,iwc,ib_page_id,ic_objectinstance_id));
-          }
-        }
-      }
-      else {
-        add("IWPropertiesWindow: ICObjectInstanceID is null");
-      }
-  }
 
-  public PresentationObject getPropertiesList(String ic_object_id,IWContext iwc)throws Exception{
-    Table table = new Table();
-    int icObjectInstanceID = Integer.parseInt(ic_object_id);
-    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(icObjectInstanceID,iwc.getApplication());
-    IWPropertyListIterator iter = methodList.getIWPropertyListIterator();
-    int counter=1;
-    while (iter.hasNext()) {
-      IWProperty methodProp = iter.nextProperty();
-      String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
-      String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp);
-      Link link = new Link(methodDescr);
-      link.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
-      link.maintainParameter(IB_PAGE_PARAMETER,iwc);
-      link.addParameter(METHOD_ID_PARAMETER,methodIdentifier);
-      table.add(link,1,counter);
-      counter++;
-    }
-    return table;
-  }
-
-  public PresentationObject getPropertySetterBox(String methodIdentifier,IWContext iwc,String pageID,String icObjectInstanceID)throws Exception{
-      Table table = new Table();
-      int ypos = 1;
-      /*TextInput input = new TextInput(VALUE_PARAMETER);
-      String value = BuilderLogic.getInstance().getProperty(pageID,Integer.parseInt(icObjectInstanceID),methodIdentifier);
-      if(value!=null){
-        input.setContent(value);
-      }
-      table.add(input,1,1);*/
-      Class ICObjectClass = null;
-      int icObjectInstanceIDint = Integer.parseInt(icObjectInstanceID);
-      if(icObjectInstanceIDint == -1){
-        ICObjectClass = com.idega.presentation.Page.class;
-      }
-      else{
-        ICObjectClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
-      }
-      String namePrefix = "ib_property_";
-      java.lang.reflect.Method method = MethodFinder.getInstance().getMethod(methodIdentifier,ICObjectClass);
-      Class[] parameters = method.getParameterTypes();
-      //System.out.println("parameters.length="+parameters.length);
-      //System.out.println("method.toString()="+method.toString());
-      List list = BuilderLogic.getInstance().getPropertyValues(pageID,Integer.parseInt(icObjectInstanceID),methodIdentifier);
-      Iterator iter = null;
-      if(list!=null){
-        iter = list.iterator();
-      }
-      for (int i = 0; i < parameters.length; i++) {
-        Class parameterClass = parameters[i];
-        String sValue=null;
-        try{
-          if(iter!=null){sValue = (String)iter.next();}
-        }
-        catch(java.util.NoSuchElementException e){
-        }
-        String sName=namePrefix+i;
-        PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(parameterClass,sName,sValue);
-        Parameter param = new Parameter(VALUE_PARAMETER,sName);
-        table.add(param,2,ypos);
-        table.add(handlerBox,2,ypos);
-        ypos++;
-      }
-      SubmitButton button = new SubmitButton(VALUE_SAVE_PARAMETER,"Save");
-      table.add(button,ypos,2);
-      return table;
-  }
-
-  public void setProperty(String key,String[] values,String icObjectInstanceID,String pageKey,IWMainApplication iwma){
-    BuilderLogic.getInstance().setProperty(pageKey,Integer.parseInt(icObjectInstanceID),key,values,iwma);
-  }
-
-  public void removeProperty(String key,String icObjectInstanceID,String pageKey){
-    /**
-     * @todo Change so that it removes properties of specific values for multivalued properties
-     */
-    String value = "";
-    BuilderLogic.getInstance().removeProperty(pageKey,Integer.parseInt(icObjectInstanceID),key,value);
-  }
 
 
   public static class IBPropertiesWindowMiddle extends FrameSet{
@@ -196,11 +76,11 @@ public class IBPropertiesWindow extends FrameSet{
     public void main(IWContext iwc){
       super.setHorizontal();
       IWURL url1 = FrameSet.getFrameURL(IBPropertiesWindowList.class);
-      url1.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
+      url1.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
       add(url1.toString());
 
       IWURL url2 = FrameSet.getFrameURL(IBPropertiesWindowSetter.class);
-      url2.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
+      url2.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
       add(url2.toString());
 
       setFrameName(1,IBPropertiesWindowList.LIST_FRAME);
@@ -238,11 +118,14 @@ public class IBPropertiesWindow extends FrameSet{
 
   public static class IBPropertiesWindowTop extends Page{
     public IBPropertiesWindowTop(){
+      setAllMargins(0);
       setBackgroundColor("gray");
     }
 
     public void main(IWContext iwc){
-      add("Properties");
+      Text t = new Text("Properties");
+      t.setBold();
+      add(t);
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.11 2001/10/08 16:34:00 palli Exp $
+ * $Id: IBXMLPage.java,v 1.12 2001/10/08 21:04:18 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -224,7 +224,7 @@ public class IBXMLPage {
       _rootElement = _xmlDocument.getRootElement();
     }
     catch(org.jdom.JDOMException e) {
-      System.err.println("JDOM Exception: " + e.getMessage());
+      //System.err.println("JDOM Exception: " + e.getMessage());
       throw new PageDoesNotExist();
     }
   }
@@ -247,7 +247,7 @@ public class IBXMLPage {
       streamopen=false;
     }
     catch(org.jdom.JDOMException e) {
-      System.err.println("JDOM Exception: " + e.getMessage());
+      //System.err.println("JDOM Exception: " + e.getMessage());
       throw new PageDoesNotExist();
     }
     catch(java.io.IOException ioe) {

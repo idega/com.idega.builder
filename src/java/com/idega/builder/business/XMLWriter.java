@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.11 2001/10/02 19:47:02 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.12 2001/10/08 21:04:18 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -239,7 +239,6 @@ public class XMLWriter {
     if(!allowMultiValued){
       property = findProperty(module,propertyName);
     }
-
     if(property==null){
       property = getNewProperty(propertyName,propertyValues);
       module.addContent(property);

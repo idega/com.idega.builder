@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.37 2001/10/08 16:34:00 palli Exp $
+ * $Id: BuilderLogic.java,v 1.38 2001/10/08 21:04:18 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,7 +52,14 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class BuilderLogic {
-  public static final String IC_OBJECT_ID_PARAMETER = "ic_object_id_par";
+
+  public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
+  /**
+   * @deprecated replaced with IC_OBJECT_INSTANCE_ID_PARAMETER
+   */
+  public static final String IC_OBJECT_ID_PARAMETER = IC_OBJECT_INSTANCE_ID_PARAMETER;
+
+
   public static final String IB_PARENT_PARAMETER = "ib_parent_par";
   public static final String IB_PAGE_PARAMETER ="ib_page_par";
 
@@ -444,7 +451,7 @@ public class BuilderLogic {
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_DELETE);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
-    link.addParameter(IC_OBJECT_ID_PARAMETER,key);
+    link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,key);
     return link;
   }
 
@@ -457,7 +464,7 @@ public class BuilderLogic {
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_MOVE);
     link.addParameter(IB_PARENT_PARAMETER,parentKey);
-    link.addParameter(IC_OBJECT_ID_PARAMETER,key);
+    link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,key);
     return link;
   }
 
@@ -481,7 +488,7 @@ public class BuilderLogic {
     link.setWindowToOpen(IBPropertiesWindow.class);
     link.addParameter(IB_PAGE_PARAMETER,getCurrentIBPage(iwc));
     link.addParameter(IB_CONTROL_PARAMETER,ACTION_EDIT);
-    link.addParameter(IC_OBJECT_ID_PARAMETER,key);
+    link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,key);
     return link;
   }
 
@@ -589,6 +596,7 @@ public class BuilderLogic {
       try{
         IBXMLPage xml = getIBXMLPage(pageKey);
         boolean allowMultivalued=isPropertyMultivalued(propertyName,ObjectInstanceId,iwma);
+        //System.out.println("AllowMultiValued="+allowMultivalued);
         if(XMLWriter.setProperty(xml,ObjectInstanceId,propertyName,propertyValues,allowMultivalued)){
           xml.update();
           return true;
@@ -710,37 +718,37 @@ public class BuilderLogic {
     }
 
     private boolean isPropertyMultivalued(String propertyName,int icObjecctInstanceID,IWMainApplication iwma)throws Exception{
-      Class c = null;
-      IWBundle iwb = null;
-      if(icObjecctInstanceID==-1){
-        c = com.idega.presentation.Page.class;
-        iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
-      }
-      else{
-        ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
-        c = instance.getObject().getObjectClass();
-        iwb = instance.getObject().getBundle(iwma);
-      }
-
-      IWPropertyList complist = iwb.getComponentList();
-      IWPropertyList component = complist.getPropertyList(c.getName());
-      IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
-      if (methodlist == null)
-        return(false);
-      IWPropertyList method = methodlist.getPropertyList(propertyName);
-      if (method == null)
-        return(false);
-      IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
-      if(prop!=null){
-        String value = prop.getValue();
-        try{
-          return Boolean.getBoolean(value);
+      try{
+        Class c = null;
+        IWBundle iwb = null;
+        if(icObjecctInstanceID==-1){
+          c = com.idega.presentation.Page.class;
+          iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
         }
-        catch(Exception e){
-          return false;
+        else{
+          ICObjectInstance instance = new ICObjectInstance(icObjecctInstanceID);
+          c = instance.getObject().getObjectClass();
+          iwb = instance.getObject().getBundle(iwma);
         }
+        IWPropertyList complist = iwb.getComponentList();
+        IWPropertyList component = complist.getPropertyList(c.getName());
+        IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHODS_KEY);
+        if (methodlist == null)
+          return(false);
+        IWPropertyList method = methodlist.getPropertyList(propertyName);
+        if (method == null)
+          return(false);
+        IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
+        if(prop!=null){
+          boolean value = prop.getBooleanValue();
+          return value;
+        }
+        else return false;
       }
-      else return false;
+      catch(Exception e){
+        //e.printStackTrace(System.err);
+        return false;
+      }
     }
 
   public boolean setTemplateId(String pageKey, String id) {
@@ -749,7 +757,6 @@ public class BuilderLogic {
       xml.update();
       return true;
     }
-
     return(false);
   }
 }
