@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.4 2002/08/15 10:53:35 palli Exp $
+ * $Id: IBPageBMPBean.java,v 1.5 2003/07/01 14:07:21 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,10 +14,12 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import javax.ejb.CreateException;
+
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICProtocol;
 import com.idega.core.user.data.User;
-import com.idega.data.BlobWrapper;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.util.IWTimestamp;
 
@@ -38,7 +40,6 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	private final static String DELETED_WHEN_COLUMN = "deleted_when";
 	private final static String TREE_ORDER = "tree_order";
 	private ICFile _file;
-	private BlobWrapper _wrapper;
 
 	public final static String PAGE = "P";
 	public final static String TEMPLATE = "T";
@@ -78,7 +79,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		addAttribute(getColumnDeleted(), "Deleted", true, true, String.class, 1);
 		addAttribute(getColumnDeletedBy(), "Deleted by", true, true, Integer.class, "many-to-one", User.class);
 		addAttribute(getColumnDeletedWhen(), "Deleted when", true, true, Timestamp.class);
-		addAttribute(TREE_ORDER,"Ordering of pages in a level in the page tree",true,true,Integer.class);
+		addAttribute(TREE_ORDER, "Ordering of pages in a level in the page tree", true, true, Integer.class);
 		addManyToManyRelationShip(ICProtocol.class, "ib_page_ic_protocol");
 	}
 
@@ -180,8 +181,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 			setColumn(getColumnDeleted(), DELETED);
 			setDeletedWhen(IWTimestamp.getTimestampRightNow());
 			//      setDeletedBy(iwc.getUserId());
-		}
-		else {
+		} else {
 			setColumn(getColumnDeleted(), NOT_DELETED);
 			//      setDeletedBy(-1);
 			//      setDeletedWhen(null);
@@ -209,7 +209,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	 *
 	 */
 	public Timestamp getDeletedWhen() {
-		return ((Timestamp) getColumnValue(getColumnDeletedWhen()));
+		return ((Timestamp)getColumnValue(getColumnDeletedWhen()));
 	}
 
 	/**
@@ -247,7 +247,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public ICFile getFile() {
 		int fileID = getFileID();
 		if (fileID != -1) {
-			_file = (ICFile) getColumnValue(getColumnFile());
+			_file = (ICFile)getColumnValue(getColumnFile());
 		}
 		return (_file);
 	}
@@ -267,8 +267,15 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public void setPageValue(InputStream stream) {
 		ICFile file = getFile();
 		if (file == null) {
-			file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
-			setFile(file);
+			try {
+				file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				setFile(file);
+			} catch (IDOLookupException e) {
+				e.printStackTrace();
+			} catch (CreateException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		file.setFileValue(stream);
 	}
@@ -282,8 +289,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 			if (file != null) {
 				return (file.getFileValue());
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 
 		return (null);
@@ -295,11 +301,16 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public OutputStream getPageValueForWrite() {
 		ICFile file = getFile();
 		if (file == null) {
-			file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
-			setFile(file);
+			try {
+				file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				setFile(file);
+			} catch (IDOLookupException e) {
+				e.printStackTrace();
+			} catch (CreateException e) {
+				e.printStackTrace();
+			}
 		}
 		OutputStream theReturn = file.getFileValueForWrite();
-		_wrapper = (BlobWrapper) file.getColumnValue(com.idega.core.data.ICFileBMPBean.getColumnFileValue());
 
 		return (theReturn);
 	}
@@ -374,26 +385,20 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		ICFile file = getFile();
 		if (file != null) {
 			try {
-				if (file.getID() == -1) {
-					file.insert();
+				if (file.getPrimaryKey() == null) {
+					file.store();
 					file.setName(this.getName());
 					file.setMimeType("text/xml");
 					setFile(file);
-				}
-				else {
-					if (_wrapper != null) {
-						file.setColumn(com.idega.core.data.ICFileBMPBean.getColumnFileValue(), _wrapper);
-					}
+				} else {
 					file.setName(this.getName());
 					file.setMimeType("text/xml");
-					file.update();
+					file.store();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
-		}
-		else {
+		} else {
 			System.out.println("IBPage, file == null in update");
 		}
 		super.update();
@@ -406,15 +411,9 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 		ICFile file = getFile();
 		if (file != null) {
 			//System.out.println("file != null in insert");
-			try {
-				file.insert();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
+			file.store();
 			setFile(file);
-		}
-		else {
+		} else {
 			//System.out.println("file == null in insert");
 		}
 		super.insert();
@@ -545,18 +544,17 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public void setOwner(IWUserContext iwuc) {
 		try {
 			iwuc.getAccessController().setCurrentUserAsOwner(this, iwuc);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void setTreeOrder(int order) {
-		setColumn(TREE_ORDER,order);	
+		setColumn(TREE_ORDER, order);
 	}
-	
+
 	public void setTreeOrder(Integer order) {
-		setColumn(TREE_ORDER,order);		
+		setColumn(TREE_ORDER, order);
 	}
 
 	public int getTreeOrder() {

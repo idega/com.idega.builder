@@ -128,7 +128,7 @@ public class ComponentPropertyHandler {
         }
         else if(parameterType.equals(ICFile.class)){
           try {
-            argument = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
+            argument = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(stringValue));
           }
           catch (Exception ex) {
             ex.printStackTrace(System.err);

@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSaveAsPageWindow.java,v 1.5 2003/04/03 19:54:57 laddi Exp $
+ * $Id: IBSaveAsPageWindow.java,v 1.6 2003/07/01 14:07:18 gummi Exp $
 
  *
 
@@ -166,7 +166,7 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
         ibPage.setName(name);
 
-        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 
         ibPage.setFile(file);
 

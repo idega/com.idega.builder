@@ -1,7 +1,9 @@
 package com.idega.builder.data;
 
+import com.idega.data.IDOLegacyEntity;
 
-public interface IBPage extends com.idega.data.TreeableEntity
+
+public interface IBPage extends com.idega.data.TreeableEntity, IDOLegacyEntity
 {
  public void delete(int p0)throws java.sql.SQLException;
  public void delete()throws java.sql.SQLException;

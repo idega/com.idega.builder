@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.25 2003/05/27 11:43:46 palli Exp $
+ * $Id: IBPageHelper.java,v 1.26 2003/07/01 14:07:22 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.ejb.CreateException;
+
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageHome;
@@ -22,6 +24,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
@@ -120,12 +123,21 @@ public class IBPageHelper {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, int domainId) {
+	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, int domainId){
 		IBPage ibPage = ((com.idega.builder.data.IBPageHome) com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).createLegacy();
 		if (name == null)
 			name = "Untitled";
 		ibPage.setName(name);
-		ICFile file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+		ICFile file;
+		try {
+			file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+		} catch (IDOLookupException e1) {
+			e1.printStackTrace();
+			return -1;
+		} catch (CreateException e1) {
+			e1.printStackTrace();
+			return -1;
+		}
 		file.setMimeType(com.idega.core.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
 		ibPage.setFile(file);
 		if (type.equals(PAGE)) {
