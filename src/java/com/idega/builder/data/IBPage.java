@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.11 2001/08/27 18:32:01 tryggvil Exp $
+ * $Id: IBPage.java,v 1.12 2001/09/12 12:28:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,198 +9,253 @@
  */
 package com.idega.builder.data;
 
-import java.sql.SQLException;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import com.idega.data.GenericEntity;
 import com.idega.data.BlobWrapper;
-
 import com.idega.core.data.ICFile;
+import java.sql.SQLException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.3
  */
-public class IBPage extends TreeableEntity{
+public class IBPage extends TreeableEntity {
+  private static String templateIdColumn_ = "template_id";
+  private static String fileColumn_ = "file_id";
+  private static String nameColumn_ = "name";
+  private static String entityName_ = "ib_page";
+  private static String type_ = "page_type";
 
-      private static String template_id_column = "template_id";
-      private static String file_column = "file_id";
-      private static String name_column = "name";
-      private static String entity_name = "ib_page";
+  public static String page = "P";
+  public static String template = "T";
+  public static String draft = "D";
 
-      private ICFile file;
-      private BlobWrapper wrapper;
+  private ICFile file_;
+  private BlobWrapper wrapper_;
 
+  /**
+   *
+   */
 	public IBPage() {
 		super();
 	}
 
+  /**
+   *
+   */
 	public IBPage(int id)throws SQLException {
 		super(id);
 	}
 
-	public void initializeAttributes(){
+  /**
+   *
+   */
+	public void initializeAttributes() {
 		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
 		addAttribute(getIDColumnName());
-		addAttribute(getColumnName(),"Nafn",true,true,"java.lang.String");
-                //addAttribute("page_value","Page value",true,true,"com.idega.data.BlobWrapper");
-                addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
-                addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBTemplatePage.class);
-
-                //this.addTreeRelationShip();
-
+		addAttribute(getColumnName(),"Nafn",true,true,String.class);
+    addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
+    addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
+    addAttribute(getColumnType(),"Type",true,true,String.class,1);
 	}
 
-        public void insertStartData()throws Exception{
-          /*IBPage page = new IBPage();
-          page.setName("Empty page");
-          page.insert();
-          */
-        }
+  /**
+   *
+   */
+  public void insertStartData() throws Exception {
+  }
 
+  /**
+   *
+   */
 	public String getEntityName() {
-		return entity_name;
+		return(entityName_);
 	}
 
+  /**
+   *
+   */
 	public void setDefaultValues() {
 		//setColumn("image_id",1);
 	}
 
 	public String getName() {
-		return getStringColumnValue(getColumnName());
+		return(getStringColumnValue(getColumnName()));
 	}
 
+  public void setName(String name) {
+    setColumn(getColumnName(),name);
+  }
 
-        public void setName(String name) {
-          setColumn(getColumnName(),name);
+  public String getType() {
+    return(getStringColumnValue(getColumnType()));
+  }
+
+  public void setType(String type) {
+    if ((type.equalsIgnoreCase(page)) || (type.equalsIgnoreCase(template)) || (type.equalsIgnoreCase(draft)))
+      setColumn(getColumnType(),type);
+  }
+
+  private int getFileID() {
+    return(getIntColumnValue(getColumnFile()));
+  }
+
+  public ICFile getFile() {
+    int fileID = getFileID();
+    if (fileID !=- 1) {
+      file_ = (ICFile)getColumnValue(getColumnFile());
+    }
+
+    return(file_);
+  }
+
+  public void setFile(ICFile file) {
+    System.out.println("Calling setFile");
+    setColumn(getColumnFile(),file);
+    file_ = file;
+  }
+
+  public void setPageValue(InputStream stream) {
+    ICFile file = getFile();
+    if (file == null) {
+      file = new ICFile();
+      setFile(file);
+    }
+    file.setFileValue(stream);
+  }
+
+  public InputStream getPageValue() {
+    try {
+      ICFile file = getFile();
+      if (file != null) {
+        return(file.getFileValue());
+      }
+    }
+    catch(Exception e) {
+    }
+
+    return(null);
+  }
+
+  public OutputStream getPageValueForWrite() {
+    ICFile file = getFile();
+    if (file == null) {
+      file = new ICFile();
+      setFile(file);
+    }
+    OutputStream theReturn = file.getFileValueForWrite();
+    wrapper_ = (BlobWrapper)file.getColumnValue(ICFile.getColumnFileValue());
+
+    return(theReturn);
+  }
+
+  public static String getColumnName() {
+    return(nameColumn_);
+  }
+
+  public static String getColumnTemplateID() {
+    return(templateIdColumn_);
+  }
+
+  public static String getColumnFile() {
+    return(fileColumn_);
+  }
+
+  public static String getColumnType() {
+    return(type_);
+  }
+
+  public void update() throws SQLException {
+    ICFile file = getFile();
+    if(file != null) {
+      try {
+        System.out.println("file != null in update");
+        if(file.getID() == -1) {
+          file.insert();
+          setFile(file);
+          System.out.println("Trying insert on ICFile");
         }
-
-        private int getFileID(){
-          return getIntColumnValue(getColumnFile());
-        }
-
-        public ICFile getFile(){
-          int fileID = getFileID();
-          if(fileID!=-1){
-            this.file = (ICFile)getColumnValue(getColumnFile());
+        else {
+          System.out.println("Trying update on ICFile");
+          if (wrapper_ != null) {
+            file.setColumn(ICFile.getColumnFileValue(),wrapper_);
           }
-          return this.file;
+          file.update();
         }
+      }
+      catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+    else {
+      System.out.println("file == null in update");
+    }
+    super.update();
+  }
 
-        public void setFile(ICFile file){
-          System.out.println("Calling setFile");
-          setColumn(getColumnFile(),file);
-          this.file = file;
-        }
+  public void insert() throws SQLException {
+    ICFile file = getFile();
+    if(file != null) {
+      System.out.println("file != null in insert");
+      file.insert();
+      setFile(file);
+    }
+    else {
+      System.out.println("file == null in insert");
+    }
+    super.insert();
+  }
 
-        public void setPageValue(InputStream stream) {
-          //setColumn("page_value",stream);
-          ICFile file = getFile();
-          if(file==null){
-            file = new ICFile();
-            setFile(file);
-          }
-          file.setFileValue(stream);
-        }
+  public void delete() throws SQLException {
+    ICFile file = getFile();
+    if(file != null) {
+      System.out.println("file != null in delete");
+      try {
+        file.delete();
+      }
+      catch(SQLException e) {
+      }
+    }
+    else {
+      System.out.println("file == null in delete");
+    }
+    super.delete();
+  }
 
-        public InputStream getPageValue(){
-          try {
-            //return getInputStreamColumnValue("page_value");
-            ICFile file = getFile();
-            if(file!=null){
-              return file.getFileValue();
-            }
-            return null;
+  public void setIsPage() {
+    setType(page);
+  }
 
-          }
-          catch(Exception e) {
-            return null;
-          }
-        }
+  public void setIsTemplate() {
+    setType(template);
+  }
 
-        public OutputStream getPageValueForWrite() {
-          //return getColumnOutputStream("page_value");
-          ICFile file = getFile();
-          if(file==null){
-            file = new ICFile();
-            setFile(file);
-          }
-          OutputStream theReturn = file.getFileValueForWrite();
-          this.wrapper = (BlobWrapper)file.getColumnValue(ICFile.getColumnFileValue());
-          return theReturn;
-        }
+  public void setIsDraft() {
+    setType(draft);
+  }
 
+  public boolean isPage() {
+    String type = getType();
+    if (type.equalsIgnoreCase(page))
+      return(true);
+    else
+      return(false);
+  }
 
-        public static String getColumnName(){
-          return name_column;
-        }
+  public boolean isTemplate() {
+    String type = getType();
+    if (type.equalsIgnoreCase(template))
+      return(true);
+    else
+      return(false);
+  }
 
-        public static String getColumnTemplateID(){
-          return template_id_column;
-        }
-
-        public static String getColumnFile(){
-          return file_column;
-        }
-
-        public void update()throws SQLException{
-          ICFile file = getFile();
-          if(file!=null){
-            try{
-              System.out.println("file != null in update");
-              if(file.getID()==-1){
-                file.insert();
-                setFile(file);
-                System.out.println("Trying insert on ICFile");
-              }
-              else{
-                System.out.println("Trying update on ICFile");
-                if(wrapper!=null){
-                  file.setColumn(ICFile.getColumnFileValue(),wrapper);
-                }
-                file.update();
-              }
-            }
-            catch(Exception e){
-              e.printStackTrace();
-            }
-          }
-          else{
-            System.out.println("file == null in update");
-          }
-          super.update();
-        }
-
-        public void insert()throws SQLException{
-          ICFile file = getFile();
-          if(file!=null){
-            System.out.println("file != null in insert");
-            file.insert();
-            setFile(file);
-          }
-          else{
-            System.out.println("file == null in insert");
-          }
-          super.insert();
-        }
-
-        public void delete()throws SQLException{
-          ICFile file = getFile();
-          if(file!=null){
-            System.out.println("file != null in delete");
-            try{
-              file.delete();
-            }
-            catch(SQLException e){
-            }
-          }
-          else{
-            System.out.println("file == null in delete");
-          }
-          super.delete();
-        }
-
-
+  public boolean isDraft() {
+    String type = getType();
+    if (type.equalsIgnoreCase(draft))
+      return(true);
+    else
+      return(false);
+  }
 }
