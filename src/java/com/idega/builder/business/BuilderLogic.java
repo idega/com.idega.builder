@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.114 2002/03/15 13:59:47 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.115 2002/03/21 01:07:11 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -834,21 +834,26 @@ public class BuilderLogic {
     }
 
     public void add(PresentationObject obj){
-      if(obj instanceof Table){
-	String width=((Table)obj).getWidth();
-	if(width!=null){
-	  _table.setWidth(width);
-	  ((Table)obj).setWidth("100%");
-	}
+      if ( obj.isAttributeSet(obj.WIDTH) )
+        _layer.setWidth(obj.getWidth());
+      if ( obj.isAttributeSet(obj.HEIGHT) )
+        _layer.setHeight(obj.getHeight());
+      if ( obj.isAttributeSet(obj.HORIZONTAL_ALIGNMENT) )
+        _layer.setHorizontalAlignment(obj.getHorizontalAlignment());
 
-	String height=((Table)obj).getHeight();
-	if(height!=null){
-	  _table.setHeight(height);
-	  ((Table)obj).setHeight("100%");
-
-	}
-
+      if ( obj instanceof Layer ) {
+        if ( obj.isAttributeSet(Layer.LEFT) )
+          _layer.setLeftPosition(obj.getAttribute(Layer.LEFT));
+        if ( obj.isAttributeSet(Layer.TOP) )
+          _layer.setTopPosition(obj.getAttribute(Layer.TOP));
+        if ( obj.isAttributeSet(Layer.ZINDEX) )
+          _layer.setZIndex(obj.getAttribute(Layer.ZINDEX));
+        obj.removeAttribute(Layer.LEFT);
+        obj.removeAttribute(Layer.TOP);
+        obj.removeAttribute(Layer.POSITION);
+        obj.removeAttribute(Layer.ZINDEX);
       }
+
       _tableLayer.add(obj);
 
       obj.setParentObject(_parent);
