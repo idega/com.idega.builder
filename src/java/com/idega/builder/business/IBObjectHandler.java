@@ -1,7 +1,7 @@
 package com.idega.builder.business;
 
 import java.sql.*;
-import com.idega.builder.data.*;
+import com.idega.core.data.*;
 import com.idega.data.EntityFinder;
 import java.util.List;
 
@@ -16,26 +16,26 @@ import java.util.List;
 
 public class IBObjectHandler {
 
-  private IBObject arObject;
-  private IBObjectInstance arObjectInstance;
+  private ICObject arObject;
+  private ICObjectInstance arObjectInstance;
 
 
   public IBObjectHandler()throws SQLException {
-    arObject = new IBObject();
-    arObjectInstance = new IBObjectInstance();
+    arObject = new ICObject();
+    arObjectInstance = new ICObjectInstance();
   }
 
 
   public int addNewObject(String PublicName, Object obj)throws Exception{
     int objID = getObjectID(obj);
     if(objID == -1){
-      IBObject newObj = new IBObject();
+      ICObject newObj = new ICObject();
         newObj.setClassName(obj.getClass().getName());
         newObj.setName(PublicName);
         newObj.insert();
         return newObj.getID();
     }else{
-      System.out.println(" WARNING! : This IBObject has been adden before and got the object_id = " + objID);
+      System.out.println(" WARNING! : This ICObject has been adden before and got the object_id = " + objID);
       return objID;
     }
 
@@ -44,20 +44,20 @@ public class IBObjectHandler {
   public int addNewObjectInstance(Object obj)throws Exception{
     int instID = getObjectID(obj);
     if(instID != -1){
-      IBObjectInstance newInstance = new IBObjectInstance();
+      ICObjectInstance newInstance = new ICObjectInstance();
       newInstance.setObjectID(instID);
       newInstance.insert();
       return newInstance.getID();
     }else{
-      throw new SQLException("IBObject is not known");
+      throw new SQLException("ICObject is not known");
     }
   }
 
 
   public int getObjectID(Object obj)throws Exception{
-    List myList = EntityFinder.findAllByColumn(arObject,IBObject.getClassNameColumnName(),obj.getClass().getName());
+    List myList = EntityFinder.findAllByColumn(arObject,ICObject.getClassNameColumnName(),obj.getClass().getName());
     if(myList != null){
-      return ((IBObject)myList.get(0)).getID();
+      return ((ICObject)myList.get(0)).getID();
     }else{
       return -1;
     }

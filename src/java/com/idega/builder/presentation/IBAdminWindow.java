@@ -11,6 +11,7 @@ import com.idega.data.*;
 import com.idega.jmodule.news.presentation.*;
 import com.idega.util.*;
 import com.idega.builder.data.*;
+import com.idega.core.data.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
@@ -60,7 +61,7 @@ private static String idega_parameter_classname = "idega_parameter_classname";
 
         IBPage ib_page ;
 
-        IBObjectInstance instance = new IBObjectInstance();
+        ICObjectInstance instance = new ICObjectInstance();
         EntityInsert inserter = new EntityInsert(instance);
         //EntityInsert inserter = new EntityInsert(instance,modinfo.getRequest().getRequestURI()+"?ib_object_instance_insert=true&"+controlParameter+"="+modinfo.getParameter(controlParameter));
         add(inserter);
@@ -69,7 +70,7 @@ private static String idega_parameter_classname = "idega_parameter_classname";
         //if ( inserter.hasInserted(getModuleInfo()) || (getParameter("ib_object_instance_insert") != null) ){
         if(inserter.hasInserted(modinfo)){
         //if ( modinfo.getParameter("ib_object_instance_insert") != null ){
-                instance = (IBObjectInstance) inserter.getInsertedObject(modinfo);
+                instance = (ICObjectInstance) inserter.getInsertedObject(modinfo);
                 ib_page= (IBPage)modinfo.getSessionAttribute("ib_page");
                 //modinfo.removeSessionAttribute("ib_page");
                 //out.print(ib_page.getName());
@@ -112,13 +113,13 @@ private static String idega_parameter_classname = "idega_parameter_classname";
 
         IBPage ib_page ;
 
-        IBObjectInstance instance = new IBObjectInstance();
+        ICObjectInstance instance = new ICObjectInstance();
         //add(new EntityInsert(instance));
 
 
 
         if ( modinfo.getParameter("ib_object_instance_id") != null){
-                instance = new IBObjectInstance(Integer.parseInt(modinfo.getParameter("ib_object_instance_id")));
+                instance = new ICObjectInstance(Integer.parseInt(modinfo.getParameter("ib_object_instance_id")));
                 add(new EntityUpdater(instance));
         }
         else{
@@ -136,11 +137,11 @@ private static String idega_parameter_classname = "idega_parameter_classname";
 
             IBPage ib_page ;
 
-            IBObjectInstance instance = new IBObjectInstance();
+            ICObjectInstance instance = new ICObjectInstance();
             //add(new EntityInsert(instance));
 
             if ( modinfo.getParameter("ib_object_instance_id") != null){
-                    instance = new IBObjectInstance(Integer.parseInt(modinfo.getParameter("ib_object_instance_id")));
+                    instance = new ICObjectInstance(Integer.parseInt(modinfo.getParameter("ib_object_instance_id")));
                     instance.removeFrom(new IBPage());
                     instance.delete();
                     window.close();
@@ -158,7 +159,7 @@ private static String idega_parameter_classname = "idega_parameter_classname";
 
         IBPage ib_page;
 
-        IBObjectInstance instance;// = new IBObjectInstance();
+        ICObjectInstance instance;// = new ICObjectInstance();
         //add(new EntityInsert(instance));
         String ib_object_instance_id = modinfo.getParameter("ib_object_instance_id");
         String idega_ib_method_name = modinfo.getParameter("idega_ib_method_name");
@@ -274,7 +275,7 @@ private static String idega_parameter_classname = "idega_parameter_classname";
   }
 
   private Class getClass(int ib_object_instance_id)throws Exception{
-      IBObjectInstance instance = new IBObjectInstance(ib_object_instance_id);
+      ICObjectInstance instance = new ICObjectInstance(ib_object_instance_id);
       Table table = new Table();
       Class theClass = instance.getObject().getNewInstance().getClass();
       return theClass;

@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.2 2001/04/30 16:40:40 palli Exp $
+ * $Id: IBMainServlet.java,v 1.3 2001/06/14 20:28:57 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,8 @@ import com.idega.jmodule.*;
 import com.idega.data.*;
 import com.idega.jmodule.news.presentation.*;
 import com.idega.util.*;
+import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectInstance;
 import com.idega.builder.data.*;
 import com.idega.builder.presentation.*;
 import com.idega.jmodule.object.*;
@@ -62,12 +64,12 @@ public class IBMainServlet extends JSPModule {
       language = "IS";
     }
 
-    IBObjectInstance[] instances;
+    ICObjectInstance[] instances;
     IBPage ib_page = new IBPage(id);
     IBAdminWindow window = new IBAdminWindow();
 
     try {
-      instances = (IBObjectInstance[]) ib_page.findReverseRelated(new IBObjectInstance());
+      instances = (ICObjectInstance[]) ib_page.findReverseRelated(new ICObjectInstance());
       for(int i = 0; i < instances.length; i++) {
         Table moduleTable = null;
         Table toolbarTable = null;
@@ -163,12 +165,12 @@ public class IBMainServlet extends JSPModule {
   /**
    * Needs reimplementation
    */
-  public ModuleObject getSetObject(IBObjectInstance instance) throws Exception {
+  public ModuleObject getSetObject(ICObjectInstance instance) throws Exception {
     return null;
   }
 
   /*
-  public ModuleObject getSetObject(IBObjectInstance instance) throws Exception {
+  public ModuleObject getSetObject(ICObjectInstance instance) throws Exception {
 
     IBObjectProperty[] properties = instance.getProperties();
     ModuleObject object = null;
