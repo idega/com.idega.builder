@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.111 2002/03/13 10:29:52 tryggvil Exp $
+ * $Id: BuilderLogic.java,v 1.112 2002/03/13 11:56:45 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.RaisedTable;
 import com.idega.presentation.IWContext;
@@ -476,7 +477,7 @@ public class BuilderLogic {
   public String getCurrentIBPage(IWContext iwc) {
     String theReturn = null;
     String requestURI = iwc.getRequestURI();
-    if(requestURI.startsWith(IWMainApplication.BUILDER_SERVLET_URL)){
+    if(requestURI.startsWith(iwc.getApplication().getBuilderServletURL())){
       int indexOfPage = requestURI.indexOf("/page/");
       if( indexOfPage != -1 ){
         boolean pageISNumber= true;
@@ -1233,7 +1234,7 @@ public class BuilderLogic {
   /**
    *
    */
-  public String getIBPageURL(IWContext iwc, int ib_page_id){
+  public String getIBPageURL(IWApplicationContext iwc, int ib_page_id){
     return(IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id);
   }
 
