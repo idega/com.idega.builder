@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.145 2004/02/26 09:39:13 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.146 2004/05/11 14:22:28 gummi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Vector;
 
+import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBLockRegionWindow;
 import com.idega.builder.presentation.IBObjectControl;
@@ -931,19 +932,16 @@ public class BuilderLogic {
 	/**
 	 *  	 *
 	 */
-	public void changeLinkPageId(Link link, String linkParentPageId, String newPageId) {
-		int moduleId = link.getICObjectInstanceID();
-		//int pageId = link.getParentPageID();
-		//IBXMLPage page = getIBXMLPage(pageId);
-		IBXMLPage page = getIBXMLPage(linkParentPageId);
+	public void changeDPTCrawlableLinkedPageId(DPTCrawlable item, int moduleId, String currentPageID, String newLinkedPageId) {
+		IBXMLPage page = getIBXMLPage(currentPageID);
 		XMLElement element = new XMLElement(XMLConstants.CHANGE_PAGE_LINK);
 		XMLAttribute id = new XMLAttribute(XMLConstants.LINK_ID_STRING, Integer.toString(moduleId));
-		XMLAttribute newPageLink = new XMLAttribute(XMLConstants.LINK_TO, newPageId);
+		XMLAttribute newPageLink = new XMLAttribute(XMLConstants.LINK_TO, newLinkedPageId);
 		element.setAttribute(id);
 		element.setAttribute(newPageLink);
 		XMLWriter.addNewElement(page, -1, element);
 		page.update();
-		PageCacher.flagPageInvalid(linkParentPageId);
+		PageCacher.flagPageInvalid(currentPageID);
 	}
 
 	/**

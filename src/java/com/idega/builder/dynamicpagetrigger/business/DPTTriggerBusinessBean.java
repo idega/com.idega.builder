@@ -2,7 +2,6 @@ package com.idega.builder.dynamicpagetrigger.business;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +20,8 @@ import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroupHome;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageLinkHome;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
+import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
+import com.idega.builder.dynamicpagetrigger.util.KeyAndValue;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -36,7 +37,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
-import com.idega.presentation.text.Link;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
@@ -230,8 +231,41 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   */
 
 
-  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name, Map createdPages, int rootPageID) throws SQLException{
+  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name, int rootPageID) throws SQLException, RemoteException{
     BuilderLogic instance = BuilderLogic.getInstance();
+    DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class);
+
+    int id = createPageCollectingDPTCrowlable(iwc,dptTemplateId,parentId,name,rootPageID);
+
+      while(cSession.hasNextCollectedDPTCrawlable()){
+      	KeyAndValue kv = cSession.nextCollectedDPTCrawlable();
+      	String pageIDString = (String)kv.getKey();
+        DPTCrawlable item = (DPTCrawlable)kv.getValue();
+
+        int templateId = item.getLinkedDPTTemplateID();
+        String createdPage = (String)cSession.getNewValue(ICPage.class,Integer.toString(templateId));
+        if(createdPage == null){
+          String subpageName = item.getLinkedDPTPageName(iwc);
+          if(subpageName == null){
+            subpageName = "Untitled";
+          }
+          int newID = this.createPageCollectingDPTCrowlable(iwc,templateId, id, subpageName,((rootPageID!=-1)?rootPageID:id));
+          if(newID == -1){
+            return (-1);
+          }
+          instance.changeDPTCrawlableLinkedPageId(item,((PresentationObject)item).getICObjectInstanceID(),pageIDString,String.valueOf(newID));
+        } else {
+          instance.changeDPTCrawlableLinkedPageId(item,((PresentationObject)item).getICObjectInstanceID(),pageIDString,createdPage);
+        }
+      }
+
+
+    return id;
+  }
+  
+  private int createPageCollectingDPTCrowlable(IWContext iwc, int dptTemplateId, int parentId, String name, int rootPageID) throws SQLException, RemoteException{
+    BuilderLogic instance = BuilderLogic.getInstance();
+    DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class);
 
     Map tree = PageTreeNode.getTree(iwc);
 
@@ -262,9 +296,8 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     }
 
 
-    createdPages.put(Integer.toString(dptTemplateId),Integer.toString(id));
-
-
+    cSession.setNewValue(ICPage.class,String.valueOf(dptTemplateId),String.valueOf(id));
+    
     IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
 	currentXMLPage.getPageRootElement().setAttribute(XMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(((rootPageID!=-1)?rootPageID:id)));
 	currentXMLPage.update();
@@ -273,44 +306,20 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 
 
     if(children != null){
+    	  String pageIDString = String.valueOf(id);
       Iterator iter = children.iterator();
       while (iter.hasNext()) {
         Object item = iter.next();
-        if(!(item instanceof Link)){
-          iter.remove();
-        }else{
-          Link link = (Link)item;
-          if(link.getDPTTemplateId() == 0){
-            iter.remove();
-          }
+        if((item instanceof DPTCrawlable)&&!(((DPTCrawlable)item).getLinkedDPTTemplateID() == 0)){
+          cSession.collectDPTCrawlable(pageIDString,(DPTCrawlable)item);
         }
       }
-      String pageIDString = Integer.toString(id);
-      iter = children.iterator();
-      while(iter.hasNext()){
-        Link item = (Link)iter.next();
-
-        int templateId = item.getDPTTemplateId();
-        String createdPage = (String)createdPages.get(Integer.toString(templateId));
-        if(createdPage == null){
-          String subpageName = item.getText();
-          if(subpageName == null){
-            subpageName = "Untitled";
-          }
-          
-          int newID = this.createPage(iwc,templateId, id, subpageName,createdPages,((rootPageID!=-1)?rootPageID:id));
-          if(newID == -1){
-            return (-1);
-          }
-          instance.changeLinkPageId(item,pageIDString,Integer.toString(newID));
-        } else {
-          instance.changeLinkPageId(item,pageIDString,createdPage);
-        }
-      }
+      
     }
-
+    
     return id;
   }
+  
 
 
   private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name) throws Exception{
@@ -319,7 +328,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     if(!sessionAlreadyStarted) {
     		cSession.startCopySession();
     }
-    int pageID = createPage(iwc, dptTemplateId, parentId, name, new Hashtable(),-1);
+    int pageID = createPage(iwc, dptTemplateId, parentId, name,-1);
     if(!sessionAlreadyStarted) {
     		cSession.endCopySession();
     }

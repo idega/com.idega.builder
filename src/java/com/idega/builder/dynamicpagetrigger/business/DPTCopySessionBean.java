@@ -3,6 +3,10 @@
  */
 package com.idega.builder.dynamicpagetrigger.business;
 
+import java.util.LinkedList;
+
+import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
+import com.idega.builder.dynamicpagetrigger.util.KeyAndValue;
 import com.idega.business.IBOSessionBean;
 import com.idega.util.datastructures.HashMatrix;
 
@@ -25,6 +29,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	
 	private boolean copyInstancePermissions = false;
 	private boolean copyPagePermissions=false;
+	private LinkedList subPageQueue = null;
 	
 	
 	/**
@@ -42,6 +47,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 		} else {
 			runningSession = true;
 			matrix = new HashMatrix();
+			subPageQueue = new LinkedList();
 			copyInstancePermissions = false;
 			copyPagePermissions=false;
 		}
@@ -51,6 +57,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 		if(runningSession) {
 			runningSession = false;
 			matrix = null;
+			subPageQueue=null;
 		} else {
 			System.out.println("No copySession to end.  Either it has not started or already ended.");
 		}
@@ -121,4 +128,18 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	public boolean isRunningSession() {
 		return runningSession;
 	}
+	
+	public void collectDPTCrawlable(Object pageID, DPTCrawlable c) {
+		subPageQueue.addLast(new KeyAndValue(pageID,c));
+	}
+	
+	public KeyAndValue nextCollectedDPTCrawlable() {
+		return (KeyAndValue)subPageQueue.removeFirst();
+	}
+	
+	public boolean hasNextCollectedDPTCrawlable() {
+		return !subPageQueue.isEmpty();
+	}
+	
+	
 }

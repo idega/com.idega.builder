@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.33 2004/05/07 14:55:44 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.34 2004/05/11 14:22:28 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -317,55 +318,56 @@ public class IBPageHelper {
 		return addElementToPage(ibPage, ids,iwuc);
 	}
 	private boolean changeInstanceId(PresentationObject obj, IBXMLPage xmlpage, boolean copyPermissions, IWUserContext iwuc) {
-//		System.out.println("changeInstanceId begins");
-//		System.out.println("obj.name = " + obj.getName());
-//		System.out.println("obj.change = " + obj.getChangeInstanceIDOnInheritance());
-//		System.out.println("obj.getId = " + obj.getICObjectID());
-//		System.out.println("obj.getObjectInstanceId = " + obj.getICObjectInstanceID());
 		if (obj.getChangeInstanceIDOnInheritance()) {
-			int object_id = obj.getICObjectID();
-			int ic_instance_id = obj.getICObjectInstanceID();
-			ICObjectInstance instance = null;
 			try {
-				ICObjectInstance inst = obj.getICObjectInstance();
-				instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
-				instance.setICObjectID(object_id);
-				if (inst != null) {
-					instance.setParentInstanceID(inst.getID());
-				}
-				instance.setIBPageByKey(xmlpage.getKey());
-				instance.insert();
-				if (copyPermissions) {
-					AccessControl.copyObjectInstancePermissions(Integer.toString(ic_instance_id), Integer.toString(instance.getID()));
-				}
-			}
-			catch (Exception e) {
-				System.out.println("changeInstanceId - exception");
-				e.printStackTrace();
-				return false;
-			}
-			if (obj instanceof Builderaware) {
-				try {
-					DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwuc,DPTCopySession.class);
-					boolean ok = ((Builderaware) obj).copyBlock(instance.getID(),cSession);
-					if (!ok) {
-						System.err.println("changeInstanceId - copyBlock failed");
+				int object_id = obj.getICObjectID();
+				int ic_instance_id = obj.getICObjectInstanceID();
+				DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwuc,DPTCopySession.class);
+				ICObjectInstanceHome icObjInstHome = ((ICObjectInstanceHome) IDOLookup.getHomeLegacy(ICObjectInstance.class));
+				Object instanceKey = new Integer(ic_instance_id);
+				Object instancePK = cSession.getNewValue(ICObjectInstance.class,instanceKey);
+				if(instancePK == null) {
+					ICObjectInstance instance = null;
+					try {
+						ICObjectInstance inst = obj.getICObjectInstance();
+						instance = icObjInstHome.createLegacy();
+						instance.setICObjectID(object_id);
+						if (inst != null) {
+							instance.setParentInstanceID(inst.getID());
+						}
+						instance.setIBPageByKey(xmlpage.getKey());
+						instance.insert();
+						instancePK = instance.getPrimaryKey();
+						cSession.setNewValue(ICObjectInstance.class,instanceKey,instancePK);
+						if (copyPermissions) {
+							AccessControl.copyObjectInstancePermissions(String.valueOf(ic_instance_id), String.valueOf(instance.getID()));
+						}
+					}
+					catch (Exception e) {
+						System.out.println("changeInstanceId - exception");
+						e.printStackTrace();
 						return false;
 					}
-				} catch (IBOLookupException e1) {
-					e1.printStackTrace();
-					System.err.println("changeInstanceId - copyBlock failed");
-					return false;
+					if (obj instanceof Builderaware) {
+							boolean ok = ((Builderaware) obj).copyBlock(instance.getID(),cSession);
+							if (!ok) {
+								System.err.println("changeInstanceId - copyBlock failed");
+								return false;
+							}
+					}
 				}
+				XMLElement element = new XMLElement(XMLConstants.CHANGE_IC_INSTANCE_ID);
+				XMLAttribute from = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_FROM, Integer.toString(ic_instance_id));
+				XMLAttribute to = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_TO, String.valueOf(instancePK));
+				element.setAttribute(from);
+				element.setAttribute(to);
+				XMLWriter.addNewElement(xmlpage, -1, element);
+			} catch (IBOLookupException e) {
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
-			XMLElement element = new XMLElement(XMLConstants.CHANGE_IC_INSTANCE_ID);
-			XMLAttribute from = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_FROM, Integer.toString(ic_instance_id));
-			XMLAttribute to = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_TO, Integer.toString(instance.getID()));
-			element.setAttribute(from);
-			element.setAttribute(to);
-			XMLWriter.addNewElement(xmlpage, -1, element);
 		}
-//		System.out.println("changeInstanceId ends");
 		return true;
 	}
 	/**
