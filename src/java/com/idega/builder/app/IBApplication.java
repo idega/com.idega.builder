@@ -52,7 +52,7 @@ public class IBApplication extends IWApplication {
       public FrameSet1(){
         add(IBLeftMenu.class);
         add(FrameSet2.class);
-        setScrolling(1,false);
+        setScrolling(1,true);
         this.setFrameName(1,IB_LEFT_MENU_FRAME);
         this.setFrameName(2,IB_FRAMESET2_FRAME);
         setSpanPixels(1,180);
@@ -189,16 +189,11 @@ public class IBApplication extends IWApplication {
         try {
           TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),modinfo);
           viewer.setTarget(IB_LEFT_MENU_FRAME);
-          //viewer.setTarget(IB_CONTENT_FRAME);
           viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
           Link l = new Link();
           l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
           viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
-          viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 10pt; decoration: none;");
-
-          //Link link = new Link();
-          //link.addParameter("view","builder");
-          //link.setTarget(IB_CONTENT_FRAME);
+          viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
           viewer.setLinkProtototype(l);
           add(viewer);
@@ -207,16 +202,11 @@ public class IBApplication extends IWApplication {
 
           TreeViewer viewer2 = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),modinfo);
           viewer2.setTarget(IB_LEFT_MENU_FRAME);
-          //viewer.setTarget(IB_CONTENT_FRAME);
           viewer2.setNodeActionParameter(com.idega.builder.business.BuilderLogic.ib_page_parameter);
           Link l2 = new Link();
           l2.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
           viewer2.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,modinfo);
-          viewer2.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 10pt; decoration: none;");
-
-          //Link link = new Link();
-          //link.addParameter("view","builder");
-          //link.setTarget(IB_CONTENT_FRAME);
+          viewer2.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
           viewer2.setLinkProtototype(l2);
           add(viewer2);
@@ -373,16 +363,21 @@ public class IBApplication extends IWApplication {
         text1.setFontSize(1);
         text1.setFontColor("Black");
 
+        Table toolTable = new Table(2,1);
+          toolTable.setCellpadding(0);
+          toolTable.setCellspacing(0);
+
         Link editLink = new Link(_iwrb.getImage("editorwindow/edit.gif"));
           editLink.setTarget(IBApplication.IB_CONTENT_FRAME);
           editLink.setURL(IBApplication.CONTENT_URL);
+          toolTable.add(editLink,1,1);
 
         Link previewLink = new Link(_iwrb.getImage("editorwindow/preview.gif"));
           previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
           previewLink.setURL(com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL);
+          toolTable.add(previewLink,2,1);
 
-        toolbarTable.add(editLink,1,1);
-        toolbarTable.add(previewLink,1,1);
+        toolbarTable.add(toolTable,1,1);
         toolbarTable.add(text1,2,1);
 
 
