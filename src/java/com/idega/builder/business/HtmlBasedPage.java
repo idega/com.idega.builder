@@ -1,8 +1,12 @@
 /*
- * Created on 1.6.2004
+ * $Id: HtmlBasedPage.java,v 1.9 2004/12/21 10:25:20 tryggvil Exp $
+ * Created on Created on 1.6.2004 by Tryggvi Larusson
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
  */
 package com.idega.builder.business;
 
@@ -18,10 +22,14 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 
 /**
- * @author tryggvil
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * This class is handles a Builder Page of format HTML.
+ * This class is responsible for reading the HTML page stream but the parsing of the 
+ * Html code and Region tags is handled by the class com.idega.presentation.HtmlPage.
+ * 
+ *  Last modified: $Date: 2004/12/21 10:25:20 $ by $Author: tryggvil $
+ * 
+ * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
+ * @version $Revision: 1.9 $
  */
 public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPage{
 
