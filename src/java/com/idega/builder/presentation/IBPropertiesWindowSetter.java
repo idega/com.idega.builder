@@ -35,6 +35,7 @@ public class IBPropertiesWindowSetter extends Page {
   final static String VALUE_PARAMETER = IBPropertiesWindow.VALUE_PARAMETER;
   final static String REMOVE_PARAMETER = "ib_remove_property";
   final static String CHANGE_PROPERTY_PARAMETER = "ib_change_property";
+  final static String IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER="ib_is_changing";
   final static String SAVE_PROPERTY_PARAMETER = "ib_save_prop";
 
   //Javascript Functions names used in the window
@@ -55,11 +56,19 @@ public class IBPropertiesWindowSetter extends Page {
     return Integer.parseInt(s);
   }
 
+  private boolean isChangingProperty(IWContext iwc){
+    String sValue = iwc.getParameter(IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER);
+    if(sValue!=null){
+      if(sValue.equals("Y")) return true;
+    }
+    return false;
+  }
+
   public void main(IWContext iwc)throws Exception{
     boolean propertyChange = false;
 
     Script script = this.getAssociatedScript();
-    script.addFunction(CHANGE_PROPERTY_FUNCTION_NAME,"function "+CHANGE_PROPERTY_FUNCTION_NAME+"(method){var form = document.forms[0];form."+CHANGE_PROPERTY_PARAMETER+".value=method;"+UPDATE_PROPERTY_FUNCTION_NAME+"();}");
+    script.addFunction(CHANGE_PROPERTY_FUNCTION_NAME,"function "+CHANGE_PROPERTY_FUNCTION_NAME+"(method){var form = document.forms[0];form."+CHANGE_PROPERTY_PARAMETER+".value=method;form."+IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER+".value='Y';"+UPDATE_PROPERTY_FUNCTION_NAME+"();}");
     script.addFunction(UPDATE_PROPERTY_FUNCTION_NAME,"function "+UPDATE_PROPERTY_FUNCTION_NAME+"(){var form = document.forms[0];form.submit();}");
     script.addFunction(MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME,"function "+MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME+"(){var form = document.forms[0];form."+SAVE_PROPERTY_PARAMETER+".value='false';"+UPDATE_PROPERTY_FUNCTION_NAME+"();}");
 
@@ -72,6 +81,8 @@ public class IBPropertiesWindowSetter extends Page {
     Parameter param1 = new Parameter(SAVE_PROPERTY_PARAMETER,"true");
     form.add(param1);
     Parameter param = new Parameter(CHANGE_PROPERTY_PARAMETER);
+    Parameter param3 = new Parameter(IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER,"N");
+    form.add(param3);
     String newPropertyID = iwc.getParameter(CHANGE_PROPERTY_PARAMETER);
     if(newPropertyID!=null){
       param.setValue(newPropertyID);
@@ -213,14 +224,16 @@ public class IBPropertiesWindowSetter extends Page {
       String[] selectedValues = parseValues(iwc);
       String[] paramDescriptions = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc,icObjectInstanceID,methodIdentifier);
       String[] realValues = BuilderLogic.getInstance().getPropertyValues(iwc.getApplication(),pageID,Integer.parseInt(icObjectInstanceID),methodIdentifier,selectedValues);
-
+      boolean isChangingProperty = this.isChangingProperty(iwc);
       for (int i = 0; i < parameters.length; i++) {
         Class parameterClass = parameters[i];
         String sValue="";
-        try{
-          sValue = realValues[i];
-          System.out.println("IBPropertyWindowSetter, Realvalues["+i+"]="+sValue);
 
+        try{
+          if(!isChangingProperty){
+            sValue = realValues[i];
+            System.out.println("IBPropertyWindowSetter, Realvalues["+i+"]="+sValue);
+          }
         }
         catch(java.lang.ArrayIndexOutOfBoundsException e){
         }
