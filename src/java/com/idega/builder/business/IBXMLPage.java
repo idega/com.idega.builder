@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.17 2001/10/11 16:23:26 palli Exp $
+ * $Id: IBXMLPage.java,v 1.18 2001/10/18 11:32:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ public class IBXMLPage {
 
   private String _type = TYPE_PAGE;
 
-  private List _usingTemplate = null;
+  private static List _usingTemplate = null;
 
   /*
    *

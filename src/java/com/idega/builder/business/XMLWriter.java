@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.14 2001/10/10 13:03:59 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.15 2001/10/18 11:32:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -337,6 +337,13 @@ public class XMLWriter {
   /**
    *
    */
+  static boolean addLabel(IBXMLPage xml, int parentObjectInstanceId, int xpos, int ypos, String label) {
+    return(true);
+  }
+
+  /**
+   *
+   */
   static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos) {
     String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
     Element region = findRegion(xml,regionId);
@@ -545,5 +552,48 @@ public class XMLWriter {
       }
     }
     return children;
+  }
+
+  /**
+   *
+   */
+  static boolean labelRegion(IBXMLPage xml, String parentObjectInstanceID, String label) {
+    Element parent = findXMLElement(xml,parentObjectInstanceID,null);
+    if (parent != null) {
+      if (label != null && !label.equals("")) {
+        Attribute labelAttribute = new Attribute(XMLConstants.LABEL_STRING,label);
+        if (parent.getAttribute(XMLConstants.LABEL_STRING) != null)
+          parent.removeAttribute(XMLConstants.LABEL_STRING);
+        parent.addAttribute(labelAttribute);
+      }
+      else {
+        if (parent.getAttribute(XMLConstants.LABEL_STRING) != null)
+          parent.removeAttribute(XMLConstants.LABEL_STRING);
+      }
+
+      return(true);
+    }
+    else {
+      int index = parentObjectInstanceID.indexOf(".");
+      if (index != -1) {
+        if (label != null && !label.equals("")) {
+          Element region = new Element(XMLConstants.REGION_STRING);
+          Attribute id = new Attribute(XMLConstants.ID_STRING,parentObjectInstanceID);
+          region.addAttribute(id);
+
+          int parentID = Integer.parseInt(parentObjectInstanceID.substring(0,index));
+          Element regionParent = findModule(xml,parentID);
+          if (regionParent != null)
+            regionParent.addContent(region);
+
+          Attribute labelAttribute = new Attribute(XMLConstants.LABEL_STRING,label);
+          region.addAttribute(labelAttribute);
+
+          return(true);
+        }
+      }
+    }
+
+    return(false);
   }
 }
