@@ -2,7 +2,7 @@
  * Created on Nov 27, 2003
  */
 /*
- * $Id: StyledIBPageChooserWindow.java,v 1.2 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: StyledIBPageChooserWindow.java,v 1.3 2004/09/08 04:23:11 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -63,7 +63,8 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 		}
 		
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
-		addTitle(iwrb.getLocalizedString("select_page", "Select page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+		setTitle(iwrb.getLocalizedString("select_page", "Select page"));
+		addTitle(iwrb.getLocalizedString("select_page", "Select page"), TITLE_STYLECLASS);
 		setStyles();
 
 		if ( fromEditor ) {
