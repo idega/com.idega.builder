@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.7 2001/11/06 18:18:03 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.8 2002/02/12 13:18:23 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
+import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.data.IBPage;
 import com.idega.presentation.Page;
 import java.util.List;
@@ -52,40 +53,13 @@ public class IBDeletePageWindow extends IWAdminWindow {
     String deleteAll = iwc.getParameter("deletechildren");
 
     if (submit != null) {
-      IBPage ibpage = new IBPage(Integer.parseInt(pageId));
-      IBPage parent = (IBPage)ibpage.getParentNode();
+      boolean deleted = false;
+      if ((deleteAll != null) && (deleteAll.equals("true")))
+        deleted = IBPageHelper.deletePage(pageId,true,PageTreeNode.getTree(iwc),iwc.getUserId());
+      else
+        deleted = IBPageHelper.deletePage(pageId,false,PageTreeNode.getTree(iwc),iwc.getUserId());
 
-      parent.removeChild(ibpage);
-      ibpage.setDeleted(true,iwc);
-      ibpage.update();
-
-      Map tree = PageTreeNode.getTree(iwc);
-
-      if ((deleteAll != null) && (deleteAll.equals("true"))) {
-        deleteAllChildren(ibpage,iwc);
-        if (tree != null) {
-          PageTreeNode parentNode = (PageTreeNode)tree.get(parent.getIDInteger());
-          PageTreeNode childNode = (PageTreeNode)tree.get(ibpage.getIDInteger());
-          parentNode.removeChild(childNode);
-          tree.remove(ibpage.getIDInteger());
-        }
-      }
-      else {
-        parent.moveChildrenFrom(ibpage);
-        if (tree != null) {
-          PageTreeNode parentNode = (PageTreeNode)tree.get(parent.getIDInteger());
-          PageTreeNode childNode = (PageTreeNode)tree.get(ibpage.getIDInteger());
-          Iterator it = childNode.getChildren();
-          if (it != null) {
-            while (it.hasNext()) {
-              parentNode.addChild((PageTreeNode)it.next());
-            }
-          }
-          parentNode.removeChild(childNode);
-          tree.remove(ibpage.getIDInteger());
-        }
-      }
-
+      iwc.setSessionAttribute("ib_page_id",Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
       setParentToReload();
       close();
     }
@@ -93,25 +67,10 @@ public class IBDeletePageWindow extends IWAdminWindow {
       close();
     }
 
-    IBXMLPage xml = instance.getIBXMLPage(pageId);
-
-    if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
-      List map = xml.getUsingTemplate();
-
-      if ((map == null) || (map.isEmpty())) {
-        IBPage ibpage = new IBPage(Integer.parseInt(pageId));
-        okToDelete = true;
-        okToDeleteChildren = checkDeleteOfChildren(ibpage);
-      }
-      else
-        okToDelete = false;
-    }
-    else {
-      okToDelete = true;
-    }
-
+    okToDelete = IBPageHelper.checkDeletePage(pageId);
 
     if (okToDelete) {
+      okToDeleteChildren = IBPageHelper.checkDeleteChildrenOfPage(pageId);
       SubmitButton ok = new SubmitButton("ok",iwrb.getLocalizedString("yes","Yes"));
       SubmitButton cancel = new SubmitButton("cancel",iwrb.getLocalizedString("no","No"));
       CheckBox deleteChildren = new CheckBox("deletechildren","true");
@@ -148,51 +107,4 @@ public class IBDeletePageWindow extends IWAdminWindow {
       form.add(cancel);
     }
   }
-
-  private void deleteAllChildren(IBPage page, IWContext iwc) throws java.sql.SQLException {
-    Iterator it = page.getChildren();
-
-    if (it != null) {
-      while (it.hasNext()) {
-        IBPage child = (IBPage)it.next();
-
-        if (child.getChildCount() != 0)
-          deleteAllChildren(child,iwc);
-
-        child.setDeleted(true,iwc);
-        child.update();
-        page.removeChild(child);
-        Map tree = PageTreeNode.getTree(iwc);
-
-        if (tree != null)
-          tree.remove(child.getIDInteger());
-      }
-    }
-  }
-
-  private boolean checkDeleteOfChildren(IBPage page) throws java.sql.SQLException {
-    Iterator it = page.getChildren();
-
-    if (it != null) {
-      while (it.hasNext()) {
-        IBPage child = (IBPage)it.next();
-
-        IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getID());
-        List map = xml.getUsingTemplate();
-
-        if ((map != null) || (!map.isEmpty())) {
-          return(false);
-        }
-
-        boolean check = true;
-        if (child.getChildCount() != 0)
-          check = checkDeleteOfChildren(child);
-
-        if (!check)
-          return(false);
-      }
-    }
-    return(true);
-  }
 }
-

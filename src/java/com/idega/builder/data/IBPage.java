@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.30 2001/12/19 11:20:36 palli Exp $
+ * $Id: IBPage.java,v 1.31 2002/02/12 13:20:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,7 @@ import com.idega.core.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.TreeableEntity;
 import com.idega.util.idegaTimestamp;
-import com.idega.presentation.IWContext;
+//import com.idega.presentation.IWContext;
 
 
 /**
@@ -168,11 +168,11 @@ public class IBPage extends TreeableEntity {
   /**
    *
    */
-  public void setDeleted(boolean deleted, IWContext iwc) {
+  public void setDeleted(boolean deleted) {
     if (deleted) {
       setColumn(getColumnDeleted(),DELETED);
       setDeletedWhen(idegaTimestamp.getTimestampRightNow());
-      setDeletedBy(iwc.getUserId());
+//      setDeletedBy(iwc.getUserId());
     }
     else {
       setColumn(getColumnDeleted(),NOT_DELETED);
@@ -397,19 +397,18 @@ public class IBPage extends TreeableEntity {
    *
    */
   public void delete() throws SQLException {
-    ICFile file = getFile();
-    if(file != null) {
-      //System.out.println("file != null in delete");
-      try {
-        file.delete();
-      }
-      catch(SQLException e) {
-      }
-    }
-    else {
-      //System.out.println("file == null in delete");
-    }
-    super.delete();
+    throw new SQLException("Use delete(int userId) instead");
+  }
+
+  /**
+   *
+   */
+  public void delete(int userId) throws SQLException {
+    setColumn(getColumnDeleted(),DELETED);
+    setDeletedWhen(idegaTimestamp.getTimestampRightNow());
+    setDeletedBy(userId);
+
+    super.update();
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.3 2002/02/08 10:03:00 palli Exp $
+ * $Id: IBPageHelper.java,v 1.4 2002/02/12 13:18:35 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -159,6 +159,9 @@ public class IBPageHelper {
     return(true);
   }
 
+  /**
+   *
+   */
   public static boolean checkDeletePage(String pageId) {
     IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageId);
     boolean okToDelete = true;
@@ -167,12 +170,11 @@ public class IBPageHelper {
       List map = xml.getUsingTemplate();
 
       if ((map == null) || (map.isEmpty())) {
-//        IBPage ibpage = new IBPage(Integer.parseInt(pageId));
         okToDelete = true;
-//        okToDeleteChildren = checkDeleteOfChildren(ibpage);
       }
-      else
+      else {
         okToDelete = false;
+      }
     }
     else {
       okToDelete = true;
@@ -181,7 +183,141 @@ public class IBPageHelper {
     return(okToDelete);
   }
 
+  /**
+   *
+   */
   public static boolean checkDeleteChildrenOfPage(String pageId) {
-    return(true);
+    try {
+      IBPage page = new IBPage(Integer.parseInt(pageId));
+      boolean okToDelete = true;
+
+      if (page.getType().equals(IBPage.PAGE))
+        return(true);
+      else if (page.getType().equals(IBPage.DRAFT))
+        return(true);
+      else if (page.getType().equals(IBPage.DPT_PAGE))
+        return(true);
+      else {
+        Iterator it = page.getChildren();
+
+        if (it != null) {
+          while (it.hasNext()) {
+            IBPage child = (IBPage)it.next();
+
+            IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getID());
+            List map = xml.getUsingTemplate();
+
+            if ((map != null) || (!map.isEmpty())) {
+              return(false);
+            }
+
+            boolean check = true;
+            if (child.getChildCount() != 0)
+              check = checkDeleteChildrenOfPage(Integer.toString(child.getID()));
+
+            if (!check)
+              return(false);
+          }
+        }
+        return(true);
+      }
+    }
+    catch(SQLException e) {
+      return(false);
+    }
+  }
+
+  /**
+   *
+   */
+  public static boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId) {
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+    try {
+      t.begin();
+      IBPage ibpage = new IBPage(Integer.parseInt(pageId));
+      IBPage parent = (IBPage)ibpage.getParentNode();
+
+      parent.removeChild(ibpage);
+      ibpage.delete(userId);
+      int templateId = ibpage.getTemplateId();
+      if (templateId > 0) {
+        BuilderLogic.getInstance().getIBXMLPage(templateId).removeUsingTemplate(pageId);
+      }
+
+      if (deleteChildren) {
+        deleteAllChildren(ibpage,tree,userId);
+        if (tree != null) {
+          PageTreeNode parentNode = (PageTreeNode)tree.get(parent.getIDInteger());
+          PageTreeNode childNode = (PageTreeNode)tree.get(ibpage.getIDInteger());
+          parentNode.removeChild(childNode);
+          tree.remove(ibpage.getIDInteger());
+        }
+      }
+      else {
+        parent.moveChildrenFrom(ibpage);
+        if (tree != null) {
+          PageTreeNode parentNode = (PageTreeNode)tree.get(parent.getIDInteger());
+          PageTreeNode childNode = (PageTreeNode)tree.get(ibpage.getIDInteger());
+          Iterator it = childNode.getChildren();
+          if (it != null) {
+            while (it.hasNext()) {
+              parentNode.addChild((PageTreeNode)it.next());
+            }
+          }
+          parentNode.removeChild(childNode);
+          tree.remove(ibpage.getIDInteger());
+        }
+      }
+    }
+    catch(Exception e) {
+      try {
+        t.rollback();
+      }
+      catch(javax.transaction.SystemException ex) {
+      }
+      return(false);
+    }
+    finally {
+      try {
+        t.commit();
+      }
+      catch(Exception e) {
+        try {
+          t.rollback();
+        }
+        catch(javax.transaction.SystemException ex) {
+        }
+
+        return(false);
+      }
+      return(true);
+    }
+  }
+
+  /**
+   *
+   */
+  private static void deleteAllChildren(IBPage page, Map tree, int userId) throws java.sql.SQLException {
+    Iterator it = page.getChildren();
+
+    if (it != null) {
+      while (it.hasNext()) {
+        IBPage child = (IBPage)it.next();
+
+        if (child.getChildCount() != 0)
+          deleteAllChildren(child,tree,userId);
+
+        child.delete(userId);
+        int templateId = child.getTemplateId();
+        if (templateId > 0) {
+          BuilderLogic.getInstance().getIBXMLPage(templateId).removeUsingTemplate(Integer.toString(child.getID()));
+        }
+
+        page.removeChild(child);
+
+        if (tree != null)
+          tree.remove(child.getIDInteger());
+      }
+    }
   }
 }
