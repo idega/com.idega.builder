@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.134 2002/12/20 15:44:16 palli Exp $
+ * $Id: BuilderLogic.java,v 1.135 2003/03/03 17:01:55 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -741,7 +741,7 @@ public class BuilderLogic
 		link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, key);
 		link.addParameter(
 			IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,
-			AccessControl._CATEGORY_OBJECT_INSTANCE);
+			AccessControl.CATEGORY_OBJECT_INSTANCE);
 		return link;
 	}
 	public PresentationObject getEditIcon(int key, IWContext iwc)

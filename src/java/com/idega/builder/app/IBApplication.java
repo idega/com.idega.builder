@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.71 2002/12/20 15:39:37 palli Exp $
+ *  $Id: IBApplication.java,v 1.72 2003/03/03 17:01:09 eiki Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -678,7 +678,7 @@ public class IBApplication extends IWApplication {
 			Link link = new Link(image);
 			link.setWindowToOpen(IBPermissionWindow.class);
 			link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, BuilderLogic.getInstance().getCurrentIBPage(iwc));
-			link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY, com.idega.core.accesscontrol.business.AccessControl._CATEGORY_PAGE_INSTANCE);
+			link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY, com.idega.core.accesscontrol.business.AccessControl.CATEGORY_PAGE_INSTANCE);
 			return link;
 		}
 	}
