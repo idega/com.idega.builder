@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.45 2003/08/05 19:45:36 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.46 2003/08/06 12:24:46 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -561,7 +561,7 @@ public class XMLReader {
 	  String pageKey = ibxml.getKey();
 	  String templatePageKey = Integer.toString(ibxml.getTemplateId());
 	  
-	  ObjectInstanceCacher.copyInstancesFromPageToPage(pageKey,templatePageKey);
+	  ObjectInstanceCacher.copyInstancesFromPageToPage(templatePageKey,pageKey);
 
 	  //System.err.println("Cashing objectInstance: "+instanceKey+" on page "+ ibxml.getKey()+" extending: "+ibxml.getTemplateId());
 	  if(instanceKey != null){
