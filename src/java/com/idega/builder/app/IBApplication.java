@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.66 2002/06/14 10:41:14 laddi Exp $
+ *  $Id: IBApplication.java,v 1.67 2002/06/14 11:24:26 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -745,8 +745,9 @@ public class IBApplication extends IWApplication {
       setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
       setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
       setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
-      /*Image tilerCell = Table.getTransparentCell(iwc);
-      tilerCell.setHeight("100%");*/
+      Image tilerCell = Table.getTransparentCell(iwc);
+      tilerCell.setHeight("100%");
+      tilerCell.setWidth(5);
 
       //setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
       //Image background = iwb.getImage("status_tiler.gif");
@@ -758,7 +759,7 @@ public class IBApplication extends IWApplication {
       toolbarTable.setHeight("100%");
       toolbarTable.setCellpadding(0);
       toolbarTable.setCellspacing(0);
-      toolbarTable.setWidth(1, 1, "6");
+      toolbarTable.setWidth(2, 1, "100%");
       toolbarTable.setAlignment(3, 1, "right");
       toolbarTable.setVerticalAlignment(3, 1, "top");
       add(toolbarTable);
@@ -846,7 +847,7 @@ public class IBApplication extends IWApplication {
 //        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
 	Text pageName = new Text(name);
 	pageName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-	//toolbarTable.add(tilerCell, 1, 1);
+	toolbarTable.add(tilerCell, 1, 1);
 	toolbarTable.add(pageName, 2, 1);
 	toolbarTable.add(toolTable, 3, 1);
       }
