@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.159 2004/07/16 09:49:02 gummi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.160 2004/07/16 10:05:38 gummi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -610,7 +610,7 @@ public class BuilderLogic {
 	
 	public static ICDomain getCurrentDomainByServerName(IWApplicationContext iwac,String serverName) {
 		try {
-			return iwac.getDomainByServerURL(serverName);
+			return iwac.getDomainByServerName(serverName);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

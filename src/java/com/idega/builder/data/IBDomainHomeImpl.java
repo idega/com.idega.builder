@@ -34,9 +34,9 @@ public java.util.Collection findAllDomains()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllDomainsByServerURL(String serverURL)throws javax.ejb.FinderException{
+public java.util.Collection findAllDomainsByServerName(String serverName)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((IBDomainBMPBean)entity).ejbFindAllDomainsByServerURL(serverURL);
+	java.util.Collection ids = ((IBDomainBMPBean)entity).ejbFindAllDomainsByServerName(serverName);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

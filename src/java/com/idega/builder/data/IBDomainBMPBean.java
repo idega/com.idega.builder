@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.13 2004/07/06 16:33:11 gummi Exp $
+ * $Id: IBDomainBMPBean.java,v 1.14 2004/07/16 10:05:38 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   public static final String start_page = "START_IB_PAGE_ID";
   public static final String start_template = "START_IB_TEMPLATE_ID";
   public static final String COLUMNNAME_GROUP_ID = "GROUP_ID";
-  public static final String COLUMNNAME_SERVER_URL = "SERVER_URL";
+  public static final String COLUMNNAME_SERVER_NAME = "SERVER_NAME";
 
   private static Map cachedDomains;
 
@@ -62,7 +62,7 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
     addAttribute(getColumnURL(),"Domain URL",true,true,String.class,1000);
     addAttribute(getColumnStartPage(),"Start Page",true,true,Integer.class,"many-to-one",ICPage.class);
     addAttribute(getColumnStartTemplate(),"Start Template",true,true,Integer.class,"many-to-one",ICPage.class);
-    addAttribute(COLUMNNAME_SERVER_URL,"Server URL",true,true,String.class);
+    addAttribute(COLUMNNAME_SERVER_NAME,"Server NAME",true,true,String.class);
 //    this.addManyToManyRelationShip(Group.class);
 //    addAttribute(COLUMNNAME_GROUP_ID,"Group ID",true,true,Integer.class,"one-to-one",Group.class);
 
@@ -210,9 +210,9 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
     return super.idoFindIDsBySQL(sql);
   }
   
-  public Collection ejbFindAllDomainsByServerURL(String serverURL) throws FinderException{
+  public Collection ejbFindAllDomainsByServerName(String serverName) throws FinderException{
   	IDOQuery query = idoQueryGetSelect();
-  	query.appendWhereEqualsWithSingleQuotes(COLUMNNAME_SERVER_URL,serverURL);
+  	query.appendWhereEqualsWithSingleQuotes(COLUMNNAME_SERVER_NAME,serverName);
   	System.out.println(query.toString());
   	return idoFindPKsByQuery(query);
   }
