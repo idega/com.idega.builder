@@ -157,7 +157,7 @@ public class ComponentPropertyHandler {
         //REMOVE AND MAKE GENERIC! ask tryggvi and eiki
         else if(parameterType.equals(Group.class)){
           try {
-            argument = (Group) ((GroupHome)com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer( stringValue.substring(stringValue.lastIndexOf('-')+1, stringValue.length()) ));
+            argument = (Group) ((GroupHome)com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer( stringValue.substring(stringValue.lastIndexOf('_')+1, stringValue.length()) ));
           }
           catch (Exception ex) {
             ex.printStackTrace(System.err);
