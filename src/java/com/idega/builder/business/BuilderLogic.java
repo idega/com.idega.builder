@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.88 2002/01/07 10:25:08 gummi Exp $
+ * $Id: BuilderLogic.java,v 1.89 2002/01/07 16:09:46 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -56,6 +56,7 @@ import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -617,6 +618,8 @@ public class BuilderLogic {
         hideLayer = true;
       if ( _theObject instanceof com.idega.presentation.Applet )
         hideLayer = true;
+      if ( _theObject instanceof com.idega.presentation.GenericPlugin )
+        hideLayer = true;
 
       Layer controlLayer = new Layer(Layer.DIV);
         controlLayer.setPositionType(Layer.RELATIVE);
@@ -1064,7 +1067,7 @@ public class BuilderLogic {
   public void changeName(String name, IWContext iwc) {
     IBXMLPage xml = getCurrentIBXMLPage(iwc);
     if (xml != null) {
-      if (!xml.getName().equals(name)) {
+      if (!xml.getName(ICLocaleBusiness.getICLocale(iwc.getCurrentLocale()).getID()).equals(name)) {
         xml.setName(name);
         java.util.Map tree = PageTreeNode.getTree(iwc);
 
