@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.30 2003/08/05 19:45:36 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.31 2003/08/07 19:02:40 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -72,57 +72,73 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		setStyles();
 		//button = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
 
-		String action = iwc.getParameter(IB_CONTROL_PARAMETER);
-		if (action.equals(ACTION_ADD)) {
+		/*String action = iwc.getParameter(IB_CONTROL_PARAMETER);
+		if (action.equals(ACTION_ADD)) {*/
 			addNewObject(iwc);
-		}
+		//}
 	}
 
 	/**
 	 *
 	 */
 	public void addNewObject(IWContext iwc) throws Exception {
-		Window window = this;
-		Form form = getForm();
-		add(form);
-		Table table = new Table(1, 2);
-		table.setBorder(0);
-		form.add(getComponentList(iwc));
-
-		String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
+		String ib_parent_id = (String) iwc.getSessionAttribute(IB_PARENT_PARAMETER);
 		if (ib_parent_id == null) {
-			System.out.println("ib_parent_id==null");
+			ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
+			iwc.setSessionAttribute(IB_PARENT_PARAMETER, ib_parent_id);
 		}
-		else {
-			form.add(new Parameter(IB_PARENT_PARAMETER, ib_parent_id));
-		}
-
-		String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
+		
+		String ib_page_id = (String) iwc.getSessionAttribute(IB_PAGE_PARAMETER);
 		if (ib_page_id == null) {
-			System.out.println("ib_page_id==null");
+			ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
+			iwc.setSessionAttribute(IB_PAGE_PARAMETER, ib_page_id);
 		}
-		else {
-			form.add(new Parameter(IB_PAGE_PARAMETER, ib_page_id));
+		
+		String label = (String) iwc.getSessionAttribute(IB_LABEL_PARAMETER);
+		if (label == null) {
+			label = iwc.getParameter(IB_LABEL_PARAMETER);
+			iwc.setSessionAttribute(IB_LABEL_PARAMETER, label);
 		}
-
-		String control = iwc.getParameter(IB_CONTROL_PARAMETER);
-		if (control == null) {
-			System.out.println("control==null");
-		}
-		else {
-			form.add(new Parameter(IB_CONTROL_PARAMETER, control));
-		}
-
-		String label = iwc.getParameter(IB_LABEL_PARAMETER);
-		if (label != null) {
-			form.add(new Parameter(IB_LABEL_PARAMETER, label));
-		}
-
+	
 		if (hasSubmitted(iwc)) {
+			Window window = this;
 			window.setParentToReload();
 			String ic_object_id = iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
 			BuilderLogic.getInstance().addNewModule(ib_page_id, ib_parent_id, Integer.parseInt(ic_object_id), label);
+			iwc.removeSessionAttribute(IB_PARENT_PARAMETER);
+			iwc.removeSessionAttribute(IB_PAGE_PARAMETER);
+			iwc.removeSessionAttribute(IB_LABEL_PARAMETER);
 			window.close();
+		}
+		else {
+			/*Form form = getForm();
+			add(form);
+			Table table = new Table(1, 2);
+			table.setBorder(0);
+			form.add(getComponentList(iwc));*/
+			add(getComponentList(iwc));
+	
+			/*if (ib_parent_id == null) {
+				System.out.println("ib_parent_id==null");
+			}
+			else {
+				form.add(new Parameter(IB_PARENT_PARAMETER, ib_parent_id));
+			}
+			if (ib_page_id == null) {
+				System.out.println("ib_page_id==null");
+			}
+			else {
+				form.add(new Parameter(IB_PAGE_PARAMETER, ib_page_id));
+			}
+			if (control == null) {
+				System.out.println("control==null");
+			}
+			else {
+				form.add(new Parameter(IB_CONTROL_PARAMETER, control));
+			}
+			if (label != null) {
+				form.add(new Parameter(IB_LABEL_PARAMETER, label));
+			}*/
 		}
 	}
 
@@ -214,29 +230,35 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		if (list != null) {
 			Iterator iter = list.iterator();
 			ICObject item;
-			Link iconLink;
+			//Link iconLink;
+			Image iconLink;
 			Link link;
 			
 			ypos++;
 			while (iter.hasNext()) {
 				item = (ICObject) iter.next();
-				iconLink = new Link(getIconForObject(item, iwc));
+
+				//iconLink = new Link(getIconForObject(item, iwc));
+				iconLink = getIconForObject(item, iwc);
 				
-				link = new Link(item.getBundle(iwc.getApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale()));
+				String objectName = item.getBundle(iwc.getApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale());
+				link = new Link(objectName);
 				link.setStyle(STYLE_NAME);
-				link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
+				//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
 				link.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
 				link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
-				link.maintainParameter(IB_PAGE_PARAMETER, iwc);
+				/*link.maintainParameter(IB_PAGE_PARAMETER, iwc);
 				link.maintainParameter(IB_PARENT_PARAMETER, iwc);
-				link.maintainParameter(IB_LABEL_PARAMETER, iwc);
+				link.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
 
+				/*System.out.println("Adding parameters to icon: " + (System.currentTimeMillis() - start) + " ms");
 				iconLink.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
 				iconLink.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
 				iconLink.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
+				System.out.println("Maintaining parameters in icon: " + (System.currentTimeMillis() - start) + " ms");
 				iconLink.maintainParameter(IB_PAGE_PARAMETER, iwc);
 				iconLink.maintainParameter(IB_PARENT_PARAMETER, iwc);
-				iconLink.maintainParameter(IB_LABEL_PARAMETER, iwc);
+				iconLink.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
 
 				subComponentTable.add(iconLink, 1, ypos);
 				subComponentTable.add(link, 2, ypos);
