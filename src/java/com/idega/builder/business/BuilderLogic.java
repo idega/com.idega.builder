@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.32 2001/10/02 10:34:12 palli Exp $
+ * $Id: BuilderLogic.java,v 1.33 2001/10/02 15:40:09 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -389,6 +389,7 @@ public class BuilderLogic {
   }
 
   private class BuilderObjectControl extends ModuleObjectContainer {
+    private com.idega.jmodule.object.Layer _layer;
     private Table _table;
     private ModuleObjectContainer _parent;
     private String _parentKey;
@@ -403,8 +404,10 @@ public class BuilderLogic {
     }
 
     private void init(ModuleInfo modinfo){
+      _layer = new com.idega.jmodule.object.Layer();
       _table = new Table(1,2);
-      super.add(_table);
+      _layer.add(_table);
+      super.add(_layer);
       _table.setBorder(0);
       _table.setCellpadding(0);
       _table.setCellspacing(2);
@@ -441,6 +444,7 @@ public class BuilderLogic {
 
       }
       _table.add(obj,1,2);
+
       obj.setParentObject(_parent);
     }
   }
@@ -606,4 +610,13 @@ public class BuilderLogic {
       else return false;
     }
 
+  public boolean setTemplateId(String pageKey, String id) {
+    IBXMLPage xml = getIBXMLPage(pageKey);
+    if (XMLWriter.setAttribute(xml,"-1",XMLConstants.TEMPLATE_STRING,id)) {
+      xml.update();
+      return true;
+    }
+
+    return(false);
+  }
 }

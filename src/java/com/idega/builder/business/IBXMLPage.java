@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.8 2001/09/28 15:39:45 palli Exp $
+ * $Id: IBXMLPage.java,v 1.9 2001/10/02 15:40:09 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Hashtable;
+import java.util.Enumeration;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
@@ -43,10 +45,12 @@ public class IBXMLPage {
   private Page _populatedPage = null;
   private String _key;
 
+  private String _type = XMLConstants.PAGE_TYPE_PAGE;
+
   /**
    * @todo Verð að gera þetta öðru vísi
    */
-  private java.util.Hashtable _children = null;
+  private Hashtable _children = null;
 
   /*
    *
@@ -66,6 +70,14 @@ public class IBXMLPage {
     try {
       ibpage = new IBPage(Integer.parseInt(key));
       setXMLPageDescriptionFile(ibpage.getPageValue());
+      if (ibpage.getType().equals(ibpage.PAGE))
+        setType(XMLConstants.PAGE_TYPE_PAGE);
+      if (ibpage.getType().equals(ibpage.DRAFT))
+        setType(XMLConstants.PAGE_TYPE_DRAFT);
+      if (ibpage.getType().equals(ibpage.TEMPLATE))
+        setType(XMLConstants.PAGE_TYPE_TEMPLATE);
+      else
+        setType(XMLConstants.PAGE_TYPE_PAGE);
     }
     catch(PageDoesNotExist pe) {
       int template = ibpage.getTemplateId();
@@ -113,7 +125,7 @@ public class IBXMLPage {
    *
    */
   public java.util.Map getChildren() {
-  //Skítamix
+    //Skítamix
     _children = null;
     if (_children == null)
       findAllChildren();
@@ -136,6 +148,19 @@ public class IBXMLPage {
     catch(java.sql.SQLException e) {}
   }
 
+  private void invalidateChildren() {
+    Hashtable h = (Hashtable)getChildren();
+    if (h != null) {
+      Enumeration e = h.keys();
+      while (e.hasMoreElements()) {
+        String invalid = (String)e.nextElement();
+        PageCacher.flagPageInvalid(invalid);
+        IBXMLPage child = PageCacher.getXML(invalid);
+        if (child.getType() == XMLConstants.PAGE_TYPE_TEMPLATE)
+          child.invalidateChildren();
+      }
+    }
+  }
 
   public boolean update() {
     try {
@@ -143,32 +168,23 @@ public class IBXMLPage {
       OutputStream stream = ibpage.getPageValueForWrite();
       store(stream);
       ibpage.update();
-      java.util.Hashtable h = (java.util.Hashtable)getChildren();
-      if (h != null) {
-        java.util.Enumeration e = h.keys();
-        while (e.hasMoreElements()) {
-          String invalid = (String)e.nextElement();
-          PageCacher.flagPageInvalid(invalid);
-        }
-      }
-      //ibpage.setPageValue(xmlDocument.);
-      //setXMLPageDescriptionFile(ibpage.getPageValue());
     }
-    catch(NumberFormatException ne){
-      try{
-        //InputStream stream = new FileInputStream(key);
-        //setXMLPageDescriptionFile(stream);
+    catch(NumberFormatException ne) {
+      try {
         OutputStream stream = new FileOutputStream(_key);
         store(stream);
       }
-      catch(FileNotFoundException fnfe){
+      catch(FileNotFoundException fnfe) {
         fnfe.printStackTrace();
       }
     }
-    catch(Exception e){
+    catch(Exception e) {
       e.printStackTrace();
     }
     setPopulatedPage(XMLReader.getPopulatedPage(this));
+    if (_type == XMLConstants.PAGE_TYPE_TEMPLATE)
+      invalidateChildren();
+
     return true;
   }
 
@@ -258,10 +274,14 @@ public class IBXMLPage {
 
     if ((type.equals(XMLConstants.PAGE_TYPE_DRAFT)) ||
         (type.equals(XMLConstants.PAGE_TYPE_PAGE)) ||
-        (type.equals(XMLConstants.PAGE_TYPE_TEMPLATE)))
+        (type.equals(XMLConstants.PAGE_TYPE_TEMPLATE))) {
       pageElement.addAttribute(XMLConstants.PAGE_TYPE,type);
-    else
+      setType(type);
+    }
+    else {
       pageElement.addAttribute(XMLConstants.PAGE_TYPE,XMLConstants.PAGE_TYPE_PAGE);
+      setType(type);
+    }
 
     if (template != null)
       pageElement.addAttribute(XMLConstants.TEMPLATE_STRING,template);
@@ -315,11 +335,23 @@ public class IBXMLPage {
 
     return(li);
   }
-}
 
-/*      SAXParserFactory f = SAXParserFactory.newInstance();
-      f.setValidating(true);
-      SAXParser p = f.newSAXParser();
-      Parser p1 = p.getParser();
-      p1.parse();*/
-//      System.out.println("Document = " + doc.toString());
+  /**
+   *
+   */
+  public void setType(String type) {
+    if ((type == XMLConstants.PAGE_TYPE_PAGE) ||
+        (type == XMLConstants.PAGE_TYPE_TEMPLATE) ||
+        (type == XMLConstants.PAGE_TYPE_DRAFT))
+      _type = type;
+    else
+      _type = XMLConstants.PAGE_TYPE_PAGE;
+  }
+
+  /**
+   *
+   */
+  public String getType() {
+    return(_type);
+  }
+}

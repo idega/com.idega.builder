@@ -5,6 +5,7 @@ import com.idega.data.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.sql.SQLException;
+import com.idega.builder.business.BuilderLogic;
 
 /**
  * Title:        idegaclasses
@@ -67,15 +68,20 @@ public class IBDomain extends GenericEntity {
     page.setType(IBPage.PAGE);
     page.insert();
 
-    com.idega.builder.business.BuilderLogic.getInstance().unlockRegion(Integer.toString(page.getID()),"-1");
+    BuilderLogic.getInstance().unlockRegion(Integer.toString(page.getID()),"-1");
 
     domain.setIBPage(page);
     domain.insert();
 
-    page = new IBPage();
-    page.setName("Default Template");
-    page.setType(IBPage.TEMPLATE);
-    page.insert();
+    IBPage page2 = new IBPage();
+    page2.setName("Default Template");
+    page2.setType(IBPage.TEMPLATE);
+    page2.insert();
+
+    page.setTemplateId(page2.getID());
+    page.update();
+
+    BuilderLogic.getInstance().setTemplateId(Integer.toString(page.getID()),Integer.toString(page2.getID()));
   }
 
   public String getEntityName(){

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.9 2001/10/02 10:34:12 palli Exp $
+ * $Id: XMLWriter.java,v 1.10 2001/10/02 15:40:09 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,50 +9,57 @@
  */
 package com.idega.builder.business;
 
+import org.jdom.Element;
+import org.jdom.Attribute;
+import java.util.List;
+import java.util.Iterator;
+import java.util.Vector;
+import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectInstance;
+
 /**
- * Title:        idegaclasses
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
- * @author       <a href="tryggvi@idega.is">Tryggvi Larusson</a>
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-
- import org.jdom.Element;
- import org.jdom.Attribute;
-
- import java.util.List;
- import java.util.Iterator;
- import java.util.Vector;
-
- import com.idega.core.data.ICObject;
- import com.idega.core.data.ICObjectInstance;
-
-
 public class XMLWriter {
 
-
-  //private static Element rootElement;
-
+  /**
+   *
+   */
   private XMLWriter() {
   }
 
+  /**
+   *
+   */
   private static Element getPageRootElement(IBXMLPage xml){
     return xml.getPageRootElement();
   }
 
+  /**
+   *
+   */
   private static Element findRegion(IBXMLPage xml,String id){
     return findXMLElement(xml,id,XMLConstants.REGION_STRING);
   }
 
+  /**
+   *
+   */
   private static Element findRegion(IBXMLPage xml,String id,Element enclosingModule){
     return findXMLElementInside(xml,id,XMLConstants.REGION_STRING,enclosingModule);
   }
 
+  /**
+   *
+   */
   private static Element findModule(IBXMLPage xml,int id){
     return findXMLElement(xml,Integer.toString(id),XMLConstants.MODULE_STRING);
   }
 
+  /**
+   *
+   */
   private static Element findModule(IBXMLPage xml,int id,Element startElement){
     return findXMLElementInside(xml,Integer.toString(id),XMLConstants.MODULE_STRING,startElement);
   }
@@ -125,12 +132,17 @@ public class XMLWriter {
     return null;
   }
 
-
+  /**
+   *
+   */
   private static Element findProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName){
     Element elem = findModule(xml,ObjectInstanceId);
     return findProperty(elem,propertyName);
   }
 
+  /**
+   *
+   */
   private static Element findProperty(Element parentElement,String propertyName){
     Element elem = parentElement;
     if(elem != null){
@@ -188,6 +200,9 @@ public class XMLWriter {
     return null;
   }
 
+  /**
+   *
+   */
   static boolean removeProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String value){
       Element module = findModule(xml,ObjectInstanceId);
       if(module!=null){
@@ -204,14 +219,17 @@ public class XMLWriter {
       }
   }
 
+  /**
+   *
+   */
   static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String propertyValue){
       String[] values = {propertyValue};
       return setProperty(xml,ObjectInstanceId,propertyName,values,false);
   }
 
-
-
-
+  /**
+   *
+   */
   static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String[] propertyValues,boolean allowMultiValued){
     Element module = findModule(xml,ObjectInstanceId);
     Element property = null;
@@ -248,7 +266,9 @@ public class XMLWriter {
     return true;
   }
 
-
+  /**
+   *
+   */
   private static Element getNewProperty(String propertyName,Object[] propertyValues){
 
     Element element = new Element(XMLConstants.PROPERTY_STRING);
@@ -269,7 +289,9 @@ public class XMLWriter {
     return element;
   }
 
-  //public static boolean addNewModule(String parentObjectInstanceID,int newICObjectTypeID){
+  /**
+   *
+   */
   private static boolean addNewModule(Element parent,int newICObjectTypeID){
     //Element parent = findModule(parentObjectInstanceID);
     if(parent!=null){
@@ -295,6 +317,9 @@ public class XMLWriter {
     return false;
   }
 
+  /**
+   *
+   */
   static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos) {
     String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
     Element region = findRegion(xml,regionId);
@@ -318,11 +343,16 @@ public class XMLWriter {
 
   }
 
+  /**
+   *
+   */
   static boolean addNewModule(IBXMLPage xml,int parentObjectInstanceID,int newICObjectID){
     return addNewModule(findModule(xml,parentObjectInstanceID),newICObjectID);
   }
 
-
+  /**
+   *
+   */
   static boolean addNewModule(IBXMLPage xml,String parentObjectInstanceID,int newICObjectID){
     try{
       return addNewModule(findModule(xml,Integer.parseInt(parentObjectInstanceID)),newICObjectID);
@@ -339,11 +369,16 @@ public class XMLWriter {
     }
   }
 
+  /**
+   *
+   */
   static boolean addNewModule(IBXMLPage xml,String parentObjectInstanceID,ICObject newObjectType){
     return addNewModule(xml,parentObjectInstanceID,newObjectType.getID());
   }
 
-
+  /**
+   *
+   */
   static boolean deleteModule(IBXMLPage xml,String parentObjectInstanceID,int ICObjectInstanceID){
     Element parent = findXMLElement(xml,parentObjectInstanceID,null);
     if(parent!=null){
@@ -359,6 +394,9 @@ public class XMLWriter {
     return false;
   }
 
+  /**
+   *
+   */
   static boolean lockRegion(IBXMLPage xml, String parentObjectInstanceID) {
     Element parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
@@ -390,6 +428,25 @@ public class XMLWriter {
     return(false);
   }
 
+  /**
+   *
+   */
+  static boolean setAttribute(IBXMLPage xml, String parentObjectInstanceID, String attributeName, String attributeValue) {
+    Element parent = findXMLElement(xml,parentObjectInstanceID,null);
+    if (parent != null) {
+      Attribute attribute = new Attribute(attributeName,attributeValue);
+      if (parent.getAttribute(attributeName) != null)
+        parent.removeAttribute(attributeName);
+      parent.addAttribute(attribute);
+      return(true);
+    }
+
+    return(false);
+  }
+
+  /**
+   *
+   */
   static boolean unlockRegion(IBXMLPage xml, String parentObjectInstanceID) {
     Element parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
@@ -422,6 +479,9 @@ public class XMLWriter {
     return(false);
   }
 
+  /**
+   *
+   */
   private static boolean deleteModule(Element parent,Element child)throws Exception{
         List children = getChildElements(child);
         if(children!=null){
@@ -445,11 +505,16 @@ public class XMLWriter {
         return true;
   }
 
-
+  /**
+   *
+   */
   private static List getChildElements(Element parent){
     return parent.getChildren();
   }
 
+  /**
+   *
+   */
   private static List getChildModules(Element parent){
     List children = parent.getChildren();
     Iterator iter = children.iterator();

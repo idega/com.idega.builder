@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.13 2001/09/28 15:39:45 palli Exp $
+ * $Id: XMLReader.java,v 1.14 2001/10/02 15:40:09 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -96,9 +96,11 @@ public class XMLReader {
     //Set the type of the page
     if (isTemplate) {
       parentContainer.setIsTemplate();
+      ibxml.setType(XMLConstants.PAGE_TYPE_TEMPLATE);
     }
     else {
       parentContainer.setIsPage();
+      ibxml.setType(XMLConstants.PAGE_TYPE_PAGE);
     }
 
     if (pageXML.hasChildren()) {
@@ -192,6 +194,9 @@ public class XMLReader {
       }
     }
 
+    boolean parseChildren = true;
+    boolean emptyParent = false;
+
     if (regionParent instanceof com.idega.jmodule.object.Page) {
       if ((regionID == null) || (regionID.equals(""))) {
         System.err.println("Missing id attribute for region tag");
@@ -199,7 +204,12 @@ public class XMLReader {
       }
       if (((Page)regionParent).getIsExtendingTemplate()) {
         newRegionParent = (ModuleObjectContainer)regionParent.getContainedObject(regionID);
-        //newRegionParent.empty();
+
+        if ((newRegionParent.getBelongsToParent()) && (newRegionParent.isLocked()))
+          parseChildren = false;
+        else
+          emptyParent = true;
+
       }
     }
     else if (regionParent instanceof com.idega.jmodule.object.Table) {
@@ -210,12 +220,16 @@ public class XMLReader {
       newRegionParent = ((Table)regionParent).containerAt(x,y);
     }
 
-    if (reg.hasChildren()) {
-      List children = reg.getChildren();
-      Iterator childrenIt = children.iterator();
+    if (parseChildren) {
+      if (reg.hasChildren()) {
+        if (emptyParent)
+          newRegionParent.empty();
+        List children = reg.getChildren();
+        Iterator childrenIt = children.iterator();
 
-      while (childrenIt.hasNext())
-        parseElement((Element)childrenIt.next(),newRegionParent);
+        while (childrenIt.hasNext())
+          parseElement((Element)childrenIt.next(),newRegionParent);
+      }
     }
   }
 
