@@ -129,6 +129,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   	templatePageId = getParentPageId(TEMPLATE_CHOOSER_NAME, iwc);
   	if (iwc.isParameterSet(SUBMIT_IMPORT_KEY)) {
   		action = IMPORT_ACTION;
+  		setOnUnLoad("window.opener.parent.parent.location.reload()");
   	}
   	if (iwc.isParameterSet(SUBMIT_CLOSE_KEY)) {
   		action = CLOSE_ACTION;
