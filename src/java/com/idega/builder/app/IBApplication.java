@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.56 2002/03/12 21:29:29 laddi Exp $
+ *  $Id: IBApplication.java,v 1.57 2002/03/13 12:21:37 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,8 +70,9 @@ public class IBApplication extends IWApplication {
   private static String URL = "";
 
   private final static String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
-  private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
-  private final static String CONTENT_EDIT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
+
+  //private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
+  //private final static String CONTENT_EDIT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
 
   /**
    *
@@ -81,6 +82,15 @@ public class IBApplication extends IWApplication {
     super.setResizable(true);
     super.setWidth(900);
     super.setHeight(700);
+  }
+
+
+  protected static String getContentEditURL(IWContext iwc){
+    return iwc.getApplication().getBuilderServletURL()+ "?view=builder";
+  }
+
+  protected static String getContentPreviewURL(IWContext iwc){
+    return iwc.getApplication().getBuilderServletURL()+ "?view=preview";
   }
 
   /**
@@ -214,8 +224,13 @@ public class IBApplication extends IWApplication {
     /**
      */
     public FrameSet2() {
+    }
+
+    public void main(IWContext iwc){
+
       add(IBToolBar.class);
-      add(CONTENT_EDIT_URL);
+      //add(CONTENT_EDIT_URL);
+      add(getContentEditURL(iwc));
       add(IBStatusBar.class);
       super.setFrameName(1, IB_TOOLBAR_FRAME);
       super.setFrameName(2, IB_CONTENT_FRAME);
@@ -777,7 +792,7 @@ public class IBApplication extends IWApplication {
 	editImage.setOnClickImage(_iwrb.getImage("shared/status/edit.gif"));
 	Link editLink = new Link(editImage);
 	editLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-	editLink.setURL(IBApplication.CONTENT_EDIT_URL);
+	editLink.setURL(getContentEditURL(iwc));
 	toolTable.add(editLink, 1, 1);
 
 	getParentPage().setOnLoad("javascript: swapImage('" + editImage.getName() + "','','" + _iwrb.getImage("shared/status/edit.gif").getURL() + "',1)");
@@ -786,7 +801,7 @@ public class IBApplication extends IWApplication {
 	previewImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
 	Link previewLink = new Link(previewImage);
 	previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-	previewLink.setURL(IBApplication.CONTENT_PREVIEW_URL);
+	previewLink.setURL(getContentPreviewURL(iwc));
 	toolTable.add(previewLink, 2, 1);
 
 	boolean isSuperUser = false;
