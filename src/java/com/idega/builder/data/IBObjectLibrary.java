@@ -1,5 +1,5 @@
 /*
- * $Id: IBObjectLibrary.java,v 1.2 2001/11/01 17:21:07 palli Exp $
+ * $Id: IBObjectLibrary.java,v 1.3 2001/12/17 15:23:24 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,37 +30,32 @@ public class IBObjectLibrary extends TreeableEntity {
   private final static String ENTITY_NAME = "ib_library";
   private final static String FILE_COLUMN = "file_id";
   private final static String OWNER_COLUMN = "user_id";
-  private final static String TYPE_COLUMN = "page_type";
 
   private ICFile _file;
   private BlobWrapper _wrapper;
-
-  public final static String CLIPBOARD = "C";
-  public final static String LIBRARY = "L";
 
   /**
    *
    */
   public IBObjectLibrary() {
-		super();
-	}
+    super();
+  }
 
   /**
    *
    */
-	public IBObjectLibrary(int id) throws SQLException {
-		super(id);
-	}
+  public IBObjectLibrary(int id) throws SQLException {
+    super(id);
+  }
 
   /**
    *
    */
-	public void initializeAttributes() {
-		addAttribute(getIDColumnName());
+  public void initializeAttributes() {
+    addAttribute(getIDColumnName());
     addAttribute(getColumnFile(),"File",true,true,Integer.class,GenericEntity.MANY_TO_ONE,ICFile.class);
     addAttribute(getColumnOwner(),"Owner",true,true,Integer.class,GenericEntity.MANY_TO_ONE,User.class);
-    addAttribute(getColumnType(),"Type",true,true,String.class,1);
-	}
+  }
 
   /**
    *
@@ -71,15 +66,15 @@ public class IBObjectLibrary extends TreeableEntity {
   /**
    *
    */
-	public String getEntityName() {
-		return(ENTITY_NAME);
-	}
+  public String getEntityName() {
+    return(ENTITY_NAME);
+  }
 
   /**
    *
    */
-	public void setDefaultValues() {
-	}
+  public void setDefaultValues() {
+  }
 
   /*
    *
@@ -219,13 +214,6 @@ public class IBObjectLibrary extends TreeableEntity {
   /**
    *
    */
-  public String getColumnType() {
-    return(TYPE_COLUMN);
-  }
-
-  /**
-   *
-   */
   public void setOwnerId(int id) {
     setColumn(getColumnOwner(),id);
   }
@@ -235,55 +223,5 @@ public class IBObjectLibrary extends TreeableEntity {
    */
   public int getOwnerId() {
     return(getIntColumnValue(getColumnOwner()));
-  }
-
-  /**
-   *
-   */
-  public void setType(String type) {
-    setColumn(getColumnType(),type);
-  }
-
-  /**
-   *
-   */
-  public String getType() {
-    return(getStringColumnValue(getColumnType()));
-  }
-
-  /**
-   *
-   */
-  public void setIsLibraryFile() {
-    setType(LIBRARY);
-  }
-
-  /**
-   *
-   */
-  public void setIsClipboardFile() {
-    setType(CLIPBOARD);
-  }
-
-  /**
-   *
-   */
-  public boolean getIsLibraryFile() {
-    String type = getType();
-    if (type.equals(LIBRARY))
-      return(true);
-    else
-      return(false);
-  }
-
-  /**
-   *
-   */
-  public boolean getIsClipboardFile() {
-    String type = getType();
-    if (type.equals(CLIPBOARD))
-      return(true);
-    else
-      return(false);
   }
 }
