@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.14 2001/09/13 17:38:17 palli Exp $
+ * $Id: IBPage.java,v 1.15 2001/09/13 18:47:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,9 +57,10 @@ public class IBPage extends TreeableEntity {
 		//par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnName(),"Nafn",true,true,String.class);
-    addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
-    addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
-    addAttribute(getColumnType(),"Type",true,true,String.class,1);
+                addAttribute(getColumnFile(),"File",true,true,Integer.class,"many-to-one",ICFile.class);
+                addAttribute(getColumnTemplateID(),"Template",true,true,Integer.class,"many-to-one",IBPage.class);
+                addAttribute(getColumnType(),"Type",true,true,String.class,1);
+
 	}
 
   /**
@@ -85,6 +86,7 @@ public class IBPage extends TreeableEntity {
 	public String getName() {
 		return(getStringColumnValue(getColumnName()));
 	}
+
 
   public void setName(String name) {
     setColumn(getColumnName(),name);
