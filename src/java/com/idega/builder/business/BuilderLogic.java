@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.160 2004/07/16 10:05:38 gummi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.161 2004/08/05 22:10:39 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -71,8 +71,10 @@ public class BuilderLogic {
 	public static final String ACTION_PASTE_ABOVE = "ACTION_PASTE_ABOVE";
 	public static final String ACTION_LIBRARY = "ACTION_LIBRARY";
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
-	public static final String SESSION_PAGE_KEY = "ib_page_id";
-	public static final String SESSION_PRIORITY_PAGE_KEY = "ib_priority_page_id";
+	/**
+	 *This is the key that holds the page in the builder session
+	 **/
+	private static final String SESSION_PAGE_KEY = "ib_page_id";
 	public static final String SESSION_OBJECT_STATE = BuilderConstants.SESSION_OBJECT_STATE;
 	public static final String PRM_HISTORY_ID = BuilderConstants.PRM_HISTORY_ID;
 	public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
@@ -515,14 +517,8 @@ public class BuilderLogic {
 			}
 		}
 
-		// priority session page check
-		if (iwc.getSessionAttribute(SESSION_PRIORITY_PAGE_KEY) != null) {
-			//System.err.println("someone is ordering a priority page");
-			theReturn = (String) iwc.getSessionAttribute(SESSION_PRIORITY_PAGE_KEY);
-			iwc.removeSessionAttribute(SESSION_PRIORITY_PAGE_KEY);
-		}
 		// normal page check
-		else if (iwc.isParameterSet(BuilderConstants.IB_PAGE_PARAMETER)) {
+		if (iwc.isParameterSet(BuilderConstants.IB_PAGE_PARAMETER)) {
 			theReturn = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
 		}
 		// session page check
@@ -537,6 +533,16 @@ public class BuilderLogic {
 		}
 		else
 			return theReturn;
+	}
+	
+	/**
+	 * Sets the IBpage Id to use in the builder session.
+	 * @param iwc
+	 * @param pageKey
+	 */
+	public void setCurrentIBPage(IWContext iwc,String pageKey){
+	    //This method only sets the session variant
+	    iwc.setSessionAttribute(SESSION_PAGE_KEY,pageKey);
 	}
 
 	

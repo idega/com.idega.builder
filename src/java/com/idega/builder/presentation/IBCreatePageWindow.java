@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.42 2004/06/09 16:12:58 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.43 2004/08/05 22:10:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -164,7 +164,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 				} // loop ends
 			}
 
-			iwc.setSessionAttribute("ib_page_id", Integer.toString(id));
+			BuilderLogic.getInstance().setCurrentIBPage(iwc,Integer.toString(id));
 			setOnUnLoad("window.opener.parent.parent.location.reload()");
 		}
 		else {

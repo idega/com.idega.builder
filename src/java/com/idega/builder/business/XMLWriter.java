@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.36 2004/06/30 03:44:02 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.37 2004/08/05 22:10:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package com.idega.builder.business;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Logger;
+
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.idegaweb.IWMainApplication;
@@ -24,6 +26,8 @@ import com.idega.xml.XMLException;
  * @version 1.0
  */
 public class XMLWriter {
+    
+    private static Logger log = Logger.getLogger(XMLWriter.class.getName());
 
 	private static final String EMPTY_STRING = "";
 
@@ -45,11 +49,20 @@ public class XMLWriter {
 	 * Label has precedence so regionId does not necessarily have to be the same.
 	 */
 	private static XMLElement findRegion(IBXMLAble xml,String label,String regionId) {
-		
-	    XMLElement region = findXMLElement(xml, XMLConstants.LABEL_STRING, label, XMLConstants.REGION_STRING);
-	    if(region==null){
+	    XMLElement region;
+	    if(label!=null){
+	        //first try to search by the label identifier
+	        region = findXMLElement(xml, XMLConstants.LABEL_STRING, label, XMLConstants.REGION_STRING);
+	        if(region!=null){
+	            return region;
+	        }
+		}
+	    else if(regionId!=null){
 	        //if nothing is found with the label label then try the id
-	        //region = findXMLElementWithId(xml, regionId, XMLConstants.REGION_STRING);
+	        region = findXMLElementWithId(xml, regionId, XMLConstants.REGION_STRING);
+	    }
+	    else{
+	        throw new RuntimeException("Can not find any region. Both label and regionId are null");
 	    }
 	    return region;
 	}
@@ -602,13 +615,46 @@ public class XMLWriter {
 	}
 
 	/**
-	 *
+	 * Checks if the given element is empty, i.e. if it contains no child elements.
+	 * @param element
+	 * @return
+	 */
+	public static boolean isElementEmpty(XMLElement element){
+	    List children = element.getChildren();
+	    for (Iterator iter = children.iterator(); iter.hasNext();) {
+            XMLElement child = (XMLElement) iter.next();
+            if(child!=null){
+                return false;
+            }
+        }
+	    
+	    return true;
+	}
+	
+	/**
+	 *Deletes the module
 	 */
 	public static boolean deleteModule(IBXMLAble xml, String parentObjectInstanceID, int ICObjectInstanceID) {
 		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
 		if (parent != null) {
 			try {
 				XMLElement module = findModule(xml, ICObjectInstanceID, parent);
+				if(module==null){
+				    //This is to handle the case when a duplicate empty region (with the same id)
+				    //prevents the find operation above to find the correct module.
+				    //This only seems to happen in table regions with e.g. parentObjectInstanceID=1.5.3
+				    log.info("Found likely corrupt duplicate region with id:"+parentObjectInstanceID);
+				    //Check if the module is empty for safetys sake
+				    if(isElementEmpty(parent)){
+					    //First Delete the corrupt region
+					    deleteModule(parent.getParent(), parent);
+					    log.info("Deleted corrupt region with id:"+parentObjectInstanceID);
+					    //Find the parent (region) again:
+					    parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+					    //Find the module again:
+					    module = findModule(xml, ICObjectInstanceID, parent);
+				    }
+				}
 				return deleteModule(parent, module);
 			}
 			catch (Exception e) {

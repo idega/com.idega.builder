@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.17 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: IBDeletePageWindow.java,v 1.18 2004/08/05 22:10:39 tryggvil Exp $
 
  *
 
@@ -66,7 +66,7 @@ public class IBDeletePageWindow extends IWAdminWindow
 				IBPageHelper.getInstance().deletePage(pageId, true, PageTreeNode.getTree(iwc), iwc.getUserId());
 			else
 				IBPageHelper.getInstance().deletePage(pageId, false, PageTreeNode.getTree(iwc), iwc.getUserId());
-			iwc.setSessionAttribute("ib_page_id", Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
+			BuilderLogic.getInstance().setCurrentIBPage(iwc,Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
 			/**@todo is this in the right place? -eiki**/
 			//      setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
 			setOnUnLoad("window.opener.parent.parent.location.reload()");

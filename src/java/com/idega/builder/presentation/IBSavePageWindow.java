@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSavePageWindow.java,v 1.7 2003/10/03 01:41:55 tryggvil Exp $
+ * $Id: IBSavePageWindow.java,v 1.8 2004/08/05 22:10:39 tryggvil Exp $
 
  *
 
@@ -20,6 +20,7 @@ package com.idega.builder.presentation;
 
 
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
@@ -202,7 +203,7 @@ public class IBSavePageWindow extends IWAdminWindow {
 
 
 
-        ibPage.insert();
+        ibPage.store();
 
         ICPage ibPageParent = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
 
@@ -210,7 +211,7 @@ public class IBSavePageWindow extends IWAdminWindow {
 
 
 
-        iwc.setSessionAttribute("ib_page_id",Integer.toString(ibPage.getID()));
+        BuilderLogic.getInstance().setCurrentIBPage(iwc,ibPage.getPrimaryKey().toString());
 
         setParentToReload();
 

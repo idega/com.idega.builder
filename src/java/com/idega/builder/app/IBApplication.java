@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.79 2004/06/24 20:12:24 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.80 2004/08/05 22:10:39 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package com.idega.builder.app;
+import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -83,8 +84,9 @@ public class IBApplication extends IWApplication {
 	}
 	protected static String getContentEditURL(IWContext iwc) {
 		//return iwc.getIWMainApplication().getBuilderServletURI() + "?view=builder";
-		String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
-		if(urlString.indexOf("?")==-1){
+		//String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
+	    String urlString = iwc.getIWMainApplication().getBuilderPagePrefixURI();
+	    if(urlString.indexOf("?")==-1){
 			return urlString+ "?view=builder";
 		}
 		else{
@@ -93,8 +95,9 @@ public class IBApplication extends IWApplication {
 	}
 	protected static String getContentPreviewURL(IWContext iwc) {
 		//return iwc.getIWMainApplication().getBuilderServletURI() + "?view=preview";
-		String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
-		if(urlString.indexOf("?")==-1){
+		//String urlString = BuilderLogic.getInstance().getCurrentIBPageURL(iwc);
+	    String urlString = iwc.getIWMainApplication().getBuilderPagePrefixURI();
+	    if(urlString.indexOf("?")==-1){
 			return urlString+ "?view=preview";
 		}
 		else{
@@ -324,7 +327,7 @@ public class IBApplication extends IWApplication {
 				BuilderService bs = BuilderServiceFactory.getBuilderService(iwc);
 				String page_id = String.valueOf(bs.getCurrentPageId(iwc));
 				if (page_id != null) {
-					iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+					BuilderLogic.getInstance().setCurrentIBPage(iwc,page_id);
 				}
 				//=======
 				//	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
@@ -401,7 +404,7 @@ public class IBApplication extends IWApplication {
 				BuilderService bs = BuilderServiceFactory.getBuilderService(iwc);
 				String page_id = String.valueOf(bs.getCurrentPageId(iwc));
 				if (page_id != null) {
-					iwc.setSessionAttribute(com.idega.builder.business.BuilderLogic.SESSION_PAGE_KEY, page_id);
+					BuilderLogic.getInstance().setCurrentIBPage(iwc,page_id);
 				}
 				//=======
 				//	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
@@ -808,8 +811,14 @@ public class IBApplication extends IWApplication {
 					toolTable.add(sourceLink, 4, 1);
 				}
 				
-				String id = (String) iwc.getSessionAttribute("ib_page_id");
-				if (id == null) {
+				String id=null;
+                try {
+                    id = Integer.toString(this.getBuilderService(iwc).getCurrentPageId(iwc));
+                } catch (RemoteException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (id == null) {
 					int i_page_id = BuilderLogic.getCurrentDomain(iwc).getStartPageID();
 					id = Integer.toString(i_page_id);
 				}
