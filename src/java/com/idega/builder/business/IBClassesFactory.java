@@ -23,6 +23,12 @@ public class IBClassesFactory  {
 		}
 		catch (ClassNotFoundException ex) {
 			throw new RuntimeException("[IBClassesFactory] A IBImageInserter could not be created");
+		} 
+		catch (InstantiationException e) {
+			throw new RuntimeException("[IBClassesFactory] A IBImageInserter could not be instanciated (does a default constructor exist?)");
+		} 
+		catch (IllegalAccessException e) {
+			throw new RuntimeException("[IBClassesFactory] A IBImageInserter could not be instanciated, access problem, (are there only private constructors?)");
 		}
 	}
 
@@ -36,6 +42,12 @@ public class IBClassesFactory  {
 		}
 		catch (ClassNotFoundException ex) {
 			throw new RuntimeException("[IBClassesFactory] A IBFileChooser could not be created");
+		} 
+		catch (InstantiationException e) {
+			throw new RuntimeException("[IBClassesFactory] A IBFileChooser could not be instanciated (does a default constructor exist?)");
+		} 
+		catch (IllegalAccessException e) {
+			throw new RuntimeException("[IBClassesFactory] A IBFileChooser could not be instanciated, access problem, (are there only private constructors?)");
 		}
 	}
 
