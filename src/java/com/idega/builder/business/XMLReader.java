@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.36 2002/04/07 19:59:40 laddi Exp $
+ * $Id: XMLReader.java,v 1.37 2002/04/07 20:11:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -425,7 +425,7 @@ public class XMLReader {
 	try {
 	  parent.add(inst);
 	}
-	catch (NullPointerException e) {
+	catch (Exception e) {
 	  e.printStackTrace(System.err);
 	  System.err.println("ParentPage: "+parent.getParentPageID());
 	  System.err.println("ParentID: "+parent.getID());
