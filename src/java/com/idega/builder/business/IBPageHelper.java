@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.39 2004/06/24 20:12:25 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.40 2004/06/30 10:32:27 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,10 +22,11 @@ import javax.ejb.FinderException;
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
-import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
+import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
@@ -387,8 +388,8 @@ public class IBPageHelper {
 						e.printStackTrace();
 						return false;
 					}
-					if (obj instanceof DPTInheritable) {
-							boolean ok = ((DPTInheritable) obj).copyICObjectInstance(xmlpage.getPageKey(),instance.getID(),cSession);
+					if (obj instanceof ICDynamicPageTriggerInheritable) {
+							boolean ok = ((ICDynamicPageTriggerInheritable) obj).copyICObjectInstance(xmlpage.getPageKey(),instance.getID(),(ICDynamicPageTriggerCopySession) cSession);
 							if (!ok) {
 								System.err.println("changeInstanceId - copyICObjectInstance failed");
 								return false;
