@@ -92,6 +92,7 @@ public class ObjectInstanceCacher{
   }
 
   public static void changeObjectInstanceID(Page page, String oldInstanceKey, String newInstanceKey, PresentationObject newObjectInstance){
+//    System.out.println("ObjectInstanceCasher.changeObjectInstanceID(....)");
     if(newInstanceKey != null){
       getObjectInstanceCacheMap().put(newInstanceKey,newObjectInstance);
     }
@@ -118,6 +119,18 @@ public class ObjectInstanceCacher{
     if(newInstanceKey != null){
       getObjectInstancesCachedForPage(page.getPageID()).put(newInstanceKey,newObjectInstance);
     }
+
+    Map tmp = getObjectInstancesCachedForPage(page.getPageID());
+/*
+    System.out.println("pageID = "+page.getPageID());
+
+    System.out.println("oldInstanceKey: "+ oldInstanceKey);
+    System.out.println("newInstanceKey: "+ newInstanceKey);
+
+    System.out.println("temp.contains(oldInstanceKey): "+ tmp.containsKey(oldInstanceKey) );
+    System.out.println("temp.contains(newInstanceKey): "+ tmp.containsKey(newInstanceKey));
+*/
+
   }
 
 

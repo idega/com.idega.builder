@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.33 2002/02/15 14:13:20 gummi Exp $
+ * $Id: XMLReader.java,v 1.34 2002/02/17 23:04:58 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -121,6 +121,12 @@ public class XMLReader {
       parentContainer.setPageID(id);
     }
     catch(NumberFormatException e) {
+      try {
+        parentContainer.setPageID(Integer.parseInt(ibxml.getKey()));
+      }
+      catch (NumberFormatException ex) {
+  //      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
+      }
     }
 
     if (pageXML.hasChildren()) {
@@ -148,26 +154,11 @@ public class XMLReader {
         }
         else if (child.getName().equals(XMLConstants.CHANGE_IC_INSTANCE_ID)) {
           changeInstanceId(child,parentContainer);
-      List c = parentContainer.getAllContainedObjectsRecursive();
-      if (c != null) {
-        Iterator it2 = c.iterator();
-        while(it2.hasNext()) {
-          PresentationObject obj = (PresentationObject)it2.next();
-        }
-      }
-
         }
         else {
           System.err.println("Unknown tag in xml description file : " + child.getName());
         }
       }
-    }
-
-    try {
-      parentContainer.setPageID(Integer.parseInt(ibxml.getKey()));
-    }
-    catch (NumberFormatException ex) {
-//      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
     }
 
     return(parentContainer);
@@ -513,6 +504,7 @@ public class XMLReader {
    *
    */
   static void changeInstanceId(XMLElement change, Page page) {
+    //System.out.println("in XMLReader.changeInstanceId(...)");
     int from = -1, to = -1;
     try {
       from = change.getAttribute(XMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
@@ -531,6 +523,7 @@ public class XMLReader {
           if (obj.getICObjectInstanceID() == from) {
             obj.setICObjectInstanceID(to);
             ObjectInstanceCacher.changeObjectInstanceID(page,Integer.toString(from),Integer.toString(to),obj);
+            //System.out.println("chached id changed");
             return;
           }
         }
