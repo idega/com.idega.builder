@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
+import com.idega.business.IBOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -19,7 +20,7 @@ import com.idega.presentation.text.Link;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Gudmundur Agust Saemundsson</a>
  * @version 1.0
  */
 
@@ -67,7 +68,7 @@ public abstract class DPTNavigator extends Block {
 
   public void _main(IWContext iwc) throws Exception {
     if(this.getICObjectInstanceID() > 0){
-      business = DPTTriggerBusiness.getInstance();
+      business = (DPTTriggerBusiness)IBOLookup.getServiceInstance(iwc,DPTTriggerBusiness.class);
 
       table.empty();
 //      initColumns(iwc);
