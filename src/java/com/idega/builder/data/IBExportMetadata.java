@@ -40,6 +40,14 @@ public class IBExportMetadata implements Storable {
 		fileElement.addContent(XMLConstants.FILE_USED_ID,name);
 		fileElement.addContent(XMLConstants.FILE_ORIGINAL_NAME, originalName);
 	}
+	
+	public void modifyElementSetNameSetOriginalNameLikeElementAt(int index, int existingDataIndex) {
+		XMLElement fileElement = (XMLElement) fileElements.get(existingDataIndex);
+		String name = fileElement.getTextTrim(XMLConstants.FILE_USED_ID);
+		String originalName = fileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
+		modifyElementSetNameSetOriginalName(index, name, originalName);
+	}
+		
 
 	
 	
