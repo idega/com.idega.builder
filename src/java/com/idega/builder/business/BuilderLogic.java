@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.133 2002/12/11 18:59:04 palli Exp $
+ * $Id: BuilderLogic.java,v 1.134 2002/12/20 15:44:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -42,7 +42,6 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
-import com.idega.presentation.help.Help;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
@@ -364,8 +363,6 @@ public class BuilderLogic
 			obj.setUseBuilderObjectControl(useBuilderObjectControl);
 		}
 		else if (obj instanceof Block)
-		{}
-		else if (obj instanceof Help) 
 		{}
 		else if (obj instanceof PresentationObjectContainer)
 		{
