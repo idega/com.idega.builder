@@ -597,7 +597,7 @@ public class IBPropertyHandler{
       IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
       IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
 
-      if(method==null){
+      if(method!=null){
         return false;
       }
 
