@@ -451,7 +451,7 @@ public class BuilderLogic{
     /** @todo  */
       ////////
       try {
-        Object Block = ICObjectBusiness.getICObjectClass(ICObjectInstanceID).newInstance();
+        Object Block = ICObjectBusiness.getICObjectClassForInstance(ICObjectInstanceID).newInstance();
         if(Block != null){
           if(Block instanceof IWBlock){
             blockDeleted = ((IWBlock) Block).deleteBlock(ICObjectInstanceID);
