@@ -9,20 +9,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.ejb.FinderException;
-
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
+import com.idega.builder.io.IBExportImportDataReader;
+import com.idega.builder.io.IBExportImportDataWriter;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.io.export.ObjectReader;
-import com.idega.io.export.ObjectWriter;
-import com.idega.io.export.Storable;
+import com.idega.io.serialization.ObjectReader;
+import com.idega.io.serialization.ObjectWriter;
+import com.idega.io.serialization.Storable;
 import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
@@ -34,7 +34,7 @@ import com.idega.xml.XMLElement;
  * <p>Company: idega Software</p>
  * @author <a href="thomas@idega.is">Thomas Hilbig</a>
  * @version 1.0
- * Created on Mar 24, 2004
+ * Created on Mar 24, 2004 
  */
 public class IBExportImportData implements Storable {
 	
@@ -208,13 +208,13 @@ public class IBExportImportData implements Storable {
 	}	
 	
 	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
-		return writer.write(this, iwc);
+		return ((IBExportImportDataWriter) writer).write(this, iwc);
 	}
 	
 	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
-		return reader.read(this, iwc);
+		return ((IBExportImportDataReader) reader).read(this, iwc);
 	}
-
+	
 	public XMLData createMetadataSummary() {
 		XMLData metadata = XMLData.getInstanceWithoutExistingFileSetNameSetRootName(EXPORT_METADATA_FILE_NAME, EXPORT_METADATA_NAME);
 		XMLElement metadataElement = metadata.getDocument().getRootElement();
@@ -336,7 +336,7 @@ public class IBExportImportData implements Storable {
 		if (necessaryModules == null) {
 			return null;
 		}
-		List missingModules = null;
+		List tempMissingModules = null;
 		Iterator iterator = necessaryModules.iterator();
 		while (iterator.hasNext()) {
 			XMLElement moduleElement = (XMLElement) iterator.next();
@@ -345,13 +345,13 @@ public class IBExportImportData implements Storable {
 				String bundleName = moduleElement.getTextTrim(XMLConstants.MODULE_BUNDLE);
 				StringBuffer buffer = new StringBuffer(className);
 				buffer.append(" ( ").append(bundleName).append(" ) ");
-				if (missingModules == null) {
-					missingModules = new ArrayList();
+				if (tempMissingModules == null) {
+					tempMissingModules = new ArrayList();
 				}
-				missingModules.add(buffer.toString());
+				tempMissingModules.add(buffer.toString());
 			}
 		}
-		return missingModules;
+		return tempMissingModules;
 	}
 
 	class PageElementComparator implements Comparator {
@@ -368,6 +368,8 @@ public class IBExportImportData implements Storable {
 	}
 
 }
+
+
 		
 		
 		

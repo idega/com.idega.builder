@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.14 2004/05/03 11:36:35 thomas Exp $
+ * $Id: IBPageBMPBean.java,v 1.15 2004/06/04 12:28:29 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,9 +25,9 @@ import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
-import com.idega.io.export.ObjectReader;
-import com.idega.io.export.ObjectWriter;
-import com.idega.io.export.Storable;
+import com.idega.io.serialization.ObjectReader;
+import com.idega.io.serialization.ObjectWriter;
+import com.idega.io.serialization.Storable;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 import com.idega.util.xml.XMLData;

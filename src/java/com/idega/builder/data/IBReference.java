@@ -3,17 +3,16 @@ package com.idega.builder.data;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.builder.business.XMLConstants;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.io.export.Storable;
-import com.idega.io.export.StorableProvider;
+import com.idega.io.serialization.Storable;
+import com.idega.io.serialization.StorableHolder;
+import com.idega.io.serialization.StorableProvider;
 import com.idega.presentation.IWContext;
 import com.idega.util.datastructures.HashMatrix;
 import com.idega.xml.XMLElement;
@@ -102,8 +101,8 @@ public class IBReference {
 			Iterator iterator = properties.iterator();
 			while (iterator.hasNext()) {
 				XMLElement propertyElement = (XMLElement) iterator.next();
-				String valueName = propertyElement.getTextTrim(XMLConstants.NAME_STRING);
-				if (this.valueName.equalsIgnoreCase(valueName)) {
+				String tempValueName = propertyElement.getTextTrim(XMLConstants.NAME_STRING);
+				if (valueName.equalsIgnoreCase(tempValueName)) {
 					// right propertyElement has been found, now get the right value (properties can have more than one value)
 					List valueElements = propertyElement.getChildren(XMLConstants.VALUE_STRING);
 					// index starts at zero 
@@ -166,7 +165,7 @@ public class IBReference {
 		
 //		use the code below if the simple solution above is not sufficient.
 //    at the moment the code below seems to be an overkill.
-//		private Storable getSourceFromPropertyElementUsingEjb(XMLElement propertyElement) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IDOLookupException, ClassNotFoundException {
+//		private IBStorable getSourceFromPropertyElementUsingEjb(XMLElement propertyElement) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, IDOLookupException, ClassNotFoundException {
 //			String value = propertyElement.getTextTrim(XMLConstants.VALUE_STRING);
 //			Class providerClass = Class.forName(providerClassName);
 //			IDOHome home = IDOLookup.getHome(providerClass);
@@ -174,19 +173,14 @@ public class IBReference {
 //			Class[] parameterTypes = method.getParameterTypes();
 //			if (parameterTypes[0].equals(Object.class)) {
 //				Object[] parameters = { new Integer(value)};
-//				return (Storable) method.invoke(method, parameters);
+//				return (IBStorable) method.invoke(method, parameters);
 //			}
 //			Object[] parameters = { value};
-//			return (Storable) method.invoke(home, parameters);
+//			return (IBStorable) method.invoke(home, parameters);
 //		}
 			
 		public StorableHolder createSource(String value) throws IOException {
-			if (isEjb) {
-				return createSourceUsingEjb();
-			}
-			else {
-				return createSourceUsingProvider(value);
-			}
+			return (isEjb) ? createSourceUsingEjb() : createSourceUsingProvider(value);
 		}
 		
 		private StorableHolder createSourceUsingEjb() throws IOException {

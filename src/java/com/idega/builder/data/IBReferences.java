@@ -11,6 +11,7 @@ import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.XMLConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
+import com.idega.io.serialization.StorableHolder;
 import com.idega.presentation.IWContext;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
