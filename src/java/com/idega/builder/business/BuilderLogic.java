@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.104 2002/02/26 23:02:39 aron Exp $
+ * $Id: BuilderLogic.java,v 1.105 2002/02/27 00:04:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -474,7 +474,14 @@ public class BuilderLogic {
   }
 
   public String getCurrentIBPage(IWContext iwc) {
-    String theReturn = (String)iwc.getSessionAttribute(SESSION_PAGE_KEY);
+    String theReturn = null;
+    if(iwc.isParameterSet(IB_PAGE_PARAMETER))
+      theReturn = iwc.getParameter(IB_PAGE_PARAMETER);
+    else if(iwc.getSessionAttribute(SESSION_PAGE_KEY)!=null)
+      theReturn = (String)iwc.getSessionAttribute(SESSION_PAGE_KEY);
+    else
+      theReturn = String.valueOf(getStartPageId(iwc));
+
     if (theReturn == null) {
       return Integer.toString(getCurrentDomain(iwc).getStartPageID());
     }
