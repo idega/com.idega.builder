@@ -1,12 +1,15 @@
 package com.idega.builder.presentation;
 
-import com.idega.presentation.text.PreformattedText;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.*;
-
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBXMLPage;
 import com.idega.core.builder.data.ICPage;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.PreformattedText;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.Window;
 
 /**
  * Title:        idegaclasses

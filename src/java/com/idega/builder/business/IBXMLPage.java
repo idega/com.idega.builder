@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.45 2004/06/09 16:12:58 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.46 2004/06/14 13:52:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,14 +19,13 @@ import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
 import javax.ejb.FinderException;
+
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
-import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookupException;
 import com.idega.exception.PageDoesNotExist;
-import com.idega.io.MemoryFileBuffer;
-import com.idega.io.MemoryInputStream;
 import com.idega.presentation.Page;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.53 2004/06/09 16:12:58 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.54 2004/06/14 13:52:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,11 +12,10 @@ package com.idega.builder.business;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.event.ObjectInstanceCacher;
-import com.idega.presentation.HtmlPage;
-import com.idega.presentation.HtmlPageRegion;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
