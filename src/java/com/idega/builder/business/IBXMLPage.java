@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.29 2001/11/12 18:37:48 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.30 2001/11/15 19:39:27 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -109,6 +109,10 @@ public class IBXMLPage {
       e.printStackTrace();
     }
     setPopulatedPage(XMLReader.getPopulatedPage(this));
+  }
+
+  public String getKey(){
+    return this._key;
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.23 2001/11/06 18:18:03 palli Exp $
+ * $Id: XMLReader.java,v 1.24 2001/11/15 19:39:27 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -137,6 +137,15 @@ public class XMLReader {
         }
       }
     }
+
+    try {
+      parentContainer.setPageID(Integer.parseInt(ibxml.getKey()));
+    }
+    catch (NumberFormatException ex) {
+      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
+    }
+
+
 
     return(parentContainer);
   }
