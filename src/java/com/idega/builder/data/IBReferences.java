@@ -1,6 +1,7 @@
 package com.idega.builder.data;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,19 @@ public class IBReferences {
 		}
 	}
 
+	public StorableHolder createSourceFromElement(XMLElement metaDataFileElement) throws IOException {
+		String moduleName = metaDataFileElement.getTextTrim(XMLConstants.FILE_MODULE);
+		IBReference reference = (IBReference) moduleReference.get(moduleName);
+		if (reference == null) {
+			// shouldn't happen
+			return null;
+		}
+		String name = metaDataFileElement.getTextTrim(XMLConstants.FILE_NAME);
+		IBReference.Entry entry = reference.getReferenceByName(name);
+		return entry.createSource();
+	}
+		
+			
 	
 	public void checkElementForReferences(XMLElement element,IBExportImportData metadata) throws IOException {
 		String nameOfElement = element.getName();
@@ -56,7 +70,7 @@ public class IBReferences {
 			String moduleClass = element.getAttributeValue(XMLConstants.CLASS_STRING);
 			if (moduleReference.containsKey(moduleClass)) {
 				IBReference reference = (IBReference) moduleReference.get(moduleClass);
-				List entries = reference.getEntries();
+				Collection entries = reference.getEntries();
 				Iterator iterator = entries.iterator();
 				while (iterator.hasNext()) {
 					IBReference.Entry entry = (IBReference.Entry) iterator.next();
