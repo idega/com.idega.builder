@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.70 2001/10/31 20:27:31 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.71 2001/11/01 18:51:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -964,6 +964,37 @@ public class BuilderLogic {
 
   public static String getIBPageURL(int ib_page_id){
     return IWMainApplication.BUILDER_SERVLET_URL+"?"+IB_PAGE_PARAMETER+"="+ib_page_id;
+  }
+
+  public void updateName(String name, IWContext iwc) {
+    IBXMLPage xml = getCurrentIBXMLPage(iwc);
+    if (xml != null) {
+      if (!xml.getName().equals(name)) {
+        xml.setName(name);
+        java.util.Map tree = null;
+        if (xml.getType().equals(IBXMLPage.TYPE_PAGE)) {
+          tree = (java.util.Map)iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
+        }
+        else if (xml.getType().equals(IBXMLPage.TYPE_TEMPLATE)) {
+          tree = (java.util.Map)iwc.getApplicationAttribute(PageTreeNode.TEMPLATE_TREE);
+        }
+
+        if (tree != null) {
+          String currentId = getCurrentIBPage(iwc);
+          if (currentId != null) {
+            Integer id = new Integer(currentId);
+            PageTreeNode node = (PageTreeNode)tree.get(id);
+            if (node != null) {
+              node.setNodeName(name);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  public void updateTemplate(String templateId, IWContext iwc) {
+
   }
 
 }
