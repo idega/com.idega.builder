@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateHandler.java,v 1.5 2001/12/14 11:28:22 palli Exp $
+ * $Id: IBTemplateHandler.java,v 1.6 2001/12/17 10:17:13 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.builder.handler;
 import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.builder.presentation.IBTemplateChooser;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.BuilderLogic;
@@ -74,6 +75,13 @@ public class IBTemplateHandler implements PropertyHandler {
             int v = Integer.parseInt(value);
             instance.changeTemplateId(value,iwc);
             IBPageUpdater.updateTemplateId(p,v);
+            Page template = instance.getIBXMLPage(value).getPopulatedPage();
+            if (template != null) {
+              if (template.isLocked())
+                instance.lockRegion(currPage,"-1");
+              else
+                instance.unlockRegion(currPage,"-1",null);
+            }
           }
 
         }
