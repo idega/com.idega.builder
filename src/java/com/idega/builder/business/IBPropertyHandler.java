@@ -154,7 +154,7 @@ public class IBPropertyHandler{
           }
       }
       else if(parameterClass.equals(com.idega.jmodule.object.Image.class)){
-          obj = new ImageInserter(name);
+          obj = new ImageInserter(name,false);
       }
       /**@todo : handle page,template,file if the inputs already hava a value
        *
