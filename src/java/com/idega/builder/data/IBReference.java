@@ -134,7 +134,7 @@ public class IBReference {
 				Class providerClass = Class.forName(providerClassName);
 				// get an instance
 				StorableProvider provider = (StorableProvider) providerClass.newInstance();
-				return provider.getSource(value, iwc);
+				return provider.getSource(value, sourceClassName, iwc);
 			}
 			catch (ClassCastException e) {
 				throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't implement StorableProvider");
@@ -202,7 +202,7 @@ public class IBReference {
 				Class providerClass = Class.forName(providerClassName);
 				// get an instance
 				StorableProvider provider = (StorableProvider) providerClass.newInstance();
-				return provider.createSource(value, iwc);
+				return provider.createSource(value, sourceClassName ,iwc);
 			}
 			catch (ClassCastException e) {
 				throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't implement StorableProvider");
