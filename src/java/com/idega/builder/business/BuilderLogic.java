@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.117 2002/03/21 16:21:04 laddi Exp $
+ * $Id: BuilderLogic.java,v 1.118 2002/03/26 13:30:19 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1017,7 +1017,7 @@ public class BuilderLogic {
 
     XMLElement toPaste = (XMLElement)element.clone();
 
-    if (XMLWriter.pasteElement(xml,parentID,toPaste)) {
+    if (XMLWriter.pasteElement(xml,pageKey,parentID,toPaste)) {
       xml.update();
       return(true);
     }
@@ -1041,7 +1041,7 @@ public class BuilderLogic {
 
     XMLElement toPaste = (XMLElement)element.clone();
 
-    if (XMLWriter.pasteElementAbove(xml,parentID,objectID,toPaste)) {
+    if (XMLWriter.pasteElementAbove(xml,pageKey,parentID,objectID,toPaste)) {
       xml.update();
       return(true);
     }
@@ -1102,7 +1102,7 @@ public class BuilderLogic {
    */
   public boolean addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
     IBXMLPage xml = getIBXMLPage(pageKey);
-    if (XMLWriter.addNewModule(xml,parentObjectInstanceID,newICObjectID,label)) {
+    if (XMLWriter.addNewModule(xml,pageKey,parentObjectInstanceID,newICObjectID,label)) {
       xml.update();
       return(true);
     }
@@ -1116,7 +1116,7 @@ public class BuilderLogic {
    */
   public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
     IBXMLPage xml = getIBXMLPage(pageKey);
-    if(XMLWriter.addNewModule(xml,parentObjectInstanceID,newObjectType,label)){
+    if(XMLWriter.addNewModule(xml,pageKey,parentObjectInstanceID,newObjectType,label)){
       xml.update();
       return true;
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.28 2002/03/06 15:56:22 laddi Exp $
+ * $Id: XMLWriter.java,v 1.29 2002/03/26 13:30:19 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -449,12 +449,13 @@ public class XMLWriter {
   /**
    *
    */
-  private static boolean addNewModule(XMLElement parent,int newICObjectTypeID){
+  private static boolean addNewModule(XMLElement parent,String pageKey,int newICObjectTypeID){
     //XMLElement parent = findModule(parentObjectInstanceID);
     if(parent!=null){
       try{
 	ICObjectInstance instance = new ICObjectInstance();
 	instance.setICObjectID(newICObjectTypeID);
+    instance.setIBPageByKey(pageKey);
 	instance.insert();
 
 	ICObject obj = new ICObject(newICObjectTypeID);
@@ -496,7 +497,7 @@ public class XMLWriter {
   /**
    *
    */
-  public static boolean addNewModule(IBXMLAble xml,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos, String label) {
+  public static boolean addNewModule(IBXMLAble xml,String pageKey,int parentObjectInstanceID,int newICObjectID,int xpos,int ypos, String label) {
     String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
     XMLElement region = findRegion(xml,regionId);
 
@@ -505,7 +506,7 @@ public class XMLWriter {
       XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING,regionId);
 //      region.addAttribute(id);
       region.setAttribute(id);
-      addNewModule(region,newICObjectID);
+      addNewModule(region,pageKey,newICObjectID);
       XMLElement parent = findModule(xml,parentObjectInstanceID);
       if (parent != null)
 	parent.addContent(region);
@@ -519,7 +520,7 @@ public class XMLWriter {
       }
     }
     else{
-      addNewModule(region,newICObjectID);
+      addNewModule(region,pageKey,newICObjectID);
     }
     return true;
 
@@ -528,16 +529,16 @@ public class XMLWriter {
   /**
    *
    */
-  public static boolean addNewModule(IBXMLAble xml,int parentObjectInstanceID,int newICObjectID, String label){
-    return addNewModule(findModule(xml,parentObjectInstanceID),newICObjectID);
+  public static boolean addNewModule(IBXMLAble xml,String pageKey,int parentObjectInstanceID,int newICObjectID, String label){
+    return addNewModule(findModule(xml,parentObjectInstanceID),pageKey,newICObjectID);
   }
 
   /**
    *
    */
-  public static boolean addNewModule(IBXMLAble xml,String parentObjectInstanceID,int newICObjectID,String label){
+  public static boolean addNewModule(IBXMLAble xml,String pageKey,String parentObjectInstanceID,int newICObjectID,String label){
     try{
-      return addNewModule(findModule(xml,Integer.parseInt(parentObjectInstanceID)),newICObjectID);
+      return addNewModule(findModule(xml,Integer.parseInt(parentObjectInstanceID)),pageKey,newICObjectID);
     }
     catch(NumberFormatException nfe){
 
@@ -547,15 +548,15 @@ public class XMLWriter {
       int xpos = Integer.parseInt(theRest.substring(0,theRest.indexOf(".")));
       int ypos = Integer.parseInt(theRest.substring(theRest.indexOf(".")+1,theRest.length()));
 
-      return addNewModule(xml,parentID,newICObjectID,xpos,ypos,label);
+      return addNewModule(xml,pageKey,parentID,newICObjectID,xpos,ypos,label);
     }
   }
 
   /**
    *
    */
-  public static boolean addNewModule(IBXMLAble xml,String parentObjectInstanceID,ICObject newObjectType, String label){
-    return addNewModule(xml,parentObjectInstanceID,newObjectType.getID(),label);
+  public static boolean addNewModule(IBXMLAble xml,String pageKey,String parentObjectInstanceID,ICObject newObjectType, String label){
+    return addNewModule(xml,pageKey,parentObjectInstanceID,newObjectType.getID(),label);
   }
 
   /**
@@ -824,8 +825,8 @@ public class XMLWriter {
   /**
    *
    */
-  public static boolean pasteElement(IBXMLAble xml, String parentObjectInstanceID, XMLElement element) {
-    changeModuleIds(element);
+  public static boolean pasteElement(IBXMLAble xml, String pageKey,String parentObjectInstanceID, XMLElement element) {
+    changeModuleIds(element,pageKey);
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
       parent.addContent(element);
@@ -858,8 +859,8 @@ public class XMLWriter {
   /**
    *
    */
-  public static boolean pasteElementAbove(IBXMLAble xml, String parentObjectInstanceID, String objectId, XMLElement element) {
-    changeModuleIds(element);
+  public static boolean pasteElementAbove(IBXMLAble xml, String pageKey,String parentObjectInstanceID, String objectId, XMLElement element) {
+    changeModuleIds(element,pageKey);
     XMLElement parent = findXMLElement(xml,parentObjectInstanceID,null);
     if (parent != null) {
 //      parent.addContent(element);
@@ -921,13 +922,14 @@ public class XMLWriter {
   /**
    *
    */
-  private static boolean changeModuleIds(XMLElement element) {
+  private static boolean changeModuleIds(XMLElement element,String pageKey) {
     try {
       XMLAttribute attribute = element.getAttribute(XMLConstants.ID_STRING);
       XMLAttribute object_id = element.getAttribute(XMLConstants.IC_OBJECT_ID_STRING);
 
       ICObjectInstance instance = new ICObjectInstance();
       instance.setICObjectID(object_id.getIntValue());
+      instance.setIBPageByKey(pageKey);
       instance.insert();
 
       String moduleId = Integer.toString(instance.getID());
@@ -939,7 +941,7 @@ public class XMLWriter {
 	Iterator it = childs.iterator();
 	while (it.hasNext()) {
 	  XMLElement child = (XMLElement)it.next();
-	  if (!changeModuleIds(child))
+	  if (!changeModuleIds(child,pageKey))
 	    return(false);
 	}
       }
@@ -965,7 +967,7 @@ public class XMLWriter {
 	    Iterator it2 = childs2.iterator();
 	    while (it2.hasNext()) {
 	      XMLElement child = (XMLElement)it2.next();
-	      if (!changeModuleIds(child))
+	      if (!changeModuleIds(child,pageKey))
 		return(false);
 	    }
 	  }
