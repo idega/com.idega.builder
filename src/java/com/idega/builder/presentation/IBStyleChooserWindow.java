@@ -346,6 +346,8 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 				value += "px";
 			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_LINE_HEIGHT) && value.indexOf("px") == -1)
 				value += "px";
+			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_BORDER_WIDTH) && value.indexOf("px") == -1)
+				value += "px";
 			setStyleValue(attribute, value);
 		}
 	}
