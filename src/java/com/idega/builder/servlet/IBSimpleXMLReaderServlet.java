@@ -34,15 +34,18 @@ public class IBSimpleXMLReaderServlet extends IWPresentationServlet {
     }
     String fileName = modinfo.getRequestURI();
     String prefix = modinfo.getApplication().getApplicationRealPath();
+
     Page page = null;
+    String pageKey = null;
     try{
-      page = PageCacher.getPage(prefix+File.separator+fileName);
+      pageKey = prefix+File.separator+fileName;
+      page = PageCacher.getPage(pageKey);
     }
     catch(RuntimeException e){
       e.printStackTrace();
     }
     if(builderview){
-      setPage(BuilderLogic.getInstance().getBuilderTransformed(page,modinfo));
+      setPage(BuilderLogic.getInstance().getBuilderTransformed(pageKey,page,modinfo));
     }
     else{
       setPage(page);
