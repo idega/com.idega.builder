@@ -8,6 +8,8 @@ import com.idega.idegaweb.*;
 
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPropertyDescription;
+import com.idega.builder.business.IBPropertyDescriptionComparator;
 
 import com.idega.util.reflect.MethodFinder;
 
@@ -15,6 +17,7 @@ import com.idega.core.data.ICObject;
 
 import java.util.List;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Title:        idegaclasses
@@ -44,10 +47,10 @@ public class IBPropertiesWindowList extends Page{
     String ic_object_id = getUsedICObjectInstanceID(iwc);
     if(ic_object_id!=null){
       add(getPropertiesList(ic_object_id,iwc));
-      System.out.println("IBPropertiesWindowList: Getting IC_OBJECT_ID");
+      //System.out.println("IBPropertiesWindowList: Getting IC_OBJECT_ID");
     }
     else{
-      System.out.println("IBPropertiesWindowList: Not getting IC_OBJECT_ID");
+      //System.out.println("IBPropertiesWindowList: Not getting IC_OBJECT_ID");
     }
   }
 
@@ -55,29 +58,59 @@ public class IBPropertiesWindowList extends Page{
     return iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
   }
 
-  public PresentationObject getPropertiesList(String ic_object_id,IWContext iwc)throws Exception{
+  public PresentationObject getPropertiesList(String ic_object_instance_id,IWContext iwc)throws Exception{
     Table table = new Table();
-    int icObjectInstanceID = Integer.parseInt(ic_object_id);
-    List methodList = IBPropertyHandler.getInstance().getMethodsListOrdered(icObjectInstanceID,iwc);
+    //int icObjectInstanceID = Integer.parseInt(ic_object_instance_id);
+    //List methodList = IBPropertyHandler.getInstance().getMethodsListOrdered(icObjectInstanceID,iwc);
+    try{
+      List methodList=this.getMethodListOrdered(iwc,ic_object_instance_id);
+      Iterator iter = methodList.iterator();
+      int counter=1;
+      while (iter.hasNext()) {
+        //IWProperty methodProp = (IWProperty)iter.next();
+        IBPropertyDescription desc = (IBPropertyDescription)iter.next();
+        String methodIdentifier = desc.getMethodIdentifier();
+        String methodDescr = desc.getMethodDescription();
+
+        Link link = new Link(methodDescr);
+        /*link.setTarget(PROPERTY_FRAME);
+        link.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        link.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
+        link.maintainParameter(IB_PAGE_PARAMETER,iwc);
+        link.addParameter(METHOD_ID_PARAMETER,methodIdentifier);*/
+        link.setURL("javascript:parent."+PROPERTY_FRAME+"."+IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME+"('"+methodIdentifier+"')");
+        table.add(link,1,counter);
+        counter++;
+      }
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
+    return table;
+  }
+
+
+  /**
+   * Returns a list of IBPropertyDescription objects
+   */
+  private List getMethodListOrdered(IWContext iwc,String ICObjectInstanceID)throws Exception{
+    List theReturn = new Vector();
+    int iICObjectInstanceID = Integer.parseInt(ICObjectInstanceID);
+    IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(iICObjectInstanceID,iwc.getApplication());
     Iterator iter = methodList.iterator();
     int counter=1;
     while (iter.hasNext()) {
       IWProperty methodProp = (IWProperty)iter.next();
       String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
       String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp,iwc);
-      Link link = new Link(methodDescr);
-      /*link.setTarget(PROPERTY_FRAME);
-      link.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
-      link.maintainParameter(IC_OBJECT_ID_PARAMETER,iwc);
-      link.maintainParameter(IB_PAGE_PARAMETER,iwc);
-      link.addParameter(METHOD_ID_PARAMETER,methodIdentifier);*/
-      link.setURL("javascript:parent."+PROPERTY_FRAME+"."+IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME+"('"+methodIdentifier+"')");
-      table.add(link,1,counter);
-      counter++;
+      IBPropertyDescription desc = new IBPropertyDescription(methodIdentifier);
+      desc.setMethodDescription(methodDescr);
+      theReturn.add(desc);
     }
-    return table;
+    java.util.Collections.sort(theReturn,IBPropertyDescriptionComparator.getInstance());
+    return theReturn;
   }
 
-
-
 }
+
+

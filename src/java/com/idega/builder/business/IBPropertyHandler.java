@@ -135,7 +135,7 @@ public class IBPropertyHandler{
       return null;
     }
 
-    public List getMethodsListOrdered(int ic_object_instance_id,IWContext iwc){
+    /*public List getMethodsListOrdered(int ic_object_instance_id,IWContext iwc){
       try{
         IWPropertyList methodList = getMethods(ic_object_instance_id,iwc.getApplication());
         if(methodList!=null){
@@ -153,7 +153,7 @@ public class IBPropertyHandler{
         e.printStackTrace(System.err);
       }
       return com.idega.util.ListUtil.getEmptyList();
-    }
+    }*/
 
     /*public IWPropertyList getMethods(IWBundle iwb,String componentKey){
       IWPropertyList compList = iwb.getComponentList();
@@ -354,6 +354,7 @@ public class IBPropertyHandler{
       //String className = parameterClass.getName();
       if(parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)){
           obj = new IntegerInput(name);
+          ((IntegerInput)obj).setMaxlength(4);
           if(stringValue!=null){
             ((IntegerInput)obj).setContent(stringValue);
           }
