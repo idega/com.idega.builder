@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.20 2002/03/27 14:08:50 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.21 2002/03/28 15:59:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -169,7 +169,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
       }
 
       if ( elements == null && blocks == null ) {
-	elements = EntityFinder.findAllByColumn(staticICO,staticICO.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_ELEMENT);
+	elements = EntityFinder.findAllByColumn(staticICO,ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_ELEMENT);
 	blocks = EntityFinder.findAllByColumn(staticICO,ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_BLOCK);
 
 	if ( elements != null ) {
