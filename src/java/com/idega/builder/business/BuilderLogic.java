@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.128 2002/09/05 16:41:12 palli Exp $
+ * $Id: BuilderLogic.java,v 1.129 2002/09/20 13:37:36 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -809,6 +809,7 @@ public class BuilderLogic
 			_layer = new Layer();
 			_tableLayer = new Layer();
 			_tableLayer.setZIndex(-1);
+			_layer.setPositionType(Layer.RELATIVE);
 			/** To work around layer stacking in Opera browser version 5, revise for newer versions */
 			boolean hideLayer = iwc.isOpera();
 			/** @todo Make a plug-in presentation/interface object which all plug-ins inherit */
@@ -818,10 +819,10 @@ public class BuilderLogic
 				hideLayer = true;
 			if (_theObject instanceof com.idega.presentation.GenericPlugin)
 				hideLayer = true;
-			Layer controlLayer = new Layer(Layer.DIV);
+			/*Layer controlLayer = new Layer(Layer.DIV);
 			controlLayer.setPositionType(Layer.RELATIVE);
 			controlLayer.setWidth(1);
-			controlLayer.setHeight(1);
+			controlLayer.setHeight(1);*/
 			Layer layer = new Layer(Layer.DIV);
 			layer.setID(_layer.getID() + "a");
 			layer.setPositionType(Layer.ABSOLUTE);
@@ -839,9 +840,10 @@ public class BuilderLogic
 			if (hideLayer)
 				showLayers += " showHideLayers('" + _tableLayer.getID() + "','','hide');";
 			layer.setOnMouseOut(hideLayers);
-			controlLayer.add(layer);
+			//controlLayer.add(layer);
 			_table = new Table(3, 5);
-			_table.add(controlLayer);
+			//_table.add(controlLayer);
+			_table.add(layer);
 			_table.add(_tableLayer, 2, 4);
 			_layer.add(_table);
 			_layer.setZIndex(number);
