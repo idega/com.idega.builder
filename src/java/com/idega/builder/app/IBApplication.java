@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.23 2001/10/19 00:48:48 laddi Exp $
+ * $Id: IBApplication.java,v 1.24 2001/10/23 16:34:46 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import com.idega.builder.presentation.IBDeletePageWindow;
 import com.idega.builder.presentation.IBSaveAsPageWindow;
 import com.idega.builder.presentation.IBSavePageWindow;
 import com.idega.builder.presentation.IBSourceView;
+import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.app.IWApplication;
 import com.idega.presentation.app.IWApplicationComponent;
 import com.idega.presentation.FrameSet;
@@ -38,6 +39,7 @@ import com.idega.builder.presentation.IBPermissionWindow;
 public class IBApplication extends IWApplication {
   private final static String IB_FRAMESET1_FRAME = "ib_frameset1";
   private final static String IB_FRAMESET2_FRAME = "ib_frameset2";
+  private final static String IB_TOOLBAR_FRAME = "ib_toolbar";
   private final static String IB_CONTENT_FRAME = "ib_content";
   private final static String IB_LEFT_MENU_FRAME = "ib_left_menu";
 
@@ -46,7 +48,7 @@ public class IBApplication extends IWApplication {
   private final static String ACTION_SETTINGS = "settings";
   private final static String ACTION_HELP = "help";
 
-  private static boolean noToolBar = false;
+  private static boolean noCurtain = false;
   private static String URL = "";
 
   private static final String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
@@ -72,16 +74,16 @@ public class IBApplication extends IWApplication {
     if ( iwc.getSessionAttribute("toolbar") != null ) {
       String toolbar = (String) iwc.getSessionAttribute("toolbar");
       if ( toolbar.equalsIgnoreCase("remove") ) {
-        noToolBar = true;
+        noCurtain = true;
       }
       else if ( toolbar.equalsIgnoreCase("add") ) {
-        noToolBar = false;
+        noCurtain = false;
       }
     }
 
     URL = iwc.getRequestURI();
 
-    if ( noToolBar ) {
+    if ( noCurtain ) {
       add(FrameSet2.class);
       setScrolling(2,true);
     }
@@ -90,7 +92,7 @@ public class IBApplication extends IWApplication {
       setScrolling(2,false);
     }
 
-    setSpanPixels(1,30);
+    setSpanPixels(1,34);
     setScrolling(1,false);
     setSpanAdaptive(2);
     setFrameName(2,IB_FRAMESET1_FRAME);
@@ -126,8 +128,11 @@ public class IBApplication extends IWApplication {
     public FrameSet2(){
       add(IBToolBar.class);
       add(CONTENT_EDIT_URL);
+      super.setFrameName(1,IB_TOOLBAR_FRAME);
       super.setFrameName(2,IB_CONTENT_FRAME);
       add(IBStatusBar.class);
+      setNoresize(1,true);
+      setNoresize(3,true);
       setSpanPixels(1,24);
       setScrolling(1,false);
       setSpanAdaptive(2);
@@ -147,8 +152,12 @@ public class IBApplication extends IWApplication {
     }
 
     public void main(IWContext iwc){
+      this.setAllMargins(0);
       setBackgroundColor("#0E2456");
+      //setBackgroundColor("#FFFFFF");
       Table table = new Table(2,1);
+        table.setCellpadding(0);
+        table.setCellspacing(3);
       add(table);
       Image image;
       image = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("header.gif");
@@ -164,76 +173,6 @@ public class IBApplication extends IWApplication {
       table.setCellpadding(0);
       table.setCellpadding(0);
 
-      setAllMargins(0);
-    }
-  }
-
-  /**
-   *
-   */
-  public static class IBMenu extends Page {
-    /**
-     *
-     */
-    public IBMenu() {
-    }
-
-    public void main(IWContext iwc){
-      setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-      //setBackgroundImage("/common/pics/arachnea/toolbar_tiler.gif");
-      IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
-      Image image = iwb.getImage("toolbar_tiler.gif");
-      setBackgroundImage(image);
-      setAllMargins(0);
-
-      String builderControlParameter = "builder_controlparameter";
-
-      Table controlTable = new Table(9,1);
-      add(controlTable);
-      controlTable.setHeight(24);
-
-      controlTable.setCellpadding(0);
-      controlTable.setCellspacing(0);
-      controlTable.setAlignment("left");
-
-      Image separator = iwb.getImage("toolbar_separator.gif");
-      separator.setHorizontalSpacing(5);
-
-      Link text1 = new Link("Builder");
-      text1.setTarget("sidebar");
-      text1.addParameter(builderControlParameter,ACTION_BUILDER);
-      text1.setFontSize(1);
-      text1.setFontColor("black");
-
-      Link text2 = new Link("Templates");
-      text2.setTarget("sidebar");
-
-      text2.addParameter(builderControlParameter,ACTION_TEMPLATES);
-      text2.setFontSize(1);
-      text2.setFontColor("black");
-
-      Link text3 = new Link("Settings");
-      text3.setTarget("sidebar");
-      text3.addParameter(builderControlParameter,ACTION_SETTINGS);
-      text3.setFontSize(1);
-      text3.setFontColor("black");
-
-      Link text5 = new Link("Help");
-      text5.setTarget("sidebar");
-
-      text5.addParameter(builderControlParameter,ACTION_HELP);
-      text5.setFontSize(1);
-      text5.setFontColor("black");
-
-      controlTable.add(separator,1,1);
-      controlTable.add(text1,2,1);
-      controlTable.add(separator,3,1);
-      controlTable.add(text2,4,1);
-      controlTable.add(separator,5,1);
-      controlTable.add(text3,6,1);
-      controlTable.add(separator,7,1);
-      controlTable.add(separator,8,1);
-      controlTable.add(text5,9,1);
     }
   }
 
@@ -242,7 +181,7 @@ public class IBApplication extends IWApplication {
     }
 
     public void main(IWContext iwc){
-      if ( noToolBar ) {
+      if ( noCurtain ) {
         getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       }
       else {
@@ -256,6 +195,7 @@ public class IBApplication extends IWApplication {
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
         l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+        l.setOnClick("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
         viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
@@ -278,7 +218,7 @@ public class IBApplication extends IWApplication {
     }
 
     public void main(IWContext iwc){
-      if ( noToolBar ) {
+      if ( noCurtain ) {
         getParentPage().setOnLoad("parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       }
       else {
@@ -323,48 +263,46 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc){
       setAlignment("left");
       setVerticalAlignment("top");
+      setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
+      setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+      setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 
       try {
+        Table menuTable = new Table();
+          menuTable.setAlignment(1,1,"right");
+
         Image closeImage = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("toolbar_remove.gif","toolbar_remove_1.gif","Hide Curtain",16,16);
           closeImage.setAlignment("right");
-          closeImage.setVerticalSpacing(2);
 
         Link closeLink = new Link(closeImage);
           closeLink.setTarget(Link.TARGET_TOP_WINDOW);
           closeLink.addParameter("toolbar","remove");
           closeLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER,IBApplication.class);
 
-        Image divider = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("transparentcell.gif");
-          divider.setWidth("100%");
-          divider.setHeight(5);
-
-        add(closeLink);
-        addBreak();
+        menuTable.add(closeLink,1,1);
 
         Text pageText = new Text("Page Tree:");
           pageText.setFontSize(1);
         Text templateText = new Text("Template Tree:");
           templateText.setFontSize(1);
 
-        add(pageText);
-        addBreak();
-        IFrame frame = new IFrame("Name",PageTree.class);
-          frame.setWidth(176);
-          frame.setHeight(150);
+        IFrame frame = new IFrame("PageTree",PageTree.class);
+          frame.setWidth(170);
+          frame.setHeight(200);
           frame.setScrolling(IFrame.SCROLLING_YES);
-        add(frame);
+        menuTable.add(pageText,1,2);
+        menuTable.add(Text.getBreak(),1,2);
+        menuTable.add(frame,1,2);
 
-        addBreak();
-        add(divider);
-        addBreak();
-
-        add(templateText);
-        addBreak();
-        IFrame frame2 = new IFrame("Name",TemplateTree.class);
-          frame2.setWidth(176);
-          frame2.setHeight(150);
+        IFrame frame2 = new IFrame("TemplateTree",TemplateTree.class);
+          frame2.setWidth(170);
+          frame2.setHeight(200);
           frame2.setScrolling(IFrame.SCROLLING_YES);
-        add(frame2);
+        menuTable.add(templateText,1,3);
+        menuTable.add(Text.getBreak(),1,3);
+        menuTable.add(frame2,1,3);
+
+        add(menuTable);
       }
       catch(Exception e) {
         e.printStackTrace();
@@ -375,7 +313,7 @@ public class IBApplication extends IWApplication {
   /**
    *
    */
-  public static class IBToolBar extends Page {
+  public static class IBToolBar extends IWApplicationComponent {
     /**
      *
      */
@@ -389,10 +327,13 @@ public class IBApplication extends IWApplication {
       super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
+      setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
+      setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+      setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 
-      setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-      Image background = iwb.getImage("toolbar_tiler.gif");
-      setBackgroundImage(background);
+      //setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+      //Image background = iwb.getImage("toolbar_tiler.gif");
+      //setBackgroundImage(background);
       setAllMargins(0);
 
       String action = iwc.getParameter(controlParameter);
@@ -401,77 +342,108 @@ public class IBApplication extends IWApplication {
       }
 
       if (action.equals(ACTION_BUILDER)) {
+        int xpos = 1;
+        Table toolbarTable = new Table();
+          toolbarTable.setCellpadding(0);
+          toolbarTable.setCellspacing(0);
+
         Image separator = iwb.getImage("toolbar_separator.gif");
 
-        Image tool_new = iwb.getImage("toolbar_new_1.gif","New Page");
+        Image tool_new = iwb.getImage("toolbar_new.gif","New Page");
+        tool_new.setHorizontalSpacing(2);
         Link link_new = new Link(tool_new);
         link_new.setWindowToOpen(IBCreatePageWindow.class);
-        add(link_new);
+        toolbarTable.add(link_new,xpos,1);
 
-        Image tool_open = iwb.getImage("toolbar_open_1.gif","Open Page");
+        Image tool_open = iwb.getImage("toolbar_open.gif","Open Page");
+        tool_open.setHorizontalSpacing(2);
         Link link_open = new Link(tool_open);
-        add(link_open);
+        toolbarTable.add(link_open,xpos,1);
 
-        Image tool_save = iwb.getImage("toolbar_save_1.gif","Save Page");
+        Image tool_save = iwb.getImage("toolbar_save.gif","Save Page");
+        tool_save.setHorizontalSpacing(2);
         Link link_save = new Link(tool_save);
         link_save.setWindowToOpen(IBSavePageWindow.class);
-        add(link_save);
+        toolbarTable.add(link_save,xpos,1);
 
-        Image tool_save_as = iwb.getImage("toolbar_save_1.gif","Save As Page");
+        Image tool_save_as = iwb.getImage("toolbar_save.gif","Save As Page");
+        tool_save_as.setHorizontalSpacing(2);
         Link link_save_as = new Link(tool_save_as);
         link_save_as.setWindowToOpen(IBSaveAsPageWindow.class);
-        add(link_save_as);
+        toolbarTable.add(link_save_as,xpos,1);
 
-        Image tool_delete = iwb.getImage("toolbar_delete_1.gif","Delete Page");
+        Image tool_delete = iwb.getImage("toolbar_delete.gif","Delete Page");
+        tool_delete.setHorizontalSpacing(2);
         Link link_delete = new Link(tool_delete);
         link_delete.setWindowToOpen(IBDeletePageWindow.class);
-        add(link_delete);
+        toolbarTable.add(link_delete,xpos,1);
 
         PresentationObject propertiesIcon = getPropertiesIcon(iwc);
-        add(propertiesIcon);
+        toolbarTable.add(propertiesIcon,xpos,1);
 
         PresentationObject permissionIcon = getPermissionIcon(iwc);
-        add(permissionIcon);
+        toolbarTable.add(permissionIcon,xpos,1);
 
-        add(separator);
+        xpos++;
+        toolbarTable.add(separator,xpos,1);
 
-        Image tool_1 = iwb.getImage("toolbar_back_1.gif","Go back");
+        xpos++;
+        Image tool_1 = iwb.getImage("toolbar_back.gif","Go back");
+        tool_1.setHorizontalSpacing(2);
         Link link_1 = new Link(tool_1);
         link_1.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].history.go(-1)");
-        add(link_1);
+        toolbarTable.add(link_1,xpos,1);
 
-        Image tool_2 = iwb.getImage("toolbar_forward_1.gif","Go forward");
+        Image tool_2 = iwb.getImage("toolbar_forward.gif","Go forward");
+        tool_2.setHorizontalSpacing(2);
         Link link_2 = new Link(tool_2);
         link_2.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].history.go(1)");
-        add(link_2);
+        toolbarTable.add(link_2,xpos,1);
 
-        Image tool_3 = iwb.getImage("toolbar_stop_1.gif","Stop loading");
+        Image tool_3 = iwb.getImage("toolbar_stop.gif","Stop loading");
+        tool_3.setHorizontalSpacing(2);
         Link link_3 = new Link(tool_3);
         link_3.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].stop()");
-        add(link_3);
+        toolbarTable.add(link_3,xpos,1);
 
-        Image tool_4 = iwb.getImage("toolbar_reload_1.gif","Reload page");
+        Image tool_4 = iwb.getImage("toolbar_reload.gif","Reload page");
+        tool_4.setHorizontalSpacing(2);
         Link link_4 = new Link(tool_4);
         link_4.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
-        add(link_4);
+        toolbarTable.add(link_4,xpos,1);
 
-        Image tool_5 = iwb.getImage("toolbar_home_1.gif","Go to startpage");
+        /*Image tool_5 = iwb.getImage("toolbar_home_1.gif","Go to startpage");
         Link link_5 = new Link(tool_5);
         link_5.setURL("javascript:parent.frames['"+IB_CONTENT_FRAME+"'].location.href='"+CONTENT_EDIT_URL+"'");
-        add(link_5);
+        toolbarTable.add(link_5,xpos,1);*/
 
-        if ( noToolBar ) {
-          add(separator);
+        xpos++;
+        toolbarTable.add(separator,xpos,1);
 
-          Image leftMenuImage = iwb.getImage("toolbar_addtoolbar_1.gif","Show Curtain");
+        Image leftMenuImage = iwb.getImage("toolbar_addtoolbar.gif","Show Curtain");
+        leftMenuImage.setHorizontalSpacing(2);
 
-          Link leftMenuLink = new Link(leftMenuImage);
-            leftMenuLink.setTarget(Link.TARGET_TOP_WINDOW);
+        Link leftMenuLink = new Link(leftMenuImage);
+          leftMenuLink.setTarget(Link.TARGET_TOP_WINDOW);
+          if ( noCurtain )
             leftMenuLink.addParameter("toolbar","add");
-            leftMenuLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER,IBApplication.class);
+          else
+            leftMenuLink.addParameter("toolbar","remove");
+          leftMenuLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER,IBApplication.class);
 
-          add(leftMenuLink);
-        }
+        xpos++;
+        toolbarTable.add(leftMenuLink,xpos,1);
+
+        /*xpos++;
+        toolbarTable.add(separator,xpos,1);
+
+        Text pageName = new Text(BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName());
+          pageName.setBold();
+
+        xpos++;
+        toolbarTable.add(pageName,xpos,1);*/
+
+        add(toolbarTable);
       }
     }
 
@@ -480,7 +452,8 @@ public class IBApplication extends IWApplication {
      */
     public PresentationObject getPropertiesIcon(IWContext iwc) {
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
-      Image image = iwb.getImage("toolbar_properties_1.gif","Page Properties");
+      Image image = iwb.getImage("toolbar_properties.gif","Page Properties");
+        image.setHorizontalSpacing(2);
       Link link = new Link(image);
       link.setWindowToOpen(IBPropertiesWindow.class);
       link.addParameter(BuilderLogic.IB_PAGE_PARAMETER,BuilderLogic.getInstance().getCurrentIBPage(iwc));
@@ -493,7 +466,8 @@ public class IBApplication extends IWApplication {
 
     public PresentationObject getPermissionIcon(IWContext iwc){
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
-      Image image = iwb.getImage("toolbar_permissions_1.gif","Page Permissions");
+      Image image = iwb.getImage("toolbar_permissions.gif","Page Permissions");
+        image.setHorizontalSpacing(2);
       Link link = new Link(image);
       link.setWindowToOpen(IBPermissionWindow.class);
       link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER,BuilderLogic.getInstance().getCurrentIBPage(iwc));
@@ -506,7 +480,7 @@ public class IBApplication extends IWApplication {
   /**
    *
    */
-  public static class IBStatusBar extends Page {
+  public static class IBStatusBar extends IWApplicationComponent {
     private final static String IW_BUNDLE_IDENTIFIER = "com.idega.core";
 
     /**
@@ -522,18 +496,21 @@ public class IBApplication extends IWApplication {
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       IWBundle _iwrb = getBundle(iwc);
       String controlParameter = "builder_controlparameter";
+      setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
+      setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+      setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 
 
-      setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
-      Image background = iwb.getImage("status_tiler.gif");
-      setBackgroundImage(background);
+      //setBackgroundColor(com.idega.idegaweb.IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
+      //Image background = iwb.getImage("status_tiler.gif");
+      //setBackgroundImage(background);
       setAllMargins(0);
 
       Table toolbarTable = new Table(2,1);
       toolbarTable.setWidth("100%");
       toolbarTable.setHeight("100%");
       toolbarTable.setCellpadding(0);
-      toolbarTable.setCellspacing(1);
+      toolbarTable.setCellspacing(0);
       toolbarTable.setWidth(2,1,"100%");
       toolbarTable.setAlignment(2,1,"right");
       toolbarTable.setVerticalAlignment(1,1,"top");
@@ -545,7 +522,7 @@ public class IBApplication extends IWApplication {
       }
 
       if (action.equals(ACTION_BUILDER)) {
-        Text text1 = new Text("Status normal");
+        Text text1 = new Text("Status normal"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
         text1.setFontSize(1);
         text1.setFontColor("Black");
 
