@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.2 2002/02/07 22:03:29 palli Exp $
+ * $Id: IBPageHelper.java,v 1.3 2002/02/08 10:03:00 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -113,6 +113,8 @@ public class IBPageHelper {
 
       if (parent != null)
         parent.addChild(node);
+
+      tree.put(new Integer(node.getNodeID()),node);
     }
 
     if ((templateId != null) && (!templateId.equals(""))) {
