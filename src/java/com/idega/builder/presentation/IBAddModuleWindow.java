@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.32 2003/09/22 16:39:22 eiki Exp $
+ * $Id: IBAddModuleWindow.java,v 1.33 2003/09/22 16:48:22 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -85,13 +85,17 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		String ib_parent_id = (String) iwc.getSessionAttribute(IB_PARENT_PARAMETER);
 		if (ib_parent_id == null) {
 			ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
-			iwc.setSessionAttribute(IB_PARENT_PARAMETER, ib_parent_id);
+			if(ib_parent_id!=null) {
+				iwc.setSessionAttribute(IB_PARENT_PARAMETER, ib_parent_id);
+			}
 		}
 		
 		String ib_page_id = (String) iwc.getSessionAttribute(IB_PAGE_PARAMETER);
 		if (ib_page_id == null) {
 			ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
-			iwc.setSessionAttribute(IB_PAGE_PARAMETER, ib_page_id);
+			if(ib_page_id!=null) {
+				iwc.setSessionAttribute(IB_PAGE_PARAMETER, ib_page_id);
+			}
 		}
 		
 		String label = (String) iwc.getSessionAttribute(IB_LABEL_PARAMETER);
@@ -101,7 +105,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				iwc.setSessionAttribute(IB_LABEL_PARAMETER, label);
 			}
 			else {
-				System.err.println("IBAddModuleWindow: Label is null "+ IB_LABEL_PARAMETER);
+				System.err.println("IBAddModuleWindow: Label is null  "+ IB_LABEL_PARAMETER);
 			}
 		}
 	
