@@ -8,6 +8,7 @@ import com.idega.jmodule.object.app.IWApplicationComponent;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.idegaweb.IWBundle;
 
 
 
@@ -183,6 +184,7 @@ public class IBApplication extends IWApplication {
       }
 
       public void main(ModuleInfo modinfo){
+        System.out.println("Is in main()");
         int i_page_id = 1;
         int i_template_id = 2;
         try {
@@ -335,11 +337,13 @@ public class IBApplication extends IWApplication {
   }*/
 
   public static class IBStatusBar extends Page{
+    private final static String IW_BUNDLE_IDENTIFIER="com.idega.core";
+
       public IBStatusBar(){
       }
 
       public void main(ModuleInfo modinfo){
-
+        IWBundle _iwrb = getBundle(modinfo);
         String controlParameter = "builder_controlparameter";
 
 
@@ -348,6 +352,13 @@ public class IBApplication extends IWApplication {
         setAllMargins(0);
 
         Table toolbarTable = new Table(2,1);
+          toolbarTable.setWidth("100%");
+          toolbarTable.setHeight("100%");
+          toolbarTable.setCellpadding(0);
+          toolbarTable.setCellspacing(1);
+          toolbarTable.setWidth(2,1,"100%");
+          toolbarTable.setAlignment(2,1,"right");
+          toolbarTable.setVerticalAlignment(1,1,"top");
         add(toolbarTable);
 
         String action = modinfo.getParameter(controlParameter);
@@ -360,7 +371,18 @@ public class IBApplication extends IWApplication {
         Text text1 = new Text("Status normal");
         text1.setFontSize(1);
         text1.setFontColor("Black");
-        toolbarTable.add(text1);
+
+        Link editLink = new Link(_iwrb.getImage("editorwindow/edit.gif"));
+          editLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+          editLink.setURL(IBApplication.CONTENT_URL);
+
+        Link previewLink = new Link(_iwrb.getImage("editorwindow/preview.gif"));
+          previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+          previewLink.setURL(com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL);
+
+        toolbarTable.add(editLink,1,1);
+        toolbarTable.add(previewLink,1,1);
+        toolbarTable.add(text1,2,1);
 
 
         //Image tool_1 = new Image("/common/pics/arachnea/back_1.gif");
@@ -380,6 +402,10 @@ public class IBApplication extends IWApplication {
 
 
       }
+    public String getBundleIdentifier(){
+      return IW_BUNDLE_IDENTIFIER;
+    }
+
   }
 
 
