@@ -181,7 +181,7 @@ public class DPTTriggerBusiness {
     BuilderLogic instance = BuilderLogic.getInstance();
 
     Map tree = PageTreeNode.getTree(iwc);
-    int id = IBPageHelper.createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree);
+    int id = IBPageHelper.getInstance().createNewPage(Integer.toString(parentId),name,IBPageHelper.DPT_PAGE,Integer.toString(dptTemplateId),tree);
 
     IBPage page = null;
     try {
@@ -377,7 +377,7 @@ public class DPTTriggerBusiness {
       l.update();
 
 
-      com.idega.builder.business.IBPageHelper.deletePage(Integer.toString(l.getPageId()),true,PageTreeNode.getTree(iwc),userId);
+      com.idega.builder.business.IBPageHelper.getInstance().deletePage(Integer.toString(l.getPageId()),true,PageTreeNode.getTree(iwc),userId);
 
       return true;
     }

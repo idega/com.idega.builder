@@ -1,5 +1,5 @@
 /*
- * $Id: IBDeletePageWindow.java,v 1.11 2002/03/21 11:23:23 palli Exp $
+ * $Id: IBDeletePageWindow.java,v 1.12 2002/04/03 12:44:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -63,9 +63,9 @@ public class IBDeletePageWindow extends IWAdminWindow {
     if (submit) {
       boolean deleted = false;
       if ((deleteAll != null) && (deleteAll.equals("true")))
-	deleted = IBPageHelper.deletePage(pageId,true,PageTreeNode.getTree(iwc),iwc.getUserId());
+	deleted = IBPageHelper.getInstance().deletePage(pageId,true,PageTreeNode.getTree(iwc),iwc.getUserId());
       else
-	deleted = IBPageHelper.deletePage(pageId,false,PageTreeNode.getTree(iwc),iwc.getUserId());
+	deleted = IBPageHelper.getInstance().deletePage(pageId,false,PageTreeNode.getTree(iwc),iwc.getUserId());
 
       iwc.setSessionAttribute("ib_page_id",Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
        /**@todo is this in the right place? -eiki**/
@@ -79,10 +79,10 @@ public class IBDeletePageWindow extends IWAdminWindow {
       close();
     }
 
-    okToDelete = IBPageHelper.checkDeletePage(pageId);
+    okToDelete = IBPageHelper.getInstance().checkDeletePage(pageId);
 
     if (okToDelete) {
-      okToDeleteChildren = IBPageHelper.checkDeleteChildrenOfPage(pageId);
+      okToDeleteChildren = IBPageHelper.getInstance().checkDeleteChildrenOfPage(pageId);
       SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("yes","Yes"),"ok");
       SubmitButton cancel = new SubmitButton(iwrb.getLocalizedImageButton("cancel","Cancel"),"cancel");
       CheckBox deleteChildren = new CheckBox("deletechildren","true");
