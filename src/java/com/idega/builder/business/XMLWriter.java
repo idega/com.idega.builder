@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.10 2001/10/02 15:40:09 palli Exp $
+ * $Id: XMLWriter.java,v 1.11 2001/10/02 19:47:02 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -227,10 +227,13 @@ public class XMLWriter {
       return setProperty(xml,ObjectInstanceId,propertyName,values,false);
   }
 
+
+
   /**
-   *
+   * Returns true if properties changed, else false
    */
   static boolean setProperty(IBXMLPage xml,int ObjectInstanceId,String propertyName,String[] propertyValues,boolean allowMultiValued){
+    boolean changed = false;
     Element module = findModule(xml,ObjectInstanceId);
     Element property = null;
     if(!allowMultiValued){
@@ -240,6 +243,7 @@ public class XMLWriter {
     if(property==null){
       property = getNewProperty(propertyName,propertyValues);
       module.addContent(property);
+      changed=true;
     }
     else{
       List values = property.getChildren(XMLConstants.VALUE_STRING);
@@ -249,7 +253,11 @@ public class XMLWriter {
         while (iter.hasNext()) {
           String propertyValue = propertyValues[index];
           Element value = (Element)iter.next();
-          value.setText(propertyValue);
+          String currentValue = value.getText();
+          if(!currentValue.equals(propertyValue)){
+            value.setText(propertyValue);
+            changed=true;
+          }
           index++;
         }
       }
@@ -259,11 +267,12 @@ public class XMLWriter {
             Element value = new Element(XMLConstants.VALUE_STRING);
             value.addContent(propertyValue);
             property.addContent(value);
+            changed=true;
         }
 
       }
     }
-    return true;
+    return changed;
   }
 
   /**

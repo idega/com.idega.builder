@@ -3,11 +3,13 @@ package com.idega.builder.presentation;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.FrameSet;
 
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWPropertyListIterator;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWURL;
 
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
@@ -29,19 +31,46 @@ import java.util.Iterator;
  * @version 1.0
  */
 
-public class IBPropertiesWindow extends IBAdminWindow{
+public class IBPropertiesWindow extends FrameSet{
 
-  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_ID_PARAMETER;
-  private static final String ib_page_parameter = BuilderLogic.IB_PAGE_PARAMETER;
-  private final static String METHOD_ID_PARAMETER="iw_method_identifier";
-  private final static String VALUE_SAVE_PARAMETER = "ib_method_save";
-  private final static String VALUE_PARAMETER = "ib_method_value";
+   static final String IC_OBJECT_ID_PARAMETER = BuilderLogic.IC_OBJECT_ID_PARAMETER;
+   static final String IB_PAGE_PARAMETER = BuilderLogic.IB_PAGE_PARAMETER;
+   final static String METHOD_ID_PARAMETER="iw_method_identifier";
+   final static String VALUE_SAVE_PARAMETER = "ib_method_save";
+   final static String VALUE_PARAMETER = "ib_method_value";
 
-  public void main(ModuleInfo modinfo)throws Exception{
-      super.addTitle("IBPropertiesWindow");
+   final static String TOP_FRAME = "ib_prop_win_top";
+   final static String MIDDLE_FRAME = "ib_prop_win_middle";
+   final static String BOTTOM_FRAME = "ib_prop_win_bottom";
+
+
+  public void main(ModuleInfo modinfo) throws Exception{
+    super.setTitle("Properties");
+    super.setWidth(600);
+    super.setHeight(600);
+    add(IBPropertiesWindowTop.class);
+
+    IWURL mURL = FrameSet.getFrameURL(IBPropertiesWindowMiddle.class);
+    mURL.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
+    add(mURL.toString());
+    //add(IBPropertiesWindowMiddle.class);
+
+    add(IBPropertiesWindowBottom.class);
+    this.setSpanPixels(1,40);
+    this.setSpanAdaptive(2);
+    this.setSpanPixels(3,50);
+
+    this.setFrameName(1,TOP_FRAME);
+    this.setFrameName(2,MIDDLE_FRAME);
+    this.setFrameName(3,BOTTOM_FRAME);
+  }
+
+
+  public void main2(ModuleInfo modinfo)throws Exception{
+      //super.addTitle("IBPropertiesWindow");
       //setParentToReload();
-      String ib_page_id = modinfo.getParameter(ib_page_parameter);
-      String ic_objectinstance_id = modinfo.getParameter(ic_object_id_parameter);
+      String ib_page_id = modinfo.getParameter(IB_PAGE_PARAMETER);
+      String ic_objectinstance_id = modinfo.getParameter(IC_OBJECT_ID_PARAMETER);
       if(ic_objectinstance_id!=null){
         String methodIdentifier = modinfo.getParameter(METHOD_ID_PARAMETER);
         if(methodIdentifier==null){
@@ -93,8 +122,8 @@ public class IBPropertiesWindow extends IBAdminWindow{
       String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
       String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp);
       Link link = new Link(methodDescr);
-      link.maintainParameter(ic_object_id_parameter,modinfo);
-      link.maintainParameter(ib_page_parameter,modinfo);
+      link.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
+      link.maintainParameter(IB_PAGE_PARAMETER,modinfo);
       link.addParameter(METHOD_ID_PARAMETER,methodIdentifier);
       table.add(link,1,counter);
       counter++;
@@ -159,6 +188,62 @@ public class IBPropertiesWindow extends IBAdminWindow{
      */
     String value = "";
     BuilderLogic.getInstance().removeProperty(pageKey,Integer.parseInt(icObjectInstanceID),key,value);
+  }
+
+
+  public static class IBPropertiesWindowMiddle extends FrameSet{
+
+    public void main(ModuleInfo modinfo){
+      super.setHorizontal();
+      IWURL url1 = FrameSet.getFrameURL(IBPropertiesWindowList.class);
+      url1.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
+      add(url1.toString());
+
+      IWURL url2 = FrameSet.getFrameURL(IBPropertiesWindowSetter.class);
+      url2.maintainParameter(IC_OBJECT_ID_PARAMETER,modinfo);
+      add(url2.toString());
+
+      setFrameName(1,IBPropertiesWindowList.LIST_FRAME);
+      setFrameName(2,IBPropertiesWindowList.PROPERTY_FRAME);
+
+      setSpanPixels(1,180);
+      setSpanAdaptive(2);
+    }
+
+  }
+
+  public static class IBPropertiesWindowBottom extends Page{
+    public IBPropertiesWindowBottom(){
+      setBackgroundColor("gray");
+      setAllMargins(0);
+      Script script = this.getAssociatedScript();
+      script.addFunction("doClose","function doClose(){doUpdate();parent.opener.location.reload();parent.close();}");
+      script.addFunction("doUpdate","function doUpdate(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();}");
+
+    }
+
+    public void main(ModuleInfo modinfo){
+      SubmitButton b1 = new SubmitButton("OK");
+      b1.setOnClick("doClose()");
+      SubmitButton b2 = new SubmitButton("Apply");
+      b2.setOnClick("doUpdate()");
+      Form form = new Form();
+      add(form);
+      Table t = new Table(2,1);
+      form.add(t);
+      t.add(b1,1,1);
+      t.add(b2,2,1);
+    }
+  }
+
+  public static class IBPropertiesWindowTop extends Page{
+    public IBPropertiesWindowTop(){
+      setBackgroundColor("gray");
+    }
+
+    public void main(ModuleInfo modinfo){
+      add("Properties");
+    }
   }
 
 

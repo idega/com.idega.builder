@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.14 2001/10/02 15:40:09 palli Exp $
+ * $Id: XMLReader.java,v 1.15 2001/10/02 19:47:02 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -102,6 +102,13 @@ public class XMLReader {
       parentContainer.setIsPage();
       ibxml.setType(XMLConstants.PAGE_TYPE_PAGE);
     }
+
+    //sets the id of the page
+    try{
+      int id = Integer.parseInt(pageKey);
+      parentContainer.setPageID(id);
+    }
+    catch(NumberFormatException e){}
 
     if (pageXML.hasChildren()) {
       List children = pageXML.getChildren();

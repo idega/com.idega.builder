@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.33 2001/10/02 15:40:09 palli Exp $
+ * $Id: BuilderLogic.java,v 1.34 2001/10/02 19:47:02 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -459,7 +459,13 @@ public class BuilderLogic {
 
   public boolean removeProperty(String pageKey,int ObjectInstanceId,String propertyName,String value){
       IBXMLPage xml = getIBXMLPage(pageKey);
-      return XMLWriter.removeProperty(xml,ObjectInstanceId,propertyName,value);
+      if(XMLWriter.removeProperty(xml,ObjectInstanceId,propertyName,value)){
+        xml.update();
+        return true;
+      }
+      else{
+        return false;
+      }
   }
 
   /**
@@ -470,11 +476,18 @@ public class BuilderLogic {
     return XMLWriter.getProperty(xml,ObjectInstanceId,propertyName);
   }
 
+  /**
+   * Returns true if properties changed, or error, else false
+   */
   public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String propertyValue,IWMainApplication iwma){
       String[] values = {propertyValue};
       return setProperty(pageKey,ObjectInstanceId,propertyName,values,iwma);
   }
 
+
+  /**
+   * Returns true if properties changed, or error, else false
+   */
   public boolean setProperty(String pageKey,int ObjectInstanceId,String propertyName,String[] propertyValues,IWMainApplication iwma){
       try{
         IBXMLPage xml = getIBXMLPage(pageKey);
