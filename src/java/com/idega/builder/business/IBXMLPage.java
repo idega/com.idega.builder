@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.41 2002/12/10 18:30:42 palli Exp $
+ * $Id: IBXMLPage.java,v 1.42 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,26 +9,25 @@
  */
 package com.idega.builder.business;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.Vector;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBPageBMPBean;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.Page;
-import com.idega.xml.XMLParser;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
-import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLException;
 import com.idega.xml.XMLOutput;
+import com.idega.xml.XMLParser;
 
 /**
  * A class that reads XML page descriptions from the database and returns

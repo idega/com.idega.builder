@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.5 2002/07/24 17:19:23 tryggvil Exp $
+ * $Id: IBDomainBMPBean.java,v 1.6 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,18 +10,23 @@
 package com.idega.builder.data;
 
 import java.rmi.RemoteException;
-import java.util.*;
-import com.idega.user.data.*;
-import com.idega.data.*;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.data.IBDomain;
-//import com.idega.data.IDOLegacyEntity;
-import com.idega.builder.data.IBDomainHome;
-import com.idega.builder.data.IBPageHome;
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBPageBMPBean;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
 import javax.ejb.FinderException;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
+import com.idega.user.data.GroupDomainRelation;
+import com.idega.user.data.GroupDomainRelationHome;
+import com.idega.user.data.GroupDomainRelationType;
+import com.idega.user.data.GroupDomainRelationTypeHome;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

@@ -1,5 +1,5 @@
 /*
- *  $Id: IBToolbarButton.java,v 1.1 2002/03/11 22:58:58 palli Exp $
+ *  $Id: IBToolbarButton.java,v 1.2 2003/04/03 09:10:10 laddi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package com.idega.builder.app;
 
-import com.idega.presentation.Image;
 import com.idega.presentation.text.Link;
 
 /**

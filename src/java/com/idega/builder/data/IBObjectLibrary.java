@@ -1,6 +1,5 @@
 package com.idega.builder.data;
 
-import javax.ejb.*;
 
 public interface IBObjectLibrary extends com.idega.data.TreeableEntity
 {

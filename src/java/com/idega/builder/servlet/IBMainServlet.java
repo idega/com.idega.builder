@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.20 2002/11/20 20:50:28 eiki Exp $
+ * $Id: IBMainServlet.java,v 1.21 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,13 +10,9 @@
 package com.idega.builder.servlet;
 
 
-import javax.servlet.http.HttpServletResponse;
-
-import com.idega.servlet.IWJSPPresentationServlet;
-import com.idega.presentation.IWContext;
-
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.data.*;
+import com.idega.presentation.IWContext;
+import com.idega.servlet.IWJSPPresentationServlet;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>

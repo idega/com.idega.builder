@@ -1,12 +1,11 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
-import com.idega.data.*;
-import com.idega.builder.data.IBPage;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.GenericGroup;
-
 import java.sql.SQLException;
+
+import com.idega.builder.data.IBPage;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.data.ICObject;
+import com.idega.core.data.ICObjectInstance;
 
 
 /**

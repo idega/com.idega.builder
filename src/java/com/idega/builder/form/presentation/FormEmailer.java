@@ -1,18 +1,13 @@
 package com.idega.builder.form.presentation;
 
-import javax.mail.MessagingException;
-
+import com.idega.idegaweb.IWGenericFormHandler;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.BackButton;
-
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWGenericFormHandler;
 
 /**
  * Title:        idegaWeb Builder

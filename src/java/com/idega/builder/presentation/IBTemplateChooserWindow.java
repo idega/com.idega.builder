@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.12 2002/05/10 15:55:26 palli Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.13 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,16 +9,14 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Table;
-import com.idega.idegaweb.IWConstants;
-import com.idega.presentation.ui.AbstractChooserWindow;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.TreeViewer;
-import com.idega.builder.data.IBDomain;
-import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.ui.TreeViewer;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

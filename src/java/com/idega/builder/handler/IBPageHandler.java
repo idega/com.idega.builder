@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.5 2002/12/20 15:39:37 palli Exp $
+ * $Id: IBPageHandler.java,v 1.6 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,12 +10,12 @@
 package com.idega.builder.handler;
 
 import java.util.List;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.builder.presentation.IBPageChooser;
-import com.idega.builder.business.PageTreeNode;
 import java.util.Map;
+
+import com.idega.builder.business.PageTreeNode;
+import com.idega.builder.presentation.IBPageChooser;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

@@ -1,5 +1,5 @@
 /*
- * $Id: IBObjectLibraryBMPBean.java,v 1.3 2002/08/12 12:59:31 palli Exp $
+ * $Id: IBObjectLibraryBMPBean.java,v 1.4 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,18 +9,13 @@
  */
 package com.idega.builder.data;
 
-import com.idega.data.BlobWrapper;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.SQLException;
+
 import com.idega.core.data.ICFile;
-import com.idega.core.data.ICObject;
 import com.idega.core.user.data.User;
-import com.idega.data.TreeableEntity;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.util.IWTimestamp;
-import com.idega.presentation.IWContext;
+import com.idega.data.BlobWrapper;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

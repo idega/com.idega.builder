@@ -14,11 +14,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.idega.idegaweb.IWStyleManager;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.presentation.IBStyleChooser;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

@@ -1,10 +1,8 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
-import com.idega.data.*;
-import com.idega.builder.data.IBDomain;
-import com.idega.builder.data.IBPage;
-
 import java.sql.SQLException;
+
+import com.idega.builder.data.IBDomain;
 
 /**
  * Title:        IW Project

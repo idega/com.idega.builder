@@ -1,6 +1,5 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
-import javax.ejb.*;
 
 public interface DPTDomain extends com.idega.data.IDOLegacyEntity
 {

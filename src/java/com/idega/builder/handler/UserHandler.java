@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.presentation.UserChooser;
 
 /**

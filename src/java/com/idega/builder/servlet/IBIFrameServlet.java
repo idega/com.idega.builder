@@ -1,17 +1,11 @@
 package com.idega.builder.servlet;
 
 
-import com.idega.servlet.IWJSPPresentationServlet;
-import com.idega.presentation.IWContext;
-
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.data.*;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IFrameContainer;
-
-import java.util.List;
-import java.util.Iterator;
+import com.idega.servlet.IWJSPPresentationServlet;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>

@@ -1,31 +1,17 @@
 package com.idega.builder.presentation;
 
-import com.idega.core.business.ICObjectBusiness;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBPropertyHandler;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.FrameSet;
-
-import com.idega.idegaweb.IWProperty;
-import com.idega.idegaweb.IWPropertyList;
-import com.idega.idegaweb.IWPropertyListIterator;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWURL;
-import com.idega.idegaweb.IWBundle;
+import com.idega.core.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWURL;
 import com.idega.idegaweb.presentation.IWAdminWindow;
-
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-
-import com.idega.util.reflect.MethodFinder;
-
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectInstance;
-
-import java.util.List;
-import java.util.Iterator;
+import com.idega.presentation.FrameSet;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Script;
+import com.idega.presentation.Table;
 
 /**
  * Title:        idegaclasses

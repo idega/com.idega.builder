@@ -1,6 +1,5 @@
 package com.idega.builder.data;
 
-import javax.ejb.*;
 
 public interface IBJspPage extends com.idega.data.IDOLegacyEntity
 {

@@ -10,24 +10,20 @@ package com.idega.builder.business;
  */
 
 import java.lang.reflect.Method;
-
-import java.util.List;
 import java.util.Iterator;
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
-import java.util.Map;
-import java.util.Hashtable;
-import com.idega.xml.XMLElement;
-import com.idega.xml.XMLAttribute;
+
+import com.idega.builder.data.IBPage;
+import com.idega.core.data.ICFile;
+import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.BooleanInput;
-import com.idega.core.data.ICFile;
-import com.idega.builder.data.IBPage;
-import com.idega.presentation.Image;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
+import com.idega.xml.XMLElement;
 
 public class ComponentPropertyHandler {
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ParagraphAlignmentHandler.java,v 1.2 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: ParagraphAlignmentHandler.java,v 1.3 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,8 @@
  */
 package com.idega.builder.handler;
 
-import java.util.List;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
 
 /**

@@ -12,9 +12,7 @@ package com.idega.builder.data;
 
 //import java.util.*;
 
-import java.sql.*;
-
-import com.idega.data.*;
+import java.sql.SQLException;
 
 
 

@@ -1,29 +1,28 @@
 package com.idega.builder.presentation;
 
-import com.idega.idegaweb.*;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBPropertyHandler;
-import com.idega.presentation.IWContext;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.business.ICObjectBusiness;
 import com.idega.core.business.UserGroupBusiness;
-import com.idega.core.data.ICObject;
 import com.idega.core.data.GenericGroup;
-
-
-
-
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Hashtable;
-import java.util.Enumeration;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SelectionDoubleBox;
+import com.idega.presentation.ui.SubmitButton;
 
 /**
  * Title:        idegaclasses

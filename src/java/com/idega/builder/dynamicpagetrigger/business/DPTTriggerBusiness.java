@@ -1,43 +1,29 @@
 package com.idega.builder.dynamicpagetrigger.business;
 
-import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
-import com.idega.builder.dynamicpagetrigger.data.PageLink;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPageFinder;
+import com.idega.builder.business.IBPageHelper;
+import com.idega.builder.business.IBXMLPage;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.data.IBPage;
+import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
+import com.idega.builder.dynamicpagetrigger.data.PageLink;
+import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
+import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBXMLPage;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.IWContext;
-import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.presentation.PresentationObject;
-import com.idega.builder.business.XMLConstants;
-import com.idega.builder.business.XMLWriter;
-import com.idega.block.IWBlock;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.data.GenericGroup;
-import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.util.IWTimestamp;
-import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.IBPageFinder;
-
-import com.idega.xml.XMLElement;
-import com.idega.xml.XMLAttribute;
-
-import com.idega.business.IDOLegacyEntityComparator;
-import java.util.Collections;
-
-
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Hashtable;
-
-import java.sql.SQLException;
 
 /**
  * Title:        IW Project

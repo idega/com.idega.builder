@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.24 2002/12/20 15:39:37 palli Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.25 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,23 +9,23 @@
  */
 package com.idega.builder.presentation;
 
+import java.lang.reflect.Method;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPropertyHandler;
+import com.idega.builder.handler.PropertyHandler;
 import com.idega.core.business.ICObjectBusiness;
-import com.idega.presentation.Page;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
-import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.text.Text;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.handler.PropertyHandler;
+import com.idega.presentation.ui.Parameter;
 import com.idega.util.reflect.MethodFinder;
-import java.lang.reflect.Method;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

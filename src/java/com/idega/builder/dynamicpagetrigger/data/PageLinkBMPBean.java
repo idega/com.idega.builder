@@ -1,14 +1,11 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
-import com.idega.data.*;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.data.ICObject;
-import com.idega.builder.data.IBPage;
-import com.idega.core.user.data.User;
-
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
+import com.idega.builder.data.IBPage;
+import com.idega.core.data.ICFile;
+import com.idega.core.user.data.User;
 
 /**
  * Title:        idegaWeb

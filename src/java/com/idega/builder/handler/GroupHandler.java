@@ -10,16 +10,13 @@
 package com.idega.builder.handler;
 
 import java.util.List;
-import com.idega.presentation.PresentationObject;
+
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.builder.presentation.IBPageChooser;
-import com.idega.builder.business.PageTreeNode;
-import com.idega.user.data.*;
-import com.idega.user.presentation.*;
+import com.idega.presentation.PresentationObject;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
+import com.idega.user.presentation.GroupChooser;
 import com.idega.user.presentation.GroupTreeNode;
-import com.idega.user.presentation.GroupTreeView;
-import java.util.Map;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

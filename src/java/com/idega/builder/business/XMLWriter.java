@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.31 2002/09/04 22:56:47 palli Exp $
+ * $Id: XMLWriter.java,v 1.32 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,17 +9,17 @@
  */
 package com.idega.builder.business;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.Vector;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import com.idega.core.data.ICObject;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
+import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
-import com.idega.core.data.ICObjectInstance;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

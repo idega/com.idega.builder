@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLFragment.java,v 1.6 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: IBXMLFragment.java,v 1.7 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,18 +9,17 @@
  */
 package com.idega.builder.business;
 
-import com.idega.xml.XMLException;
-import com.idega.xml.XMLDocument;
-import com.idega.xml.XMLElement;
-import com.idega.xml.XMLParser;
-import java.util.List;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.util.List;
+
 import com.idega.builder.data.IBObjectLibrary;
 import com.idega.exception.LibraryDoesNotExist;
+import com.idega.xml.XMLDocument;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
+import com.idega.xml.XMLParser;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

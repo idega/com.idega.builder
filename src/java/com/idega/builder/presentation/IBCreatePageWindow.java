@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.38 2002/12/20 15:39:37 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.39 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,32 +9,23 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.idegaweb.IWConstants;
-import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.business.IBXMLPage;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBDomain;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.Page;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.RadioGroup;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import java.util.List;
-import java.util.Iterator;
 import java.util.Map;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPageHelper;
+import com.idega.builder.business.IBXMLPage;
+import com.idega.builder.business.PageTreeNode;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>

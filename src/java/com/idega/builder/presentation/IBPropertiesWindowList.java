@@ -1,24 +1,24 @@
 package com.idega.builder.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import com.idega.idegaweb.*;
+import javax.swing.JButton;
 
-import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyDescription;
 import com.idega.builder.business.IBPropertyDescriptionComparator;
-
-import com.idega.util.reflect.MethodFinder;
-
-import com.idega.core.data.ICObject;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.Vector;
-import javax.swing.*;
+import com.idega.builder.business.IBPropertyHandler;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWProperty;
+import com.idega.idegaweb.IWPropertyList;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 
 /**
  * Title:        idegaclasses

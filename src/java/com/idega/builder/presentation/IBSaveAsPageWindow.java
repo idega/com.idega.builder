@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSaveAsPageWindow.java,v 1.3 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: IBSaveAsPageWindow.java,v 1.4 2003/04/03 09:10:10 laddi Exp $
 
  *
 
@@ -21,38 +21,18 @@ package com.idega.builder.presentation;
 
 
 import com.idega.builder.business.IBPropertyHandler;
-
 import com.idega.builder.data.IBPage;
-
 import com.idega.core.data.ICFile;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.presentation.PresentationObject;
-
-import com.idega.presentation.Table;
-
-import com.idega.presentation.text.Text;
-
-import com.idega.presentation.ui.Form;
-
-import com.idega.presentation.ui.TextInput;
-
-import com.idega.presentation.ui.SubmitButton;
-
 import com.idega.idegaweb.IWResourceBundle;
-
 import com.idega.idegaweb.presentation.IWAdminWindow;
-
-import com.idega.presentation.ui.RadioGroup;
-
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
-
-import java.util.List;
-
-import java.util.Iterator;
-
-import com.idega.presentation.ui.Window;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 
 

@@ -1,13 +1,10 @@
 package com.idega.builder.presentation;
 
-import com.idega.presentation.*;
-import com.idega.util.text.TextSoap;
-import com.idega.presentation.ui.*;
-
-import com.idega.idegaweb.IWBundle;
 import com.idega.builder.business.BuilderLogic;
-
-import com.idega.builder.data.IBPage;
+import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.AbstractChooser;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:        idegaclasses

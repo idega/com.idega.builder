@@ -12,23 +12,11 @@ package com.idega.builder.data;
 
 //import java.util.*;
 
-import java.sql.*;
-
-import com.idega.data.*;
-
-import com.idega.presentation.*;
-
-import com.idega.block.news.presentation.NewsReader;
-
-import com.idega.block.text.presentation.TextReader;
+import java.sql.SQLException;
 
 import com.idega.block.login.presentation.Login;
-
-
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.block.news.presentation.NewsReader;
+import com.idega.block.text.presentation.TextReader;
 
 
 

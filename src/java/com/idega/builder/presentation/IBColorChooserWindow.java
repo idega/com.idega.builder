@@ -1,17 +1,28 @@
 package com.idega.builder.presentation;
 
-import com.idega.idegaweb.*;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.util.text.TextSoap;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.util.IWColor;
-import java.util.StringTokenizer;
-import java.util.HashMap;
 import java.util.Iterator;
-import com.idega.util.text.StyleConstants;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWProperty;
+import com.idega.idegaweb.IWPropertyList;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Script;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWColor;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:

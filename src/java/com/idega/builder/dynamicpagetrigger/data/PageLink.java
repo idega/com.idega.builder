@@ -1,6 +1,5 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
-import javax.ejb.*;
 
 public interface PageLink extends com.idega.data.IDOLegacyEntity
 {

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCutModuleWindow.java,v 1.2 2002/04/06 19:07:39 tryggvil Exp $
+ * $Id: IBCutModuleWindow.java,v 1.3 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,15 +9,8 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.data.IBObjectLibrary;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CheckBox;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

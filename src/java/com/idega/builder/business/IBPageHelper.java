@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.20 2002/12/20 15:39:37 palli Exp $
+ * $Id: IBPageHelper.java,v 1.21 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,30 +8,29 @@
  *
  */
 package com.idega.builder.business;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import com.idega.block.IWBlock;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBPageHome;
 import com.idega.builder.data.IBStartPages;
 import com.idega.builder.data.IBStartPagesHome;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDORuntimeException;
+import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.IWBlock;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORuntimeException;
+import com.idega.idegaweb.IWUserContext;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TreeViewer;
-import com.idega.xml.XMLElement;
 import com.idega.xml.XMLAttribute;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
-import com.idega.core.data.ICMimeType;
-import com.idega.idegaweb.IWUserContext;
+import com.idega.xml.XMLElement;
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0

@@ -7,17 +7,12 @@ package com.idega.builder.business;
  * @author
  * @version 1.0
  */
-import com.idega.presentation.Page;
-import com.idega.builder.data.IBPage;
-import com.idega.presentation.IWContext;
-import com.idega.exception.PageDoesNotExist;
-import java.util.Hashtable;
-import java.util.WeakHashMap;
-import java.util.Map;
 import java.util.HashMap;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 public class PageCacher
 {
 	private static Map pageCache = new WeakHashMap();

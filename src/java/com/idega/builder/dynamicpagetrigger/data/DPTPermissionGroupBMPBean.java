@@ -1,7 +1,5 @@
 package com.idega.builder.dynamicpagetrigger.data;
 
-import com.idega.core.data.GenericGroup;
-import java.sql.*;
 
 /**
  * Title:        IW Project

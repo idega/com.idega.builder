@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.23 2002/10/15 12:36:49 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.24 2003/04/03 09:10:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,24 +9,25 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.idegaweb.IWConstants;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import java.util.*;
-import com.idega.builder.business.ModuleComparator;
-import com.idega.builder.data.IBPage;
-import com.idega.core.data.ICObjectInstance;
-import com.idega.core.data.ICObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.ui.Parameter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
 import com.idega.builder.business.BuilderLogic;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.builder.business.ModuleComparator;
+import com.idega.core.data.ICObject;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.Window;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>

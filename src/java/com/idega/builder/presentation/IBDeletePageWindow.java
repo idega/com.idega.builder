@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.14 2002/10/06 02:06:33 tryggvil Exp $
+ * $Id: IBDeletePageWindow.java,v 1.15 2003/04/03 09:10:10 laddi Exp $
 
  *
 
@@ -16,24 +16,18 @@
 
  */
 package com.idega.builder.presentation;
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPageHelper;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBXMLPage;
-import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.data.IBPage;
-import com.idega.presentation.Page;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
 /**
 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

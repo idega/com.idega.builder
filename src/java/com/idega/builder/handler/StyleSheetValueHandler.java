@@ -12,11 +12,10 @@ package com.idega.builder.handler;
 import java.util.Enumeration;
 import java.util.List;
 
-import com.idega.idegaweb.IWStyleManager;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.builder.presentation.IBStyleChooser;
+import com.idega.idegaweb.IWStyleManager;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

@@ -14,37 +14,8 @@ package com.idega.builder.presentation;
 
 //import java.util.*;
 
-import java.lang.reflect.Method;
-
-import java.beans.BeanInfo;
-
-import java.beans.PropertyDescriptor;
-
-import java.beans.Introspector;
-
-
-
-
-
-import com.idega.util.*;
-
-import com.idega.builder.data.*;
-
-import com.idega.core.data.*;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.builder.business.*;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWResourceBundle;
-
 import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
 
 /**
 

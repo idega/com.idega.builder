@@ -1,17 +1,16 @@
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
 import java.net.URLEncoder;
-import com.idega.util.text.TextSoap;
-import com.idega.presentation.ui.*;
-import java.util.StringTokenizer;
-import java.util.HashMap;
-import java.util.Iterator;
-import com.idega.util.text.StyleConstants;
-import com.idega.presentation.Block;
+
+import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.ui.BooleanInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 
 /**
  * Title:
