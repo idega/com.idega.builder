@@ -1,5 +1,6 @@
 package com.idega.builder.presentation;
 
+import com.idega.core.business.ICObjectBusiness;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.presentation.IWContext;
@@ -65,9 +66,9 @@ public IBPropertiesWindow() {
       if(sICObjectInstanceID!=null){
 	title += " : ";
 	int iInstanceID = Integer.parseInt(sICObjectInstanceID);
-	ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getInstance().getICObjectInstance(iInstanceID);
-	ICObject ico = instance.getObject();
-	String name = ico.getName();
+	/*ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getInstance().getICObjectInstance(iInstanceID);
+	ICObject ico = instance.getObject();*/
+	String name = ICObjectBusiness.getInstance().getNewObjectInstance(iInstanceID).getBuilderName(iwc);
 	title += name;
       }
     }
