@@ -44,21 +44,18 @@ public class GroupHandler implements PropertyHandler {
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
     GroupChooser chooser = new GroupChooser(name);
-//    try {
-//      if (value != null && !value.equals("")) {
-//      	 Group group = getGroupHome().findByPrimaryKey(new Integer(value));
-//		 GroupTreeNode node = new GroupTreeNode(group);
-//		  if (node != null)
-//		    chooser.setSelectedNode(node);
-//		
-//      }
-//    }
-//    catch(NumberFormatException e) {
-//      e.printStackTrace();
-//    }
-//    catch(Exception ex){
-//    
-//    }
+    try {
+      if (value != null && !value.equals("")) {
+      	Group group = getGroupHome().findByPrimaryKey(new Integer(value));
+		 		GroupTreeNode node = new GroupTreeNode(group);
+			  if (node != null)
+			    chooser.setSelectedNode(node);
+      }
+    }
+    catch(NumberFormatException e) {
+    }
+    catch(Exception ex){
+    }
     return(chooser);
   }
   
