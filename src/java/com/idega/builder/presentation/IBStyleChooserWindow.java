@@ -1,24 +1,22 @@
 package com.idega.builder.presentation;
 
-import com.idega.presentation.text.Paragraph;
-import com.idega.block.text.business.TextFormatter;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWConstants;
-import com.idega.presentation.ui.AbstractChooserWindow;
-import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.Iterator;
-import com.idega.util.text.StyleConstants;
-import com.idega.presentation.Block;
+import java.util.StringTokenizer;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.text.StyleConstants;
 
 /**
  * Title:
@@ -36,6 +34,7 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 	private String _styleString;
 	private String[] _styles = StyleConstants.ALL_STYLES;
 	private String[] _borderStyles = { StyleConstants.ATTRIBUTE_BORDER+"_style",StyleConstants.ATTRIBUTE_BORDER+"_color",StyleConstants.ATTRIBUTE_BORDER+"_width" };
+	private final String loremIpsum = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea c...";
 
 	public IBStyleChooserWindow() {
 		setDefaultValues();
@@ -91,7 +90,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		fontFamily.addMenuElement(StyleConstants.FONT_FAMILY_TIMES, StyleConstants.FONT_FAMILY_TIMES);
 		fontFamily.addMenuElement(StyleConstants.FONT_FAMILY_VERDANA, StyleConstants.FONT_FAMILY_VERDANA);
 		fontFamily.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY));
-		fontFamily.setToSubmit();
 		fontFamily.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE + "width:100%;");
 		Text fontFamilyText = new Text("Font family:");
 		fontFamilyText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -105,7 +103,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 			fontSize.addMenuElement(Integer.toString(a) + "px", Integer.toString(a) + "px");
 		}
 		fontSize.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE));
-		fontSize.setToSubmit();
 		fontSize.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text fontSizeText = new Text("Size:");
 		fontSizeText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -119,7 +116,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		fontStyle.addMenuElement(StyleConstants.FONT_STYLE_ITALIC, StyleConstants.FONT_STYLE_ITALIC);
 		fontStyle.addMenuElement(StyleConstants.FONT_STYLE_OBLIQUE, StyleConstants.FONT_STYLE_OBLIQUE);
 		fontStyle.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_FONT_STYLE));
-		fontStyle.setToSubmit();
 		fontStyle.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text fontStyleText = new Text("Style:");
 		fontStyleText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -134,7 +130,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		fontWeight.addMenuElement(StyleConstants.FONT_WEIGHT_BOLDER, StyleConstants.FONT_WEIGHT_BOLDER);
 		fontWeight.addMenuElement(StyleConstants.FONT_WEIGHT_LIGHT, StyleConstants.FONT_WEIGHT_LIGHT);
 		fontWeight.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT));
-		fontWeight.setToSubmit();
 		fontWeight.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text fontWeightText = new Text("Weight:");
 		fontWeightText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -147,7 +142,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		fontVariant.addMenuElement(StyleConstants.FONT_VARIANT_NORMAL, StyleConstants.FONT_VARIANT_NORMAL);
 		fontVariant.addMenuElement(StyleConstants.FONT_VARIANT_SMALLCAPS, StyleConstants.FONT_VARIANT_SMALLCAPS);
 		fontVariant.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_FONT_VARIANT));
-		fontVariant.setToSubmit();
 		fontVariant.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text fontVariantText = new Text("Variant:");
 		fontVariantText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -162,7 +156,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		textTransform.addMenuElement(StyleConstants.TEXT_TRANSFORM_LOWERCASE, StyleConstants.TEXT_TRANSFORM_LOWERCASE);
 		textTransform.addMenuElement(StyleConstants.TEXT_TRANSFORM_NONE, StyleConstants.TEXT_TRANSFORM_NONE);
 		textTransform.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_TEXT_TRANSFORM));
-		textTransform.setToSubmit();
 		textTransform.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text textTransformText = new Text("Transform:");
 		textTransformText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -177,7 +170,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		textAlign.addMenuElement(StyleConstants.TEXT_ALIGN_RIGHT, StyleConstants.TEXT_ALIGN_RIGHT);
 		textAlign.addMenuElement(StyleConstants.TEXT_ALIGN_JUSTIFY, StyleConstants.TEXT_ALIGN_JUSTIFY);
 		textAlign.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_TEXT_ALIGN));
-		textAlign.setToSubmit();
 		textAlign.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text textAlignText = new Text("Alignment:");
 		textAlignText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -193,7 +185,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		textDecoration.addMenuElement(StyleConstants.TEXT_DECORATION_LINETHROUGH, StyleConstants.TEXT_DECORATION_LINETHROUGH);
 		textDecoration.addMenuElement(StyleConstants.TEXT_DECORATION_BLINK, StyleConstants.TEXT_DECORATION_BLINK);
 		textDecoration.setSelectedElement(getStyleValue(StyleConstants.ATTRIBUTE_TEXT_DECORATION));
-		textDecoration.setToSubmit();
 		textDecoration.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text textDecorationText = new Text("Decoration:");
 		textDecorationText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -206,7 +197,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		whitespace.addMenuElement(StyleConstants.WHITE_SPACE_NORMAL, StyleConstants.WHITE_SPACE_NORMAL);
 		whitespace.addMenuElement(StyleConstants.WHITE_SPACE_PRE, StyleConstants.WHITE_SPACE_PRE);
 		whitespace.addMenuElement(StyleConstants.WHITE_SPACE_NOWRAP, StyleConstants.WHITE_SPACE_NOWRAP);
-		whitespace.setToSubmit();
 		whitespace.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		Text whitespaceText = new Text("Whitespace:");
 		whitespaceText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -282,7 +272,6 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		borderStyle.addMenuElement(StyleConstants.BORDER_INSET, StyleConstants.BORDER_INSET);
 		borderStyle.addMenuElement(StyleConstants.BORDER_OUTSET, StyleConstants.BORDER_OUTSET);
 		borderStyle.setSelectedElement(getBorderStyleValue(StyleConstants.ATTRIBUTE_BORDER + "_style"));
-		borderStyle.setToSubmit();
 		borderStyle.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 		TextInput borderColor = new TextInput(StyleConstants.ATTRIBUTE_BORDER + "_color");
 		borderColor.setLength(7);
@@ -324,7 +313,7 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		formTable.add(previewTable, 1, 3);
 
 		Paragraph paragraph = new Paragraph();
-		Text text = new Text(TextFormatter.getLoremIpsumString(iwc, 256));
+		Text text = new Text(loremIpsum);
 		if (_styleString != null && _styleString.length() > 0)
 			paragraph.setStyleAttribute(_styleString);
 		paragraph.add(text);
