@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.59 2002/03/15 16:54:59 laddi Exp $
+ *  $Id: IBApplication.java,v 1.60 2002/03/19 19:52:04 eiki Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -53,10 +53,10 @@ public class IBApplication extends IWApplication {
 
   private final static String IB_FRAMESET1_FRAME = "ib_frameset1";
   private final static String IB_FRAMESET2_FRAME = "ib_frameset2";
-  private final static String IB_TOOLBAR_FRAME = "ib_toolbar";
-  private final static String IB_CONTENT_FRAME = "ib_content";
-  private final static String IB_STATUS_FRAME = "ib_status";
-  private final static String IB_LEFT_MENU_FRAME = "ib_left_menu";
+  public final static String IB_TOOLBAR_FRAME = "ib_toolbar";
+  public final static String IB_CONTENT_FRAME = "ib_content";
+  public final static String IB_STATUS_FRAME = "ib_status";
+  public final static String IB_LEFT_MENU_FRAME = "ib_left_menu";
 
   private final static String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
   private final static String _linkHoverStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#FF8008;text-decoration:none;";
@@ -511,7 +511,9 @@ public class IBApplication extends IWApplication {
     public void main(IWContext iwc) {
       boolean startupInProgress = startupInProgress(iwc);
       if (!startupInProgress) {
-	super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+	//super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+        //the tree reloading in done in the appropriate windows such as in the create new page window
+        super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       }
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
