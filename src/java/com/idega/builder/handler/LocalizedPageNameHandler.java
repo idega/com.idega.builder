@@ -13,6 +13,7 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageUpdater;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.LocalePresentationUtil;
 import com.idega.development.presentation.Localizer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -58,7 +59,7 @@ public class LocalizedPageNameHandler implements PropertyHandler {
 		if (tok.hasMoreElements())
 			titleString = (String)tok.nextElement();
 		
-    DropdownMenu menu = Localizer.getAvailableLocalesDropdown(iwc.getApplication(),name);
+    DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(),name);
     if (menuString != null)
 	    menu.setSelectedElement(menuString);
     

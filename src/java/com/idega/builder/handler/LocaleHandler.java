@@ -1,5 +1,5 @@
 /*
- * $Id: LocaleHandler.java,v 1.6 2003/04/03 09:10:10 laddi Exp $
+ * $Id: LocaleHandler.java,v 1.7 2003/06/23 17:01:13 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package com.idega.builder.handler;
 
 import java.util.List;
 
-import com.idega.development.presentation.Localizer;
+import com.idega.core.localisation.presentation.LocalePresentationUtil;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
@@ -41,7 +41,7 @@ public class LocaleHandler implements PropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-    DropdownMenu menu = Localizer.getAvailableLocalesDropdown(iwc.getApplication(),name);
+    DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(),name);
     menu.setSelectedElement(value);
     //IBPropertyHandler.getInstance().setDropdownToChangeValue(menu);
     return(menu);
