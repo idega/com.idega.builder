@@ -62,12 +62,13 @@ public class IBPageExporterWindow extends IBPageWindow {
 	
   public IBPageExporterWindow() {
     setWidth(300);
-    setHeight(400);
+    setHeight(500);
     setScrollbar(true);
     setResizable(true);
   }
 
   public void main(IWContext iwc) throws Exception {
+  	setTitle("PageExporter");
   	String action = parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
 		doAction(action, iwc);
@@ -159,8 +160,8 @@ public class IBPageExporterWindow extends IBPageWindow {
     // set size
 		SelectionBox rightBox = selectionDoubleBox.getRightBox();
 		SelectionBox leftBox = selectionDoubleBox.getLeftBox();
-    rightBox.setHeight("20");
-    leftBox.setHeight("20");   
+    rightBox.setHeight(10);
+    leftBox.setHeight(10);   
 		// submit selection on right box
 		rightBox.selectAllOnSubmit();
 		Iterator iterator = startPages.iterator();
