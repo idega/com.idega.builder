@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.6 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBDomainBMPBean.java,v 1.7 2003/05/27 20:33:02 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,8 +25,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.user.data.GroupDomainRelation;
 import com.idega.user.data.GroupDomainRelationHome;
-import com.idega.user.data.GroupDomainRelationType;
-import com.idega.user.data.GroupDomainRelationTypeHome;
+import com.idega.user.data.GroupDomainRelationTypeBMPBean;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -167,29 +166,17 @@ public class IBDomainBMPBean extends GenericEntity implements IBDomain {
   }
 
   public Collection getTopLevelGroupsUnderDomain() throws IDORelationshipException, RemoteException, FinderException{
-    Collection relations = ((GroupDomainRelationHome)IDOLookup.getHome(GroupDomainRelation.class)).findGroupsRelationshipsUnder(this);
 
-    GroupDomainRelationType type = ((GroupDomainRelationTypeHome)IDOLookup.getHome(GroupDomainRelationType.class)).getTopNodeRelationType();
-
+    Collection relations = ((GroupDomainRelationHome)IDOLookup.getHome(GroupDomainRelation.class)).findGroupsRelationshipsUnderDomainByRelationshipType(this.getID(),GroupDomainRelationTypeBMPBean.RELATION_TYPE_TOP_NODE);
+//TODO do this in one sql command like in groupbmpbean and grouprelation
     Iterator iter = relations.iterator();
     Collection groups = new Vector();
     while (iter.hasNext()) {
       GroupDomainRelation item = (GroupDomainRelation)iter.next();
-      //if(!type.isIdentical(item.getRelationship())){
-      if(!type.equals(item.getRelationship())){
-//        iter.remove();
-      } else {
         groups.add(item.getRelatedGroup());
-      }
     }
 
     return groups;
-//    return ((GroupHome)IDOLookup.getHome(Group.class)).findGroups();
-
-
-
-
-//    return relations;
   }
 
   public void setIBPage(IBPage page) {
