@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.18 2004/03/30 15:50:42 thomas Exp $
+ * $Id: XMLConstants.java,v 1.19 2004/04/05 17:08:17 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -64,6 +64,7 @@ public abstract class XMLConstants {
   // for file metadata
   public static final String FILE_FILES = "files";
   public static final String FILE_FILE = "file";
+  public static final String FILE_MODULE = "module";
   public static final String FILE_SOURCE = "source";
   public static final String FILE_NAME = "name";
   public static final String FILE_VALUE = "value";
