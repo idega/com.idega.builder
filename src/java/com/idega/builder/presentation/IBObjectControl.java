@@ -82,6 +82,13 @@ public class IBObjectControl extends PresentationObjectContainer
 	}
 	private void init(IWContext iwc)
 	{
+		String frameColor = "#000000";
+		String topColor = "#CCCCCC";
+		//Different color of the top and the frame if the object is set to change instance id on dpt pages that inherit current page
+		if(_theObject.getChangeInstanceIDOnInheritance()) {
+			frameColor = "#7D0000";
+			topColor = "#D2C0C0";
+		}
 		_layer = new Layer(Layer.DIV);
 		_tableLayer = new Layer(Layer.DIV);
 		_tableLayer.setZIndex(0);
@@ -146,12 +153,12 @@ public class IBObjectControl extends PresentationObjectContainer
 		//_table.setCellspacing(1);
 		//_table.setColor("#000000");
 		//_table.setColor(1,2,"white");
-		_table.setColor(2, 2, "#CCCCCC");
-		_table.setRowColor(1, "#000000");
-		_table.setRowColor(3, "#000000");
-		_table.setRowColor(5, "#000000");
-		_table.setColumnColor(1, "#000000");
-		_table.setColumnColor(3, "#000000");
+		_table.setColor(2, 2, topColor);
+		_table.setRowColor(1, frameColor);
+		_table.setRowColor(3, frameColor);
+		_table.setRowColor(5, frameColor);
+		_table.setColumnColor(1, frameColor);
+		_table.setColumnColor(3, frameColor);
 		_table.setVerticalAlignment(2, 4, "top");
 		/*_table.setLineFrame(true);
 		_table.setLineAfterRow(1);
@@ -183,10 +190,10 @@ public class IBObjectControl extends PresentationObjectContainer
 			rTable.setHeight(3, "1");
 			rTable.setWidth(1, "1");
 			rTable.setWidth(3, "1");
-			rTable.setColumnColor(1, "#000000");
-			rTable.setColumnColor(3, "#000000");
-			rTable.setRowColor(1, "#000000");
-			rTable.setRowColor(3, "#000000");
+			rTable.setColumnColor(1, frameColor);
+			rTable.setColumnColor(3, frameColor);
+			rTable.setRowColor(1, frameColor);
+			rTable.setRowColor(3, frameColor);
 			rTable.setCellpaddingAndCellspacing(0);
 			table = new Table();
 			table.setCellpadding(3);
