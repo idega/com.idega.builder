@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.26 2003/05/15 08:46:46 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.27 2003/05/15 08:47:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,7 +29,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.Window;
-import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
