@@ -18,15 +18,16 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWUserContext;
-import com.idega.io.ICFileWriter;
-import com.idega.io.ObjectWriter;
-import com.idega.io.Storable;
 import com.idega.io.UploadFile;
-import com.idega.io.WriterToFile;
-import com.idega.io.XMLDataWriter;
-import com.idega.io.IBExportImportDataWriter;
-import com.idega.io.IBExportImportDataReader;
+import com.idega.io.export.FileObjectWriter;
+import com.idega.io.export.IBExportImportDataReader;
+import com.idega.io.export.IBExportImportDataWriter;
+import com.idega.io.export.ICFileWriter;
+import com.idega.io.export.ObjectWriter;
+import com.idega.io.export.Storable;
+import com.idega.io.export.WriterToFile;
+import com.idega.io.export.XMLDataWriter;
+import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
 import com.idega.util.xml.XMLData;
 
@@ -44,34 +45,38 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
 	public final static String AUXILIARY_FOLDER = "auxiliaryDataFolder";
 	public final static String AUXILIARY_FILE = "auxililary_data_file_";
 	
-	public IBExportImportData getIBExportImportData(UploadFile uploadFile, boolean performValidation, int parentPageId, int templatePageId, IWUserContext iwuc) throws IOException {
+	public IBExportImportData getIBExportImportData(UploadFile uploadFile, boolean performValidation, int parentPageId, int templatePageId, IWContext iwc) throws IOException {
 		IBExportImportData exportImportData = new IBExportImportData();
-		IBExportImportDataReader reader = new IBExportImportDataReader(exportImportData,performValidation, getIWApplicationContext(), iwuc);
+		IBExportImportDataReader reader = new IBExportImportDataReader(exportImportData,performValidation, iwc);
 		reader.setParentPageForImportedPages(parentPageId);
 		reader.setParentTemplateForImportedTemplates(templatePageId);
 		reader.openContainer(uploadFile);
 		return exportImportData;
 	}
 		
-	public String getURLForOfferingDownload(Storable storableObject) throws IOException {
-		return createContainer(storableObject);
+	public String getURLForOfferingDownload(Storable storableObject, IWContext iwc) throws IOException {
+		return createContainer(storableObject, iwc);
 	}
 	
-	private String createContainer(Storable storableObject) throws IOException {
-		WriterToFile currentWriter = (WriterToFile) storableObject.write(this);
+	private String createContainer(Storable storableObject, IWContext iwc) throws IOException {
+		WriterToFile currentWriter = (WriterToFile) storableObject.write(this, iwc);
 		return currentWriter.createContainer(); 
 	}
 	
-  public Object write(ICFile file) {
-		return new ICFileWriter((Storable) file, getIWApplicationContext());
+	public Object write(File file, IWContext iwc) {
+		return new FileObjectWriter((Storable) file, iwc);
 	}
 	
-  public Object write(XMLData xmlData) {
-		return new XMLDataWriter(xmlData, getIWApplicationContext());
+  public Object write(ICFile file, IWContext iwc) {
+		return new ICFileWriter((Storable) file, iwc);
+	}
+	
+  public Object write(XMLData xmlData, IWContext iwc) {
+		return new XMLDataWriter(xmlData, iwc);
 	}
   
-  public Object write(IBExportImportData metadata) {
-  	return new IBExportImportDataWriter(metadata, getIWApplicationContext());
+  public Object write(IBExportImportData metadata, IWContext iwc) {
+  	return new IBExportImportDataWriter(metadata, iwc);
   }
   
   /** inputStream is not closed by this method */

@@ -9,8 +9,9 @@ import com.idega.builder.data.IBExportImportData;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
-import com.idega.idegaweb.IWUserContext;
+
 import com.idega.io.UploadFile;
+import com.idega.presentation.IWContext;
 import com.idega.util.datastructures.MessageContainer;
 
 /**
@@ -26,9 +27,9 @@ public class IBPageImportBusinessBean extends IBOServiceBean  implements IBPageI
 	
 	private FileBusiness fileBusiness = null;
 	
-	public MessageContainer importPages(UploadFile file, boolean performValidation, int parentPageId, int templatePageId, IWUserContext iwuc) throws RemoteException, IOException {
+	public MessageContainer importPages(UploadFile file, boolean performValidation, int parentPageId, int templatePageId, IWContext iwc) throws RemoteException, IOException {
 		FileBusiness fileBusiness = getFileBusiness();
-		IBExportImportData exportImportData = fileBusiness.getIBExportImportData(file, performValidation,parentPageId, templatePageId, iwuc);
+		IBExportImportData exportImportData = fileBusiness.getIBExportImportData(file, performValidation,parentPageId, templatePageId, iwc);
 		if (! exportImportData.isValid() && performValidation) { 
 			List missingModules = exportImportData.getMissingModules();
 			MessageContainer messageContainer = new MessageContainer();
