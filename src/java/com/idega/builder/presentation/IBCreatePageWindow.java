@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.21 2002/02/07 22:03:42 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.22 2002/02/12 12:46:21 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -51,13 +51,14 @@ public class IBCreatePageWindow extends IWAdminWindow {
     String type = iwc.getParameter(PAGE_TYPE);
     if (type == null) {
       String currPageType = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getType();
+      System.out.println("Test");
       if (currPageType.equals(IBXMLPage.TYPE_TEMPLATE))
-        type = "2";
+        type = IBPageHelper.TEMPLATE;
       else
-        type = "1";
+        type = IBPageHelper.PAGE;
     }
 
-    if (type.equals("2"))
+    if (type.equals(IBPageHelper.TEMPLATE))
       setTitle(iwrb.getLocalizedString("create_new_template","Create a new template"));
     else
       setTitle(iwrb.getLocalizedString("create_new_page","Create a new page"));
@@ -65,15 +66,15 @@ public class IBCreatePageWindow extends IWAdminWindow {
     Table tab = new Table(2,5);
     form.add(tab);
     TextInput inputName = new TextInput(PAGE_NAME_PARAMETER);
-    if (type.equals("2"))
+    if (type.equals(IBPageHelper.TEMPLATE))
       tab.add(iwrb.getLocalizedString("template_name","Template name"),1,1);
     else
       tab.add(iwrb.getLocalizedString("page_name","Page name"),1,1);
     tab.add(inputName,2,1);
 
     DropdownMenu mnu = new DropdownMenu(PAGE_TYPE);
-    mnu.addMenuElement("1","Page");
-    mnu.addMenuElement("2","Template");
+    mnu.addMenuElement(IBPageHelper.PAGE,"Page");
+    mnu.addMenuElement(IBPageHelper.TEMPLATE,"Template");
     mnu.setSelectedElement(type);
 
     tab.add(new Text("Select type : "),1,2);
@@ -81,7 +82,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
 
     mnu.setToSubmit();
 
-    if (!type.equals("2")) {
+    if (!type.equals(IBPageHelper.TEMPLATE)) {
       tab.add(iwrb.getLocalizedString("parent_page","Create page under:"),1,3);
       tab.add(getPageChooser(PAGE_CHOOSER_NAME,iwc),2,3);
     }
@@ -99,7 +100,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
       String name = iwc.getParameter(PAGE_NAME_PARAMETER);
       type = iwc.getParameter(PAGE_TYPE);
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
-      if (type.equals("2"))
+      if (type.equals(IBPageHelper.TEMPLATE))
         parentPageId = templateId;
 
       if (parentPageId != null) {
@@ -164,7 +165,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
         if (current.getType().equals(IBPage.TEMPLATE))
           chooser.setSelectedPage(current);
         else {
-          if (type.equals("2")) {
+          if (type.equals(IBPageHelper.TEMPLATE)) {
             IBDomain domain = IBDomain.getDomain(1);
             IBPage top = domain.getStartTemplate();
             if (top != null)
