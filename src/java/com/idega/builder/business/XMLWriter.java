@@ -1,3 +1,12 @@
+/*
+ * $Id: XMLWriter.java,v 1.5 2001/09/14 15:30:14 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.builder.business;
 
 /**
@@ -22,13 +31,6 @@ package com.idega.builder.business;
 
 public class XMLWriter {
 
-  private static final String PROPERTY_STRING = "property";
-  private static final String VALUE_STRING = "value";
-  private static final String TYPE_STRING = "type";
-  private static final String NAME_STRING = "name";
-  private static final String ID_STRING = "id";
-  private static final String MODULE_STRING = "module";
-  private static final String REGION_STRING = "region";
 
   //private static Element rootElement;
 
@@ -40,19 +42,19 @@ public class XMLWriter {
   }
 
   private static Element findRegion(IBXMLPage xml,String id){
-    return findXMLElement(xml,id,REGION_STRING);
+    return findXMLElement(xml,id,XMLConstants.REGION_STRING);
   }
 
   private static Element findRegion(IBXMLPage xml,String id,Element enclosingModule){
-    return findXMLElementInside(xml,id,REGION_STRING,enclosingModule);
+    return findXMLElementInside(xml,id,XMLConstants.REGION_STRING,enclosingModule);
   }
 
   private static Element findModule(IBXMLPage xml,int id){
-    return findXMLElement(xml,Integer.toString(id),MODULE_STRING);
+    return findXMLElement(xml,Integer.toString(id),XMLConstants.MODULE_STRING);
   }
 
   private static Element findModule(IBXMLPage xml,int id,Element startElement){
-    return findXMLElementInside(xml,Integer.toString(id),MODULE_STRING,startElement);
+    return findXMLElementInside(xml,Integer.toString(id),XMLConstants.MODULE_STRING,startElement);
   }
 
   /**
@@ -99,7 +101,7 @@ public class XMLWriter {
           //if(attributes!=null){
           //Iterator iter2 = attributes.iterator();
           //while (iter2.hasNext()){
-            Attribute attr = element.getAttribute(ID_STRING);
+            Attribute attr = element.getAttribute(XMLConstants.ID_STRING);
             //Attribute attr = (Attribute)iter2.next();
             //if(item2.getName().equals(ID_STRING)){
               if(attr!=null){
@@ -138,8 +140,8 @@ public class XMLWriter {
         while (iter.hasNext()) {
           Element pElement = (Element)iter.next();
           if(pElement!=null){
-            if(pElement.getName().equals(PROPERTY_STRING)){
-              Element name = pElement.getChild(NAME_STRING);
+            if(pElement.getName().equals(XMLConstants.PROPERTY_STRING)){
+              Element name = pElement.getChild(XMLConstants.NAME_STRING);
               if(name!=null){
                 if(name.getText().equals(propertyName)){
                   return pElement;
@@ -161,7 +163,7 @@ public class XMLWriter {
     Element property = findProperty(module,propertyName);
     List theReturn = new Vector();
     if(property!=null){
-      List list = property.getChildren(VALUE_STRING);
+      List list = property.getChildren(XMLConstants.VALUE_STRING);
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
         Element el = (Element)iter.next();
@@ -180,7 +182,7 @@ public class XMLWriter {
     Element module = findModule(xml,ObjectInstanceId);
     Element property = findProperty(module,propertyName);
     if(property!=null){
-      Element value = property.getChild(VALUE_STRING);
+      Element value = property.getChild(XMLConstants.VALUE_STRING);
       return value.getText();
     }
     return null;
@@ -224,7 +226,7 @@ public class XMLWriter {
     }
     else{
       System.out.println("property!=null");
-      List values = property.getChildren(VALUE_STRING);
+      List values = property.getChildren(XMLConstants.VALUE_STRING);
       if(values!=null){
         Iterator iter = values.iterator();
         int index = 0;
@@ -238,7 +240,7 @@ public class XMLWriter {
       else{
         for (int index = 0; index < propertyValues.length; index++) {
             String propertyValue = propertyValues[index];
-            Element value = new Element(VALUE_STRING);
+            Element value = new Element(XMLConstants.VALUE_STRING);
             value.addContent(propertyValue);
             property.addContent(value);
         }
@@ -251,11 +253,11 @@ public class XMLWriter {
 
   private static Element getNewProperty(String propertyName,Object[] propertyValues){
 
-    Element element = new Element(PROPERTY_STRING);
-    Element name = new Element(NAME_STRING);
+    Element element = new Element(XMLConstants.PROPERTY_STRING);
+    Element name = new Element(XMLConstants.NAME_STRING);
     for (int i = 0; i < propertyValues.length; i++) {
-      Element value = new Element(VALUE_STRING);
-      Element type = new Element(TYPE_STRING);
+      Element value = new Element(XMLConstants.VALUE_STRING);
+      Element type = new Element(XMLConstants.TYPE_STRING);
       Object propertyValue = propertyValues[i];
       if(i==0){
         element.addContent(name);
@@ -279,8 +281,8 @@ public class XMLWriter {
         instance.insert();
         System.out.println("instanceid="+instance.getID());
 
-        Element newElement = new Element(MODULE_STRING);
-        Attribute id = new Attribute(ID_STRING,Integer.toString(instance.getID()));
+        Element newElement = new Element(XMLConstants.MODULE_STRING);
+        Attribute id = new Attribute(XMLConstants.ID_STRING,Integer.toString(instance.getID()));
         newElement.addAttribute(id);
         parent.addContent(newElement);
 
@@ -302,8 +304,8 @@ public class XMLWriter {
     Element region = findRegion(xml,regionId);
 
     if(region==null){
-      region = new Element(REGION_STRING);
-      Attribute id = new Attribute(ID_STRING,regionId);
+      region = new Element(XMLConstants.REGION_STRING);
+      Attribute id = new Attribute(XMLConstants.ID_STRING,regionId);
       region.addAttribute(id);
       addNewModule(region,newICObjectID);
       System.out.println("instance="+parentObjectInstanceID);
@@ -368,7 +370,7 @@ public class XMLWriter {
             Element childchild = (Element)iter.next();
             deleteModule(child,childchild);
           }
-          Attribute attribute = child.getAttribute(ID_STRING);
+          Attribute attribute = child.getAttribute(XMLConstants.ID_STRING);
           if(attribute!=null){
             String ICObjectInstanceID = attribute.getValue();
             try{
@@ -393,10 +395,10 @@ public class XMLWriter {
     Iterator iter = children.iterator();
     while (iter.hasNext()) {
       Element item = (Element)iter.next();
-      if(item.getName().equals(REGION_STRING)){
+      if(item.getName().equals(XMLConstants.REGION_STRING)){
         children.addAll(getChildModules((Element)item));
       }
-      else if(!item.getName().equals(MODULE_STRING)){
+      else if(!item.getName().equals(XMLConstants.MODULE_STRING)){
         iter.remove();
       }
     }

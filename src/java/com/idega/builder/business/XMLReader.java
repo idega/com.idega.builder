@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.5 2001/09/13 17:38:17 palli Exp $
+ * $Id: XMLReader.java,v 1.6 2001/09/14 15:30:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,28 +9,16 @@
  */
 package com.idega.builder.business;
 
-import com.idega.builder.data.*;
-import com.idega.jmodule.object.*;
-import java.lang.reflect.Method;
-
-import java.io.InputStream;
-
+import com.idega.core.data.ICObjectInstance;
+import com.idega.jmodule.object.Page;
+import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.Table;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Enumeration;
 import java.util.Vector;
-import java.util.Map;
-import java.util.Hashtable;
-
 import org.jdom.Element;
 import org.jdom.Attribute;
-
-//import is.idega.experimental.builder.Region;
-
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectInstance;
-
-import com.idega.exception.PageDoesNotExist;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>,<a href="palli@idega.is">Pall Helgason</a>
@@ -38,120 +26,68 @@ import com.idega.exception.PageDoesNotExist;
  */
 public class XMLReader {
 
-    private static final String PAGE_STRING = "page";
-    private static final String ID_STRING = "id";
+  private XMLReader() {
+  }
 
-    private static final String TYPE_TAG = "type";
+  static Page getPopulatedPage(IBXMLPage ibxml) {
+    Page parentContainer = null;
+    String pageKey = null;
+    Element root = ibxml.getRootElement();
+    Element pageXML = root.getChild(XMLConstants.PAGE_STRING);
+    List pageAttr = pageXML.getAttributes();
+    Iterator attr = pageAttr.iterator();
 
-    private static final String method = ":method";
-    //private static Hashtable theRegions;
+    boolean hasTemplate = false;
 
-    private XMLReader() {
+    // Parse the page attributes
+    while(attr.hasNext()) {
+      Attribute at = (Attribute)attr.next();
+      if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
+        hasTemplate = true;
+        parentContainer = PageCacher.getPage(at.getValue());
+        ((Page)parentContainer).setIsTemplate();
+        //parseXML(at.getValue(),verifyPage,parent);
+      }
+      else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
+        pageKey = (String)at.getValue();
+      }
     }
 
+    if (!hasTemplate) {
+      parentContainer = new Page();
+    }
 
-    /*public static IBXMLPage parseXML(int ib_page_id)throws PageDoesNotExist{
-        IBPage page = null;
-        try{
-            page = new IBPage(ib_page_id);
+    if (pageXML.hasChildren()) {
+      List children = pageXML.getChildren();
+      Iterator it = children.iterator();
+
+      while (it.hasNext()) {
+        Element child = (Element)it.next();
+        if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)){
+          setProperties(child,parentContainer);
         }
-        catch(Exception ex){
-            ex.printStackTrace();
+        else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
+            if (hasTemplate)
+                System.err.println("Using element or module on top level in a page having a template");
+            else
+                //parseElement(child,parentContainer,null);
+                if(parentContainer ==null){
+                    System.err.println("pc ==null");
+                }
+
+            parseElement(child,parentContainer);
         }
-        return parseXML(page);
+        else if (child.getName().equalsIgnoreCase("region")) {
+            parseRegion(child,parentContainer);
+        }
+        else {
+            System.err.println("Unknown tag in xml description file : " + child.getName());
+        }
+      }
     }
 
-    public static IBXMLPage parseXML(IBPage page)throws PageDoesNotExist{
-        return parseXML(page.getPageValue());
-    }
-
-    public static IBXMLPage parseXML(InputStream streamWithPage)throws PageDoesNotExist{
-        //return null;
-        //Page page = new Page();
-        return parseXML(streamWithPage,false);
-        //return page;
-    }
-
-
-
-    public static IBXMLPage parseXML(InputStream pageInputStream, boolean verifyPage)throws PageDoesNotExist{//, ModuleObjectContainer parentContainer) {
-        //public void parseXML(String xmlFile, boolean verifyPage, ModuleObjectContainer parent) {
-
-        IBXMLPage xmlDesc=null;
-
-        xmlDesc = new IBXMLPage(verifyPage,pageInputStream);
-            //xmlDesc.setXMLPageDescriptionFile(xmlFile);
-            //xmlDesc.setXMLPageDescriptionFile(pageInputStream);
-        xmlDesc.setPopulatedPage(getPopulatedPage(xmlDesc));
-        return xmlDesc;
-    }*/
-
-    static Page getPopulatedPage(IBXMLPage ibxml){
-
-            Page parentContainer = null;
-            String pageKey=null;
-            Element root = ibxml.getRootElement();
-            Element pageXML = root.getChild(PAGE_STRING);
-            List pageAttr = pageXML.getAttributes();
-            Iterator attr = pageAttr.iterator();
-
-
-            boolean hasTemplate = false;
-
-            while (attr.hasNext()) {
-                Attribute at = (Attribute)attr.next();
-                if (at.getName().equalsIgnoreCase("template")) {
-                    hasTemplate = true;
-                    parentContainer = PageCacher.getPage(at.getValue());
-                    ((Page)parentContainer).setIsTemplate();
-                    //parseXML(at.getValue(),verifyPage,parent);
-                }
-                else
-                    if (at.getName().equalsIgnoreCase("id")) {
-                        System.out.println("Parsing document : " + at.getValue());
-                        pageKey = (String)at.getValue();
-                    }
-                    else
-                        System.err.println("Undefined attribute : " + at.getName());
-            }
-
-            if(!hasTemplate){
-                parentContainer = new Page();
-            }
-
-            if (pageXML.hasChildren()) {
-                List children = pageXML.getChildren();
-                Iterator it = children.iterator();
-
-                while (it.hasNext()) {
-                    Element child = (Element)it.next();
-                    if (child.getName().equalsIgnoreCase("property")){
-                        setProperties(child,parentContainer);
-                    }
-                    else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
-                        if (hasTemplate)
-                            System.err.println("Using element or module on top level in a page having a template");
-                        else
-                            //parseElement(child,parentContainer,null);
-                            if(parentContainer ==null){
-                                System.err.println("pc ==null");
-                            }
-
-                        parseElement(child,parentContainer);
-                    }
-                    else if (child.getName().equalsIgnoreCase("region")) {
-                        parseRegion(child,parentContainer);
-                    }
-                    else {
-                        System.err.println("Unknown tag in xml description file : " + child.getName());
-                    }
-                }
-            }
-
-
-        return parentContainer;
-
-    }
+    return(parentContainer);
+  }
 
     static void parseRegion(Element reg, ModuleObjectContainer regionParent) {
         List regionAttrList = reg.getAttributes();
@@ -164,7 +100,7 @@ public class XMLReader {
         int x = 1;
         int y = 1;
 
-        Attribute regionIDattr = reg.getAttribute(ID_STRING);
+        Attribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
         String regionID=null;
         if(regionIDattr!=null){
           regionID = regionIDattr.getValue();
@@ -275,7 +211,7 @@ public class XMLReader {
 
         if (key != null) {
           //key is MethodIdentifier
-          if(key.startsWith(method)){
+          if(key.startsWith(XMLConstants.METHOD_STRING)){
             setReflectionProperty(object,key,values);
           }
           else{
@@ -290,14 +226,6 @@ public class XMLReader {
     static void setReflectionProperty(ModuleObject instance,String methodIdentifier,Vector stringValues){
       ComponentPropertyHandler.getInstance().setReflectionProperty(instance,methodIdentifier,stringValues);
     }
-/*
-    static void setReflectionProperty(ModuleObject instance,Method method,Element values){
-        Object[] args = getObjectArguments(values);
-        method.invoke(instance,args);
-    }
-*/
-
-
 
     static void parseElement(Element el, ModuleObjectContainer parent) {
         //public static void parseElement(Element el, ModuleObjectContainer parent, String region) {
@@ -441,3 +369,39 @@ public class XMLReader {
 
 
 }
+
+    /*public static IBXMLPage parseXML(int ib_page_id)throws PageDoesNotExist{
+        IBPage page = null;
+        try{
+            page = new IBPage(ib_page_id);
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return parseXML(page);
+    }
+
+    public static IBXMLPage parseXML(IBPage page)throws PageDoesNotExist{
+        return parseXML(page.getPageValue());
+    }
+
+    public static IBXMLPage parseXML(InputStream streamWithPage)throws PageDoesNotExist{
+        //return null;
+        //Page page = new Page();
+        return parseXML(streamWithPage,false);
+        //return page;
+    }
+
+
+
+    public static IBXMLPage parseXML(InputStream pageInputStream, boolean verifyPage)throws PageDoesNotExist{//, ModuleObjectContainer parentContainer) {
+        //public void parseXML(String xmlFile, boolean verifyPage, ModuleObjectContainer parent) {
+
+        IBXMLPage xmlDesc=null;
+
+        xmlDesc = new IBXMLPage(verifyPage,pageInputStream);
+            //xmlDesc.setXMLPageDescriptionFile(xmlFile);
+            //xmlDesc.setXMLPageDescriptionFile(pageInputStream);
+        xmlDesc.setPopulatedPage(getPopulatedPage(xmlDesc));
+        return xmlDesc;
+    }*/
