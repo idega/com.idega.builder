@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.48 2004/02/20 16:37:43 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.49 2004/05/05 15:14:00 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -92,6 +92,10 @@ public class XMLReader {
 					isLocked = false;
 				else
 					isLocked = true;
+			} else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
+				hasTemplate = true;
+				parentContainer = PageCacher.getPage(at.getValue());
+				parentContainer.setTemplateId(at.getValue());
 			}
 		}
 

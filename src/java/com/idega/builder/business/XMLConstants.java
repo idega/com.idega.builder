@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.22 2004/05/04 10:05:56 thomas Exp $
+ * $Id: XMLConstants.java,v 1.23 2004/05/05 15:14:00 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ public abstract class XMLConstants {
   public static final String IC_OBJECT_ID_STRING = "ic_object_id";
   public static final String METHOD_STRING = ":method";
   public static final String TEMPLATE_STRING = "template";
+  public static final String DPT_ROOTPAGE_STRING = "dpt_root_page";
   public static final String REGION_STRING = "region";
   public static final String PROPERTY_STRING = "property";
   public static final String VALUE_STRING = "value";
@@ -47,6 +48,7 @@ public abstract class XMLConstants {
   public static final String PAGE_TYPE_TEMPLATE = "template";
   public static final String PAGE_TYPE_DPT_TEMPLATE = "dpt_template";
   public static final String PAGE_TYPE_DPT_PAGE = "dpt_page";
+  
 
   public static final String FRAGMENT_TYPE_LIBRARY = "library";
   public static final String FRAGMENT_TYPE_CLIPBOARD = "clipboard";

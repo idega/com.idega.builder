@@ -12,6 +12,7 @@ import com.idega.builder.business.IBPageFinder;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
+import com.idega.builder.business.XMLConstants;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
@@ -175,7 +176,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   */
 
 
-  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name, Map createdPages) throws SQLException{
+  private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name, Map createdPages, int rootPageID) throws SQLException{
     BuilderLogic instance = BuilderLogic.getInstance();
 
     Map tree = PageTreeNode.getTree(iwc);
@@ -221,6 +222,10 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 */
 
     IBXMLPage currentXMLPage = instance.getIBXMLPage(id);
+    if(rootPageID != -1) {
+    		currentXMLPage.getPageRootElement().setAttribute(XMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(rootPageID));
+    		currentXMLPage.update();
+    }
     Page current = currentXMLPage.getPopulatedPage();
     List children = current.getChildrenRecursive();
 /*
@@ -260,7 +265,8 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
           if(subpageName == null){
             subpageName = "Untitled";
           }
-          int newID = this.createPage(iwc,templateId, id, subpageName,createdPages);
+          
+          int newID = this.createPage(iwc,templateId, id, subpageName,createdPages,((rootPageID!=-1)?rootPageID:id));
           if(newID == -1){
             return (-1);
           }
@@ -278,7 +284,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name) throws Exception{
     DPTCopySession cSession = ((DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class));
   	cSession.startCopySession();
-    int pageID = createPage(iwc, dptTemplateId, parentId, name, new Hashtable());
+    int pageID = createPage(iwc, dptTemplateId, parentId, name, new Hashtable(),-1);
     cSession.endCopySession();
     return pageID;
   }
