@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.13 2001/11/01 17:21:07 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.14 2001/11/02 10:30:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBDomain;
 import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -32,11 +33,9 @@ import java.util.Map;
 import com.idega.presentation.ui.Window;
 
 /**
- * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
- * @modified by <a href=teiki@idega.is">Eirikur Hrafnsson</a>
- * @version 1.0 alpha
+ * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * @version 1.0
 */
-
 public class IBCreatePageWindow extends IWAdminWindow {
   private static final String PAGE_NAME_PARAMETER   = "ib_page_name";
   private static final String PAGE_CHOOSER_NAME     = IBPropertyHandler.PAGE_CHOOSER_NAME;
@@ -47,38 +46,46 @@ public class IBCreatePageWindow extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception {
     IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
     Form form = new Form();
+    String type = iwc.getParameter(PAGE_TYPE);
+    if (type == null) {
+      String currPageType = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getType();
+      if (currPageType.equals(IBXMLPage.TYPE_TEMPLATE))
+        type = "2";
+      else
+        type = "1";
+    }
 
-    setTitle(iwrb.getLocalizedString("create_new_page","Create a new page"));
+    if (type.equals("2"))
+      setTitle(iwrb.getLocalizedString("create_new_template","Create a new template"));
+    else
+      setTitle(iwrb.getLocalizedString("create_new_page","Create a new page"));
     add(form);
     Table tab = new Table(2,5);
     form.add(tab);
     TextInput inputName = new TextInput(PAGE_NAME_PARAMETER);
-    tab.add(iwrb.getLocalizedString("page_name","Page name"),1,1);
+    if (type.equals("2"))
+      tab.add(iwrb.getLocalizedString("template_name","Template name"),1,1);
+    else
+      tab.add(iwrb.getLocalizedString("page_name","Page name"),1,1);
     tab.add(inputName,2,1);
 
     DropdownMenu mnu = new DropdownMenu(PAGE_TYPE);
     mnu.addMenuElement("1","Page");
     mnu.addMenuElement("2","Template");
+    mnu.setSelectedElement(type);
 
-    tab.add(new Text("Select page type : "),1,2);
+    tab.add(new Text("Select type : "),1,2);
     tab.add(mnu,2,2);
 
     mnu.setToSubmit();
 
-    String type = iwc.getParameter(PAGE_TYPE);
-
-    tab.add(iwrb.getLocalizedString("parent_page","Create page under:"),1,3);
-    if (type != null) {
-      if (type.equals("2"))
-        tab.add(getTemplateChooser(PAGE_CHOOSER_NAME,iwc),2,3);
-      else
-        tab.add(getPageChooser(PAGE_CHOOSER_NAME,iwc),2,3);
-    }
-    else
+    if (!type.equals("2")) {
+      tab.add(iwrb.getLocalizedString("parent_page","Create page under:"),1,3);
       tab.add(getPageChooser(PAGE_CHOOSER_NAME,iwc),2,3);
+    }
 
     tab.add(iwrb.getLocalizedString("using_template","Using template:"),1,4);
-    tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME,iwc),2,4);
+    tab.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME,iwc,type),2,4);
 
     SubmitButton button = new SubmitButton("subbi",iwrb.getLocalizedString("save","Save"));
     tab.add(button,2,5);
@@ -90,6 +97,9 @@ public class IBCreatePageWindow extends IWAdminWindow {
       String name = iwc.getParameter(PAGE_NAME_PARAMETER);
       type = iwc.getParameter(PAGE_TYPE);
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
+
+      if (type.equals("2"))
+        pageId = templateId;
 
       if (pageId != null) {
         IBPage ibPage = new IBPage();
@@ -110,7 +120,7 @@ public class IBCreatePageWindow extends IWAdminWindow {
         }
         else {
           ibPage.setType(IBPage.PAGE);
-          treeType =PageTreeNode.PAGE_TREE;
+          treeType = PageTreeNode.PAGE_TREE;
         }
 
         int tid = -1;
@@ -164,24 +174,52 @@ public class IBCreatePageWindow extends IWAdminWindow {
   /*
    *
    */
-  private PresentationObject getPageChooser(String name,IWContext iwc){
+  private PresentationObject getPageChooser(String name, IWContext iwc) {
     IBPageChooser chooser = new IBPageChooser(name);
-    try{
-      chooser.setSelectedPage(BuilderLogic.getInstance().getCurrentIBPageEntity(iwc));
+    try {
+      IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
+      if (current.getType().equals(IBPage.PAGE))
+        chooser.setSelectedPage(current);
+      else {
+        IBDomain domain = IBDomain.getDomain(1);
+        IBPage top = domain.getStartPage();
+        if (top != null)
+          chooser.setSelectedPage(top);
+      }
     }
-    catch(Exception e){
+    catch(Exception e) {
       //does nothing
     }
-    return chooser;
+    return(chooser);
   }
 
   /*
    *
    */
-  private PresentationObject getTemplateChooser(String name,IWContext iwc){
+  private PresentationObject getTemplateChooser(String name, IWContext iwc, String type){
     IBTemplateChooser chooser = new IBTemplateChooser(name);
-    //chooser.setSelectedPage(BuilderLogic.getInstance().getCurrentIBPage(iwc));
-    return chooser;
+    try {
+      String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
+      if (templateId == null || templateId.equals("")) {
+        IBPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
+        if (current.getType().equals(IBPage.TEMPLATE))
+          chooser.setSelectedPage(current);
+        else {
+          IBDomain domain = IBDomain.getDomain(1);
+          IBPage top = domain.getStartTemplate();
+          if (top != null)
+            chooser.setSelectedPage(top);
+        }
+      }
+      else {
+        IBPage top = new IBPage(Integer.parseInt(templateId));
+        if (top != null)
+          chooser.setSelectedPage(top);
+      }
+    }
+    catch(Exception e) {
+      //does nothing
+    }
+    return(chooser);
   }
 }
-

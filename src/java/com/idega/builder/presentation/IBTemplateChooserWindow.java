@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.3 2001/10/05 08:04:05 tryggvil Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.4 2001/11/02 10:30:22 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.TreeViewer;
 import com.idega.presentation.text.Link;
 import com.idega.builder.data.IBDomain;
+import com.idega.builder.business.PageTreeNode;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -44,7 +45,8 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
     try {
       int i_page_id = 2;
 
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
+//      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
+      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
 
       add(viewer);
       viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
