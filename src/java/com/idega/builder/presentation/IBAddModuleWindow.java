@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.36 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.37 2004/06/03 12:53:00 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,15 +12,16 @@ package com.idega.builder.presentation;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.EntityFinder;
+import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -249,8 +250,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				try{
 					//iconLink = new Link(getIconForObject(item, iwc));
 					iconLink = getIconForObject(item, iwc);
-					
-					String objectName = item.getBundle(iwc.getIWMainApplication()).getComponentName(item.getClassName(), iwc.getCurrentLocale());
+					IWMainApplication iwma = iwc.getIWMainApplication();
+					IWBundle iwb = item.getBundle(iwma);
+					String objectName = iwb.getComponentName(item.getClassName(), iwc.getCurrentLocale());
 					link = new Link(objectName);
 					link.setStyle(STYLE_NAME);
 					//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
@@ -273,6 +275,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					subComponentTable.add(link, 2, ypos);
 	
 					ypos++;
+				}
+				catch(IWBundleDoesNotExist iwbne){
+					System.err.println(iwbne.getLocalizedMessage()+". Please remove all references in the IC_OBJECT table");
 				}
 				catch(Exception e){
 					e.printStackTrace();
