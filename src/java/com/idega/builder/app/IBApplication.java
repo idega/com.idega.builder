@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.51 2002/03/09 17:43:03 laddi Exp $
+ * $Id: IBApplication.java,v 1.52 2002/03/11 02:08:16 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,14 @@
  */
 package com.idega.builder.app;
 
+import java.util.*;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.presentation.Script;
+import com.idega.idegaweb.*;
+import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.*;
+import com.idega.development.presentation.Localizer;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.presentation.IBCreatePageWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
@@ -16,7 +24,6 @@ import com.idega.builder.presentation.IBDeletePageWindow;
 import com.idega.builder.presentation.IBSaveAsPageWindow;
 import com.idega.builder.presentation.IBSavePageWindow;
 import com.idega.builder.presentation.IBSourceView;
-import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.app.IWApplication;
 import com.idega.presentation.app.IWApplicationComponent;
 import com.idega.presentation.FrameSet;
@@ -27,15 +34,9 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.TreeViewer;
-import com.idega.presentation.ui.IFrame;
-import com.idega.idegaweb.IWBundle;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.business.PageTreeNode;
 
-import java.util.Vector;
-import java.util.List;
-import java.util.Iterator;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -70,6 +71,7 @@ public class IBApplication extends IWApplication {
     super.setResizable(true);
     super.setWidth(900);
     super.setHeight(700);
+    super.setStatus(true);
   }
 
   static boolean startupInProgress(IWContext iwc){
@@ -464,8 +466,9 @@ public class IBApplication extends IWApplication {
       boolean startupInProgress = startupInProgress(iwc);
       //System.out.println("Startup in progress for IBToolBar:"+startupInProgress);
       if(!startupInProgress){
-	super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
+	//super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
 	//super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload()");
+	super.setOnLoad("parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
       }
       IWBundle iwb = iwc.getApplication().getBundle(IB_BUNDLE_IDENTIFIER);
       String controlParameter = "builder_controlparameter";
@@ -597,10 +600,47 @@ public class IBApplication extends IWApplication {
 	xpos++;
 	toolbarTable.add(pageName,xpos,1);*/
 
+	if ( iwc.isIE() ) {
+	  xpos++;
+	  toolbarTable.add(separator,xpos,1);
+
+	  xpos++;
+	  toolbarTable.add(Text.getNonBrakingSpace(),xpos,1);
+	  toolbarTable.add(getLocaleMenu(iwc),xpos,1);
+	}
+
 	add(toolbarTable);
       }
 
       endStartup(iwc,IBToolBar.class);
+    }
+
+    private DropdownMenu getLocaleMenu(IWContext iwc) {
+      StringBuffer buffer = new StringBuffer();
+      buffer.append("WindowOpener?");
+      if ( iwc.getParameter("idegaweb_frame_class") != null )
+	buffer.append("idegaweb_frame_class="+iwc.getParameter("idegaweb_frame_class"));
+      buffer.append("&");
+      buffer.append(IWMainApplication.IdegaEventListenerClassParameter+"="+IWMainApplication.getEncryptedClassName(LocaleSwitcher.class.getName()));
+      buffer.append("&");
+      buffer.append(LocaleSwitcher.languageParameterString+"=");
+
+      Script script = getParentPage().getAssociatedScript();
+      script.addFunction("jumpMenu","function jumpMenu(targ,selObj,restore){ eval(targ+\".location='\"+selObj.options[selObj.selectedIndex].value+\"'\"); if (restore) selObj.selectedIndex=0; }");
+      getParentPage().setAssociatedScript(script);
+
+      List locales = ICLocaleBusiness.listOfLocalesJAVA();
+      DropdownMenu down = new DropdownMenu(LocaleSwitcher.languageParameterString);
+      Iterator iter = locales.iterator();
+      while (iter.hasNext()) {
+	Locale item = (Locale)iter.next();
+	down.addMenuElement(buffer.toString()+item.toString(),item.getDisplayLanguage());
+      }
+      down.setSelectedElement(buffer.toString()+iwc.getCurrentLocale().toString());
+      down.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE_SMALL);
+      down.setOnChange("jumpMenu('parent.frames[\\'"+IB_TOOLBAR_FRAME+"\\']',this,0)");
+
+      return down;
     }
 
     /**
