@@ -14,25 +14,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import com.idega.presentation.PresentationObject;
+import com.idega.repository.data.Instantiator;
+import com.idega.repository.data.Singleton;
+import com.idega.repository.data.SingletonRepository;
 import com.idega.util.reflect.Property;
 import com.idega.xml.XMLElement;
 
-public class ComponentPropertyHandler {
+public class ComponentPropertyHandler implements Singleton {
 
-  private static ComponentPropertyHandler instance;
+  private static Instantiator instantiator = new Instantiator() { public Object getInstance() { return new ComponentPropertyHandler();}};
 
   private static final String XML_TYPE_TAG = "type";
   private static final String XML_VALUE_TAG = "value";
 
 
   private ComponentPropertyHandler() {
+  	// empty
   }
 
   public static ComponentPropertyHandler getInstance(){
-    if(instance==null){
-      instance = new ComponentPropertyHandler();
-    }
-    return instance;
+  	return (ComponentPropertyHandler) SingletonRepository.getRepository().getInstance(ComponentPropertyHandler.class,instantiator);
   }
 
      void setReflectionProperty(PresentationObject instance,String methodIdentifier,Vector stringValues){

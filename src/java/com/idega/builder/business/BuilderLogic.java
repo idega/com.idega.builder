@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.164 2004/12/20 08:55:07 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.165 2005/02/01 17:33:39 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -50,6 +50,9 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.repository.data.Instantiator;
+import com.idega.repository.data.Singleton;
+import com.idega.repository.data.SingletonRepository;
 import com.idega.util.FileUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -58,7 +61,7 @@ import com.idega.xml.XMLElement;
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * @version 1.0
  */
-public class BuilderLogic {
+public class BuilderLogic implements Singleton {
 
 	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	public static final String IB_PARENT_PARAMETER = "ib_parent_par";
@@ -83,14 +86,17 @@ public class BuilderLogic {
 	 *This is the key that holds the page in the builder session
 	 **/
 	private static final String SESSION_PAGE_KEY = "ib_page_id";
+	
 	public static final String SESSION_OBJECT_STATE = BuilderConstants.SESSION_OBJECT_STATE;
 	public static final String PRM_HISTORY_ID = BuilderConstants.PRM_HISTORY_ID;
 	public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
 	public static final String IMAGE_IC_OBJECT_INSTANCE_SESSION_ADDRESS = "ic_object_id_image";
+	
 	private static final String IB_APPLICATION_RUNNING_SESSION = "ib_application_running";
 	//private static final String DEFAULT_PAGE = "1";
 	public static final String CLIPBOARD = "user_clipboard";
-	private static BuilderLogic _instance;
+	
+	private static Instantiator instantiator = new Instantiator() { public Object getInstance() { return new BuilderLogic();}};
 
 	public String PAGE_FORMAT_IBXML="IBXML";
 	public String PAGE_FORMAT_HTML="HTML";
@@ -99,13 +105,15 @@ public class BuilderLogic {
 	private String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2};
 	
 	private BuilderLogic() {
+		// empty
 	}
 
 	public static BuilderLogic getInstance() {
-		if (_instance == null) {
-			_instance = new BuilderLogic();
-		}
-		return (_instance);
+		return (BuilderLogic) SingletonRepository.getRepository().getInstance(BuilderLogic.class, instantiator);
+	}
+	
+	public static void unload()	{
+		SingletonRepository.getRepository().unloadInstance(BuilderLogic.class);
 	}
 
 	public boolean updatePage(int id) {
@@ -1174,12 +1182,6 @@ public class BuilderLogic {
 	}
 	public void setIBPageHelper(IBPageHelper ibPageHelper){
 		this.ibPageHelper=ibPageHelper;
-	}
-	
-	public void unload(){
-		pageCacher=null;
-		ibPageHelper=null;
-		_instance=null;
 	}
 	
 	/**

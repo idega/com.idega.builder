@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.46 2005/01/13 23:07:23 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.47 2005/02/01 17:33:39 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,13 +40,16 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.TextInput;
+import com.idega.repository.data.Instantiator;
+import com.idega.repository.data.Singleton;
+import com.idega.repository.data.SingletonRepository;
 import com.idega.util.caching.Cache;
 import com.idega.util.reflect.MethodFinder;
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0 beta
  */
-public class IBPropertyHandler {
+public class IBPropertyHandler implements Singleton{
 	public final static String METHOD_PROPERTY_IDENTIFIER = "iw_method_identifier";
 	public final static String METHOD_PROPERTY_DESCRIPTION = "iw_method_description";
 	public static final String METHOD_PROPERTY_ALLOW_MULTIVALUED = "iw_method_option_multiv";
@@ -60,21 +63,19 @@ public class IBPropertyHandler {
 	public static final String METHOD_PARAMETER_PROPERTY_PRIMARY_KEY = "iw_method_param_prim_key";
 	private static final String TABLE_ROWS_PROPERTY = ":method:1:implied:void:setRows:int:";
 	private static final String TABLE_COLUMNS_PROPERTY = ":method:1:implied:void:setColumns:int:";
-	private static final String PROPERTYWINDOW_VALUE_FIND = "iw_propw_val_find";
-	private static IBPropertyHandler instance;
+
+	private static Instantiator instantiator = new Instantiator() { public Object getInstance() { return new IBPropertyHandler();}};
 	private Map propertyHandlers;
 	private IBClassesFactory builderClassesFactory;
 
 	private IBPropertyHandler() {
+		// empty
 	}
 
 	public static IBPropertyHandler getInstance() {
-		if (instance == null) {
-			instance = new IBPropertyHandler();
-		}
-		return instance;
+		return (IBPropertyHandler) SingletonRepository.getRepository().getInstance(IBPropertyHandler.class,instantiator);
 	}
-
+	
 	public void removeMethod(IWBundle iwb, String componentKey, String methodIdentifier) {
 		IWPropertyList methods = getMethods(iwb, componentKey);
 		if (methods != null) {

@@ -158,6 +158,6 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	 * Unloads all the resources associated with the Builder
 	 */
 	public void unload(){
-		getBuilderLogic().unload();
+		BuilderLogic.unload();
 	}
 }

@@ -12,6 +12,7 @@ package com.idega.builder.business;
 public class IBPropertyDescriptionComparator implements java.util.Comparator{
 
     public IBPropertyDescriptionComparator(){
+    	// empty
     }
 
     public int compare(Object o1,Object o2){

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.45 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.46 2005/02/01 17:33:39 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,13 +40,14 @@ import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.repository.data.Singleton;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class IBPageHelper {
+public class IBPageHelper implements Singleton  {
 	public static final String PAGE = com.idega.builder.data.IBPageBMPBean.PAGE;
 	public static final String TEMPLATE = com.idega.builder.data.IBPageBMPBean.TEMPLATE;
 	public static final String DRAFT = com.idega.builder.data.IBPageBMPBean.DRAFT;
@@ -58,6 +59,7 @@ public class IBPageHelper {
 	private final int TEMPLATEVIEWER = 1;
 	//private static IBPageHelper _instance = null;
 	IBPageHelper() {
+		// empty
 	}
 	
 	public static IBPageHelper getInstance() {
