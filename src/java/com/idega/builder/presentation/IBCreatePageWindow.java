@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.20 2002/01/11 12:33:12 palli Exp $
+ * $Id: IBCreatePageWindow.java,v 1.21 2002/02/07 22:03:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,7 +16,6 @@ import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.data.IBPage;
 import com.idega.builder.data.IBDomain;
-//import com.idega.core.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -25,14 +24,14 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Window;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Map;
-import com.idega.presentation.ui.Window;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -96,37 +95,20 @@ public class IBCreatePageWindow extends IWAdminWindow {
     String submit = iwc.getParameter("subbi");
 
     if (submit != null) {
-      String pageId = iwc.getParameter(PAGE_CHOOSER_NAME);
+      String parentPageId = iwc.getParameter(PAGE_CHOOSER_NAME);
       String name = iwc.getParameter(PAGE_NAME_PARAMETER);
       type = iwc.getParameter(PAGE_TYPE);
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       if (type.equals("2"))
-        pageId = templateId;
+        parentPageId = templateId;
 
-      if (pageId != null) {
-        int id = IBPageHelper.createNewPage(pageId,name,type,templateId);
+      if (parentPageId != null) {
+      /**
+       * @todo Breyta þessu þannig að createNewPage setji tréð inn í mappið...
+       */
+        Map tree = PageTreeNode.getTree(iwc);
+        int id = IBPageHelper.createNewPage(parentPageId,name,type,templateId,tree);
         if (id != -1) {
-          PageTreeNode parent = new PageTreeNode(Integer.parseInt(pageId),iwc);
-          Map tree = PageTreeNode.getTree(iwc);
-
-          if (parent != null) {
-            if (tree != null) {
-              PageTreeNode child = new PageTreeNode(id,iwc);
-              child.setNodeName(name);
-              parent.addChild(child);
-              tree.put(new Integer(child.getNodeID()),child);
-            }
-          }
-
-          if ((templateId != null) && (!templateId.equals(""))) {
-            IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
-            xml.addUsingTemplate(Integer.toString(id));
-            Page templateParent = xml.getPopulatedPage();
-            if (!templateParent.isLocked()) {
-              BuilderLogic.getInstance().unlockRegion(Integer.toString(id),"-1",null);
-            }
-          }
-
           iwc.setSessionAttribute("ib_page_id",Integer.toString(id));
         }
 

@@ -42,12 +42,28 @@ public class IBPageChooser extends AbstractChooser {
     return IBPageChooserWindow.class;
   }
 
+  /**
+   * Sets the page designated by pageId to be the page that is selected
+   * in the page tree.
+   *
+   * @param pageId The id of the page that is to be selected
+   * @param pageName The name of the page that is to be selected
+   */
+  public void setSelectedPage(int pageId, String pageName) {
+    super.setChooserValue(pageName,pageId);
+  }
+
+  /**
+   * @deprecated Replaced by {@link #setSelectedPage(int,String)}
+   */
   public void setSelectedPage(IBPage page){
     super.setChooserValue(page.getName(),page.getID());
   }
 
+  /**
+   * @deprecated Replaced by {@link #setSelectedPage(int,String)}
+   */
   public void setValue(Object page){
     setSelectedPage((IBPage)page);
   }
-
 }
