@@ -1,5 +1,5 @@
 /*
- * $Id: IBPage.java,v 1.3 2001/05/18 13:04:07 palli Exp $
+ * $Id: IBPage.java,v 1.4 2001/05/18 13:31:47 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.builder.data;
 import java.sql.SQLException;
 import com.idega.data.GenericEntity;
 import com.idega.data.BlobWrapper;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -53,7 +54,10 @@ public class IBPage extends GenericEntity {
       return (BlobWrapper) getColumnValue("page_value");
   }
 
-  public void setPageValue(BlobWrapper wrapper) {
-    setColumn("page_value",wrapper);
+  public void setPageValue(InputStream stream) {
+    setColumn("page_value",stream);
   }
+
+
+
 }
