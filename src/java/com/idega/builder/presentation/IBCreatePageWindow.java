@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.12 2001/10/31 13:12:46 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.13 2001/11/01 17:21:07 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -131,7 +131,6 @@ public class IBCreatePageWindow extends IWAdminWindow {
         if (parent != null) {
           if (tree != null) {
             PageTreeNode child = new PageTreeNode(ibPage.getID(),iwc,treeType);
-            child.setNodeId(ibPage.getID());
             child.setNodeName(ibPage.getName());
             parent.addChild(child);
             tree.put(new Integer(child.getNodeID()),child);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBApplication.java,v 1.29 2001/11/01 16:17:02 tryggvil Exp $
+ * $Id: IBApplication.java,v 1.30 2001/11/01 17:21:07 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -231,12 +231,13 @@ public class IBApplication extends IWApplication {
       getParentPage().setAllMargins(2);
       int i_page_id = 1;
       try {
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
-//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.PAGE_TREE),iwc);
+//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_page_id),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_page_id,iwc,PageTreeNode.PAGE_TREE),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
         l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
+//        l.setOnClick("parent.parent.frames['"+IB_FRAMESET2_FRAME+"'].frames['"+IB_TOOLBAR_FRAME+"'].location.reload()");
         viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER,iwc);
         viewer.setTreeStyle("font-face: Verdana, Arial, sans-serif; font-size: 8pt; text-decoration: none;");
 
@@ -276,8 +277,8 @@ public class IBApplication extends IWApplication {
 
       int i_template_id = 2;
       try {
-        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
-//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
+//        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.builder.data.IBPage(i_template_id),iwc);
+        TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(i_template_id,iwc,PageTreeNode.TEMPLATE_TREE),iwc);
         viewer.setTarget(IB_LEFT_MENU_FRAME);
         viewer.setNodeActionParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
         Link l = new Link();
@@ -602,6 +603,7 @@ public class IBApplication extends IWApplication {
         toolTable.add(sourceLink,3,1);
 
 
+//        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
         String name = Text.NON_BREAKING_SPACE+"Page name"; //BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
         toolbarTable.add(new Text(name,true,false,false),1,1);
         toolbarTable.add(toolTable,2,1);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBObjectLibrary.java,v 1.1 2001/10/30 14:57:02 palli Exp $
+ * $Id: IBObjectLibrary.java,v 1.2 2001/11/01 17:21:07 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,7 +23,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.presentation.IWContext;
 
 /**
- * @authorP <a href="mail:palli@idega.is">Pall Helgason</a>
+ * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class IBObjectLibrary extends TreeableEntity {

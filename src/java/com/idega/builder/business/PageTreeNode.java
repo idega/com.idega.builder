@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.3 2001/11/01 17:21:07 palli Exp $
+ * $Id: PageTreeNode.java,v 1.4 2001/11/01 17:22:59 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -156,7 +156,6 @@ public class PageTreeNode implements ICTreeNode {
    *
    */
   public int getChildCount() {
-System.out.println("Getting child count for node " + _id);
     return(_children.size());
   }
 
