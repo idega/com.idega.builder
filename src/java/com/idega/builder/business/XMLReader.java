@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.54 2004/06/14 13:52:48 palli Exp $
+ * $Id: XMLReader.java,v 1.55 2004/06/22 17:53:56 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -140,7 +140,7 @@ public class XMLReader {
 		//sets dptRootpageID
 		try {
 			if(dptRootPage!=null) {
-				parentContainer.setDPTRootPage(dptRootPage);
+				parentContainer.getDynamicPageTrigger().setRootPage(dptRootPage);
 			}
 		}
 		catch (NumberFormatException e) {
