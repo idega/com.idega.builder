@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.11 2003/07/30 11:58:23 aron Exp $
+ * $Id: PageTreeNode.java,v 1.12 2003/07/30 12:15:19 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,7 @@ public class PageTreeNode implements ICTreeNode {
 	protected List _children = null;
 	protected Object _extra = null;
 	protected int _order = -1;
+	protected IWApplicationContext _iwac;
 
 	protected PageTreeNode(int id, String name) {
 		this(id, name, -1);
@@ -59,6 +60,7 @@ public class PageTreeNode implements ICTreeNode {
 	 *
 	 */
 	public PageTreeNode(int id, IWApplicationContext iwc) {
+		_iwac=iwc;
 		Map tree = PageTreeNode.getTree(iwc);
 		PageTreeNode node = (PageTreeNode) tree.get(new Integer(id));
 		if (node != null) {
@@ -262,16 +264,26 @@ public class PageTreeNode implements ICTreeNode {
 	}
 
 	/**
-	 *
+	 * Returns the node name for this node
 	 */
 	public String getNodeName() {
 		return _name;
 	}
+
+	/**
+	 * Returns the Localized node name for this node
+	 */
 	public String getNodeName(Locale locale) {
-			return _name;
-		}
+		IWApplicationContext iwac = getIWApplicationContext();
+		return getLocalizedNodeName(iwac,locale);
+	}
 	
 	public String getLocalizedNodeName(IWContext iwc) {
+		Locale curr = iwc.getCurrentLocale();
+		return getLocalizedNodeName(iwc,curr);
+	}
+	
+	public String getLocalizedNodeName(IWApplicationContext iwc,Locale locale) {
 		Hashtable names = (Hashtable)iwc.getApplicationAttribute(NAME_TREE);
 		if (names == null)
 			return getNodeName();
@@ -280,9 +292,9 @@ public class PageTreeNode implements ICTreeNode {
 		if (pageNames == null)
 			return getNodeName();
 	
-		Locale curr = iwc.getCurrentLocale();
-		StringBuffer localeString = new StringBuffer(curr.getLanguage());
-		String country = curr.getCountry();
+		//Locale curr = iwc.getCurrentLocale();
+		StringBuffer localeString = new StringBuffer(locale.getLanguage());
+		String country = locale.getCountry();
 		if (country != null && !country.equals("")) {
 			localeString.append("_");
 			localeString.append(country);
@@ -420,5 +432,9 @@ public class PageTreeNode implements ICTreeNode {
 		}
 		else
 			return false;
+	}
+	
+	protected IWApplicationContext getIWApplicationContext(){
+		return _iwac;
 	}
 }
