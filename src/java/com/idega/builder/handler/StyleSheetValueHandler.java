@@ -59,7 +59,7 @@ public class StyleSheetValueHandler implements ICPropertyHandler {
   private String getStyleValue(IWContext iwc) {
   	Enumeration enumer = iwc.getParameterNames();
   	while ( enumer.hasMoreElements() ) {
-  		String style = new IWStyleManager().getStyle(iwc.getParameter((String)enumer.nextElement()));
+  		String style = IWStyleManager.getInstance().getStyle(iwc.getParameter((String)enumer.nextElement()));
   		if ( style != null )
   			return style;	
   	}	
