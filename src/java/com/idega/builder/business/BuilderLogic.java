@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.106 2002/02/27 18:45:24 aron Exp $
+ * $Id: BuilderLogic.java,v 1.107 2002/03/02 18:11:46 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -329,8 +329,6 @@ public class BuilderLogic {
       inserter.setImSessionImageName(sessionID);
       inserter.setWindowToReload(true);
       //inserter.maintainSessionParameter();
-      //inserter.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
-      //inserter.setWindowClassToOpen(ImageEditorWindow.class);
 
       obj = inserter;
       obj.setICObjectInstanceID(ICObjectIntanceID);
