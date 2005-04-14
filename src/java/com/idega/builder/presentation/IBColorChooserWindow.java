@@ -255,8 +255,8 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 				formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), "add_remove"), column, row++);
 			}
 
-			if (iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER) != null) {
-				form.add(new HiddenInput(SCRIPT_PREFIX_PARAMETER, (String) iwc.getSessionAttribute(SCRIPT_PREFIX_PARAMETER)));
+			if (iwc.getSessionAttribute(FORM_ID_PARAMETER) != null) {
+				form.add(new HiddenInput(FORM_ID_PARAMETER, (String) iwc.getSessionAttribute(FORM_ID_PARAMETER)));
 				form.add(new HiddenInput(SCRIPT_SUFFIX_PARAMETER, (String) iwc.getSessionAttribute(SCRIPT_SUFFIX_PARAMETER)));
 				form.add(new HiddenInput(DISPLAYSTRING_PARAMETER_NAME, (String) iwc.getSessionAttribute(DISPLAYSTRING_PARAMETER_NAME)));
 				form.add(new HiddenInput(VALUE_PARAMETER_NAME, (String) iwc.getSessionAttribute(VALUE_PARAMETER_NAME)));
@@ -309,7 +309,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 					table.setColor(column, row, color);
 					link = new Link(image);
 					link.addParameter("color", color);
-					link.maintainParameter(SCRIPT_PREFIX_PARAMETER, iwc);
+					link.maintainParameter(FORM_ID_PARAMETER, iwc);
 					link.maintainParameter(SCRIPT_SUFFIX_PARAMETER, iwc);
 					link.maintainParameter(DISPLAYSTRING_PARAMETER_NAME, iwc);
 					link.maintainParameter(VALUE_PARAMETER_NAME, iwc);
@@ -367,8 +367,8 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			_colorString = "bgcolor";
 		}
 
-		if (iwc.isParameterSet(SCRIPT_PREFIX_PARAMETER)) {
-			iwc.setSessionAttribute(SCRIPT_PREFIX_PARAMETER, iwc.getParameter(SCRIPT_PREFIX_PARAMETER));
+		if (iwc.isParameterSet(FORM_ID_PARAMETER)) {
+			iwc.setSessionAttribute(FORM_ID_PARAMETER, iwc.getParameter(FORM_ID_PARAMETER));
 			iwc.setSessionAttribute(SCRIPT_SUFFIX_PARAMETER, iwc.getParameter(SCRIPT_SUFFIX_PARAMETER));
 			iwc.setSessionAttribute(DISPLAYSTRING_PARAMETER_NAME, iwc.getParameter(DISPLAYSTRING_PARAMETER_NAME));
 			iwc.setSessionAttribute(VALUE_PARAMETER_NAME, iwc.getParameter(VALUE_PARAMETER_NAME));

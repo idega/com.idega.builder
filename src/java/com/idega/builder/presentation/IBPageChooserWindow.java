@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.15 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: IBPageChooserWindow.java,v 1.16 2005/04/14 08:27:51 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -102,7 +102,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 
 			add(viewer);
 
-			viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER, iwc);
+			viewer.setToMaintainParameter(FORM_ID_PARAMETER, iwc);
 			viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER, iwc);
 			viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME, iwc);
 			viewer.setToMaintainParameter(VALUE_PARAMETER_NAME, iwc);

@@ -59,7 +59,7 @@ public static final String replaceMentCommon = "+";
     Form form = new Form();
     Table formTable = new Table();
 
-    form.maintainParameter(SCRIPT_PREFIX_PARAMETER);
+    form.maintainParameter(FORM_ID_PARAMETER);
     form.maintainParameter(SCRIPT_SUFFIX_PARAMETER);
     form.maintainParameter(DISPLAYSTRING_PARAMETER_NAME);
     form.maintainParameter(VALUE_PARAMETER_NAME);

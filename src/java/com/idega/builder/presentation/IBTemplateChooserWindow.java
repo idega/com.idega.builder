@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.14 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.15 2005/04/14 08:27:51 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,7 +57,7 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
       TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getTemplateTreeViewer(iwc);
 
       add(viewer);
-      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(FORM_ID_PARAMETER,iwc);
       viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
       viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
       viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
