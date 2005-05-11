@@ -49,3 +49,16 @@ top_level=Top level
 url=URL
 user=
 yes=Yes
+
+
+create_simple_template.Pages=Pages
+create_simple_template.Create=Create
+create_simple_template.Edit=Edit
+create_simple_template.Save=Save
+create_simple_template.Reset=Reset
+create_simple_template.PageType=Page Type
+create_simple_template.PageTypeName=Page Type Name
+create_simple_template.Image=Image
+create_simple_template.Description=Description
+create_simple_template.Type=Type
+create_simple_template.Component=Component
