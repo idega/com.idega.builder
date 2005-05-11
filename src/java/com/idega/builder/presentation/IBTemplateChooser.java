@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.11 2004/02/20 16:37:42 tryggvil Exp $
+ * $Id: IBTemplateChooser.java,v 1.12 2005/05/11 18:25:44 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 
+import javax.faces.component.UIComponentBase;
 import com.idega.presentation.ui.AbstractChooser;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
@@ -21,6 +22,12 @@ import com.idega.core.builder.data.ICPage;
  */
 public class IBTemplateChooser extends AbstractChooser {
   private String _name = null;
+  
+  
+  public IBTemplateChooser(){
+  	addForm(false);
+  }
+  
   /**
    *
    */
