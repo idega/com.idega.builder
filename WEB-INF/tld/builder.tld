@@ -90,5 +90,25 @@
 			<rtexprvalue>false</rtexprvalue>
 		</attribute>
 	</tag>
+	
+	<tag>
+		<name>pageChooser</name>
+		<tag-class>com.idega.builder.tag.IBPageChooserTag</tag-class>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>templateChooser</name>
+		<tag-class>com.idega.builder.tag.IBTemplateChooserTag</tag-class>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
 
 </taglib>
