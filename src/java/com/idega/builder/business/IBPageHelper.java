@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.48 2005/03/03 09:16:49 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.49 2005/05/11 18:27:25 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,10 @@
  *
  */
 package com.idega.builder.business;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
@@ -54,6 +59,8 @@ public class IBPageHelper implements Singleton  {
 	public static final String FOLDER = com.idega.builder.data.IBPageBMPBean.FOLDER;
 	public static final String DPT_PAGE = com.idega.builder.data.IBPageBMPBean.DPT_PAGE;
 	public static final String DPT_TEMPLATE = com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE;
+	public static final String SUBTYPE_SIMPLE_TEMPLATE = com.idega.builder.data.IBPageBMPBean.SUBTYPE_SIMPLE_TEMPLATE;
+	public static final String SUBTYPE_SIMPLE_TEMPLATE_PAGE = com.idega.builder.data.IBPageBMPBean.SUBTYPE_SIMPLE_TEMPLATE_PAGE;
 	private final String LINK_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
 	private final int PAGEVIEWER = 0;
 	private final int TEMPLATEVIEWER = 1;
@@ -170,6 +177,26 @@ public class IBPageHelper implements Singleton  {
 	 * @param tree A map of PageTreeNode objects representing the whole page tree
 	 * @param creatorContext the context of the User that created the page
 	 * @param subType Subtype of the current page
+	 * @param format Page format
+	 * @param sourceMarkup The source of the page in the format that is specified
+	 *
+	 * @return The id of the new IBPage
+	 */
+	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, String format, String sourceMarkup) {
+		return createNewPage(parentId, name, type, templateId, null, tree, creatorContext, subType, -1,format,sourceMarkup);
+	}
+	/**
+	 * Creates a new IBPage. Sets its name and type and stores it to the database.
+	 * If the parentId and the tree parameter are valid it also stores the page in
+	 * the cached IWContext tree.
+	 *
+	 * @param parentId The id of the parent of this page
+	 * @param name The name this page is to be given
+	 * @param type The type of the page, ie. PAGE, TEMPLATE, DRAFT, ...
+	 * @param templateId The id of the page this page is extending, if any
+	 * @param tree A map of PageTreeNode objects representing the whole page tree
+	 * @param creatorContext the context of the User that created the page
+	 * @param subType Subtype of the current page
 	 * @param domainId The id of the domain if you are creating a top level page
 	 * @param pageUri pageUri to the page
 	 *
@@ -179,7 +206,6 @@ public class IBPageHelper implements Singleton  {
 		String pageUri = null;
 		return createNewPage(parentId,name,type,templateId,pageUri,tree,creatorContext,subType,domainId);
 	}
-	
 	
 	/**
 	 * Creates a new IBPage. Sets its name and type and stores it to the database.
@@ -200,13 +226,47 @@ public class IBPageHelper implements Singleton  {
 	 * @return The id of the new IBPage
 	 */
 	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId){
+		return createNewPage(parentId,name,type,templateId,pageUri,tree,creatorContext,subType,domainId,null,null);
+	}
+
+	
+	
+	/**
+	 * Creates a new IBPage. Sets its name and type and stores it to the database.
+	 * If the parentId and the tree parameter are valid it also stores the page in
+	 * the cached IWContext tree.
+	 *
+	 * @param parentId The id of the parent of this page, if null the page will be a top-level page on the domain
+	 * @param name The name this page is to be given
+	 * @param type The type of the page, ie. PAGE, TEMPLATE, DRAFT, ...
+	 * @param templateId The id of the page this page is extending, if any
+	 * @param pageUri the URI (e.g. '/about/profile') that is a URI on the server to the page, if set null it will be generated
+	 * @param tree A map of PageTreeNode objects representing the whole page tree
+	 * @param creatorContext the context of the User that created the page
+	 * @param subType Subtype of the current page
+	 * @param domainId The id of the domain if you are creating a top level page
+	 * @param pageUri pageUri to the page
+	 * @param format Page format
+	 * @param sourceMarkup The source of the page in the format that is specified
+	 *
+	 * @return The id of the new IBPage
+	 */
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
 		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 		if (name == null)
 			name = "Untitled";
-		ibPage.setName(name);
+		ibPage.setName(name);	
+		if(format != null){
+			ibPage.setFormat(format);
+		} else {
+			ibPage.setFormat(IBPageBMPBean.FORMAT_IBXML);
+		}
 		ICFile file;
 		try {
 			file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+			if(sourceMarkup!=null){
+				storeStream(file.getFileValueForWrite(),sourceMarkup);
+			}
 		} catch (IDOLookupException e1) {
 			e1.printStackTrace();
 			return -1;
@@ -312,7 +372,7 @@ public class IBPageHelper implements Singleton  {
 			return (-1);
 		}
 		
-		if (tid != -1) {
+		if (tid != -1 && (IBPageBMPBean.FORMAT_IBXML.equals(ibPage.getFormat()))) {
 //			System.out.println("Creating page = " + ibPage.getName());
 			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
 			Page current = currentXMLPage.getPopulatedPage();
@@ -366,6 +426,39 @@ public class IBPageHelper implements Singleton  {
 		}
 		return (id);
 	}
+	
+	/**
+	 * Writes this page to the given OutputStream stream.
+	 * Called from the update method
+	 * @param stream
+	 */
+	protected synchronized void storeStream(OutputStream stream, String fileSource) {
+		try {
+				//convert the string to utf-8
+				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
+				//String theString = new String(this.toString().getBytes(),"UTF-8");
+
+				StringReader sr = new StringReader(fileSource);
+				
+				OutputStreamWriter out = new OutputStreamWriter(stream,"UTF-8");
+				
+				
+				int bufferlength=1000;
+				char[] buf = new char[bufferlength];
+				int read = sr.read(buf);
+				while (read!=-1){
+					out.write(buf,0,read);
+					read = sr.read(buf);
+				}
+				sr.close();
+				out.close();
+				stream.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.err);
+		}
+	}
+	
 	public boolean addElementToPage(ICPage ibPage, int[] templateObjInstID, IWUserContext iwuc) {
 		System.out.println("addElementToPage begins");
 		if (templateObjInstID != null) {
