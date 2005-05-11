@@ -74,6 +74,14 @@ public class IBPageHomeImpl extends com.idega.data.IDOFactory implements ICPageH
     		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 	
-	
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.data.ICPageHome#findAllPagesWithoutUri()
+	 */
+	public Collection findAllSimpleTemplates() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids  = ((IBPageBMPBean)entity).ejbFindAllSimpleTemplates();
+    		this.idoCheckInPooledEntity(entity);
+    		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 	
 }

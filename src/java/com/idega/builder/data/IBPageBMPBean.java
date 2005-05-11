@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.24 2005/03/02 09:19:33 laddi Exp $
+ * $Id: IBPageBMPBean.java,v 1.25 2005/05/11 18:19:35 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,6 +27,8 @@ import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDOQuery;
+import com.idega.data.query.Criteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
@@ -60,6 +62,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	private final static String PAGE_FORMAT="PAGE_FORMAT";
 	private final static String PAGE_URI="PAGE_URI";
 	private ICFile _file;
+	
 
 	public final static String PAGE = "P";
 	public final static String TEMPLATE = "T";
@@ -67,6 +70,8 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public final static String FOLDER = "F";
 	public final static String DPT_TEMPLATE = "A";
 	public final static String DPT_PAGE = "B";
+	public final static String SUBTYPE_SIMPLE_TEMPLATE = "SIMPLE_TEMPLATE";
+	public final static String SUBTYPE_SIMPLE_TEMPLATE_PAGE = "SIMPLE_TEMPLATE_PAGE";
 
 	public final static String DELETED = "Y";
 	public final static String NOT_DELETED = "N";
@@ -765,4 +770,13 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	    	return idoFindPKsByQuery(query);
 	}
 	
+	
+	/**
+	 * @return
+	 */
+	public Collection ejbFindAllSimpleTemplates() throws FinderException{
+	    SelectQuery query = idoSelectQuery();
+	    query.addCriteria(new MatchCriteria(idoQueryTable(),getColumnSubType(),MatchCriteria.LIKE,SUBTYPE_SIMPLE_TEMPLATE));
+	    	return idoFindPKsByQuery(query);
+	}
 }
