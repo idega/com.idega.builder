@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.12 2005/05/11 18:25:44 gummi Exp $
+ * $Id: IBTemplateChooser.java,v 1.13 2005/05/14 14:31:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,11 @@
  */
 package com.idega.builder.presentation;
 
-import javax.faces.component.UIComponentBase;
-import com.idega.presentation.ui.AbstractChooser;
-import com.idega.presentation.IWContext;
-import com.idega.idegaweb.IWBundle;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.builder.data.ICPage;
+import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.AbstractChooser;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
