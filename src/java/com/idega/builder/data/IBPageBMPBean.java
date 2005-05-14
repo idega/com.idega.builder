@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.25 2005/05/11 18:19:35 gummi Exp $
+ * $Id: IBPageBMPBean.java,v 1.26 2005/05/14 14:30:40 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,8 +27,6 @@ import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookupException;
-import com.idega.data.IDOQuery;
-import com.idega.data.query.Criteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
