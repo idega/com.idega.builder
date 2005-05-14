@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleTemplateCreationManagedBean.java,v 1.1 2005/05/11 18:26:32 gummi Exp $
+ * $Id: SimpleTemplateCreationManagedBean.java,v 1.2 2005/05/14 14:32:37 laddi Exp $
  * Created on 4.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/11 18:26:32 $ by $Author: gummi $
+ *  Last modified: $Date: 2005/05/14 14:32:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SimpleTemplateCreationManagedBean implements ActionListener {
 
@@ -241,7 +241,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	}
 	
 	public List getPageRegions(IWContext iwc){
-		String parentIdentifier = getParentTemplateIdentifier();
+		/*String parentIdentifier = */getParentTemplateIdentifier();
 
 		ICPage parentICPage = getParentTemplateICPage();
 		if(parentICPage != null){
