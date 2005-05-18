@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderPageFacetMap.java,v 1.5 2005/01/04 15:44:22 palli Exp $
+ * $Id: BuilderPageFacetMap.java,v 1.6 2005/05/18 14:40:21 tryggvil Exp $
  * Created on 16.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,13 +20,15 @@ import com.idega.presentation.PresentationObjectContainer;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/04 15:44:22 $ by $Author: palli $
+ *  Last modified: $Date: 2005/05/18 14:40:21 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 
+	public static final String PREFIX="builderRegion";
+	
 	/**
 	 * @param component
 	 */
@@ -77,7 +79,7 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 		// TODO Auto-generated method stub
 		//return super.get(key);
 		String facetKey=(String)key;
-		String PREFIX="builder";
+		
 		if(facetKey.startsWith(PREFIX)){
 			String regionKey = facetKey.substring(PREFIX.length(),facetKey.length());
 			UIComponent region = findRegionComponent(regionKey);
@@ -124,7 +126,6 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 	public Object put(Object key, Object value) {
 		//return super.put(key, value);
 		String facetKey = (String)key;
-		String PREFIX="builder";
 		if(facetKey.startsWith(PREFIX)){
 			String regionKey = facetKey.substring(PREFIX.length(),facetKey.length());
 			UIComponent region = findRegionComponent(regionKey);
@@ -207,7 +208,6 @@ public class BuilderPageFacetMap extends PresentationObjectComponentFacetMap {
 	 */
 	public Object remove(Object key) {
 		String facetKey = (String)key;
-		String PREFIX="builder";
 		if(facetKey.startsWith(PREFIX)){
 			String regionKey = facetKey.substring(PREFIX.length(),facetKey.length());
 			UIComponent region = findRegionComponent(regionKey);

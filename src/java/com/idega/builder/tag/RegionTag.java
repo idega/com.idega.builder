@@ -1,5 +1,5 @@
 /*
- * $Id: RegionTag.java,v 1.2 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: RegionTag.java,v 1.3 2005/05/18 14:40:21 tryggvil Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,10 +14,10 @@ import javax.faces.webapp.FacetTag;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/05/18 14:40:21 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RegionTag extends FacetTag {
 
@@ -76,13 +76,12 @@ public class RegionTag extends FacetTag {
 	 * (this method is called from UIComponentTag).
 	 */
 	public String getName() {
-		String PREFIX="builder";
 		if(super.getName()==null){
 			if(getLabel()!=null){
-				return PREFIX+getLabel();
+				return BuilderPageFacetMap.PREFIX+getLabel();
 			}
 			else{
-				return PREFIX+getId();
+				return BuilderPageFacetMap.PREFIX+getId();
 			}
 		}
 		else{
