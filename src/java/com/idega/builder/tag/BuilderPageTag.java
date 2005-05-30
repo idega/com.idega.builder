@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderPageTag.java,v 1.1 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: BuilderPageTag.java,v 1.2 2005/05/30 15:28:54 tryggvil Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,10 +14,10 @@ import javax.faces.webapp.UIComponentTag;
 
 /**
  * 
- *  Last modified: $Date: 2004/12/20 08:55:07 $ by $Author: tryggvil $
+ * Last modified: $Date: 2005/05/30 15:28:54 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BuilderPageTag extends UIComponentTag {
 
@@ -75,7 +75,6 @@ public class BuilderPageTag extends UIComponentTag {
 	 * @see javax.faces.webapp.UIComponentTag#getComponentType()
 	 */
 	public String getComponentType() {
-		// TODO Auto-generated method stub
 		String templateId = getTemplate();
 		return pageComponentId+templateId;
 	}
@@ -84,7 +83,6 @@ public class BuilderPageTag extends UIComponentTag {
 	 * @see javax.faces.webapp.UIComponentTag#getRendererType()
 	 */
 	public String getRendererType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
