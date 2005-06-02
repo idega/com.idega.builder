@@ -19,6 +19,7 @@ import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.view.KeyboardShortcut;
 import com.idega.core.view.ViewManager;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -66,7 +67,9 @@ public class IWBundleStarter implements IWBundleStartable {
 			IWMainApplication iwma = starterBundle.getApplication();
 			//IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			ViewManager viewManager = ViewManager.getInstance(iwma);
-			/*DefaultViewNode pagesViewNode = */new BuilderRootViewNode("pages",viewManager.getApplicationRoot());
+			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode("pages",viewManager.getApplicationRoot());
+			pagesViewNode.setKeyboardShortcut(new KeyboardShortcut("p"));
+			
 		}
 		
 		updateBuilderPageUris();
