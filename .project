@@ -5,7 +5,6 @@
   <comment>
   </comment>
   <projects>
-    <project>com.idega.core</project>
   </projects>
   <buildSpec>
     <buildCommand>
