@@ -14,6 +14,7 @@ import com.idega.io.serialization.Storable;
 import com.idega.io.serialization.StorableHolder;
 import com.idega.io.serialization.StorableProvider;
 import com.idega.presentation.IWContext;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.util.datastructures.HashMatrix;
 import com.idega.xml.XMLElement;
 
@@ -124,7 +125,7 @@ public class IBReference {
 
 		private Storable getSourceFromPropertyElementUsingEjb(String value) throws IOException {
 			try {
-				Class providerClass = Class.forName(providerClassName);
+				Class providerClass = RefactorClassRegistry.forName(providerClassName);
 				IDOHome home = IDOLookup.getHome(providerClass);
 				return (Storable) home.findByPrimaryKeyIDO(new Integer(value));
 			}
@@ -144,7 +145,7 @@ public class IBReference {
 		
 		private Storable getSourceFromPropertyElementUsingProvider(String value) throws IOException {
 			try {
-				Class providerClass = Class.forName(providerClassName);
+				Class providerClass = RefactorClassRegistry.forName(providerClassName);
 				// get an instance
 				StorableProvider provider = (StorableProvider) providerClass.newInstance();
 				return provider.getSource(value, sourceClassName, iwc);
@@ -185,7 +186,7 @@ public class IBReference {
 		
 		private StorableHolder createSourceUsingEjb() throws IOException {
 			try {
-				Class providerClass = Class.forName(providerClassName);
+				Class providerClass = RefactorClassRegistry.forName(providerClassName);
 				IDOHome home = IDOLookup.getHome(providerClass);
 				IDOEntity entity = home.createIDO();
 				entity.store();
@@ -207,7 +208,7 @@ public class IBReference {
 			
 		private StorableHolder createSourceUsingProvider(String value) throws IOException {
 			try {
-				Class providerClass = Class.forName(providerClassName);
+				Class providerClass = RefactorClassRegistry.forName(providerClassName);
 				// get an instance
 				StorableProvider provider = (StorableProvider) providerClass.newInstance();
 				return provider.createSource(value, sourceClassName ,iwc);

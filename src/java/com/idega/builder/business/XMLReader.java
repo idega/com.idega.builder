@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.59 2004/12/28 00:20:58 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.60 2005/06/03 15:20:15 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -413,7 +414,7 @@ public class XMLReader {
 		try {
 			if (id == null) {
 				try {
-					inst = (PresentationObject) Class.forName(className).newInstance();
+					inst = (PresentationObject) RefactorClassRegistry.forName(className).newInstance();
 				}
 				catch (Exception e) {
 					e.printStackTrace(System.err);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.47 2005/02/01 17:33:39 thomas Exp $
+ * $Id: IBPropertyHandler.java,v 1.48 2005/06/03 15:20:15 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,7 @@ import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.TextInput;
 import com.idega.repository.data.Instantiator;
+import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.util.caching.Cache;
@@ -631,7 +632,7 @@ public class IBPropertyHandler implements Singleton{
 		ICPropertyHandler theReturn = (ICPropertyHandler) getPropertyHandlersMap().get(handlerClassName);
 		if (theReturn == null) {
 			try {
-				Class theClass = Class.forName(handlerClassName);
+				Class theClass = RefactorClassRegistry.forName(handlerClassName);
 				theReturn = (ICPropertyHandler) theClass.newInstance();
 				putPropertyHandler(handlerClassName, theReturn);
 			}
