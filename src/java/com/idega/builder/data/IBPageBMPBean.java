@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.26 2005/05/14 14:30:40 laddi Exp $
+ * $Id: IBPageBMPBean.java,v 1.27 2005/06/27 20:22:25 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,6 +27,7 @@ import com.idega.core.net.data.ICProtocol;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookupException;
+import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
@@ -699,7 +700,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public java.util.Collection ejbFindByTemplate(Integer templateID)throws javax.ejb.FinderException{
 	    Table table = new Table(this);
 	    	SelectQuery query = new SelectQuery(table);
-	    	query.addColumn(new WildCardColumn());
+	    	query.addColumn(new Column(table, getIDColumnName()));
 	    	query.addCriteria(new MatchCriteria(table,getColumnTemplateID(),MatchCriteria.EQUALS,templateID));
 	    	return idoFindPKsByQuery(query);
 	}
@@ -707,7 +708,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public Integer ejbFindByPageUri(String pageUri,int domainId)throws javax.ejb.FinderException{
 	    Table table = new Table(this);
 	    	SelectQuery query = new SelectQuery(table);
-	    	query.addColumn(new WildCardColumn());
+	    	query.addColumn(new Column(table, getIDColumnName()));
 	    	query.addCriteria(new MatchCriteria(table,PAGE_URI,MatchCriteria.EQUALS,pageUri));
 	    	//query.addCriteria(new MatchCriteria(table,DOMAIN_ID,MatchCriteria.EQUALS,domainId));
 	    	return (Integer)idoFindOnePKByQuery(query);
@@ -763,7 +764,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	public Collection ejbFindAllPagesWithoutUri() throws FinderException{
 	    Table table = new Table(this);
 	    	SelectQuery query = new SelectQuery(table);
-	    	query.addColumn(new WildCardColumn());
+	    	query.addColumn(new Column(table, getIDColumnName()));
 	    	query.addCriteria(new MatchCriteria(table,PAGE_URI,MatchCriteria.IS,(String)null));
 	    	return idoFindPKsByQuery(query);
 	}
