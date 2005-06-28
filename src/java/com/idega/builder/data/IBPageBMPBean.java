@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.27 2005/06/27 20:22:25 sigtryggur Exp $
+ * $Id: IBPageBMPBean.java,v 1.28 2005/06/28 15:54:39 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,6 @@ import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
-import com.idega.data.query.WildCardColumn;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectReader;
 import com.idega.io.serialization.ObjectWriter;
