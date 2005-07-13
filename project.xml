@@ -94,8 +94,8 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <!--HELPER--><version>3.0.5</version><!--HELPER-->
-      <!--HELPERversion>SNAPSHOT</versionHELPER-->
+      <!--version>3.0.5</version-->
+      <version>SNAPSHOT</version>
 
       <type>jar</type>
       <url>http://www.idega.com/</url>
