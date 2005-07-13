@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.175 2005/03/06 00:57:58 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.176 2005/07/13 13:39:33 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -480,7 +480,7 @@ public class BuilderLogic implements Singleton {
 								((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 							if (curr.getIsTemplate()) {
 								((PresentationObjectContainer) obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
-								if (!((PresentationObjectContainer) obj).isLocked())
+								if (((PresentationObjectContainer) obj).isLocked())
 									((PresentationObjectContainer) obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 								else
 									((PresentationObjectContainer) obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
@@ -493,7 +493,7 @@ public class BuilderLogic implements Singleton {
 							((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
 						if (curr.getIsTemplate()) {
 							((PresentationObjectContainer) obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
-							if (!((PresentationObjectContainer) obj).isLocked())
+							if (((PresentationObjectContainer) obj).isLocked())
 								((PresentationObjectContainer) obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
 							else
 								((PresentationObjectContainer) obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
