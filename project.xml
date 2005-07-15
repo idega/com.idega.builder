@@ -99,9 +99,12 @@
 
       <type>jar</type>
       <url>http://www.idega.com/</url>
- 	  <properties>
-        <j:if test="${idegaweb.project.source.dependent}=='true'}"><eclipse.dependency>true</eclipse.dependency></j:if>
+      <properties>
+        <eclipse.dependency>true</eclipse.dependency>
       </properties>
+ 	  <!--properties>
+        <j:if test="${idegaweb.project.source.dependent}=='true'}"><eclipse.dependency>true</eclipse.dependency></j:if>
+      </properties-->
     </dependency>
   </dependencies>
 </project>
