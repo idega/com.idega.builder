@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.176 2005/07/13 13:39:33 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.177 2005/07/26 17:48:50 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1195,9 +1195,9 @@ public class BuilderLogic implements Singleton {
 					String currentPageId = getCurrentIBPage(iwc);
 					setTemplateId(currentPageId, newTemplateId);
 					//if (newId > 0)
-						getIBXMLPage(newTemplateId).addPageUsingThisTemplate(currentPageId);
+						getCachedBuilderPage(newTemplateId).addPageUsingThisTemplate(currentPageId);
 					//if (oldId > 0)
-						getIBXMLPage(oldId).removePageAsUsingThisTemplate(currentPageId);
+						getCachedBuilderPage(oldId).removePageAsUsingThisTemplate(currentPageId);
 				}
 			}
 		}
