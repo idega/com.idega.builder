@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.56 2004/12/20 08:55:06 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.57 2005/07/27 15:32:50 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import java.io.StringReader;
 import java.util.List;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import com.idega.builder.data.IBPageBMPBean;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -31,10 +32,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2004/12/20 08:55:06 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/07/27 15:32:50 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.56 $
+ * @version $Revision: 1.57 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -162,38 +163,20 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @param stream
 	 */
 	protected synchronized void storeStream(OutputStream stream) {
-	try {
-		
-		//if(this.getPageFormat().equals("IBXML")){
-				
-				XMLOutput output = new XMLOutput("  ", true);
-				output.setLineSeparator(System.getProperty("line.separator"));
-				output.setTextNormalize(true);
-				output.setEncoding("UTF-8");
-				output.output(getXMLDocument(), stream);
-				stream.close();
-		/*	}
-			else if(this.getPageFormat().equals("HTML")){
-				//convert the string to utf-8
-				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
-				//String theString = new String(this.toString().getBytes(),"UTF-8");
-				String theString = this.toString();
-				StringReader sr = new StringReader(theString);
-				
-				OutputStreamWriter out = new OutputStreamWriter(stream,"UTF-8");
-				
-				
-				int bufferlength=1000;
-				char[] buf = new char[bufferlength];
-				int read = sr.read(buf);
-				while (read!=-1){
-					out.write(buf,0,read);
-					read = sr.read(buf);
-				}
-				sr.close();
-				out.close();
-				stream.close();
-			}*/
+		try {
+			//Double check for the case when changing type from IBXML to HTML
+			if(this.getPageFormat().equals(IBPageBMPBean.FORMAT_IBXML)){
+					
+					XMLOutput output = new XMLOutput("  ", true);
+					output.setLineSeparator(System.getProperty("line.separator"));
+					output.setTextNormalize(true);
+					output.setEncoding("UTF-8");
+					output.output(getXMLDocument(), stream);
+					stream.close();
+			}
+			else{
+				super.storeStream(stream);
+			}
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.err);
