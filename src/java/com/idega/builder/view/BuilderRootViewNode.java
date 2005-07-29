@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderRootViewNode.java,v 1.3 2005/03/01 23:25:03 tryggvil Exp $
+ * $Id: BuilderRootViewNode.java,v 1.4 2005/07/29 17:02:59 tryggvil Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,16 +25,17 @@ import com.idega.util.StringHandler;
 
 
 /**
- * 
- *  Last modified: $Date: 2005/03/01 23:25:03 $ by $Author: tryggvil $
+ * <p>
+ * This is the ViewNode that is by default mapped to the root of the builder viewnode hierarchy, i.e. the one that is by 
+ * default mapped under '/pages/'. The instance of this class is the one that handles precicely this url, i.e. the 
+ * one on the root for pages.
+ * </p>
+ *  Last modified: $Date: 2005/07/29 17:02:59 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class BuilderRootViewNode extends DefaultViewNode {
-
-	private ViewHandler builderPageViewHandler;
-	
 	/**
 	 * @param viewId
 	 * @param parent
@@ -61,7 +62,8 @@ public class BuilderRootViewNode extends DefaultViewNode {
 	}*/
 	
 	public void setViewHandler(ViewHandler viewHandler) {
-		this.builderPageViewHandler=viewHandler;
+		//this.builderPageViewHandler=viewHandler;
+		super.setViewHandler(viewHandler);
 	}
 	
 	/* (non-Javadoc)
