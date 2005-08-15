@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.17 2005/03/01 23:25:03 tryggvil Exp $
+ * $Id: IBDomainBMPBean.java,v 1.18 2005/08/15 14:18:11 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -169,17 +169,30 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
 //  public int getGroupID() {
 //    return(getIntColumnValue(COLUMNNAME_GROUP_ID));
 //  }
-
+  
+  // thomas is asking: why are there two methods (getName and  getDomainName) for the same attribute?
   public String getName() {
     return(getDomainName());
   }
-
+  
+  public void setName(String name) {
+    setColumn(getColumnDomainName(),name);
+  }
+  
   public String getDomainName() {
     return(getStringColumnValue(getColumnDomainName()));
+  }
+  
+  public void setDomainName(String name) {
+  	setName(name);
   }
 
   public String getURL() {
     return(getStringColumnValue(getColumnURL()));
+  }
+  
+  public void setURL(String url) {
+  	setStringColumn(getColumnURL(), url);
   }
 
   public Collection getTopLevelGroupsUnderDomain() throws IDORelationshipException, RemoteException, FinderException{
@@ -208,9 +221,7 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
 //     setColumn(COLUMNNAME_GROUP_ID,group);
 //  }
 
-  public void setName(String name) {
-    setColumn(getColumnDomainName(),name);
-  }
+
   
   public void setServerName(String serverName){
       setColumn(COLUMNNAME_SERVER_NAME,serverName);
