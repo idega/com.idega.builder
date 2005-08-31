@@ -41,7 +41,7 @@ public static final String replaceMentCommon = "+";
         debug("String = "+_windowString);
 //        _windowString = TextSoap.findAndReplace(_windowString, "'",replaceMent);
         /*_windowString = TextSoap.findAndReplace(_windowString, ",",replaceMentCommon);
-        _windowString = TextSoap.findAndReplace(_windowString, "openwindow(", "");
+        _windowString = TextSoap.findAndReplace(_windowString, "iwOpenWindow(", "");
         _windowString = TextSoap.findAndReplace(_windowString, ")", "");*/
         _windowString = URLEncoder.encode(_windowString);
         getParentPage().setOnLoad(SELECT_FUNCTION_NAME+"('"+_windowString+"','"+_windowString+"')");

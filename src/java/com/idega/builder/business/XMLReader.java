@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.60 2005/06/03 15:20:15 thomas Exp $
+ * $Id: XMLReader.java,v 1.61 2005/08/31 02:13:21 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.builder.business;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.component.UIComponent;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.tag.BuilderPage;
 import com.idega.core.component.data.ICObjectInstance;
@@ -41,20 +42,22 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	private static void setAllBuilderControls(PresentationObject parent, boolean setTo) {
+	private static void setAllBuilderControls(UIComponent parent, boolean setTo) {
 		//List list = parent.getChildren();
 		//if (list != null) {
 			//Iterator it = list.iterator();
 			Iterator it = parent.getFacetsAndChildren();
 			while (it.hasNext()) {
 				try{
-					PresentationObject obj = (PresentationObject) it.next();
-					obj.setUseBuilderObjectControl(setTo);
-					obj.setBelongsToParent(true);
-					//if (obj instanceof PresentationObjectContainer) {
-					//	setAllBuilderControls((PresentationObjectContainer) obj, setTo);
-					//}
-					setAllBuilderControls(obj, setTo);
+					UIComponent obj = (UIComponent) it.next();
+					if(parent instanceof PresentationObject){
+						((PresentationObject)obj).setUseBuilderObjectControl(setTo);
+						((PresentationObject)obj).setBelongsToParent(true);
+						//if (obj instanceof PresentationObjectContainer) {
+						//	setAllBuilderControls((PresentationObjectContainer) obj, setTo);
+						//}
+						setAllBuilderControls(obj, setTo);
+					}
 				}
 				catch(ClassCastException cce){
 					cce.printStackTrace();
@@ -199,7 +202,7 @@ public class XMLReader {
 	 */
 	static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, CachedBuilderPage ibxml) {
 		List regionAttrList = reg.getAttributes();
-		PresentationObjectContainer newRegionParent = regionParent;
+		UIComponent newRegionParent = regionParent;
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
 			System.err.println("Table region has no attributes");
 			return;
@@ -275,11 +278,11 @@ public class XMLReader {
 			}
 			if (((Page) regionParent).getIsExtendingTemplate()) {
 				
-				newRegionParent = (PresentationObjectContainer) regionParent.getContainedObject(regionID);
+				newRegionParent = regionParent.getContainedObject(regionID);
 					
 				if (newRegionParent == null) {
 					if (label != null) {
-						newRegionParent = (PresentationObjectContainer) regionParent.getContainedLabeledObject(label.getValue());
+						newRegionParent = regionParent.getContainedLabeledObject(label.getValue());
 						if (newRegionParent == null) {
 							parseChildren = false;
 						}
@@ -288,7 +291,7 @@ public class XMLReader {
 						parseChildren = false;
 				}
 				else {
-					if ((newRegionParent.getBelongsToParent()) && (newRegionParent.isLocked()))
+					if (( ((PresentationObjectContainer)newRegionParent).getBelongsToParent()) && ( ((PresentationObjectContainer)newRegionParent).isLocked()))
 						parseChildren = false;
 					else
 						emptyParent = true;
@@ -310,13 +313,18 @@ public class XMLReader {
 
 		if (parseChildren) {
 			if (reg.hasChildren()) {
-				if (emptyParent)
-					newRegionParent.empty();
+				if (emptyParent){
+					List children = newRegionParent.getChildren();
+					if(children!=null){
+						children.clear();
+					}
+				}
+				
 				List children = reg.getChildren();
 				Iterator childrenIt = children.iterator();
 
 				while (childrenIt.hasNext())
-					parseElement((XMLElement) childrenIt.next(), newRegionParent, ibxml);
+					parseElement((XMLElement) childrenIt.next(), (PresentationObjectContainer) newRegionParent, ibxml);
 			}
 		}
 	}
@@ -324,10 +332,9 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void setProperties(XMLElement properties, PresentationObject object) {
+	static void setProperties(XMLElement properties, UIComponent object) {
 		String key = null;
 		Vector values = new Vector(1);
-		String vals[] = null;
 
 		List li = properties.getChildren();
 		Iterator it = li.iterator();
@@ -336,13 +343,6 @@ public class XMLReader {
 			XMLElement e = (XMLElement) it.next();
 
 			if (e.getName().equalsIgnoreCase(XMLConstants.NAME_STRING)) {
-				if (key != null) {
-					vals = new String[values.size()];
-					for (int i = 0; i < values.size(); i++)
-						vals[i] = (String) values.elementAt(i);
-					object.setProperty(key, vals);
-					values.clear();
-				}
 				key = e.getTextTrim();
 			}
 			else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
@@ -361,10 +361,14 @@ public class XMLReader {
 				}
 			}
 			else {
-				vals = new String[values.size()];
-				for (int i = 0; i < values.size(); i++)
-					vals[i] = (String) values.elementAt(i);
-				object.setProperty(key, vals);
+				//Eiki not tested ever, also not put into PropertyCache....
+				String vals[] = (String[]) values.toArray();
+				if(vals.length==1){
+					object.getAttributes().put(key,vals[0]);
+				}
+				else{
+					object.getAttributes().put(key,vals);
+				}
 			}
 		}
 	}
@@ -372,36 +376,42 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void setReflectionProperty(PresentationObject instance, String methodIdentifier, Vector stringValues) {
+	static void setReflectionProperty(UIComponent instance, String methodIdentifier, Vector stringValues) {
 		ComponentPropertyHandler.getInstance().setReflectionProperty(instance, methodIdentifier, stringValues);
 	}
 
 	/**
 	 *
 	 */
-	static void parseElement(XMLElement el, PresentationObjectContainer parent, CachedBuilderPage ibxml) {
-		PresentationObject inst = null;
+	public static UIComponent parseElement(XMLElement el, UIComponent parent, CachedBuilderPage ibxml) {
+	
+		UIComponent firstUICInstance = null;
+		
 		List at = el.getAttributes();
 		boolean isLocked = true;
 
 		if ((at == null) || (at.isEmpty())) {
 			System.err.println("No attributes specified");
-			return;
+			return null;
 		}
 		String className = null;
-		String id = null;
-		String ic_object_id = null;
+		String icObjectInstanceId = null;
+		String icObjectId = null;
+		ICObjectInstance icObjectInstance = null;
+		
 		Iterator it = at.iterator();
+		
+		//get the attributes for the module tag
 		while (it.hasNext()) {
 			XMLAttribute attr = (XMLAttribute) it.next();
 			if (attr.getName().equalsIgnoreCase(XMLConstants.CLASS_STRING)) {
 				className = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
-				id = attr.getValue();
+				icObjectInstanceId = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.IC_OBJECT_ID_STRING)) {
-				ic_object_id = attr.getValue();
+				icObjectId = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
 				if (attr.getValue().equals("false"))
@@ -411,51 +421,46 @@ public class XMLReader {
 			}
 		}
 
+		
 		try {
-			if (id == null) {
+			//first create an instance
+			//try to do it first by the classname (definately an UIComponent and maybe a PresentationObject)
+			if (className !=null && icObjectId == null) {
 				try {
-					inst = (PresentationObject) RefactorClassRegistry.forName(className).newInstance();
+					firstUICInstance = (UIComponent) RefactorClassRegistry.forName(className).newInstance();
 				}
 				catch (Exception e) {
 					e.printStackTrace(System.err);
 					throw new Exception("Invalid Class tag for module");
 				}
 			}
-			else {
-				ICObjectInstance ico = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(id));
-				inst = ico.getNewInstance();
-				inst.setICObjectInstance(ico);
-				if (ic_object_id == null) {
-					inst.setICObject(ico.getObject());
-				}
-				else {
-					inst.setICObjectID(Integer.parseInt(ic_object_id));
-				}
-				// added by gummi@idega.is // - cache ObjectInstance
-				if (!"0".equals(id)) {
-					setObjectInstance(ibxml, id, inst);
-				}
+			else if(icObjectInstanceId!=null){
+				icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(icObjectInstanceId));
+				firstUICInstance = icObjectInstance.getNewInstance();
 			}
 			
+			setInstanceId(ibxml, firstUICInstance, icObjectInstanceId, icObjectId, icObjectInstance);	
+			
+			
+			//TODO JSF Compat IS this necesery?
 			//This is a hack to refresh the property cache so that we don't get old properties.
 			//(this is used in JSF state restoring for PresentationObjects)
-			if(inst != null){
-				String objectCacheKey = Integer.toString(inst.getICObjectInstanceID());
-				PropertyCache.getInstance().clearPropertiesForKey(objectCacheKey);
-			}
-				
-
-			if (inst instanceof PresentationObjectContainer) {
+			String objectCacheKey = BuilderLogic.getInstance().getInstanceId(firstUICInstance);
+			PropertyCache.getInstance().clearPropertiesForKey(objectCacheKey);
+			//////
+			
+			//TODO are there any similar UIComponent containers we need to check for?
+			if (firstUICInstance instanceof PresentationObjectContainer) {
 				if (isLocked)
-					 ((PresentationObjectContainer) inst).lock();
+					 ((PresentationObjectContainer) firstUICInstance).lock();
 				else
-					 ((PresentationObjectContainer) inst).unlock();
+					 ((PresentationObjectContainer) firstUICInstance).unlock();
 			}
 
-			if (inst instanceof com.idega.presentation.Table) {
-				com.idega.presentation.Table table = (com.idega.presentation.Table) inst;
-				parent.add(table);
-
+			if (firstUICInstance instanceof com.idega.presentation.Table) {
+				com.idega.presentation.Table table = (com.idega.presentation.Table) firstUICInstance;
+				parent.getChildren().add(table);
+				
 				if (el.hasChildren()) {
 					List children = el.getChildren();
 					Iterator itr = children.iterator();
@@ -477,16 +482,20 @@ public class XMLReader {
 				}
 			}
 			else {
+				//Add the component to its parent
 				try {
-					parent.add(inst);
+					parent.getChildren().add(firstUICInstance);
 				}
 				catch (Exception e) {
 					e.printStackTrace(System.err);
 					if (parent != null)
-						System.err.println("ParentID: " + parent.getID());
-					if (inst != null)
-						System.err.println("InstanceID: " + inst.getICObjectInstanceID());
+						System.err.println("ParentID: " + parent.getId());
+					if (firstUICInstance != null){
+						System.err.println("InstanceID: " + BuilderLogic.getInstance().getInstanceId(firstUICInstance));
+					}
 				}
+				
+				//set the properties for it or do the same for its children
 				if (el.hasChildren()) {
 					List children = el.getChildren();
 					Iterator itr = children.iterator();
@@ -494,13 +503,13 @@ public class XMLReader {
 					while (itr.hasNext()) {
 						XMLElement child = (XMLElement) itr.next();
 						if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
-							setProperties(child, inst);
+							setProperties(child, firstUICInstance);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-							parseElement(child, (PresentationObjectContainer) inst, ibxml);
+							parseElement(child, (PresentationObjectContainer) firstUICInstance, ibxml);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
-							parseRegion(child, (PresentationObjectContainer) inst, ibxml);
+							parseRegion(child, (PresentationObjectContainer) firstUICInstance, ibxml);
 						}
 						else {
 							System.err.println("Unknown tag in xml description file : " + child.getName());
@@ -524,6 +533,42 @@ public class XMLReader {
 		catch (Exception e4) {
 			System.err.println("Exception");
 			e4.printStackTrace();
+		}
+		
+		
+		return firstUICInstance;
+	}
+
+	/**
+	 * @param ibxml
+	 * @param firstUICInstance
+	 * @param icObjectInstanceId
+	 * @param icObjectId
+	 * @param icObjectInstance
+	 * @return
+	 */
+	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String icObjectInstanceId, String icObjectId, ICObjectInstance icObjectInstance) {
+		if(firstUICInstance instanceof PresentationObject){
+			PresentationObject presentationObject = (PresentationObject) firstUICInstance;
+			presentationObject.setICObjectInstance(icObjectInstance);
+			
+			if (icObjectId == null) {
+				presentationObject.setICObject(icObjectInstance.getObject());
+			}
+			else {
+				presentationObject.setICObjectID(Integer.parseInt(icObjectId));
+			}
+			
+			//TODO JSF COMPAT FIND OUT WHAT THIS IS for??
+			// added by gummi@idega.is // - cache ObjectInstance
+			if (!"0".equals(icObjectInstanceId)) {
+				setObjectInstance(ibxml, icObjectInstanceId, presentationObject);
+			}
+			
+		}
+		else{
+			//set the instance id for a UIComponent
+			firstUICInstance.setId(icObjectInstanceId);
 		}
 	}
 

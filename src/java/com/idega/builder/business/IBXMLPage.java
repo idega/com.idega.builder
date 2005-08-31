@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.57 2005/07/27 15:32:50 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.58 2005/08/31 02:13:21 eiki Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2005/07/27 15:32:50 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/08/31 02:13:21 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.57 $
+ * @version $Revision: 1.58 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -394,10 +394,10 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		return super.toString();
 	}
 
-	public XMLElement copyModule(String pageKey, int ICObjectInstanceID) {
-		return XMLWriter.copyModule(this, ICObjectInstanceID);
+	public XMLElement copyModule(String instanceId) {
+		return XMLWriter.copyModule(this, instanceId);
 	}
-
+	
 	/**
 	 * Gets if the XML parser should verify the XML source.
 	 * Default is false.
@@ -450,8 +450,8 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
 				permissionview = true;
 			}
-			//Page page = getPageCacher().getPage(Integer.toString(id), iwc);
 			Page page = getNewPage(iwc);
+			
 			if (builderEditView && iwc.hasEditPermission(page)) {
 				return (getBuilderLogic().getBuilderTransformed(getPageKey(), page, iwc));
 			}

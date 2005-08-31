@@ -1,5 +1,5 @@
 /*
- * $Id: IBPasteModuleWindow.java,v 1.5 2004/06/24 20:12:24 tryggvil Exp $
+ * $Id: IBPasteModuleWindow.java,v 1.6 2005/08/31 02:13:21 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,8 +9,8 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.BuilderConstants;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IWContext;
 
 /**
@@ -24,7 +24,8 @@ public class IBPasteModuleWindow extends IBAdminWindow {
   private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String ACTION_PASTE = BuilderLogic.ACTION_PASTE;
   private static final String ACTION_PASTE_ABOVE = BuilderLogic.ACTION_PASTE_ABOVE;
-
+  private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
+	
   /**
    *
    */
@@ -43,6 +44,7 @@ public class IBPasteModuleWindow extends IBAdminWindow {
     String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
     String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
     String ic_object_id = iwc.getParameter(IC_OBJECT_ID_PARAMETER);
+    String label = iwc.getParameter(IB_LABEL_PARAMETER);
 
     if (control == null)
       close();
@@ -50,10 +52,10 @@ public class IBPasteModuleWindow extends IBAdminWindow {
     setParentToReload();
 
     if (control.equals(ACTION_PASTE)) {
-      pasteObject(iwc,ib_page_id,ib_parent_id);
+      pasteObject(iwc,ib_page_id,ib_parent_id,label);
     }
     else if (control.equals(ACTION_PASTE_ABOVE)) {
-      pasteObject(iwc,ib_page_id,ib_parent_id,ic_object_id);
+      pasteObject(ib_page_id,ib_parent_id,ic_object_id,iwc);
     }
 
     close();
@@ -62,14 +64,14 @@ public class IBPasteModuleWindow extends IBAdminWindow {
   /**
    *
    */
-  public void pasteObject(IWContext iwc, String pageKey, String parentID) {
-    BuilderLogic.getInstance().pasteModule(iwc,pageKey,parentID);
+  public void pasteObject(IWContext iwc, String pageKey, String parentID, String label) {
+    BuilderLogic.getInstance().pasteModuleIntoRegion(iwc,pageKey,parentID,label);
   }
 
   /**
    *
    */
-  public void pasteObject(IWContext iwc, String pageKey, String parentID, String objectID) {
-    BuilderLogic.getInstance().pasteModule(iwc,pageKey,parentID,objectID);
+  public void pasteObject(String pageKey, String parentID, String objectID,IWContext iwc) {
+    BuilderLogic.getInstance().pasteModuleAbove(iwc,pageKey,parentID,objectID);
   }
 }

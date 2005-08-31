@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.8 2004/06/24 20:12:24 tryggvil Exp $
+ * $Id: IBCopyModuleWindow.java,v 1.9 2005/08/31 02:13:21 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,8 +65,8 @@ public class IBCopyModuleWindow extends IBAdminWindow {
   /**
    *
    */
-  public void copyObject(IWContext iwc, String pageKey, String objectID) {
-    BuilderLogic.getInstance().copyModule(iwc,pageKey,Integer.parseInt(objectID));
+  public void copyObject(IWContext iwc, String pageKey, String instanceId) {
+    BuilderLogic.getInstance().copyModule(iwc,pageKey,instanceId);
   }
 
   /**

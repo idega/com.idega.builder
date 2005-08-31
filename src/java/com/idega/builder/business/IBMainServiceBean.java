@@ -5,6 +5,7 @@ package com.idega.builder.business;
 
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
+import javax.faces.component.UIComponent;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDomain;
@@ -165,6 +166,14 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	 */
 	public String getPageKeyByRequestURIAndServerName(String pageRequestUri,String serverName) {
 		return getBuilderLogic().getPageKeyByURIAndServerName(pageRequestUri,serverName);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.core.builder.business.BuilderService#getCopyOfUIComponentFromIBXML(UIComponent)
+	 */
+	public UIComponent getCopyOfUIComponentFromIBXML(UIComponent component) {
+		return getBuilderLogic().getCopyOfUIComponentFromIBXML(component);
+		
 	}
 	
 }

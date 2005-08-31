@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.177 2005/07/26 17:48:50 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.178 2005/08/31 02:13:21 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -11,6 +11,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.Vector;
 import javax.ejb.FinderException;
+import javax.faces.component.UIComponent;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
@@ -59,6 +60,7 @@ import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
+import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 
@@ -92,7 +94,7 @@ public class BuilderLogic implements Singleton {
 	public static final String ACTION_PASTE_ABOVE = "ACTION_PASTE_ABOVE";
 	public static final String ACTION_LIBRARY = "ACTION_LIBRARY";
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
-	/**
+	/**  
 	 *This is the key that holds the page in the builder session
 	 **/
 	private static final String SESSION_PAGE_KEY = "ib_page_id";
@@ -195,7 +197,7 @@ public class BuilderLogic implements Singleton {
 			PresentationObjectContainer parent = page;
 			while (iter.hasNext()) {
 				int index = iter.nextIndex();
-				PresentationObject item = (PresentationObject) iter.next();
+				UIComponent item = (UIComponent) iter.next();
 				transformObject(page,pageKey, item, index, parent, "-1", iwc);
 			}
 		}
@@ -211,7 +213,7 @@ public class BuilderLogic implements Singleton {
 			if (!page.isLocked()) {
 				page.add(getAddIcon(Integer.toString(-1), iwc, null));
 				if (!clipboardEmpty)
-					page.add(getPasteIcon(Integer.toString(-1), iwc));
+					page.add(getPasteIcon(Integer.toString(-1),null, iwc));
 				//page.add(layer);
 			}
 			if(page instanceof HtmlPage){
@@ -243,7 +245,7 @@ public class BuilderLogic implements Singleton {
 				page.add(getAddIcon(Integer.toString(-1), iwc, null));
 			}
 			if ((!clipboardEmpty)&&mayAddButtonsInPage)
-				page.add(getPasteIcon(Integer.toString(-1), iwc));
+				page.add(getPasteIcon(Integer.toString(-1), null, iwc));
 			if (page.getIsTemplate())
 				if (page.isLocked())
 					page.add(getLockedIcon(Integer.toString(-1), iwc, null));
@@ -315,7 +317,7 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 			else {
-				List list = ((PresentationObjectContainer) obj).getChildren();
+				List list = obj.getChildren();
 				if (list != null) {
 					ListIterator iter = list.listIterator();
 					while (iter.hasNext()) {
@@ -328,117 +330,31 @@ public class BuilderLogic implements Singleton {
 		}
 	}
 
-	private void processImageSet(String pageKey, int ICObjectInstanceID, int imageID, IWMainApplication iwma) {
-		setProperty(pageKey, ICObjectInstanceID, "image_id", Integer.toString(imageID), iwma);
+	private void processImageSet(String pageKey, String instanceId, int imageID, IWMainApplication iwma) {
+		setProperty(pageKey, instanceId, "image_id", Integer.toString(imageID), iwma);
 	}
 
-	private void transformObject(Page currentPage,String pageKey, PresentationObject obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
+	private void transformObject(Page currentPage,String pageKey, UIComponent obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
-		boolean clipboardEmpty = true;
-		if (pasted != null)
-			clipboardEmpty = false;
-		if (obj instanceof Image) {
-			Image imageObj = (Image) obj;
-			boolean useBuilderObjectControl = obj.getUseBuilderObjectControl();
-			int ICObjectIntanceID = imageObj.getICObjectInstanceID();
-			String sessionID = "ic_" + ICObjectIntanceID;
-			String session_image_id = (String) iwc.getSessionAttribute(sessionID);
-			if (session_image_id != null) {
-				int image_id = Integer.parseInt(session_image_id);
-				/**
-				 * @todo Change this so that id is done in a more appropriate place,
-				 * i.e. set the image_id permanently on the image
-				 */
-				processImageSet(pageKey, ICObjectIntanceID, image_id, iwc.getIWMainApplication());
-				iwc.removeSessionAttribute(sessionID);
-				imageObj.setImageID(image_id);
-			}
-			IBImageInserter inserter = null;
-			inserter = (new IBClassesFactory()).createImageInserterImpl();
-			inserter.setHasUseBox(false);
-			String width = imageObj.getWidth();
-			String height = imageObj.getHeight();
-			inserter.limitImageWidth(false);
-
-			if (width != null) {
-				inserter.setWidth(width);
-			}
-			if (height != null) {
-				inserter.setHeight(height);
-			}
-
-			int image_id = imageObj.getImageID(iwc);
-			if (image_id != -1) {
-				inserter.setImageId(image_id);
-			}
-			inserter.setImSessionImageName(sessionID);
-			inserter.setWindowToReload(true);
-			//inserter.maintainSessionParameter();
-			obj = (PresentationObject) inserter;
-			obj.setICObjectInstanceID(ICObjectIntanceID);
-			obj.setUseBuilderObjectControl(useBuilderObjectControl);
+		boolean clipboardEmpty = (pasted == null);
+		//We can either be working with pure UIComponents or PresentationObjects
+		boolean isPresentationObject = obj instanceof  PresentationObject;
+		
+		//Some very special cases, added the boolean to make it faster
+		if (isPresentationObject && obj instanceof Image) {
+			obj = transformImage(pageKey, obj, iwc);
 		}
-		//else if (obj instanceof Block) {
-		//}
-		//else if (obj instanceof PresentationObjectContainer) {
-		else if (obj.isContainer()) {
+		else if ( isPresentationObject && ((PresentationObject)obj).isContainer()) {
 			if (obj instanceof Table) {
-				Table tab = (Table) obj;
-				//tab.setBorder(1);
-				tab.setStyleAttribute("border","1px dotted grey");
-				int cols = tab.getColumns();
-				int rows = tab.getRows();
-				for (int x = 1; x <= cols; x++) {
-					for (int y = 1; y <= rows; y++) {
-						PresentationObjectContainer moc = tab.containerAt(x, y);
-						String newParentKey = obj.getICObjectInstanceID() + "." + x + "." + y;
-						if (moc != null) {
-							transformObject(currentPage,pageKey, moc, -1, tab, newParentKey, iwc);
-						}
-						//Page currentPage = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
-						if (currentPage.getIsExtendingTemplate()) {
-							if (tab.getBelongsToParent()) {
-								if (!tab.isLocked(x, y)) {
-									tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-									if (!clipboardEmpty)
-										tab.add(getPasteIcon(newParentKey, iwc), x, y);
-								}
-							}
-							else {
-								tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-								if (!clipboardEmpty)
-									tab.add(getPasteIcon(newParentKey, iwc), x, y);
-								if (currentPage.getIsTemplate()) {
-									tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-									if (tab.isLocked(x, y))
-										tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-									else
-										tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
-								}
-							}
-						}
-						else {
-							tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-							if (!clipboardEmpty)
-								tab.add(getPasteIcon(newParentKey, iwc), x, y);
-							if (currentPage.getIsTemplate()) {
-								tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-								if (tab.isLocked(x, y))
-									tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-								else
-									tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
-							}
-						}
-					}
-				}
+				transformTable(currentPage, pageKey, obj, iwc, clipboardEmpty);
 			}
 			else {
-				List list = ((PresentationObjectContainer) obj).getChildren();
-				if (list != null) {
+				List list = obj.getChildren();
+				if (list != null && !list.isEmpty()) {
 					ListIterator iter = list.listIterator();
 					while (iter.hasNext()) {
 						int index2 = iter.nextIndex();
-						PresentationObject item = (PresentationObject) iter.next();
+						UIComponent item = (UIComponent) iter.next();
 						/**
 						 * If parent is Table
 						 */
@@ -457,8 +373,9 @@ public class BuilderLogic implements Singleton {
 								newParentKey = region.getRegionId();
 							}
 							else{
-								newParentKey = Integer.toString(obj.getICObjectInstanceID());
+								newParentKey = getInstanceId(obj);
 							}
+							
 							transformObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, newParentKey, iwc);
 						}
 					}
@@ -466,49 +383,158 @@ public class BuilderLogic implements Singleton {
 				if (index != -1) {
 					//Page curr = getPageCacher().getPage(getCurrentIBPage(iwc), iwc);
 					Page curr = getPageCacher().getComponentBasedPage(getCurrentIBPage(iwc)).getNewPage(iwc);
+					PresentationObjectContainer container = ((PresentationObjectContainer) obj);
+					String instanceId = getInstanceId(obj);
+					
 					if (curr.getIsExtendingTemplate()) {
-						if (obj.getBelongsToParent()) {
-							if (!((PresentationObjectContainer) obj).isLocked()) {
-								((PresentationObjectContainer) obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+						if (container.getBelongsToParent()) {
+							if (!container.isLocked()) {
+								container.add(getAddIcon(instanceId, iwc, container.getLabel()));
 								if (!clipboardEmpty)
-									((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+									container.add(getPasteIcon(instanceId,container.getLabel(), iwc));
 							}
 						}
 						else {
-							((PresentationObjectContainer) obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+							container.add(getAddIcon(instanceId, iwc, container.getLabel()));
 							if (!clipboardEmpty)
-								((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+								container.add(getPasteIcon(instanceId,container.getLabel(), iwc));
 							if (curr.getIsTemplate()) {
-								((PresentationObjectContainer) obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
-								if (((PresentationObjectContainer) obj).isLocked())
-									((PresentationObjectContainer) obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+								container.add(getLabelIcon(instanceId, iwc, container.getLabel()));
+								if (container.isLocked())
+									container.add(getLockedIcon(instanceId, iwc, container.getLabel()));
 								else
-									((PresentationObjectContainer) obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+									container.add(getUnlockedIcon(instanceId, iwc));
 							}
 						}
 					}
 					else {
-						((PresentationObjectContainer) obj).add(getAddIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+						container.add(getAddIcon(instanceId, iwc, container.getLabel()));
 						if (!clipboardEmpty)
-							((PresentationObjectContainer) obj).add(getPasteIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+							container.add(getPasteIcon(instanceId,container.getLabel(), iwc));
 						if (curr.getIsTemplate()) {
-							((PresentationObjectContainer) obj).add(getLabelIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
-							if (((PresentationObjectContainer) obj).isLocked())
-								((PresentationObjectContainer) obj).add(getLockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc, ((PresentationObjectContainer) obj).getLabel()));
+							container.add(getLabelIcon(instanceId, iwc, container.getLabel()));
+							if (container.isLocked())
+								container.add(getLockedIcon(instanceId, iwc, container.getLabel()));
 							else
-								((PresentationObjectContainer) obj).add(getUnlockedIcon(Integer.toString(obj.getICObjectInstanceID()), iwc));
+								container.add(getUnlockedIcon(instanceId, iwc));
 						}
 					}
 				}
 			}
 		}
-		if (obj.getUseBuilderObjectControl()) {
+		if ( (isPresentationObject && ((PresentationObject) obj).getUseBuilderObjectControl()) || !isPresentationObject ) {
 			if (index != -1) {
 				//parent.remove(obj);
 				//parent.add(new IBObjectControl(obj,parent,parentKey,iwc,index));
 				parent.set(index, new IBObjectControl(obj, parent, parentKey, iwc, index));
 			}
 		}
+	
+	}
+
+	/**
+	 * @param currentPage
+	 * @param pageKey
+	 * @param obj
+	 * @param iwc
+	 * @param clipboardEmpty
+	 */
+	protected void transformTable(Page currentPage, String pageKey, UIComponent obj, IWContext iwc, boolean clipboardEmpty) {
+		Table tab = (Table) obj;
+		int cols = tab.getColumns();
+		int rows = tab.getRows();
+		for (int x = 1; x <= cols; x++) {
+			for (int y = 1; y <= rows; y++) {
+				PresentationObjectContainer moc = tab.containerAt(x, y);
+				String newParentKey = tab.getICObjectInstanceID() + "." + x + "." + y;
+				if (moc != null) {
+					transformObject(currentPage,pageKey, moc, -1, tab, newParentKey, iwc);
+				}
+				//Page currentPage = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
+				if (currentPage.getIsExtendingTemplate()) {
+					if (tab.getBelongsToParent()) {
+						if (!tab.isLocked(x, y)) {
+							tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+							if (!clipboardEmpty)
+								tab.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc), x, y);
+						}
+					}
+					else {
+						tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+						if (!clipboardEmpty)
+							tab.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc), x, y);
+						if (currentPage.getIsTemplate()) {
+							tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+							if (tab.isLocked(x, y))
+								tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+							else
+								tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
+						}
+					}
+				}
+				else {
+					tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+					if (!clipboardEmpty)
+						tab.add(getPasteIcon(newParentKey, tab.getLabel(x,y) ,iwc), x, y);
+					if (currentPage.getIsTemplate()) {
+						tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+						if (tab.isLocked(x, y))
+							tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+						else
+							tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param pageKey
+	 * @param obj
+	 * @param iwc
+	 * @return
+	 */
+	protected UIComponent transformImage(String pageKey, UIComponent obj, IWContext iwc) {
+		Image imageObj = (Image) obj;
+		boolean useBuilderObjectControl = imageObj.getUseBuilderObjectControl();
+		int ICObjectIntanceID = imageObj.getICObjectInstanceID();
+		String sessionID = "ic_" + ICObjectIntanceID;
+		String session_image_id = (String) iwc.getSessionAttribute(sessionID);
+		if (session_image_id != null) {
+			int image_id = Integer.parseInt(session_image_id);
+			/**
+			 * @todo Change this so that id is done in a more appropriate place,
+			 * i.e. set the image_id permanently on the image
+			 */
+			processImageSet(pageKey, Integer.toString(ICObjectIntanceID), image_id, iwc.getIWMainApplication());
+			iwc.removeSessionAttribute(sessionID);
+			imageObj.setImageID(image_id);
+		}
+		IBImageInserter inserter = null;
+		inserter = (new IBClassesFactory()).createImageInserterImpl();
+		inserter.setHasUseBox(false);
+		String width = imageObj.getWidth();
+		String height = imageObj.getHeight();
+		inserter.limitImageWidth(false);
+
+		if (width != null) {
+			inserter.setWidth(width);
+		}
+		if (height != null) {
+			inserter.setHeight(height);
+		}
+
+		int image_id = imageObj.getImageID(iwc);
+		if (image_id != -1) {
+			inserter.setImageId(image_id);
+		}
+		inserter.setImSessionImageName(sessionID);
+		inserter.setWindowToReload(true);
+		//inserter.maintainSessionParameter();
+		obj = (PresentationObject) inserter;
+		((PresentationObject)obj).setICObjectInstanceID(ICObjectIntanceID);
+		((PresentationObject)obj).setUseBuilderObjectControl(useBuilderObjectControl);
+		return obj;
 	}
 
 	public ICPage getCurrentIBPageEntity(IWContext iwc) throws Exception {
@@ -801,15 +827,15 @@ public class BuilderLogic implements Singleton {
 	 * Returns the real properties set for the property if the property is set
 	 * with the specified keys Returns the selectedValues[] if nothing found
 	 */
-	public String[] getPropertyValues(IWMainApplication iwma, String pageKey, int ObjectInstanceId, String propertyName, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
+	public String[] getPropertyValues(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		return IBPropertyHandler.getInstance().getPropertyValues(iwma, xml, ObjectInstanceId, propertyName, selectedValues, returnSelectedValueIfNothingFound);
+		return IBPropertyHandler.getInstance().getPropertyValues(iwma, xml, instanceId, propertyName, selectedValues, returnSelectedValueIfNothingFound);
 		//return XMLWriter.getPropertyValues(xml,ObjectInstanceId,propertyName);
 	}
 
-	public boolean removeProperty(IWMainApplication iwma, String pageKey, int ObjectInstanceId, String propertyName, String[] values) {
+	public boolean removeProperty(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] values) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.removeProperty(iwma, xml, ObjectInstanceId, propertyName, values)) {
+		if (XMLWriter.removeProperty(iwma, xml, instanceId, propertyName, values)) {
 			xml.store();
 			return true;
 		}
@@ -821,27 +847,27 @@ public class BuilderLogic implements Singleton {
 	/**
 	 * Returns the first property if there is an array of properties set
 	 */
-	public String getProperty(String pageKey, int ObjectInstanceId, String propertyName) {
+	public String getProperty(String pageKey, String instanceId, String propertyName) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		return XMLWriter.getProperty(xml, ObjectInstanceId, propertyName);
+		return XMLWriter.getProperty(xml, instanceId, propertyName);
 	}
 
 	/**
 	 * Returns true if properties changed, or error, else false
 	 */
-	public boolean setProperty(String pageKey, int ObjectInstanceId, String propertyName, String propertyValue, IWMainApplication iwma) {
+	public boolean setProperty(String pageKey, String instanceId, String propertyName, String propertyValue, IWMainApplication iwma) {
 		String[] values = {propertyValue};
-		return setProperty(pageKey, ObjectInstanceId, propertyName, values, iwma);
+		return setProperty(pageKey, instanceId, propertyName, values, iwma);
 	}
 
 	/**
 	 * Returns true if properties changed, or error, else false
 	 */
-	public boolean setProperty(String pageKey, int ObjectInstanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
+	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
 		try {
 			IBXMLPage xml = getIBXMLPage(pageKey);
-			boolean allowMultivalued = isPropertyMultivalued(propertyName, ObjectInstanceId, iwma);
-			if (XMLWriter.setProperty(iwma, xml, ObjectInstanceId, propertyName, propertyValues, allowMultivalued)) {
+			boolean allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwma);
+			if (XMLWriter.setProperty(iwma, xml, instanceId, propertyName, propertyValues, allowMultivalued)) {
 				xml.store();
 				return (true);
 			}
@@ -858,10 +884,10 @@ public class BuilderLogic implements Singleton {
 	/**
 	 * Returns true if properties changed, or error, else false
 	 */
-	public boolean isPropertySet(String pageKey, int ObjectInstanceId, String propertyName, IWMainApplication iwma) {
+	public boolean isPropertySet(String pageKey, String instanceId, String propertyName, IWMainApplication iwma) {
 		try {
 			IBXMLPage xml = getIBXMLPage(pageKey);
-			return XMLWriter.isPropertySet(iwma, xml, ObjectInstanceId, propertyName);
+			return XMLWriter.isPropertySet(iwma, xml, instanceId, propertyName);
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -870,20 +896,24 @@ public class BuilderLogic implements Singleton {
 	}
 
 	// add by Aron 20.sept 2001 01:49
-	public boolean deleteModule(String pageKey, String parentObjectInstanceID, int ICObjectInstanceID) {
+	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		try {
-			PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(ICObjectInstanceID);
+			int objectInstanceId = Integer.parseInt(instanceId);
+			PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(objectInstanceId);
 			if (Block != null) {
 				if (Block instanceof Builderaware) {
-					((Builderaware) Block).deleteBlock(ICObjectInstanceID);
+					((Builderaware) Block).deleteBlock(Integer.parseInt(instanceId));
 				}
 			}
+		}
+		catch (NumberFormatException ex) {
+			//its a UIComponent
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		if (XMLWriter.deleteModule(xml, parentObjectInstanceID, ICObjectInstanceID)) {
+		if (XMLWriter.deleteModule(xml, parentObjectInstanceID, instanceId)) {
 			xml.store();
 			return (true);
 		}
@@ -895,9 +925,10 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *  	 *
 	 */
-	public boolean copyModule(IWContext iwc, String pageKey, int ICObjectInstanceID) {
+	public boolean copyModule(IWUserContext iwc, String pageKey, String instanceId) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		XMLElement element = xml.copyModule(pageKey, ICObjectInstanceID);
+		
+		XMLElement element = xml.copyModule(instanceId);
 		if (element == null)
 			return (false);
 		else {
@@ -910,23 +941,27 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *  	 *
 	 */
-	public boolean pasteModule(IWContext iwc, String pageKey, String parentID) {
+	public boolean pasteModuleIntoRegion(IWUserContext iwc, String pageKey, String regionId, String regionLabel) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		if (element == null)
 			return (false);
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (XMLWriter.pasteElement(xml, pageKey, parentID, toPaste)) {
+		if (XMLWriter.pasteElement(xml, pageKey, regionId, regionLabel,toPaste)) {
 			xml.store();
 			return (true);
 		}
 		return (false);
 	}
+	
+	public boolean pasteModule(IWUserContext iwc, String pageKey, String parentID) {
+		return pasteModuleIntoRegion(iwc,pageKey,parentID,null);
+	}
 
 	/**
 	 *  	 *
 	 */
-	public boolean pasteModule(IWContext iwc, String pageKey, String parentID, String objectID) {
+	public boolean pasteModuleAbove(IWUserContext iwc,String pageKey, String parentID, String objectID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		System.out.println("pageKey = " + pageKey);
 		System.out.println("parentID = " + parentID);
@@ -941,6 +976,77 @@ public class BuilderLogic implements Singleton {
 		}
 		return (false);
 	}
+	
+	public boolean pasteModuleBelow(IWUserContext iwc, String pageKey, String parentID, String objectID) {
+		IBXMLPage xml = getIBXMLPage(pageKey);
+		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
+		if (element == null)
+			return (false);
+		XMLElement toPaste = (XMLElement) element.clone();
+		if (XMLWriter.pasteElementBelow(xml, pageKey, parentID, objectID, toPaste)) {
+			xml.store();
+			return (true);
+		}
+		return (false);
+	}
+	
+	
+	/**
+	 * Copies, cuts and then pastes the module
+	 * @param iwc
+	 * @param objectId
+	 * @param pageKey
+	 * @param formerParentId
+	 * @param newParentId
+	 * @param objectIdToPasteBelow
+	 * @return
+	 * @throws Exception 
+	 */
+	public boolean moveModule(IWUserContext iwc, String instanceId, String pageKey, String formerParentId, String newParentId, String objectIdToPasteBelow) throws Exception{
+
+		System.out.println("pageKey = " + pageKey);
+		System.out.println("parentID = " + formerParentId);
+		System.out.println("instanceId = " + instanceId);
+		System.out.println("newparentID = " + 	newParentId);
+		System.out.println("instanceIdToPasteBelow = " +objectIdToPasteBelow);
+		
+		boolean returner = false;
+		
+		//find the XMLElement
+		//remove it from the page
+		//insert it after the object we dropped on
+		IBXMLPage page = getIBXMLPage(pageKey);
+		//find
+		XMLElement moduleXML =  XMLWriter.findModule(page,instanceId);
+		XMLElement parentXML =  XMLWriter.findModule(page,formerParentId);
+		
+		XMLElement moduleXMLCopy = (XMLElement)moduleXML.clone();
+		
+		if(moduleXML!=null && parentXML!=null){
+			//remove	
+			try {
+				returner = XMLWriter.removeElement(parentXML,moduleXML,false);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				throw new Exception(e.getMessage());
+			}
+			
+			if(!returner) return false;
+			//insert
+
+			returner = XMLWriter.insertElementBelow(page,newParentId,moduleXMLCopy,objectIdToPasteBelow);
+			if(!returner){
+				return false;
+			}
+			
+			return page.store();
+		}
+		
+		return false;
+	}
+	
+	
 
 	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
@@ -988,6 +1094,8 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
+		//TODO add handling for generic UIComponent adding
+		
 		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label)) {
 			xml.store();
 			return (true);
@@ -1022,16 +1130,16 @@ public class BuilderLogic implements Singleton {
 		return null;
 	}
 
-	private boolean isPropertyMultivalued(String propertyName, int icObjecctInstanceID, IWMainApplication iwma) throws Exception {
+	private boolean isPropertyMultivalued(String propertyName, String instanceId, IWMainApplication iwma) throws Exception {
 		try {
 			Class c = null;
 			IWBundle iwb = null;
-			if (icObjecctInstanceID == -1) {
+			if ("-1".equals(instanceId)) {
 				c = com.idega.presentation.Page.class;
 				iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
 			}
 			else {
-				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjecctInstanceID);
+				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(instanceId));
 				c = instance.getObject().getObjectClass();
 				iwb = instance.getObject().getBundle(iwma);
 			}
@@ -1069,7 +1177,7 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *  	 *
 	 */
-	public PresentationObject getPasteIcon(String parentKey, IWContext iwc) {
+	public PresentationObject getPasteIcon(String parentKey,String regionLabel, IWContext iwc) {
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		Image pasteImage = bundle.getImage("paste.gif", "Paste component");
 		Link link = new Link(pasteImage);
@@ -1077,6 +1185,9 @@ public class BuilderLogic implements Singleton {
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(IB_CONTROL_PARAMETER, ACTION_PASTE);
 		link.addParameter(IB_PARENT_PARAMETER, parentKey);
+		if(regionLabel!=null){
+			link.addParameter(IB_LABEL_PARAMETER , regionLabel);
+		}
 		return (link);
 	}
 
@@ -1246,7 +1357,7 @@ public class BuilderLogic implements Singleton {
 		XMLAttribute newPageLink = new XMLAttribute(XMLConstants.LINK_TO, newLinkedPageId);
 		element.setAttribute(id);
 		element.setAttribute(newPageLink);
-		XMLWriter.addNewElement(page, -1, element);
+		XMLWriter.addNewElement(page, "-1", element);
 		page.store();
 		getPageCacher().flagPageInvalid(currentPageID);
 	}
@@ -1385,6 +1496,8 @@ public class BuilderLogic implements Singleton {
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
+		
+		//add drop target and on paste icon
 		return (link);
 	}
 	
@@ -1436,7 +1549,7 @@ public class BuilderLogic implements Singleton {
 		return (link);
 	}
 
-	public PresentationObject getCutIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc)
 	{
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image cutImage = bundle.getImage("shared/menu/cut.gif", "Cut component");
@@ -1452,7 +1565,7 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getCopyIcon(String key, String parentKey, IWContext iwc)
 	{
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image copyImage = bundle.getImage("shared/menu/copy.gif", "Copy component");
@@ -1466,7 +1579,7 @@ public class BuilderLogic implements Singleton {
 		return (link);
 	}
 
-	public PresentationObject getDeleteIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc)
 	{
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image deleteImage = bundle.getImage("shared/menu/delete.gif", "Delete component");
@@ -1479,7 +1592,7 @@ public class BuilderLogic implements Singleton {
 		return link;
 	}
 
-	public PresentationObject getPermissionIcon(int key, IWContext iwc)
+	public PresentationObject getPermissionIcon(String key, IWContext iwc)
 	{
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image editImage = bundle.getImage("shared/menu/permission.gif", "Set permissions");
@@ -1494,7 +1607,7 @@ public class BuilderLogic implements Singleton {
 		return link;
 	}
 
-	public PresentationObject getEditIcon(int key, IWContext iwc)
+	public PresentationObject getEditIcon(String key, IWContext iwc)
 	{
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image editImage = bundle.getImage("shared/menu/edit.gif", "Properties");
@@ -1509,7 +1622,7 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getPasteAboveIcon(String key, String parentKey, IWContext iwc)
 	{
 		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
 		Image pasteImage = bundle.getImage("shared/menu/paste.gif", "Paste above component");
@@ -1529,4 +1642,36 @@ public class BuilderLogic implements Singleton {
 		return ViewManager.getInstance(IWMainApplication.getDefaultIWMainApplication()).getApplicationRoot().getChild(BUILDER_PAGE_VIEW_ID);
 	}
 	
+	
+	public String getInstanceId(UIComponent object) {
+		if(object instanceof PresentationObject){
+			return Integer.toString(((PresentationObject)object).getICObjectInstanceID());
+		}
+		else{
+			//set from the xml
+			return object.getId();
+		}
+	}
+	
+
+	/**
+	 * Gets a copy of a UIComponent by its instanceId (component.getId()) if it is found in the current pages ibxml
+	 * @param component
+	 * @return A reset copy of the component from ibxml
+	 */
+	public UIComponent getCopyOfUIComponentFromIBXML(UIComponent component) {
+		String instanceId = getInstanceId(component);
+		UIComponent newComponent = null;
+		try {
+			newComponent = (UIComponent) component.getClass().newInstance();
+			newComponent.setId(instanceId);
+			PropertyCache.getInstance().setAllCachedPropertiesOnInstance(instanceId, newComponent);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return component;
+		}
+		return newComponent;
+	}
+
 }

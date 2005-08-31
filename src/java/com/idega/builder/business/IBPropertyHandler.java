@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.48 2005/06/03 15:20:15 thomas Exp $
+ * $Id: IBPropertyHandler.java,v 1.49 2005/08/31 02:13:21 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -104,24 +104,24 @@ public class IBPropertyHandler implements Singleton{
 	 *
 	 * @return
 	 */
-	public IWProperty getMethodProperty(int ic_object_instance_id, String methodPropertyKey, IWMainApplication iwma) throws Exception {
-		IWPropertyList list = getMethods(ic_object_instance_id, iwma);
+	public IWProperty getMethodProperty(String instanceId, String methodPropertyKey, IWMainApplication iwma) throws Exception {
+		IWPropertyList list = getMethods(instanceId, iwma);
 		if (list != null) {
 			return list.getIWProperty(methodPropertyKey);
 		}
 		return null;
 	}
 
-	public IWPropertyList getMethods(int ic_object_instance_id, IWMainApplication iwma) throws Exception {
+	public IWPropertyList getMethods(String instanceId, IWMainApplication iwma) throws Exception {
 		String componentKey = null;
 		IWBundle iwb = null;
 		//Hardcoded -1 for the top page
-		if (ic_object_instance_id == -1) {
+		if ("-1".equals(instanceId) ) {
 			componentKey = "com.idega.presentation.Page";
 			iwb = iwma.getBundle(com.idega.presentation.Page.IW_BUNDLE_IDENTIFIER);
 		}
 		else {
-			ICObjectInstance icoi = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(ic_object_instance_id);
+			ICObjectInstance icoi = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(instanceId));
 			ICObject obj = icoi.getObject();
 			iwb = obj.getBundle(iwma);
 			componentKey = obj.getClassName();
@@ -132,6 +132,8 @@ public class IBPropertyHandler implements Singleton{
 	public IWPropertyList getMethods(IWBundle iwb, String componentKey) {
 		//IWPropertyList compList = iwb.getComponentList();
 		//IWPropertyList componentProperties = compList.getPropertyList(componentKey);
+		
+		//TODO GET PROPERTYLIST FOR JSF COMPONENTS
 		IWPropertyList componentProperties = iwb.getComponentPropertyList(componentKey);
 		if (componentProperties != null) {
 			IWPropertyList methodList = componentProperties.getPropertyList(METHODS_KEY);
@@ -143,9 +145,9 @@ public class IBPropertyHandler implements Singleton{
 		return null;
 	}
 
-	public int getColumnCountForTable(IWContext iwc, String ICObjectInstanceID) {
+	public int getColumnCountForTable(IWContext iwc, String instanceId) {
 		String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
-		String theReturn = BuilderLogic.getInstance().getProperty(pageKey, Integer.parseInt(ICObjectInstanceID), TABLE_COLUMNS_PROPERTY);
+		String theReturn = BuilderLogic.getInstance().getProperty(pageKey, instanceId, TABLE_COLUMNS_PROPERTY);
 		if (theReturn != null) {
 			try {
 				return Integer.parseInt(theReturn);
@@ -159,9 +161,9 @@ public class IBPropertyHandler implements Singleton{
 	/**	
 	 * @return true if the Method Parameter property is a Primary Key
 	 */
-	boolean isMethodParameterPrimaryKey(IWMainApplication iwma, int ICObjectInstanceId, String methodIdentifier, int parameterIndex) {
+	boolean isMethodParameterPrimaryKey(IWMainApplication iwma, String instanceId, String methodIdentifier, int parameterIndex) {
 		try {
-			IWProperty methodProperty = this.getMethodProperty(ICObjectInstanceId, methodIdentifier, iwma);
+			IWProperty methodProperty = this.getMethodProperty(instanceId, methodIdentifier, iwma);
 			String sValue = getMethodParameterProperty(methodProperty, parameterIndex, METHOD_PARAMETER_PROPERTY_PRIMARY_KEY);
 			if (sValue != null) {
 				if (sValue.equalsIgnoreCase("true")) {
@@ -188,13 +190,13 @@ public class IBPropertyHandler implements Singleton{
 	 * Returns the real properties set for the property if the property is set with the specified keys
 	 * Returns the selectedValues[] if nothing found	
 	 */
-	public String[] getPropertyValues(IWMainApplication iwma, IBXMLPage xml, int ICObjectInstanceId, String methodIdentifier, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
+	public String[] getPropertyValues(IWMainApplication iwma, IBXMLPage xml, String instanceId, String methodIdentifier, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
 		//if(selectedValues!=null){
-		List availableValues = XMLWriter.getPropertyValues(xml, ICObjectInstanceId, methodIdentifier);
+		List availableValues = XMLWriter.getPropertyValues(xml, instanceId, methodIdentifier);
 		if (selectedValues != null) {
 			for (int i = 0; i < selectedValues.length; i++) {
 				String selectedValue = selectedValues[i];
-				boolean isPrimaryKey = isMethodParameterPrimaryKey(iwma, ICObjectInstanceId, methodIdentifier, i);
+				boolean isPrimaryKey = isMethodParameterPrimaryKey(iwma, instanceId, methodIdentifier, i);
 				if (isPrimaryKey) {
 					Iterator iter = availableValues.iterator();
 					while (iter.hasNext()) {
@@ -220,9 +222,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	
-	public int getRowCountForTable(IWContext iwc, String ICObjectInstanceID) {
+	public int getRowCountForTable(IWContext iwc, String instanceId) {
 		String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
-		String theReturn = BuilderLogic.getInstance().getProperty(pageKey, Integer.parseInt(ICObjectInstanceID), TABLE_ROWS_PROPERTY);
+		String theReturn = BuilderLogic.getInstance().getProperty(pageKey,instanceId, TABLE_ROWS_PROPERTY);
 		if (theReturn != null) {
 			try {
 				return Integer.parseInt(theReturn);
@@ -240,9 +242,9 @@ public class IBPropertyHandler implements Singleton{
    * asks for its proberty value in order to decide which values it should
    * deliver for the drop down menue of the DropDownMenuSpecifiedChoiceHandler.
   */
- public String getPropertyValue(IWContext iwc, String ICObjectInstanceID, String methodIdentifier) {
+ public String getPropertyValue(IWContext iwc, String instanceId, String methodIdentifier) {
     String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
-    String theReturn = BuilderLogic.getInstance().getProperty(pageKey, Integer.parseInt(ICObjectInstanceID), methodIdentifier);
+    String theReturn = BuilderLogic.getInstance().getProperty(pageKey, instanceId, methodIdentifier);
     return theReturn;
   }
   
@@ -326,17 +328,17 @@ public class IBPropertyHandler implements Singleton{
 		}
 		return (handlerPresentation);
 	}
-	public String[] getPropertyDescriptions(IWContext iwc, String icObjectInstanceID, String methodIdentifier) {
+	public String[] getPropertyDescriptions(IWContext iwc, String instanceId, String methodIdentifier) {
 		try {
 			int numberOfParametersForMethod = MethodFinder.getInstance().getArgumentClasses(methodIdentifier).length;
 			String[] theReturn = new String[numberOfParametersForMethod];
 			for (int i = 0; i < theReturn.length; i++) {
-				theReturn[i] = getMethodParameterProperty(iwc, icObjectInstanceID, methodIdentifier, i, this.METHOD_PARAMETER_PROPERTY_DESCRIPTION);
+				theReturn[i] = getMethodParameterProperty(iwc, instanceId, methodIdentifier, i, this.METHOD_PARAMETER_PROPERTY_DESCRIPTION);
 			}
 			return theReturn;
 		}
 		catch (Exception e) {
-			String[] theReturn = { this.getMethodDescription(Integer.parseInt(icObjectInstanceID), methodIdentifier, iwc)};
+			String[] theReturn = { this.getMethodDescription(instanceId, methodIdentifier, iwc)};
 			return theReturn;
 		}
 	}
@@ -492,9 +494,9 @@ public class IBPropertyHandler implements Singleton{
 	 * @todo Change so that this returns the Localized description
 	
 	 */
-	public String getMethodDescription(int icObjectInstanceID, String methodPropertyKey, IWContext iwc) {
+	public String getMethodDescription(String instanceId, String methodPropertyKey, IWContext iwc) {
 		try {
-			IWProperty methodProperty = getMethodProperty(icObjectInstanceID, methodPropertyKey, iwc.getIWMainApplication());
+			IWProperty methodProperty = getMethodProperty(instanceId, methodPropertyKey, iwc.getIWMainApplication());
 			if (methodProperty != null) {
 				return (getMethodDescription(methodProperty, iwc));
 			}

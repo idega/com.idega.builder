@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.49 2005/05/11 18:27:25 gummi Exp $
+ * $Id: IBPageHelper.java,v 1.50 2005/08/31 02:13:21 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -549,7 +549,7 @@ public class IBPageHelper implements Singleton  {
 				XMLAttribute to = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_TO, String.valueOf(instancePK));
 				element.setAttribute(from);
 				element.setAttribute(to);
-				XMLWriter.addNewElement(xmlpage, -1, element);
+				XMLWriter.addNewElement(xmlpage, "-1", element);
 			} catch (IBOLookupException e) {
 				e.printStackTrace();
 			} catch (RemoteException e) {

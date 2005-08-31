@@ -1,16 +1,15 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.29 2004/06/28 14:07:05 thomas Exp $
- *
+ * $Id: IBPropertiesWindowSetter.java,v 1.30 2005/08/31 02:13:21 eiki Exp $
+ * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Idega hf. Use is subject to
+ * license terms.
+ * 
  */
 package com.idega.builder.presentation;
 
 import java.lang.reflect.Method;
-
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.presentation.ICPropertyHandler;
@@ -32,7 +31,8 @@ import com.idega.util.reflect.MethodFinder;
  * @version 1.0
  */
 public class IBPropertiesWindowSetter extends Page {
-	//Parameters used in the window
+
+	// Parameters used in the window
 	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = IBPropertiesWindow.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	public static final String IB_PAGE_PARAMETER = IBPropertiesWindow.IB_PAGE_PARAMETER;
 	final static String METHOD_ID_PARAMETER = IBPropertiesWindow.METHOD_ID_PARAMETER;
@@ -42,12 +42,10 @@ public class IBPropertiesWindowSetter extends Page {
 	final static String CHANGE_PROPERTY_PARAMETER = "ib_change_property";
 	final static String IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER = "ib_is_changing";
 	final static String SAVE_PROPERTY_PARAMETER = "ib_save_prop";
-
-	//Javascript Functions names used in the window
+	// Javascript Functions names used in the window
 	final static String CHANGE_PROPERTY_FUNCTION_NAME = "setProperty";
 	final static String UPDATE_PROPERTY_FUNCTION_NAME = "update";
 	public final static String MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME = "multivalueChange";
-
 	private static final String BACKGROUND_COLOUR = "#FFFFFF";
 	private static final String HANDLER_PARAMETER = "handler_parameter";
 
@@ -59,35 +57,30 @@ public class IBPropertiesWindowSetter extends Page {
 		return iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
 	}
 
-	public int getUsedICObjectInstanceIDInt(IWContext iwc) {
-		String s = getUsedICObjectInstanceID(iwc);
-		return Integer.parseInt(s);
-	}
-
 	private boolean isChangingProperty(IWContext iwc) {
 		String sValue = iwc.getParameter(IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER);
 		if (sValue != null) {
 			if (sValue.equals("Y"))
 				return true;
 		}
-
 		return false;
 	}
 
 	public void main(IWContext iwc) throws Exception {
 		boolean propertyChange = false;
-
 		Script script = this.getAssociatedScript();
-		script.addFunction(CHANGE_PROPERTY_FUNCTION_NAME, "function " + CHANGE_PROPERTY_FUNCTION_NAME + "(method){var form = document.forms[0];form." + CHANGE_PROPERTY_PARAMETER + ".value=method;form." + IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER + ".value='Y';" + UPDATE_PROPERTY_FUNCTION_NAME + "();}");
-		script.addFunction(UPDATE_PROPERTY_FUNCTION_NAME, "function " + UPDATE_PROPERTY_FUNCTION_NAME + "(){var form = document.forms[0];form.submit();}");
-		script.addFunction(MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME, "function " + MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME + "(){var form = document.forms[0];form." + SAVE_PROPERTY_PARAMETER + ".value='false';" + UPDATE_PROPERTY_FUNCTION_NAME + "();}");
-
+		script.addFunction(CHANGE_PROPERTY_FUNCTION_NAME, "function " + CHANGE_PROPERTY_FUNCTION_NAME
+				+ "(method){var form = document.forms[0];form." + CHANGE_PROPERTY_PARAMETER + ".value=method;form."
+				+ IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER + ".value='Y';" + UPDATE_PROPERTY_FUNCTION_NAME + "();}");
+		script.addFunction(UPDATE_PROPERTY_FUNCTION_NAME, "function " + UPDATE_PROPERTY_FUNCTION_NAME
+				+ "(){var form = document.forms[0];form.submit();}");
+		script.addFunction(MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME, "function "
+				+ MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME + "(){var form = document.forms[0];form."
+				+ SAVE_PROPERTY_PARAMETER + ".value='false';" + UPDATE_PROPERTY_FUNCTION_NAME + "();}");
 		String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
-
 		Form form = new Form();
 		add(form);
 		form.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
-
 		Parameter param1 = new Parameter(SAVE_PROPERTY_PARAMETER, "true");
 		form.add(param1);
 		Parameter param = new Parameter(CHANGE_PROPERTY_PARAMETER);
@@ -100,9 +93,7 @@ public class IBPropertiesWindowSetter extends Page {
 		else {
 			param.setValue("");
 		}
-
 		form.add(param);
-
 		String changePropertyID = iwc.getParameter(CHANGE_PROPERTY_PARAMETER);
 		if (changePropertyID != null) {
 			Parameter param2 = new Parameter(METHOD_ID_PARAMETER, changePropertyID);
@@ -115,7 +106,6 @@ public class IBPropertiesWindowSetter extends Page {
 				form.add(param2);
 			}
 		}
-
 		boolean doSave = true;
 		String sDoSave = iwc.getParameter(SAVE_PROPERTY_PARAMETER);
 		if (sDoSave != null) {
@@ -126,7 +116,6 @@ public class IBPropertiesWindowSetter extends Page {
 				doSave = true;
 			}
 		}
-
 		String ic_object_id = getUsedICObjectInstanceID(iwc);
 		if (ic_object_id != null) {
 			String propertyID = iwc.getParameter(METHOD_ID_PARAMETER);
@@ -143,9 +132,9 @@ public class IBPropertiesWindowSetter extends Page {
 				}
 				else {
 					if (doSave) {
-						propertyChange = setProperty(propertyID, values, ic_object_id, pageKey, iwc.getIWMainApplication());
+						propertyChange = setProperty(propertyID, values, ic_object_id, pageKey,
+								iwc.getIWMainApplication());
 						ICPropertyHandler handler = (ICPropertyHandler) iwc.getSessionAttribute(HANDLER_PARAMETER);
-
 						if (handler != null) {
 							handler.onUpdate(values, iwc);
 							iwc.removeSessionAttribute(HANDLER_PARAMETER);
@@ -153,14 +142,14 @@ public class IBPropertiesWindowSetter extends Page {
 					}
 				}
 			}
-
 			if (propertyChange) {
 				doReload();
 			}
 			else {
 				if (newPropertyID != null) {
-					int iICObjectInstanceID = this.getUsedICObjectInstanceIDInt(iwc);
-					Text description = new Text(IBPropertyHandler.getInstance().getMethodDescription(iICObjectInstanceID, newPropertyID, iwc));
+					String iICObjectInstanceID = this.getUsedICObjectInstanceID(iwc);
+					Text description = new Text(IBPropertyHandler.getInstance().getMethodDescription(
+							iICObjectInstanceID, newPropertyID, iwc));
 					description.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:11pt;font-weight:bold;");
 					form.add(description);
 					form.add(getPropertySetterBox(newPropertyID, iwc, null, ic_object_id));
@@ -183,7 +172,6 @@ public class IBPropertiesWindowSetter extends Page {
 		t.add(removeProperty, 1, 1);
 		CheckBox button = new CheckBox(REMOVE_PARAMETER);
 		t.add(button, 2, 1);
-
 		return t;
 	}
 
@@ -198,17 +186,16 @@ public class IBPropertiesWindowSetter extends Page {
 				if (values[i] != null && !values[i].equals("")) {
 					setProperty = true;
 					/**
-					 * @todo This is a shitty-mix solution for the LocalizedPageNameHandler. Have to fix
-					 *       this later.
+					 * @todo This is a shitty-mix solution for the
+					 *       LocalizedPageNameHandler. Have to fix this later.
 					 * 
 					 */
-					String langString = iwc.getParameter(valueParams[i]+"a");
+					String langString = iwc.getParameter(valueParams[i] + "a");
 					if (langString != null)
 						values[i] = values[i] + ";" + langString;
 				}
 			}
 		}
-
 		if (setProperty) {
 			return values;
 		}
@@ -217,14 +204,13 @@ public class IBPropertiesWindowSetter extends Page {
 		}
 	}
 
-	public PresentationObject getPropertySetterBox(String methodIdentifier, IWContext iwc, String pageID, String icObjectInstanceID) throws Exception {
+	public PresentationObject getPropertySetterBox(String methodIdentifier, IWContext iwc, String pageID,
+			String icObjectInstanceID) throws Exception {
 		if (pageID == null) {
 			pageID = BuilderLogic.getInstance().getCurrentIBPage(iwc);
 		}
-
 		Table table = new Table();
 		int ypos = 1;
-
 		Class ICObjectClass = null;
 		int icObjectInstanceIDint = Integer.parseInt(icObjectInstanceID);
 		if (icObjectInstanceIDint == -1) {
@@ -237,14 +223,14 @@ public class IBPropertiesWindowSetter extends Page {
 		Method method = MethodFinder.getInstance().getMethod(methodIdentifier, ICObjectClass);
 		Class parameters[] = method.getParameterTypes();
 		String selectedValues[] = parseValues(iwc);
-		String paramDescriptions[] = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc, icObjectInstanceID, methodIdentifier);
+		String paramDescriptions[] = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc, icObjectInstanceID,
+				methodIdentifier);
 		boolean isChangingProperty = isChangingProperty(iwc);
-		String realValues[] = BuilderLogic.getInstance().getPropertyValues(iwc.getIWMainApplication(), pageID, Integer.parseInt(icObjectInstanceID), methodIdentifier, selectedValues, !isChangingProperty);
-
+		String realValues[] = BuilderLogic.getInstance().getPropertyValues(iwc.getIWMainApplication(), pageID,
+				icObjectInstanceID, methodIdentifier, selectedValues, !isChangingProperty);
 		for (int i = 0; i < parameters.length; i++) {
 			Class parameterClass = parameters[i];
 			String sValue = "";
-
 			try {
 				sValue = realValues[i];
 			}
@@ -252,39 +238,37 @@ public class IBPropertiesWindowSetter extends Page {
 			}
 			catch (NullPointerException npe) {
 			}
-
 			String sName = namePrefix + i;
 			String sParamDescription = paramDescriptions[i];
-			String handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc, icObjectInstanceID, methodIdentifier, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
-//			if (handlerClass.equals("com.idega.builder.handler.LocalizedPageNameHandler")) {				
-//				StringBuffer tmp = null;
-//				if (sValue != null) 
-//					tmp = new StringBuffer(sValue);
-//				else 
-//					tmp = new StringBuffer("");
-//				
-//				tmp.append(";");
-//				String langValue = iwc.getParameter("ib_property_0a");
-//				if (langValue != null)
-//					tmp.append(langValue);
-//					
-//				sValue = tmp.toString();
-//			}
-			
-			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc, icObjectInstanceID, methodIdentifier, i, parameterClass, sName, sValue);
-
+			String handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc, icObjectInstanceID,
+					methodIdentifier, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
+			// if
+			// (handlerClass.equals("com.idega.builder.handler.LocalizedPageNameHandler"))
+			// {
+			// StringBuffer tmp = null;
+			// if (sValue != null)
+			// tmp = new StringBuffer(sValue);
+			// else
+			// tmp = new StringBuffer("");
+			//				
+			// tmp.append(";");
+			// String langValue = iwc.getParameter("ib_property_0a");
+			// if (langValue != null)
+			// tmp.append(langValue);
+			//					
+			// sValue = tmp.toString();
+			// }
+			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,
+					icObjectInstanceID, methodIdentifier, i, parameterClass, sName, sValue);
 			ICPropertyHandler handler = null;
 			if (handlerClass != null && !handlerClass.equals("")) {
 				handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
-
 				if (handler != null)
 					iwc.setSessionAttribute(HANDLER_PARAMETER, handler);
 			}
-
 			if (handler == null) {
 				iwc.removeSessionAttribute(HANDLER_PARAMETER);
 			}
-
 			Parameter param = new Parameter(VALUE_PARAMETER, sName);
 			if (sParamDescription != null) {
 				Text tDescription = formatDescription(sParamDescription + ":");
@@ -292,15 +276,16 @@ public class IBPropertiesWindowSetter extends Page {
 				table.add(tDescription, 1, ypos);
 			}
 			table.add(param, 2, ypos);
-//			if (handlerClass.equals("com.idega.builder.handler.LocalizedPageNameHandler")) {
-//				Parameter param2 = new Parameter(VALUE_PARAMETER, sName+"a");
-//				table.add(param2, 2, ypos);				
-//			}
+			// if
+			// (handlerClass.equals("com.idega.builder.handler.LocalizedPageNameHandler"))
+			// {
+			// Parameter param2 = new Parameter(VALUE_PARAMETER, sName+"a");
+			// table.add(param2, 2, ypos);
+			// }
 			table.add(handlerBox, 2, ypos);
 			ypos++;
 		}
 		table.setColumnVerticalAlignment(1, "top");
-
 		return table;
 	}
 
@@ -308,28 +293,31 @@ public class IBPropertiesWindowSetter extends Page {
 		return new Text(text);
 	}
 
-	public boolean setProperty(String key, String values[], String icObjectInstanceID, String pageKey, IWMainApplication iwma) {
-		//invalidate cache for blocks
-		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(Integer.parseInt(icObjectInstanceID));
-		/**@todo ensure the cache is invalidated for all states**/
+	public boolean setProperty(String key, String values[], String icObjectInstanceID, String pageKey,
+			IWMainApplication iwma) {
+		// invalidate cache for blocks
+		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
+				Integer.parseInt(icObjectInstanceID));
+		/** @todo ensure the cache is invalidated for all states* */
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
 		}
-
-		return BuilderLogic.getInstance().setProperty(pageKey, Integer.parseInt(icObjectInstanceID), key, values, iwma);
+		return BuilderLogic.getInstance().setProperty(pageKey, icObjectInstanceID, key, values, iwma);
 	}
 
-	public void removeProperty(IWMainApplication iwma, String key, String values[], String icObjectInstanceID, String pageKey) {
+	public void removeProperty(IWMainApplication iwma, String key, String values[], String icObjectInstanceID,
+			String pageKey) {
 		/**
-		 * @todo Change so that it removes properties of specific values for multivalued properties
+		 * @todo Change so that it removes properties of specific values for
+		 *       multivalued properties
 		 */
-		//invalidate cache for blocks
-		/**@todo ensure the cache is invalidated for all states**/
-		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(Integer.parseInt(icObjectInstanceID));
+		// invalidate cache for blocks
+		/** @todo ensure the cache is invalidated for all states* */
+		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
+				Integer.parseInt(icObjectInstanceID));
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
 		}
-
-		BuilderLogic.getInstance().removeProperty(iwma, pageKey, Integer.parseInt(icObjectInstanceID), key, values);
+		BuilderLogic.getInstance().removeProperty(iwma, pageKey, icObjectInstanceID, key, values);
 	}
 }

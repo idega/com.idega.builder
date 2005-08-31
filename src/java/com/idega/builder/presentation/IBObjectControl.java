@@ -9,19 +9,18 @@ package com.idega.builder.presentation;
 
 
 
+import javax.faces.component.UIComponent;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.repository.data.ImplementorRepository;
-import com.idega.util.text.TextStyler;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.xml.XMLElement;
 
 /**
@@ -30,21 +29,27 @@ import com.idega.xml.XMLElement;
 public class IBObjectControl extends PresentationObjectContainer
 {
 	private static String IW_BUNDLE_IDENTIFIER="com.idega.builder";
-	private com.idega.presentation.Layer _layer;
-	private Table _table;
-	private Table table;
-	private Layer _tableLayer;
+	private Layer containerLayer;
+	private Layer handleAndMenuLayer;
+	private Layer contentLayer;
+	private Layer buttonsLayer;
+	private Layer scriptLayer;
+	private Layer nameLayer;
+	private Layer dropAreaLayer;
+	
+	private Table tempTable;
+
 	private PresentationObjectContainer _parent;
 	private String _parentKey;
-	private PresentationObject _theObject;
+	private UIComponent _theObject;
+	boolean isPresentationObject = false;
 	private int number = 0;
-	String showLayers;
-	String hideLayers;
+
 	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	public IBObjectControl(
-		PresentationObject obj,
+		UIComponent obj,
 		PresentationObjectContainer objectParent,
 		String theParentKey,
 		IWContext iwc,
@@ -54,306 +59,267 @@ public class IBObjectControl extends PresentationObjectContainer
 		_theObject = obj;
 		_parentKey = theParentKey;
 		number = index;
+		isPresentationObject = _theObject instanceof PresentationObject;
+		
+		
 		init(iwc);
 		add(obj);
 	}
 	public void main(IWContext iwc)
 	{
-		try
-		{
+		try {			
 			Page page = getParentPage();
-			Script script = page.getAssociatedScript();
-			script.addFunction(
-				"findObj(n, d)",
-				"function findObj(n, d) { \n\t var p,i,x;  if(!d) d=document; \n\t if((p=n.indexOf(\"?\"))>0&&parent.frames.length) { \n\t     d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p); \n\t } \n\t  if(!(x=d[n])&&d.all) x=d.all[n]; \n\t for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n]; \n\t  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=findObj(n,d.layers[i].document); \n\t if(!x && document.getElementById) x=document.getElementById(n); return x; \n }");
-			script.addFunction(
-				"showHideLayers()",
-				"function showHideLayers() { \n\t var i,p,v,obj,args=showHideLayers.arguments; \n\t for (i=0; i<(args.length-2); i+=3) \n\t if ((obj=findObj(args[i]))!=null) { \n\t v=args[i+2]; \n\t   if (obj.style) { obj=obj.style; v=(v=='show')?'visible':(v='hide')?'hidden':v; \n\t }    obj.visibility=v; \n\t }\n}");
-			getParentPage().setAssociatedScript(script);
-		}
-		catch (NullPointerException e)
-		{
-			System.out.println(
-				"getParentPage() returns null in BuilderObjectControl for Object "
-					+ _theObject.getClass().getName()
-					+ " and ICObjectInstanceID="
-					+ _theObject.getICObjectInstanceID());
-		}
-	}
-	private void init(IWContext iwc)
-	{
-		String frameColor = "#000000";
-		String topColor = "#CCCCCC";
-		//Different color of the top and the frame if the object is set to change instance id on dpt pages that inherit current page
-		if(_theObject.getChangeInstanceIDOnInheritance()) {
-			frameColor = "#7D0000";
-			topColor = "#D2C0C0";
-		}
-		_layer = new Layer(Layer.DIV);
-		_tableLayer = new Layer(Layer.DIV);
-		_tableLayer.setZIndex(0);
-		//_tableLayer.setPositionType(Layer.ABSOLUTE);
-		//_layer.setPositionType(Layer.RELATIVE);
-		/** To work around layer stacking in Opera browser version 5, revise for newer versions */
-		boolean hideLayer = iwc.isOpera();
-		if (ImplementorRepository.getInstance().isTypeOf(InvisibleInBuilder.class, _theObject.getClass())) {
-			hideLayer = true;
-		}
-		/*Layer controlLayer = new Layer(Layer.DIV);
-		controlLayer.setPositionType(Layer.RELATIVE);
-		controlLayer.setWidth(1);
-		controlLayer.setHeight(1);*/
-		Layer layer2 = new Layer(Layer.DIV);
-		layer2.setZIndex(37999);
-		layer2.setPositionType(Layer.ABSOLUTE);
-		layer2.setWidth(0);
-		layer2.setHeight(0);
-		Layer layer = new Layer(Layer.DIV);
-		layer2.add(layer);
-		layer.setID(_layer.getID() + "a");
-		layer.setPositionType(Layer.ABSOLUTE);
-		layer.setTopPosition(-1);
-		layer.setLeftPosition(-1);
-		layer.setBackgroundColor("#CCCCCC");
-		layer.setVisibility("hidden");
-		layer.setZIndex(37999);
-		layer.setWidth(0);
-		layer.setHeight(0);
-		hideLayers = "showHideLayers('" + layer.getID() + "','','hide');";
-		if (hideLayer)
-			hideLayers += " showHideLayers('" + _tableLayer.getID() + "','','show');";
-		showLayers = "showHideLayers('" + layer.getID() + "','','show');";
-		if (hideLayer)
-			showLayers += " showHideLayers('" + _tableLayer.getID() + "','','hide');";
-		layer.setMarkupAttribute("onmouseout", hideLayers);
-		//controlLayer.add(layer);
-		_table = new Table(3, 5);
-		//_table.add(controlLayer);
-		super.add(layer2);
-		_table.add(_tableLayer, 2, 4);
-		_layer.add(_table);
-		_layer.setZIndex(number);
-		super.add(_layer);
-		_table.setBorder(0);
-		//_table.setWidth(1,"3");
-		//_table.setHeight(2,"1");
-		_table.setWidth(1, "1");
-		_table.setWidth(3, "1");
-		_table.setHeight(1, "1");
-		_table.setHeight(3, "1");
-		_table.setHeight(5, "1");
-		_table.setCellpadding(0);
-		_table.setCellspacing(0);
-		//_table.setCellspacing(1);
-		//_table.setColor("#000000");
-		//_table.setColor(1,2,"white");
-		_table.setColor(2, 2, topColor);
-		_table.setRowColor(1, frameColor);
-		_table.setRowColor(3, frameColor);
-		_table.setRowColor(5, frameColor);
-		_table.setColumnColor(1, frameColor);
-		_table.setColumnColor(3, frameColor);
-		_table.setVerticalAlignment(2, 4, "top");
-		/*_table.setLineFrame(true);
-		_table.setLineAfterRow(1);
-		_table.setLineWidth("1");
-		_table.setLineHeight("1");
-		_table.setLineColor("#000000");*/
-		_table.setHeight(2, "11");
-		Image image = getBundle(iwc).getImage("menuicon.gif", "Component menu");
-		image.setHorizontalSpacing(1);
-		image.setAlignment("absmiddle");
-		image.setOnClick(showLayers);
-		Text text = new Text("");
-		text.setFontStyle(
-			"font-size:5pt;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;text-transform:uppercase;");
-		if (_theObject != null)
-		{
-			//table.add(theObject.getClassName());
-			StringBuffer buffer = new StringBuffer();
-			buffer.append(Text.NON_BREAKING_SPACE);
-			buffer.append(_theObject.getBuilderName(iwc));
-			buffer.append(Text.NON_BREAKING_SPACE);
-			text.setText(buffer.toString());
-			_table.add(image, 2, 2);
-			_table.add(text, 2, 2);
-			Table rTable = new Table(3, 3);
-			rTable.setWidth(80);
-			rTable.setHeight(50);
-			rTable.setHeight(1, "1");
-			rTable.setHeight(3, "1");
-			rTable.setWidth(1, "1");
-			rTable.setWidth(3, "1");
-			rTable.setColumnColor(1, frameColor);
-			rTable.setColumnColor(3, frameColor);
-			rTable.setRowColor(1, frameColor);
-			rTable.setRowColor(3, frameColor);
-			rTable.setCellpaddingAndCellspacing(0);
-			table = new Table();
-			table.setCellpadding(3);
-			table.setCellspacing(0);
-			table.setWidth("100%");
-			table.setHeight("100%");
-			table.setColor("#CCCCCC");
-			table.setMarkupAttribute("onMouseOver", showLayers);
-			table.setMarkupAttribute("onClick", hideLayers);
-			rTable.add(table, 2, 2);
-			Image separator = getBundle(iwc).getImage("shared/menu/menu_separator.gif");
-			separator.setWidth("100%");
-			separator.setHeight(2);
-			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
-			if (pasted == null)
-			{
-				addToTable(getCutIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc), 1, 1);
-				addToTable(
-					getCutIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc),
-					"Cut",
-					IBCutModuleWindow.class,
-					2,
-					1);
-				addToTable(getCopyIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc), 1, 2);
-				addToTable(
-					getCopyIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc),
-					"Copy",
-					IBCopyModuleWindow.class,
-					2,
-					2);
-				addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc), 1, 3);
-				addToTable(
-					getDeleteIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc),
-					"Delete",
-					IBDeleteModuleWindow.class,
-					2,
-					3);
-				table.add(separator, 2, 4);
-				addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(), iwc), 1, 5);
-				addToTable(
-					getPermissionIcon(_theObject.getICObjectInstanceID(), iwc),
-					"Permission",
-					IBPermissionWindow.class,
-					2,
-					5);
-				addToTable(getEditIcon(_theObject.getICObjectInstanceID(), iwc), 1, 6);
-				addToTable(
-					getEditIcon(_theObject.getICObjectInstanceID(), iwc),
-					"Properties",
-					IBPropertiesWindow.class,
-					2,
-					6);
-			}
-			else
-			{
-				addToTable(getCutIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc), 1, 1);
-				addToTable(
-					getCutIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc),
-					"Cut",
-					IBCutModuleWindow.class,
-					2,
-					1);
-				addToTable(getCopyIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc), 1, 2);
-				addToTable(
-					getCopyIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc),
-					"Copy",
-					IBCopyModuleWindow.class,
-					2,
-					2);
-				addToTable(getPasteAboveIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc), 1, 3);
-				addToTable(
-					getPasteAboveIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc),
-					"Paste",
-					IBPasteModuleWindow.class,
-					2,
-					3);
-				addToTable(getDeleteIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc), 1, 4);
-				addToTable(
-					getDeleteIcon(_theObject.getICObjectInstanceID(), _parentKey, iwc),
-					"Delete",
-					IBDeleteModuleWindow.class,
-					2,
-					4);
-				table.add(separator, 2, 5);
-				addToTable(getPermissionIcon(_theObject.getICObjectInstanceID(), iwc), 1, 6);
-				addToTable(
-					getPermissionIcon(_theObject.getICObjectInstanceID(), iwc),
-					"Permission",
-					IBPermissionWindow.class,
-					2,
-					6);
-				addToTable(getEditIcon(_theObject.getICObjectInstanceID(), iwc), 1, 7);
-				addToTable(
-					getEditIcon(_theObject.getICObjectInstanceID(), iwc),
-					"Properties",
-					IBPropertiesWindow.class,
-					2,
-					7);
-			}
-			table.setColumnColor(1, "#D8D8D1");
-			table.setColumnColor(2, "#F9F8F7");
-			table.setColumnAlignment(1, "center");
-			layer.add(rTable);
-		}
-		else
-		{
-			_table.add(getDeleteIcon(0, _parentKey, iwc), 2, 2);
-			_table.add(getEditIcon(0, iwc), 2, 2);
-		}
-	}
-	private void addToTable(PresentationObject obj, int col, int row)
-	{
-		obj.setMarkupAttribute("onMouseOver", showLayers);
-		table.add(obj, col, row);
-	}
-	private void addToTable(PresentationObject obj, String textString, Class className, int col, int row)
-	{
-		Text text = new Text(textString);
-		text.setFontStyle(
-			"font-family: Arial, Helvetica, sans-serif; font-weight: bold; font-style: normal; font-size: 8pt; text-decoration: none; color: #000000");
-		Link link = (Link) obj;
-		link.setObject(text);
-		if (className != null)
-			link.setWindowToOpen(className);
-		addToTable(link, col, row);
-	}
-	public void add(PresentationObject obj)
-	{
-		if (obj.isWidthSet())
-		{
-			_layer.setWidth(obj.getWidth());
-			_table.setWidth(obj.getWidth());
-		}
-		if (obj.isHeightSet())
-		{
-			_layer.setHeight(obj.getHeight());
-			_table.setHeight(obj.getHeight());
-		}
-		if (obj.isMarkupAttributeSet(PresentationObject.HORIZONTAL_ALIGNMENT))
-		{
-			_layer.setHorizontalAlignment(obj.getHorizontalAlignment());
-		}
-		if (obj instanceof Layer)
-		{
-			Layer tempLayer = (Layer) obj;
-			TextStyler styler = new TextStyler(tempLayer.getStyleAttribute());
+			IWBundle iwb = getBundle(iwc);
+			page.addStyleSheetURL(this.getBundle(iwc).getVirtualPathWithFileNameString("style/builder.css"));
+			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/prototype.js"));
+			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/effects.js"));
+			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/dragdrop.js"));
+			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/controls.js"));
 			
-			if (styler.isStyleSet(Layer.LEFT)) {
-				_layer.setLeftPosition(styler.getStyleValue(Layer.LEFT));
-			}
-			if (styler.isStyleSet(Layer.TOP)) {
-				_layer.setLeftPosition(styler.getStyleValue(Layer.TOP));
-			}
-			if (styler.isStyleSet(Layer.ZINDEX)) {
-				_layer.setLeftPosition(styler.getStyleValue(Layer.ZINDEX));
-			}
-			styler.removeStyleValue(Layer.LEFT);
-			styler.removeStyleValue(Layer.TOP);
-			styler.removeStyleValue(Layer.POSITION);
-			styler.removeStyleValue(Layer.ZINDEX);
-			obj.setStyleAttribute(styler.getStyleString());
+			//if we want to use Sortable (javascript from the DnD library) someday
+			page.setID("DnDPage");
+			
+			
 		}
-		_tableLayer.add(obj);
+		catch (NullPointerException e) {
+			String error = "getParentPage() returns null in BuilderObjectControl for Object "
+				+ _theObject.getClass().getName()
+				+ " and ICObjectInstanceID="+BuilderLogic.getInstance().getInstanceId(_theObject);
+			System.out.println(error);
+				
+					
+		}
+	}
+	
+	private void init(IWContext iwc) {
+		
+		IWBundle iwb = getBundle(iwc);
+		
+		//details for divs and layout are changed in the stylesheet
+		//initilize stuff
+	
+		super.add(new Text("<!-- idegaweb-module starts -->"));
+		
+		containerLayer = new Layer(Layer.DIV);
+		containerLayer.setZIndex(number);
+		containerLayer.setStyleClass("moduleContainer");
+
+		//must have a parent before getId
+		super.add(containerLayer);
+		
+		String containerId = containerLayer.getID();
+		
+		handleAndMenuLayer = new Layer(Layer.DIV);
+		handleAndMenuLayer.setStyleClass("moduleHandle");
+		handleAndMenuLayer.setID("handle_"+containerId);
+		
+		contentLayer = new Layer(Layer.DIV);
+		contentLayer.setStyleClass("moduleContent");
+		contentLayer.setID("content_"+containerId);
+		
+		buttonsLayer = new Layer(Layer.DIV);
+		buttonsLayer.setStyleClass("moduleButtons");
+		
+		dropAreaLayer = new Layer(Layer.DIV);
+		dropAreaLayer.setStyleClass("moduleDropArea");
+		dropAreaLayer.setID("dropArea_"+containerId);
+				
+		nameLayer = new Layer(Layer.DIV);
+		nameLayer.setStyleClass("moduleName");
+		nameLayer.setID("moduleName_"+containerId);
+		
+		//temporary table solution
+		//because I cannot figure out how do the css so the drop area extends under the button layer but not the name layer
+		Table tempDragDropContainer = new Table(2,1);
+		tempDragDropContainer.setStyleClass("DnDAreaTable");
+		tempDragDropContainer.setColumnWidth(1,"60");
+		tempDragDropContainer.setColumnWidth(2,"100%");
+		tempDragDropContainer.setCellpaddingAndCellspacing(0);
+			
+		Script drag = new Script();
+		drag.addFunction("", getDraggableScript(containerId,nameLayer.getID()));
+		Script drop = new Script();
+		drop.addFunction("", getDroppableScript(containerId, dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+					
+		
+		//add scripts
+		super.add(drag);
+		super.add(drop);		
+		
+		super.add(new Text("<!-- idegaweb-module ends -->"));
+		
+		//finally add the object to the contentlayer
+		if (_theObject != null) {
+			Text text = null; 
+			
+			if(isPresentationObject){
+				text = new Text(((PresentationObject)_theObject).getBuilderName(iwc));
+			}
+			else{
+				//TODO make this localizable and remove getBuilderName from PO
+				text = new Text(_theObject.getClass().getName());
+			}
+			nameLayer.add(text);
+			
+			//TODO change icobjectinstanceid to String 
+			String instanceId = BuilderLogic.getInstance().getInstanceId(_theObject);
+				
+			HiddenInput instanceIdHidden = new HiddenInput("instanceId_"+containerId,instanceId);
+			instanceIdHidden.setID("instanceId_"+containerId);
+			
+			HiddenInput parentIdHidden = new HiddenInput("parentId_"+containerId,_parentKey);
+			parentIdHidden.setID("parentId_"+containerId);
+			
+			HiddenInput pageIdHidden = new HiddenInput("pageId_"+containerId,BuilderLogic.getInstance().getCurrentIBPage(iwc));
+			pageIdHidden.setID("pageId_"+containerId);
+			
+			containerLayer.add(instanceIdHidden);
+			containerLayer.add(parentIdHidden);
+			containerLayer.add(pageIdHidden);
+			
+			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
+			if (pasted == null) {
+				buttonsLayer.add(getCutIcon(instanceId, _parentKey, iwc));
+				buttonsLayer.add(getCopyIcon(instanceId, _parentKey, iwc));
+				buttonsLayer.add(getDeleteIcon(instanceId, _parentKey, iwc));
+				buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+				buttonsLayer.add(getEditIcon(instanceId, iwc));
+			}
+			else {
+				buttonsLayer.add(getCutIcon(instanceId, _parentKey, iwc));
+				buttonsLayer.add(getCopyIcon(instanceId, _parentKey, iwc));
+				buttonsLayer.add(getPasteAboveIcon(instanceId, _parentKey, iwc));
+				buttonsLayer.add(getDeleteIcon(instanceId, _parentKey, iwc));
+				buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+				buttonsLayer.add(getEditIcon(instanceId, iwc));
+			}
+			
+			
+			dropAreaLayer.add(buttonsLayer);
+			
+			tempDragDropContainer.add(nameLayer,1,1);
+			tempDragDropContainer.add(dropAreaLayer,2,1);
+
+			containerLayer.add(tempDragDropContainer);
+			containerLayer.add(contentLayer);
+			
+//			handleAndMenuLayer.add(nameLayer);
+//			handleAndMenuLayer.add(buttonsLayer);	
+			
+		}
+		else {//object being added is null for some reason!
+			//setup layout
+			containerLayer.add(handleAndMenuLayer);
+			containerLayer.add(contentLayer);
+			
+			handleAndMenuLayer.add(getDeleteIcon("0", _parentKey, iwc));
+			handleAndMenuLayer.add(getEditIcon("0", iwc));
+		}
+	}
+	/**
+	 * @param containerId
+	 * @return
+	 */
+	private String getDraggableScript(String containerId, String handleId) {
+	//	return " new Draggable('"+containerId+"',{handle:'"+handleAndMenuLayer.getID()+"',revert:true});";
+		return " new Draggable('"+containerId+"',{handle:'"+handleId+"',revert:true, " +
+		"endeffect: function(element, top_offset, left_offset) { " +
+        //"	new Effect.Opacity(element, {duration:0.2, from:0.7, to:1.0}); " +
+        "	new Effect.Pulsate(element,{duration:1.5});" +
+        "}});";
+	}
+
+	private String getDroppableScript(String contentLayerId, String droppableId, String acceptableStyleClasses, String hoverStyleClass, String webServiceURI) {
+		//TODO make an external script (as much as possible)
+		 return "Droppables.add('"+droppableId+"',{accept:['"+acceptableStyleClasses+"'],hoverclass:'"+hoverStyleClass+"'," +
+			"onDrop: " +
+			"function(element) { \n" +
+			"	var elementContainerId = element.id; \n" +
+			"	var dropTargetId = '"+contentLayerId+"'; \n" +
+		 	"	var dropTarget = $(dropTargetId); \n" +
+		 	"   var elementInstanceId = $('instanceId_'+elementContainerId).value; \n" +
+		 	"   var dropTargetInstanceId =  $('instanceId_'+dropTargetId).value \n;" +
+		 	"   var currentPageKey =  $('pageId_'+dropTargetId).value; \n" +
+		 	"   var formerParentId =  $('parentId_'+elementContainerId).value; \n" +
+		 	"   var newParentId = $('parentId_'+dropTargetId).value; \n" +
+		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
+		 	"	var query = 'method=moveModule&objectId='+elementInstanceId+'&pageKey='+currentPageKey+'&formerParentId='+formerParentId+'&newParentId='+newParentId+'&objectIdToPasteBelow='+dropTargetInstanceId;  \n" +	
+		 	//"   alert(query);" +
+		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
+		 	"			onComplete: function(request) { \n" +
+		 	"				if(request.responseText.indexOf('iwbuilder-ok')>=0){ \n" +
+		 	"					$('parentId_'+elementContainerId).value = newParentId; " +
+		 	"		 	 		dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
+		 	" 					element.parentNode.insertBefore(dropTarget,element);  \n" +
+		 	" 					$('parentId_'+elementContainerId).value = newParentId; \n"	 +
+		 	"				}else { alert(request.responseText); } \n" +
+		 	"			}, method: 'GET',asynchronous: true})" +
+
+		 	
+		 	
+		 	//OLD WAY that did not work for droppables within droppables after one drag.
+
+//			"	var elementHandleId = 'handle_'+elementContainerId;" +
+//			"   var scriptLayer = $('script_'+elementContainerId);" +
+//		 	"   var scriptLayerId = scriptLayer.id;" +
+		 	//Copy the moduleContainer layer
+			//"   new Insertion['After']($('"+contentLayerId+"'), '<div class=moduleContainer id='+elementContainerId+' >'+element.innerHTML+' </div>');" +
+			//get rid of the old
+			//"	Element.remove(element); " +
+			//"	element = null;" +
+			//Copy the script layer also!
+			//"   new Insertion['After']($(elementContainerId), '<div class=script id='+scriptLayerId+' >'+scriptLayer.innerHTML+' </div>');" +
+			
+		 	"}});";
+	}
+	
+	
+	public void add(UIComponent obj) {
+		contentLayer.add(obj);
+		obj.setParent(_parent);
+	}
+	
+	public void add(PresentationObject obj) {
+		
+		String objWidth = obj.getWidth();
+		String objHeight = obj.getHeight();
+		
+		if (objWidth!=null) {
+			containerLayer.setWidth(objWidth);
+			//handleAndContentTable.setWidth(objWidth);
+			//handleAndMenuLayer.setWidth(objWidth);
+		}
+		
+		if (objHeight!=null) {
+			containerLayer.setHeight(objHeight);
+			//handleAndContentTable.setHeight(objHeight);
+		}
+		
+		if (obj.getHorizontalAlignment()!=null) {
+			containerLayer.setHorizontalAlignment(obj.getHorizontalAlignment());
+		}
+
+		if (obj instanceof Layer) {
+			if (obj.isMarkupAttributeSet(Layer.LEFT)){
+				containerLayer.setLeftPosition(obj.getMarkupAttribute(Layer.LEFT));
+			}
+			if (obj.isMarkupAttributeSet(Layer.TOP)){
+				containerLayer.setTopPosition(obj.getMarkupAttribute(Layer.TOP));
+			}
+			if (obj.isMarkupAttributeSet(Layer.ZINDEX)){
+				containerLayer.setZIndex(obj.getMarkupAttribute(Layer.ZINDEX));
+			}
+			obj.removeMarkupAttribute(Layer.LEFT);
+			obj.removeMarkupAttribute(Layer.TOP);
+			obj.removeMarkupAttribute(Layer.POSITION);
+			obj.removeMarkupAttribute(Layer.ZINDEX);
+		}
+		
+		contentLayer.add(obj);
 		obj.setParentObject(_parent);
 		obj.setLocation(_parent.getLocation());
-	}
+		
+}
 
 	/**
 	 *
@@ -363,38 +329,32 @@ public class IBObjectControl extends PresentationObjectContainer
 		return getBuilderLogic().getLabelIcon(parentKey,iwc,label);
 	}
 
-	public PresentationObject getCutIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc)
 	{
 		return getBuilderLogic().getCutIcon(key,parentKey,iwc);
 	}
 
-	/**
-	 *
-	 */
-	public PresentationObject getCopyIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getCopyIcon(String key, String parentKey, IWContext iwc)
 	{
 		return getBuilderLogic().getCopyIcon(key,parentKey,iwc);
 	}
 
-	public PresentationObject getDeleteIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc)
 	{
 		return getBuilderLogic().getDeleteIcon(key,parentKey,iwc);
 	}
 
-	public PresentationObject getPermissionIcon(int key, IWContext iwc)
+	public PresentationObject getPermissionIcon(String key, IWContext iwc)
 	{
 		return getBuilderLogic().getPermissionIcon(key,iwc);
 	}
 
-	public PresentationObject getEditIcon(int key, IWContext iwc)
+	public PresentationObject getEditIcon(String key, IWContext iwc)
 	{
 		return getBuilderLogic().getEditIcon(key,iwc);
 	}
 
-	/**
-	 *
-	 */
-	public PresentationObject getPasteAboveIcon(int key, String parentKey, IWContext iwc)
+	public PresentationObject getPasteAboveIcon(String key, String parentKey, IWContext iwc)
 	{
 		return getBuilderLogic().getPasteAboveIcon(key,parentKey,iwc);
 	}
