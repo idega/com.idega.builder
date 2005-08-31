@@ -1,0 +1,51 @@
+import com.idega.builder.business.BuilderLogic;
+import com.idega.idegaweb.IWUserContext;
+
+public class IWBuilderWS {
+
+	public String moveModule(String objectId, String pageKey, String formerParentId, String newParentId, String objectIdToPasteBelow){
+	   try {
+	         IWUserContext iwc = com.idega.axis.util.AxisUtil.getIWUserContext();
+	         if(iwc.isLoggedOn()){
+		         BuilderLogic logic = BuilderLogic.getInstance();
+		         boolean success = logic.moveModule(iwc, objectId, pageKey, formerParentId, newParentId, objectIdToPasteBelow);
+	
+		         if(success){
+		         	return "iwbuilder-ok";
+		         }
+		         else{
+		         	return "failed to move module";
+		         }
+	        }
+	        else return "not logged on!";
+	    
+	    }
+	    catch (Exception e) {
+	            e.printStackTrace();
+	            return "Service failed to move the module. The error message was :"+e.getMessage();
+	    }
+	}
+	
+	public String deleteModule(String pageKey, String parentId, String instanceId){
+	   try {
+	         IWUserContext iwc = com.idega.axis.util.AxisUtil.getIWUserContext();
+	         if(iwc.isLoggedOn()){
+		         BuilderLogic logic = BuilderLogic.getInstance();
+		         boolean success = logic.deleteModule(pageKey,parentId,instanceId);
+	
+		         if(success){
+		         	return "iwbuilder-ok";
+		         }
+		         else{
+		         	return "failed to delete module";
+		         }
+	        }
+	        else return "not logged on!";
+	    
+	    }
+	    catch (Exception e) {
+	            e.printStackTrace();
+	            return "Service failed to delete the module. The error message was :"+e.getMessage();
+	    }
+	}
+}
