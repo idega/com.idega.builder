@@ -1,0 +1,78 @@
+.moduleContainer {	
+	cursor: default;	
+	border: 1px #000000 solid;
+	margin: 1px;
+}
+
+.moduleContainer:hover {	
+	cursor: default;	
+	border: 1px #000000 dotted;
+	margin: 1px;
+}
+
+.moduleHandle {
+	background-color: #D7DBE7;
+	border-bottom: 1px #000000 solid;	
+	cursor: default;
+	height: 18px;
+	clear: both;
+	padding:0px;
+}
+
+.moduleContent{	
+	cursor: default;
+}
+
+.moduleName{
+	font-size: 14px;
+	font-family: Arial;
+	height: 18px;
+	#float: left;
+	#clear:left;
+	cursor: move;
+	background-color: #d7dbe7;
+	#display: inline;
+	white-space: nowrap;
+	padding: 0px;
+}
+
+.moduleDropArea{
+	cursor: default;
+	height: 18px;
+	width: 100%;
+}
+
+.moduleDropAreaHover{
+	cursor: default;
+	background-color: #e7edf7;
+}
+
+.moduleButtons{
+	#background-color:#d7dbe7;
+	cursor: default;
+	float: right;
+	clear:right;
+	text-align:right;
+	#width: 90%;
+	margin: 1px;
+	#display: inline;
+}
+
+.DnDAreaTable{
+	margin:0px;
+	background-color: #D7DBE7;
+	border-bottom: 1px #000000 solid;	
+	cursor: default;
+	height: 18px;
+	clear: both;
+	padding: 0px;
+	width:100%;
+	cell-padding: 0px;
+	cell-spacing: 0px;
+	white-space: nowrap;
+}
+
+#.table{
+#	border: 1px grey dotted;
+#}
+		
