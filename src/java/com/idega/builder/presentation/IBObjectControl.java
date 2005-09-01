@@ -12,6 +12,7 @@ package com.idega.builder.presentation;
 import javax.faces.component.UIComponent;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
@@ -202,6 +203,9 @@ public class IBObjectControl extends PresentationObjectContainer
 
 			containerLayer.add(tempDragDropContainer);
 			containerLayer.add(contentLayer);
+			
+			//experimental so the box always is around everything
+			containerLayer.add(new CSSSpacer());
 			
 //			handleAndMenuLayer.add(nameLayer);
 //			handleAndMenuLayer.add(buttonsLayer);	
