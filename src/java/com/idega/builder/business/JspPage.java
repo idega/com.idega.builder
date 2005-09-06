@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.3 2005/03/04 18:17:26 tryggvil Exp $
+ * $Id: JspPage.java,v 1.4 2005/09/06 12:26:31 tryggvil Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,12 +19,15 @@ import com.idega.idegaweb.IWMainApplication;
 
 
 /**
- *  The instance of this class wrapps a Builder page of format JSP.<br>
- * 
- *  Last modified: $Date: 2005/03/04 18:17:26 $ by $Author: tryggvil $
+ * <p>
+ * This is an implementation for a a "JSP" based Builder page that is rendered through JSF.<br/>
+ * This means that the page is based on a JSP page and the rendering is dispatched to the 
+ * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
+ * </p>
+ *  Last modified: $Date: 2005/09/06 12:26:31 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class JspPage extends CachedBuilderPage {
 	
@@ -96,6 +99,8 @@ public class JspPage extends CachedBuilderPage {
 				}
 				pageStream.close();
 				jspStream.close();*/
+				
+				log.finer("Streaming builder page with uri: "+getURI()+" to disk in file: "+jspFile.toURL().toString());
 				
 				InputStreamReader reader = new InputStreamReader(pageStream,"UTF-8");//,encoding);
 				int bufferlength=1000;
