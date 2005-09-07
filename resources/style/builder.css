@@ -75,9 +75,10 @@
 .regionLabel{
 	background-color: yellow;
 	border: 1px #000000 solid;	
-	display: inline;
-	padding-left: 1px;
+	float:left;
+    padding-left: 1px;
     padding-right: 1px;
+    clear:both;
 }
 
 .regionLabel a{

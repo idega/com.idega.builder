@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.179 2005/09/07 21:10:11 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.180 2005/09/07 21:19:11 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -212,7 +212,7 @@ public class BuilderLogic implements Singleton {
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
-				Layer marker = getLabelMarker(null);
+				Layer marker = getLabelMarker("page");
 				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
 				
 							
@@ -226,7 +226,7 @@ public class BuilderLogic implements Singleton {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					Layer marker = getLabelMarker(null);
+					Layer marker = getLabelMarker(regionKey);
 					marker.add(getAddIcon(regionKey, iwc, regionKey));
 					hPage.add(marker,regionKey);
 				}
@@ -250,7 +250,7 @@ public class BuilderLogic implements Singleton {
 			}
 			
 			if(mayAddButtonsInPage){
-				Layer marker = getLabelMarker(null);
+				Layer marker = getLabelMarker("page");
 				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
 
 				if ((!clipboardEmpty)){
@@ -274,10 +274,7 @@ public class BuilderLogic implements Singleton {
 	public Layer getLabelMarker(String label) {
 		Layer marker = new Layer(Layer.DIV);
 		marker.setStyleClass("regionLabel");
-		if(label==null){
-			marker.add("page");
-		}
-		else{
+		if(label!=null){
 			marker.add(label);
 		}
 		
