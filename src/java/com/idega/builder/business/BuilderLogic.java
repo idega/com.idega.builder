@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.178 2005/08/31 02:13:21 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.179 2005/09/07 21:10:11 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -49,6 +49,7 @@ import com.idega.presentation.HtmlPageRegion;
 import com.idega.presentation.IFrameContainer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
@@ -211,17 +212,23 @@ public class BuilderLogic implements Singleton {
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
-				page.add(getAddIcon(Integer.toString(-1), iwc, null));
+				Layer marker = getLabelMarker(null);
+				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
+				
+							
 				if (!clipboardEmpty)
-					page.add(getPasteIcon(Integer.toString(-1),null, iwc));
-				//page.add(layer);
+					marker.add(getPasteIcon(Integer.toString(-1),null, iwc));
+				
+				page.add(marker);
 			}
 			if(page instanceof HtmlPage){
 				HtmlPage hPage = (HtmlPage)page;
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					hPage.add(getAddIcon(regionKey, iwc, regionKey),regionKey);
+					Layer marker = getLabelMarker(null);
+					marker.add(getAddIcon(regionKey, iwc, regionKey));
+					hPage.add(marker,regionKey);
 				}
 			}
 		}
@@ -241,19 +248,40 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 			}
+			
 			if(mayAddButtonsInPage){
-				page.add(getAddIcon(Integer.toString(-1), iwc, null));
+				Layer marker = getLabelMarker(null);
+				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
+
+				if ((!clipboardEmpty)){
+					marker.add(getPasteIcon(Integer.toString(-1), null, iwc));
+				}
+				page.add(marker);
 			}
-			if ((!clipboardEmpty)&&mayAddButtonsInPage)
-				page.add(getPasteIcon(Integer.toString(-1), null, iwc));
-			if (page.getIsTemplate())
-				if (page.isLocked())
+			
+			if (page.getIsTemplate()){
+				if (page.isLocked()){
 					page.add(getLockedIcon(Integer.toString(-1), iwc, null));
-				else
+				}
+				else{
 					page.add(getUnlockedIcon(Integer.toString(-1), iwc));
-			//page.add(layer);
+				}
+			}
 		}
 		return (page);
+	}
+
+	public Layer getLabelMarker(String label) {
+		Layer marker = new Layer(Layer.DIV);
+		marker.setStyleClass("regionLabel");
+		if(label==null){
+			marker.add("page");
+		}
+		else{
+			marker.add(label);
+		}
+		
+		return marker;
 	}
 
 	public Page getPermissionTransformed(int groupId, String pageKey, Page page, IWContext iwc) {
@@ -389,35 +417,51 @@ public class BuilderLogic implements Singleton {
 					if (curr.getIsExtendingTemplate()) {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
-								container.add(getAddIcon(instanceId, iwc, container.getLabel()));
-								if (!clipboardEmpty)
-									container.add(getPasteIcon(instanceId,container.getLabel(), iwc));
+								Layer marker = getLabelMarker(container.getLabel());
+								marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+								
+								if (!clipboardEmpty){
+									marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
+								}
+								container.add(marker);
 							}
 						}
 						else {
-							container.add(getAddIcon(instanceId, iwc, container.getLabel()));
-							if (!clipboardEmpty)
-								container.add(getPasteIcon(instanceId,container.getLabel(), iwc));
-							if (curr.getIsTemplate()) {
-								container.add(getLabelIcon(instanceId, iwc, container.getLabel()));
-								if (container.isLocked())
-									container.add(getLockedIcon(instanceId, iwc, container.getLabel()));
-								else
-									container.add(getUnlockedIcon(instanceId, iwc));
+							Layer marker = getLabelMarker(container.getLabel());
+							marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+							container.add(marker);
+							
+							if (!clipboardEmpty){
+								marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
 							}
+							
+							
+							if (curr.getIsTemplate()) {
+								marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
+								if (container.isLocked())
+									marker.add(getLockedIcon(instanceId, iwc, container.getLabel()));
+								else
+									marker.add(getUnlockedIcon(instanceId, iwc));
+							}
+							
+							container.add(marker);
 						}
 					}
 					else {
-						container.add(getAddIcon(instanceId, iwc, container.getLabel()));
+						Layer marker = getLabelMarker(container.getLabel());
+						marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+						
+												
 						if (!clipboardEmpty)
-							container.add(getPasteIcon(instanceId,container.getLabel(), iwc));
+							marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
 						if (curr.getIsTemplate()) {
-							container.add(getLabelIcon(instanceId, iwc, container.getLabel()));
+							marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
 							if (container.isLocked())
-								container.add(getLockedIcon(instanceId, iwc, container.getLabel()));
+								marker.add(getLockedIcon(instanceId, iwc, container.getLabel()));
 							else
-								container.add(getUnlockedIcon(instanceId, iwc));
+								marker.add(getUnlockedIcon(instanceId, iwc));
 						}
+						container.add(marker);
 					}
 				}
 			}
@@ -454,35 +498,48 @@ public class BuilderLogic implements Singleton {
 				if (currentPage.getIsExtendingTemplate()) {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
-							tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
-							if (!clipboardEmpty)
-								tab.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc), x, y);
+							Layer marker = getLabelMarker(tab.getLabel(x, y));
+							marker.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)));
+							
+							if (!clipboardEmpty){
+								marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
+							}
+							
+							tab.add(marker, x, y);
 						}
 					}
 					else {
-						tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+						Layer marker = getLabelMarker(tab.getLabel(x, y));
+						marker.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)));
+						
 						if (!clipboardEmpty)
-							tab.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc), x, y);
+							marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
 						if (currentPage.getIsTemplate()) {
-							tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+							marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
 							if (tab.isLocked(x, y))
-								tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+								marker.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)));
 							else
-								tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
+								marker.add(getUnlockedIcon(newParentKey, iwc));
 						}
+						
+						tab.add(marker, x, y);
 					}
 				}
 				else {
-					tab.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+					Layer marker = getLabelMarker(tab.getLabel(x, y));
+					marker.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)));
+					
 					if (!clipboardEmpty)
-						tab.add(getPasteIcon(newParentKey, tab.getLabel(x,y) ,iwc), x, y);
+						marker.add(getPasteIcon(newParentKey, tab.getLabel(x,y) ,iwc));
 					if (currentPage.getIsTemplate()) {
-						tab.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+						marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
 						if (tab.isLocked(x, y))
-							tab.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)), x, y);
+							marker.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)));
 						else
-							tab.add(getUnlockedIcon(newParentKey, iwc), x, y);
+							marker.add(getUnlockedIcon(newParentKey, iwc));
 					}
+					
+					tab.add(marker, x, y);
 				}
 			}
 		}
@@ -1496,7 +1553,9 @@ public class BuilderLogic implements Singleton {
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
-		
+		if(label!=null){
+			link.setToolTip(label);
+		}
 		//add drop target and on paste icon
 		return (link);
 	}
@@ -1515,6 +1574,9 @@ public class BuilderLogic implements Singleton {
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_UNLOCK_REGION);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
+		if(label!=null){
+			link.setToolTip(label);
+		}
 		return (link);
 	}
 
@@ -1546,6 +1608,9 @@ public class BuilderLogic implements Singleton {
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
+		if(label!=null){
+			link.setToolTip(label);
+		}
 		return (link);
 	}
 

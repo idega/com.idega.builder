@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.61 2005/08/31 02:13:21 eiki Exp $
+ * $Id: XMLReader.java,v 1.62 2005/09/07 21:10:11 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,9 @@
  */
 package com.idega.builder.business;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.component.UIComponent;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.tag.BuilderPage;
@@ -171,7 +171,7 @@ public class XMLReader {
 				XMLElement child = (XMLElement) it.next();
 				
 				if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
-					setProperties(child, parentContainer);
+					setProperty(child, parentContainer);
 				}
 				else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
 					if (!parentContainer.getIsExtendingTemplate())
@@ -330,13 +330,13 @@ public class XMLReader {
 	}
 
 	/**
-	 *
+	 *Sets properties from the xml on the object via reflection or getAttributes().put(..) or PresentationObject.setProperty(...)
 	 */
-	static void setProperties(XMLElement properties, UIComponent object) {
+	static void setProperty(XMLElement property, UIComponent object) {
 		String key = null;
-		Vector values = new Vector(1);
+		List values = new ArrayList();
 
-		List li = properties.getChildren();
+		List li = property.getChildren();
 		Iterator it = li.iterator();
 
 		while (it.hasNext()) {
@@ -346,7 +346,7 @@ public class XMLReader {
 				key = e.getTextTrim();
 			}
 			else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
-				values.addElement(e.getTextTrim());
+				values.add(e.getTextTrim());
 			}
 		}
 
@@ -361,13 +361,20 @@ public class XMLReader {
 				}
 			}
 			else {
-				//Eiki not tested ever, also not put into PropertyCache....
-				String vals[] = (String[]) values.toArray();
-				if(vals.length==1){
-					object.getAttributes().put(key,vals[0]);
+				//Backward compatability and possibly good for beanproperties, used by Image,Page and Table at least...
+				//NOT into PropertyCache....
+				if(object instanceof PresentationObject){
+					//depracated stuff, the method in PO does the same as for a UIComponent in the "else part" 
+					//but is overridden by ancient classes that do different thing with it
+					String[] vals = new String[values.size()];
+					for (int i = 0; i < values.size(); i++){
+						vals[i] = (String) values.get(i);
+					}
+					((PresentationObject)object).setProperty(key,vals);
 				}
 				else{
-					object.getAttributes().put(key,vals);
+					//UIComponent
+					object.getAttributes().put(key,values);
 				}
 			}
 		}
@@ -376,7 +383,7 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void setReflectionProperty(UIComponent instance, String methodIdentifier, Vector stringValues) {
+	static void setReflectionProperty(UIComponent instance, String methodIdentifier, List stringValues) {
 		ComponentPropertyHandler.getInstance().setReflectionProperty(instance, methodIdentifier, stringValues);
 	}
 
@@ -468,7 +475,7 @@ public class XMLReader {
 					while (itr.hasNext()) {
 						XMLElement child = (XMLElement) itr.next();
 						if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
-							setProperties(child, table);
+							setProperty(child, table);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
 							parseElement(child, table, ibxml);
@@ -503,7 +510,7 @@ public class XMLReader {
 					while (itr.hasNext()) {
 						XMLElement child = (XMLElement) itr.next();
 						if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
-							setProperties(child, firstUICInstance);
+							setProperty(child, firstUICInstance);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
 							parseElement(child, (PresentationObjectContainer) firstUICInstance, ibxml);

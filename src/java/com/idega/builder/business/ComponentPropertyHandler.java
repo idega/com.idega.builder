@@ -37,7 +37,7 @@ public class ComponentPropertyHandler implements Singleton {
   	return (ComponentPropertyHandler) SingletonRepository.getRepository().getInstance(ComponentPropertyHandler.class,instantiator);
   }
 
-     void setReflectionProperty(UIComponent instance,String methodIdentifier,Vector stringValues){
+     void setReflectionProperty(UIComponent instance,String methodIdentifier,List stringValues){
       Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier,instance.getClass());
       if(method==null){
         throw new RuntimeException("Method: "+methodIdentifier+" not found");
@@ -49,7 +49,7 @@ public class ComponentPropertyHandler implements Singleton {
 
      
      private static String[] emptyStringArray = new String[0];
-     void setReflectionProperty(UIComponent instance,Method method,Vector stringPropertyValues){
+     void setReflectionProperty(UIComponent instance,Method method,List stringPropertyValues){
      	Property property = new Property(method);
      	String[] sPropertyValuesArray = (String[])stringPropertyValues.toArray(emptyStringArray);
      	property.setPropertyValues(sPropertyValuesArray);

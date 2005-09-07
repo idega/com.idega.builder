@@ -72,7 +72,19 @@
 	white-space: nowrap;
 }
 
+.regionLabel{
+	background-color: yellow;
+	border: 1px #000000 solid;	
+	display: inline;
+	padding-left: 1px;
+    padding-right: 1px;
+}
+
+.regionLabel a{
+    margin: 2px;
+}
+
+
 #.table{
 #	border: 1px grey dotted;
 #}
-		
