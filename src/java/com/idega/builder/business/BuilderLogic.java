@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.182 2005/09/08 14:49:14 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.183 2005/09/08 15:00:46 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -57,7 +57,6 @@ import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
@@ -1588,10 +1587,8 @@ public class BuilderLogic implements Singleton {
 	 *
 	 */
 	public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label){
-		Layer addLayer = new Layer(Layer.DIV);
-		
 		Image addImage = getBuilderBundle().getImage("add.gif", "Add new component");
-		//addImage.setAttribute("style","z-index: 0;");
+
 		Link link = new Link(addImage);
 		link.setWindowToOpen(IBAddModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1601,19 +1598,8 @@ public class BuilderLogic implements Singleton {
 		if(label!=null){
 			link.setToolTip(label);
 		}
-		
-		addLayer.add(link);
-		String layerId = addLayer.getId();
-		HiddenInput ibPage = new HiddenInput(BuilderConstants.IB_PAGE_PARAMETER+"_"+layerId, getCurrentIBPage(iwc));
-		addLayer.add(ibPage);
-		
-		HiddenInput parent = new HiddenInput(BuilderLogic.IB_PARENT_PARAMETER+"_"+layerId, parentKey);
-		addLayer.add(parent);
-		
-		HiddenInput labelInput = new HiddenInput(BuilderLogic.IB_LABEL_PARAMETER+"_"+layerId, label);
-		addLayer.add(labelInput);
 	
-		return (addLayer);
+		return link;
 	}
 	
 
