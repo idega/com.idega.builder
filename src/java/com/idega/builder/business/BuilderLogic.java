@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.181 2005/09/08 12:58:11 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.182 2005/09/08 14:49:14 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -235,8 +235,14 @@ public class BuilderLogic implements Singleton {
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
 					Layer marker = getLabelMarker(regionKey);
-					marker.add(getAddIcon(regionKey, iwc, regionKey));
 					hPage.add(marker,regionKey);
+					marker.add(getAddIcon(regionKey, iwc, regionKey));
+					
+					if (!clipboardEmpty){
+						marker.add(getPasteIcon(regionKey,regionKey, iwc));
+					}
+					
+					
 				}
 			}
 		}
