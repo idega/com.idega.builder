@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.180 2005/09/07 21:19:11 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.181 2005/09/08 12:58:11 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -53,9 +53,11 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
@@ -213,13 +215,19 @@ public class BuilderLogic implements Singleton {
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
 				Layer marker = getLabelMarker("page");
-				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
-				
-							
-				if (!clipboardEmpty)
-					marker.add(getPasteIcon(Integer.toString(-1),null, iwc));
-				
 				page.add(marker);
+				
+				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
+							
+				if (!clipboardEmpty){
+					marker.add(getPasteIcon(Integer.toString(-1),null, iwc));
+				}
+				
+				Script drop = new Script();
+				drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),"-1","page","moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
+				page.add(drop);
+				
+				
 			}
 			if(page instanceof HtmlPage){
 				HtmlPage hPage = (HtmlPage)page;
@@ -415,19 +423,23 @@ public class BuilderLogic implements Singleton {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
 								Layer marker = getLabelMarker(container.getLabel());
+								container.add(marker);
 								marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 								
 								if (!clipboardEmpty){
 									marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
 								}
-								container.add(marker);
+								
+								Script drop = new Script();
+								drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+								container.add(drop);	
 							}
 						}
 						else {
 							Layer marker = getLabelMarker(container.getLabel());
-							marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 							container.add(marker);
-							
+							marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+														
 							if (!clipboardEmpty){
 								marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
 							}
@@ -435,30 +447,43 @@ public class BuilderLogic implements Singleton {
 							
 							if (curr.getIsTemplate()) {
 								marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
-								if (container.isLocked())
+								if (container.isLocked()){
 									marker.add(getLockedIcon(instanceId, iwc, container.getLabel()));
-								else
+								}
+								else{
 									marker.add(getUnlockedIcon(instanceId, iwc));
+									Script drop = new Script();
+									drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+									container.add(drop);									
+								}
 							}
 							
-							container.add(marker);
+							
 						}
 					}
 					else {
 						Layer marker = getLabelMarker(container.getLabel());
+						container.add(marker);
 						marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 						
 												
-						if (!clipboardEmpty)
+						if (!clipboardEmpty){
 							marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
+						}
+						
 						if (curr.getIsTemplate()) {
 							marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
-							if (container.isLocked())
+							if (container.isLocked()){
 								marker.add(getLockedIcon(instanceId, iwc, container.getLabel()));
-							else
+							}
+							else{
 								marker.add(getUnlockedIcon(instanceId, iwc));
+								Script drop = new Script();
+								drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+								container.add(drop);
+							}
 						}
-						container.add(marker);
+						
 					}
 				}
 			}
@@ -496,47 +521,65 @@ public class BuilderLogic implements Singleton {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
 							Layer marker = getLabelMarker(tab.getLabel(x, y));
-							marker.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)));
+							tab.add(marker, x, y);
+							
+							PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+							marker.add(addIcon);
 							
 							if (!clipboardEmpty){
 								marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
 							}
 							
-							tab.add(marker, x, y);
+							Script drop = new Script();
+							drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+							tab.add(drop,x,y);
 						}
 					}
 					else {
 						Layer marker = getLabelMarker(tab.getLabel(x, y));
-						marker.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)));
+						tab.add(marker, x, y);
+						
+						PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+						marker.add(addIcon);
 						
 						if (!clipboardEmpty)
 							marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
 						if (currentPage.getIsTemplate()) {
 							marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
-							if (tab.isLocked(x, y))
+							if (tab.isLocked(x, y)){
 								marker.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)));
-							else
+							}
+							else{
 								marker.add(getUnlockedIcon(newParentKey, iwc));
+								Script drop = new Script();
+								drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+								tab.add(drop,x,y);
+							}
 						}
-						
-						tab.add(marker, x, y);
 					}
 				}
 				else {
 					Layer marker = getLabelMarker(tab.getLabel(x, y));
-					marker.add(getAddIcon(newParentKey, iwc, tab.getLabel(x, y)));
+					tab.add(marker, x, y);
 					
+					PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+					marker.add(addIcon);
+										
 					if (!clipboardEmpty)
 						marker.add(getPasteIcon(newParentKey, tab.getLabel(x,y) ,iwc));
 					if (currentPage.getIsTemplate()) {
 						marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
-						if (tab.isLocked(x, y))
+						if (tab.isLocked(x, y)){
 							marker.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)));
-						else
+						}
+						else{
 							marker.add(getUnlockedIcon(newParentKey, iwc));
+							Script drop = new Script();
+							drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+							tab.add(drop,x,y);
+						}
 					}
 					
-					tab.add(marker, x, y);
 				}
 			}
 		}
@@ -1232,8 +1275,7 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public PresentationObject getPasteIcon(String parentKey,String regionLabel, IWContext iwc) {
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-		Image pasteImage = bundle.getImage("paste.gif", "Paste component");
+		Image pasteImage = getBuilderBundle().getImage("paste.gif", "Paste component");
 		Link link = new Link(pasteImage);
 		link.setWindowToOpen(IBPasteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1539,10 +1581,10 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image addImage = bundle.getImage("add.gif", "Add new component");
+	public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label){
+		Layer addLayer = new Layer(Layer.DIV);
+		
+		Image addImage = getBuilderBundle().getImage("add.gif", "Add new component");
 		//addImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(addImage);
 		link.setWindowToOpen(IBAddModuleWindow.class);
@@ -1553,18 +1595,27 @@ public class BuilderLogic implements Singleton {
 		if(label!=null){
 			link.setToolTip(label);
 		}
-		//add drop target and on paste icon
-		return (link);
+		
+		addLayer.add(link);
+		String layerId = addLayer.getId();
+		HiddenInput ibPage = new HiddenInput(BuilderConstants.IB_PAGE_PARAMETER+"_"+layerId, getCurrentIBPage(iwc));
+		addLayer.add(ibPage);
+		
+		HiddenInput parent = new HiddenInput(BuilderLogic.IB_PARENT_PARAMETER+"_"+layerId, parentKey);
+		addLayer.add(parent);
+		
+		HiddenInput labelInput = new HiddenInput(BuilderLogic.IB_LABEL_PARAMETER+"_"+layerId, label);
+		addLayer.add(labelInput);
+	
+		return (addLayer);
 	}
 	
 
 	/**
 	 *
 	 */
-	public PresentationObject getLockedIcon(String parentKey, IWContext iwc, String label)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image lockImage = bundle.getImage("las_close.gif", "Unlock region");
+	public PresentationObject getLockedIcon(String parentKey, IWContext iwc, String label){
+		Image lockImage = getBuilderBundle().getImage("las_close.gif", "Unlock region");
 		Link link = new Link(lockImage);
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1580,10 +1631,8 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getUnlockedIcon(String parentKey, IWContext iwc)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image lockImage = bundle.getImage("las_open.gif", "Lock region");
+	public PresentationObject getUnlockedIcon(String parentKey, IWContext iwc){
+		Image lockImage = getBuilderBundle().getImage("las_open.gif", "Lock region");
 		Link link = new Link(lockImage);
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1595,10 +1644,8 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image labelImage = bundle.getImage("label.gif", "Put label on region");
+	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label){
+		Image labelImage = getBuilderBundle().getImage("label.gif", "Put label on region");
 		Link link = new Link(labelImage);
 		link.setWindowToOpen(IBAddRegionLabelWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1611,10 +1658,8 @@ public class BuilderLogic implements Singleton {
 		return (link);
 	}
 
-	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image cutImage = bundle.getImage("shared/menu/cut.gif", "Cut component");
+	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc){
+		Image cutImage = getBuilderBundle().getImage("shared/menu/cut.gif", "Cut component");
 		Link link = new Link(cutImage);
 		link.setWindowToOpen(IBCutModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1627,10 +1672,8 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getCopyIcon(String key, String parentKey, IWContext iwc)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image copyImage = bundle.getImage("shared/menu/copy.gif", "Copy component");
+	public PresentationObject getCopyIcon(String key, String parentKey, IWContext iwc){
+		Image copyImage = getBuilderBundle().getImage("shared/menu/copy.gif", "Copy component");
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(copyImage);
 		link.setWindowToOpen(IBCopyModuleWindow.class);
@@ -1641,10 +1684,8 @@ public class BuilderLogic implements Singleton {
 		return (link);
 	}
 
-	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image deleteImage = bundle.getImage("shared/menu/delete.gif", "Delete component");
+	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc){
+		Image deleteImage = getBuilderBundle().getImage("shared/menu/delete.gif", "Delete component");
 		Link link = new Link(deleteImage);
 		link.setWindowToOpen(IBDeleteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1654,10 +1695,8 @@ public class BuilderLogic implements Singleton {
 		return link;
 	}
 
-	public PresentationObject getPermissionIcon(String key, IWContext iwc)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image editImage = bundle.getImage("shared/menu/permission.gif", "Set permissions");
+	public PresentationObject getPermissionIcon(String key, IWContext iwc){
+		Image editImage = getBuilderBundle().getImage("shared/menu/permission.gif", "Set permissions");
 		Link link = new Link(editImage);
 		link.setWindowToOpen(IBPermissionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1669,10 +1708,8 @@ public class BuilderLogic implements Singleton {
 		return link;
 	}
 
-	public PresentationObject getEditIcon(String key, IWContext iwc)
-	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image editImage = bundle.getImage("shared/menu/edit.gif", "Properties");
+	public PresentationObject getEditIcon(String key, IWContext iwc){
+		Image editImage = getBuilderBundle().getImage("shared/menu/edit.gif", "Properties");
 		Link link = new Link(editImage);
 		link.setWindowToOpen(IBPropertiesWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -1686,8 +1723,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public PresentationObject getPasteAboveIcon(String key, String parentKey, IWContext iwc)
 	{
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-		Image pasteImage = bundle.getImage("shared/menu/paste.gif", "Paste above component");
+		Image pasteImage = getBuilderBundle().getImage("shared/menu/paste.gif", "Paste above component");
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(pasteImage);
 		link.setWindowToOpen(IBPasteModuleWindow.class);
@@ -1735,5 +1771,96 @@ public class BuilderLogic implements Singleton {
 		}
 		return newComponent;
 	}
+	
+/**
+	 * @param containerId
+	 * @return
+	 */
+	public String getDraggableScript(String containerId, String handleId) {
+	//	return " new Draggable('"+containerId+"',{handle:'"+handleAndMenuLayer.getID()+"',revert:true});";
+		return " new Draggable('"+containerId+"',{handle:'"+handleId+"',revert:true, " +
+		"endeffect: function(element, top_offset, left_offset) { " +
+        //"	new Effect.Opacity(element, {duration:0.2, from:0.7, to:1.0}); " +
+        "	new Effect.Pulsate(element,{duration:1.5});" +
+        "}});";
+	}
 
+	public String getModuleToModuleDroppableScript(String contentLayerId, String droppableId, String acceptableStyleClasses, String hoverStyleClass, String webServiceURI) {
+		//TODO make an external script (as much as possible)
+		 return "Droppables.add('"+droppableId+"',{accept:['"+acceptableStyleClasses+"'],hoverclass:'"+hoverStyleClass+"'," +
+			"onDrop: " +
+			"function(element) { \n" +
+			"	var elementContainerId = element.id; \n" +
+			"	var dropTargetId = '"+contentLayerId+"'; \n" +
+		 	"	var dropTarget = $(dropTargetId); \n" +
+		 	"   var elementInstanceId = $('instanceId_'+elementContainerId).value; \n" +
+		 	"   var dropTargetInstanceId =  $('instanceId_'+dropTargetId).value \n;" +
+		 	"   var currentPageKey =  $('pageId_'+dropTargetId).value; \n" +
+		 	"   var formerParentId =  $('parentId_'+elementContainerId).value; \n" +
+		 	"   var newParentId = $('parentId_'+dropTargetId).value; \n" +
+		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
+		 	"	var query = 'method=moveModule&objectId='+elementInstanceId+'&pageKey='+currentPageKey+'&formerParentId='+formerParentId+'&newParentId='+newParentId+'&objectIdToPasteBelow='+dropTargetInstanceId;  \n" +	
+		 	//"   alert(query);" +
+		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
+		 	"			onComplete: function(request) { \n" +
+		 	"				if(request.responseText.indexOf('iwbuilder-ok')>=0){ \n" +
+		 	"					$('parentId_'+elementContainerId).value = newParentId; " +
+		 	"		 	 		dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
+		 	" 					element.parentNode.insertBefore(dropTarget,element);  \n" +
+		 	" 					$('parentId_'+elementContainerId).value = newParentId; \n"	 +
+		 	"				}else { alert(request.responseText); } \n" +
+		 	"			}, method: 'GET',asynchronous: true})" +
+
+		 	
+		 	
+		 	//OLD WAY that did not work for droppables within droppables after one drag.
+
+//			"	var elementHandleId = 'handle_'+elementContainerId;" +
+//			"   var scriptLayer = $('script_'+elementContainerId);" +
+//		 	"   var scriptLayerId = scriptLayer.id;" +
+		 	//Copy the moduleContainer layer
+			//"   new Insertion['After']($('"+contentLayerId+"'), '<div class=moduleContainer id='+elementContainerId+' >'+element.innerHTML+' </div>');" +
+			//get rid of the old
+			//"	Element.remove(element); " +
+			//"	element = null;" +
+			//Copy the script layer also!
+			//"   new Insertion['After']($(elementContainerId), '<div class=script id='+scriptLayerId+' >'+scriptLayer.innerHTML+' </div>');" +
+			
+		 	"}});";
+	}
+	
+	public String getRegionDroppableScript(String regionMarkerId, String pageKey, String parentKey, String label, String acceptableStyleClasses, String hoverStyleClass, String webServiceURI) {
+//		addLayer.add(new HiddenInput(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc)));
+//		addLayer.add(new HiddenInput(BuilderLogic.IB_PARENT_PARAMETER, parentKey));
+//		addLayer.add(new HiddenInput(BuilderLogic.IB_LABEL_PARAMETER, label));
+		
+		 return "Droppables.add('"+regionMarkerId+"',{accept:['"+acceptableStyleClasses+"'],hoverclass:'"+hoverStyleClass+"'," +
+			"onDrop: " +
+			"function(element) { \n" +
+			"	var elementContainerId = element.id; \n" +
+			"	var dropTargetId = '"+regionMarkerId+"'; \n" +
+		 	"	var dropTarget = $(dropTargetId); \n" +
+		 	"   var elementInstanceId = $('instanceId_'+elementContainerId).value; \n" +
+		 	"   var currentPageKey =  '"+pageKey+"' \n" +
+		 	"   var formerParentId =  $('parentId_'+elementContainerId).value; \n" +
+		 	"   var newParentId = '"+parentKey+"'; \n" +
+		 	"   var labelName = '"+label+"'\n" +
+		 	"   dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
+//		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
+//		 	"	var query = 'method=moveModule&objectId='+elementInstanceId+'&pageKey='+currentPageKey+'&formerParentId='+formerParentId+'&newParentId='+newParentId+'&objectIdToPasteBelow='+dropTargetInstanceId;  \n" +	
+//		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
+//		 	"			onComplete: function(request) { \n" +
+//		 	"				if(request.responseText.indexOf('iwbuilder-ok')>=0){ \n" +
+//		 	"					$('parentId_'+elementContainerId).value = newParentId; " +
+//		 	"		 	 		dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
+//		 	" 					element.parentNode.insertBefore(dropTarget,element);  \n" +
+//		 	" 					$('parentId_'+elementContainerId).value = newParentId; \n"	 +
+//		 	"				}else { alert(request.responseText); } \n" +
+//		 	"			}, method: 'GET',asynchronous: true}) " +
+		 	"}});";
+	}
+	
+	public IWBundle getBuilderBundle(){
+		return IWMainApplication.getDefaultIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+	}
 }

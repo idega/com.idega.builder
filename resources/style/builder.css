@@ -81,6 +81,15 @@
     clear:both;
 }
 
+.regionLabelHover{
+	background-color: green;
+	border: 1px #000000 solid;	
+	float:left;
+    padding-left: 1px;
+    padding-right: 1px;
+    clear:both;
+}
+
 .regionLabel a{
     margin: 2px;
 }

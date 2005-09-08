@@ -138,10 +138,9 @@ public class IBObjectControl extends PresentationObjectContainer
 		tempDragDropContainer.setCellpaddingAndCellspacing(0);
 			
 		Script drag = new Script();
-		drag.addFunction("", getDraggableScript(containerId,nameLayer.getID()));
+		drag.addFunction("", getBuilderLogic().getDraggableScript(containerId,nameLayer.getID()));
 		Script drop = new Script();
-		drop.addFunction("", getDroppableScript(containerId, dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-					
+		drop.addFunction("", getBuilderLogic().getModuleToModuleDroppableScript(containerId, dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 		
 		//add scripts
 		super.add(drag);
@@ -220,64 +219,7 @@ public class IBObjectControl extends PresentationObjectContainer
 			handleAndMenuLayer.add(getEditIcon("0", iwc));
 		}
 	}
-	/**
-	 * @param containerId
-	 * @return
-	 */
-	private String getDraggableScript(String containerId, String handleId) {
-	//	return " new Draggable('"+containerId+"',{handle:'"+handleAndMenuLayer.getID()+"',revert:true});";
-		return " new Draggable('"+containerId+"',{handle:'"+handleId+"',revert:true, " +
-		"endeffect: function(element, top_offset, left_offset) { " +
-        //"	new Effect.Opacity(element, {duration:0.2, from:0.7, to:1.0}); " +
-        "	new Effect.Pulsate(element,{duration:1.5});" +
-        "}});";
-	}
-
-	private String getDroppableScript(String contentLayerId, String droppableId, String acceptableStyleClasses, String hoverStyleClass, String webServiceURI) {
-		//TODO make an external script (as much as possible)
-		 return "Droppables.add('"+droppableId+"',{accept:['"+acceptableStyleClasses+"'],hoverclass:'"+hoverStyleClass+"'," +
-			"onDrop: " +
-			"function(element) { \n" +
-			"	var elementContainerId = element.id; \n" +
-			"	var dropTargetId = '"+contentLayerId+"'; \n" +
-		 	"	var dropTarget = $(dropTargetId); \n" +
-		 	"   var elementInstanceId = $('instanceId_'+elementContainerId).value; \n" +
-		 	"   var dropTargetInstanceId =  $('instanceId_'+dropTargetId).value \n;" +
-		 	"   var currentPageKey =  $('pageId_'+dropTargetId).value; \n" +
-		 	"   var formerParentId =  $('parentId_'+elementContainerId).value; \n" +
-		 	"   var newParentId = $('parentId_'+dropTargetId).value; \n" +
-		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
-		 	"	var query = 'method=moveModule&objectId='+elementInstanceId+'&pageKey='+currentPageKey+'&formerParentId='+formerParentId+'&newParentId='+newParentId+'&objectIdToPasteBelow='+dropTargetInstanceId;  \n" +	
-		 	//"   alert(query);" +
-		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
-		 	"			onComplete: function(request) { \n" +
-		 	"				if(request.responseText.indexOf('iwbuilder-ok')>=0){ \n" +
-		 	"					$('parentId_'+elementContainerId).value = newParentId; " +
-		 	"		 	 		dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
-		 	" 					element.parentNode.insertBefore(dropTarget,element);  \n" +
-		 	" 					$('parentId_'+elementContainerId).value = newParentId; \n"	 +
-		 	"				}else { alert(request.responseText); } \n" +
-		 	"			}, method: 'GET',asynchronous: true})" +
-
-		 	
-		 	
-		 	//OLD WAY that did not work for droppables within droppables after one drag.
-
-//			"	var elementHandleId = 'handle_'+elementContainerId;" +
-//			"   var scriptLayer = $('script_'+elementContainerId);" +
-//		 	"   var scriptLayerId = scriptLayer.id;" +
-		 	//Copy the moduleContainer layer
-			//"   new Insertion['After']($('"+contentLayerId+"'), '<div class=moduleContainer id='+elementContainerId+' >'+element.innerHTML+' </div>');" +
-			//get rid of the old
-			//"	Element.remove(element); " +
-			//"	element = null;" +
-			//Copy the script layer also!
-			//"   new Insertion['After']($(elementContainerId), '<div class=script id='+scriptLayerId+' >'+scriptLayer.innerHTML+' </div>');" +
-			
-		 	"}});";
-	}
-	
-	
+		
 	public void add(UIComponent obj) {
 		contentLayer.add(obj);
 		obj.setParent(_parent);
