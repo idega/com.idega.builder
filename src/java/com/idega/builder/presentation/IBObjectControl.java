@@ -15,7 +15,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
-import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Script;
@@ -65,31 +64,6 @@ public class IBObjectControl extends PresentationObjectContainer
 		
 		init(iwc);
 		add(obj);
-	}
-	public void main(IWContext iwc)
-	{
-		try {			
-			Page page = getParentPage();
-			IWBundle iwb = getBundle(iwc);
-			page.addStyleSheetURL(this.getBundle(iwc).getVirtualPathWithFileNameString("style/builder.css"));
-			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/prototype.js"));
-			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/effects.js"));
-			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/dragdrop.js"));
-			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/controls.js"));
-			
-			//if we want to use Sortable (javascript from the DnD library) someday
-			page.setID("DnDPage");
-			
-			
-		}
-		catch (NullPointerException e) {
-			String error = "getParentPage() returns null in BuilderObjectControl for Object "
-				+ _theObject.getClass().getName()
-				+ " and ICObjectInstanceID="+BuilderLogic.getInstance().getInstanceId(_theObject);
-			System.out.println(error);
-				
-					
-		}
 	}
 	
 	private void init(IWContext iwc) {

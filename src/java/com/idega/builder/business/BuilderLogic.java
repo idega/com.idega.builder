@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.184 2005/09/09 04:39:50 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.185 2005/09/09 05:19:22 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -192,6 +192,16 @@ public class BuilderLogic implements Singleton {
 	 */
 	public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc) {
 
+		IWBundle iwb = getBuilderBundle();
+		page.addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
+		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/prototype.js"));
+		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/effects.js"));
+		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/dragdrop.js"));
+		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/controls.js"));
+		
+		//if we want to use Sortable (javascript from the DnD library) someday
+		page.setID("DnDPage");
+		
 		//Begin with transforming the objects on a normal Page object (constructed from IBXML)
 		List list = page.getChildren();
 		if (list != null) {
