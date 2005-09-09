@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.40 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.41 2005/09/09 16:25:23 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,12 @@
  */
 package com.idega.builder.presentation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
@@ -55,6 +58,10 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	
 	private Image elementImage;
 	private Image blockImage;
+	
+	private Map bundles;
+	private List failedBundles;
+	
 	//Image button;
 
 	public IBAddModuleWindow() {
@@ -62,6 +69,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		setHeight(400);
 		setResizable(true);
 		setScrollbar(true);
+		failedBundles = new ArrayList();
+		bundles = new HashMap();
 	}
 
 	/**
@@ -201,14 +210,19 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
 				blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
 
+				ModuleComparator comparator = new ModuleComparator(iwc);
 				if (elements != null) {
-					java.util.Collections.sort(elements, new ModuleComparator(iwc));
+					java.util.Collections.sort(elements,comparator );
 				}
 				if (blocks != null) {
-					java.util.Collections.sort(blocks, new ModuleComparator(iwc));
+					java.util.Collections.sort(blocks,comparator);
 				}
 				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
 				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
+				
+				failedBundles = comparator.getFailedBundles();
+				bundles = comparator.getBundles();
+				
 			}
 
 			String sElements = iwrb.getLocalizedString("elements_header", "Elements");
@@ -230,8 +244,13 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	 *
 	 */
 	private void addSubComponentList(String name, List list, Table table, int ypos, int xpos, IWContext iwc) {
+		//TODO set the final size
 		Table subComponentTable = new Table();
+		
 		table.add(subComponentTable, xpos, ypos);
+		
+		IWMainApplication iwma = iwc.getIWMainApplication();
+		Locale currentLocale = iwc.getCurrentLocale();
 
 		Text header = new Text(name, true, false, false);
 		header.setFontSize(Text.FONT_SIZE_12_HTML_3);
@@ -250,9 +269,28 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				try{
 					//iconLink = new Link(getIconForObject(item, iwc));
 					iconLink = getIconForObject(item, iwc);
-					IWMainApplication iwma = iwc.getIWMainApplication();
-					IWBundle iwb = item.getBundle(iwma);
-					String objectName = iwb.getComponentName(item.getClassName(), iwc.getCurrentLocale());
+					
+					String bundleIdentifier = item.getBundleIdentifier();
+					String objectName = item.getClassName();
+					try {
+						if (!failedBundles.contains(bundleIdentifier)) {
+							IWBundle bundle = (IWBundle) bundles.get(bundleIdentifier);
+							if (bundle == null) {
+								bundle = iwma.getBundle(bundleIdentifier);
+							}
+							objectName = bundle.getComponentName(objectName, currentLocale);
+						}
+					}
+					catch (IWBundleDoesNotExist iwbne) {
+						failedBundles.add(bundleIdentifier);
+						System.err.println("com.idega.builder.business.ModuleComparator: " + iwbne.getLocalizedMessage()
+								+ ". Please remove all references in the IC_OBJECT table");
+					}
+					
+					if(objectName==null){
+						objectName = item.getClassName();
+					}
+					
 					link = new Link(objectName);
 					link.setStyle(STYLE_NAME);
 					//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
@@ -275,9 +313,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					subComponentTable.add(link, 2, ypos);
 	
 					ypos++;
-				}
-				catch(IWBundleDoesNotExist iwbne){
-					System.err.println(iwbne.getLocalizedMessage()+". Please remove all references in the IC_OBJECT table");
 				}
 				catch(Exception e){
 					e.printStackTrace();
