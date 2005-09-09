@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.185 2005/09/09 05:19:22 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.186 2005/09/09 16:28:00 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -233,7 +233,7 @@ public class BuilderLogic implements Singleton {
 				}
 				
 				Script drop = new Script();
-				drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),"-1","page","moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
+				drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),"-1","","moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
 				page.add(drop);
 				
 				
@@ -251,6 +251,9 @@ public class BuilderLogic implements Singleton {
 						marker.add(getPasteIcon(regionKey,regionKey, iwc));
 					}
 					
+					Script drop = new Script();
+					drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),regionKey,regionKey,"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
+					page.add(drop);
 					
 				}
 			}
