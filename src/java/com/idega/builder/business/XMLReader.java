@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.62 2005/09/07 21:10:11 eiki Exp $
+ * $Id: XMLReader.java,v 1.63 2005/09/09 00:03:01 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,7 +50,7 @@ public class XMLReader {
 			while (it.hasNext()) {
 				try{
 					UIComponent obj = (UIComponent) it.next();
-					if(parent instanceof PresentationObject){
+					if(obj instanceof PresentationObject){
 						((PresentationObject)obj).setUseBuilderObjectControl(setTo);
 						((PresentationObject)obj).setBelongsToParent(true);
 						//if (obj instanceof PresentationObjectContainer) {
@@ -104,10 +104,10 @@ public class XMLReader {
 				pageKey = (String) at.getValue();
 			}
 			else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
-				if (at.getValue().equals("false"))
-					isLocked = false;
-				else
+				if (at.getValue().equals("true"))
 					isLocked = true;
+				else
+					isLocked = false;
 			} 
 			else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
 				dptRootPage = (String)at.getValue();
@@ -291,10 +291,12 @@ public class XMLReader {
 						parseChildren = false;
 				}
 				else {
-					if (( ((PresentationObjectContainer)newRegionParent).getBelongsToParent()) && ( ((PresentationObjectContainer)newRegionParent).isLocked()))
+					if ( ((PresentationObject)newRegionParent).getBelongsToParent() &&  ((PresentationObjectContainer)newRegionParent).isLocked()){
 						parseChildren = false;
-					else
+					}
+					else{
 						emptyParent = true;
+					}
 				}
 			}
 		}
@@ -314,10 +316,7 @@ public class XMLReader {
 		if (parseChildren) {
 			if (reg.hasChildren()) {
 				if (emptyParent){
-					List children = newRegionParent.getChildren();
-					if(children!=null){
-						children.clear();
-					}
+					((PresentationObjectContainer)newRegionParent).empty();
 				}
 				
 				List children = reg.getChildren();
@@ -466,8 +465,12 @@ public class XMLReader {
 
 			if (firstUICInstance instanceof com.idega.presentation.Table) {
 				com.idega.presentation.Table table = (com.idega.presentation.Table) firstUICInstance;
-				parent.getChildren().add(table);
-				
+				if(parent instanceof PresentationObjectContainer){
+					((PresentationObjectContainer)parent).add(table);
+				}
+				else{
+					parent.getChildren().add(table);
+				}
 				if (el.hasChildren()) {
 					List children = el.getChildren();
 					Iterator itr = children.iterator();
@@ -491,7 +494,12 @@ public class XMLReader {
 			else {
 				//Add the component to its parent
 				try {
-					parent.getChildren().add(firstUICInstance);
+					if(parent instanceof PresentationObjectContainer){
+						((PresentationObjectContainer)parent).add(firstUICInstance);
+					}
+					else{
+						parent.getChildren().add(firstUICInstance);
+					}
 				}
 				catch (Exception e) {
 					e.printStackTrace(System.err);
