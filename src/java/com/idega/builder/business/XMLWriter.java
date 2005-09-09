@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.39 2005/08/31 02:13:21 eiki Exp $
+ * $Id: XMLWriter.java,v 1.40 2005/09/09 04:39:50 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -888,24 +888,34 @@ public class XMLWriter {
 	public static boolean insertElementBelow(IBXMLAble xml, String parentInstanceId, XMLElement elementToInsert, String instanceIdToInsertBelow) {
 		return insertElement(xml,null,parentInstanceId,instanceIdToInsertBelow,elementToInsert,false,false);
 	}
-	/**
-	 *  
-	 */
-	public static boolean pasteElement(IBXMLAble xml, String pageKey, String parentObjectInstanceID, String label, XMLElement element) {
-		changeModuleIds(element, pageKey);
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+	
+	public static boolean pasteElementLastIntoParentOrRegion(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element) {
+		return insertElementLastIntoParentOrRegion(xml, pageKey, parentInstanceId, label, element, true);
+	}
+	
+	public static boolean insertElementLastIntoParentOrRegion(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element) {
+		return insertElementLastIntoParentOrRegion(xml, pageKey, parentInstanceId, label, element, false);
+	}
+	
+	public static boolean insertElementLastIntoParentOrRegion(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element, boolean changeInstanceId) {
+		
+		if(changeInstanceId){
+			changeModuleIds(element, pageKey);
+		}
+		
+		XMLElement parent = findXMLElementWithId(xml, parentInstanceId, null);
 		if (parent != null) {
 			parent.addContent(element);
 			return (true);
 		}
 		else {
-			int index = parentObjectInstanceID.indexOf(".");
+			int index = parentInstanceId.indexOf(".");
 			if (index != -1) {
 				XMLElement region = new XMLElement(XMLConstants.REGION_STRING);
-				XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING, parentObjectInstanceID);
+				XMLAttribute id = new XMLAttribute(XMLConstants.ID_STRING, parentInstanceId);
 				region.setAttribute(id);
 				
-				String parentID = parentObjectInstanceID.substring(0, index);
+				String parentID = parentInstanceId.substring(0, index);
 				XMLElement regionParent = findModule(xml, parentID);
 				
 				if(label!=null){

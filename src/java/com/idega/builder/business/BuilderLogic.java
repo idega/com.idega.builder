@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.183 2005/09/08 15:00:46 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.184 2005/09/09 04:39:50 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -223,7 +223,7 @@ public class BuilderLogic implements Singleton {
 				}
 				
 				Script drop = new Script();
-				drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),"-1","page","moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
+				drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),"-1","page","moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
 				page.add(drop);
 				
 				
@@ -436,7 +436,7 @@ public class BuilderLogic implements Singleton {
 								}
 								
 								Script drop = new Script();
-								drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 								container.add(drop);	
 							}
 						}
@@ -458,7 +458,7 @@ public class BuilderLogic implements Singleton {
 								else{
 									marker.add(getUnlockedIcon(instanceId, iwc));
 									Script drop = new Script();
-									drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+									drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 									container.add(drop);									
 								}
 							}
@@ -484,7 +484,7 @@ public class BuilderLogic implements Singleton {
 							else{
 								marker.add(getUnlockedIcon(instanceId, iwc));
 								Script drop = new Script();
-								drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 								container.add(drop);
 							}
 						}
@@ -536,7 +536,7 @@ public class BuilderLogic implements Singleton {
 							}
 							
 							Script drop = new Script();
-							drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+							drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 							tab.add(drop,x,y);
 						}
 					}
@@ -557,7 +557,7 @@ public class BuilderLogic implements Singleton {
 							else{
 								marker.add(getUnlockedIcon(newParentKey, iwc));
 								Script drop = new Script();
-								drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 								tab.add(drop,x,y);
 							}
 						}
@@ -580,7 +580,7 @@ public class BuilderLogic implements Singleton {
 						else{
 							marker.add(getUnlockedIcon(newParentKey, iwc));
 							Script drop = new Script();
-							drop.addFunction("",getRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+							drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 							tab.add(drop,x,y);
 						}
 					}
@@ -1049,7 +1049,7 @@ public class BuilderLogic implements Singleton {
 		if (element == null)
 			return (false);
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (XMLWriter.pasteElement(xml, pageKey, regionId, regionLabel,toPaste)) {
+		if (XMLWriter.pasteElementLastIntoParentOrRegion(xml, pageKey, regionId, regionLabel,toPaste)) {
 			xml.store();
 			return (true);
 		}
@@ -1092,9 +1092,55 @@ public class BuilderLogic implements Singleton {
 		return (false);
 	}
 	
+	/**
+	 * Copies, cuts and then pastes the module as the last item in a region
+	 * @param iwc
+	 * @param instanceId
+	 * @param formerParentId
+	 * @param pageKey
+	 * @param regionId
+	 * @param regionLabel
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean moveModuleIntoRegion(IWUserContext iwc, String instanceId, String formerParentId, String pageKey, String regionId, String regionLabel) throws Exception {
+		boolean returner = false;
+	
+		IBXMLPage page = getIBXMLPage(pageKey);
+		//find
+		XMLElement moduleXML =  XMLWriter.findModule(page,instanceId);
+		XMLElement parentXML =  XMLWriter.findModule(page,formerParentId);
+		
+		XMLElement moduleXMLCopy = (XMLElement)moduleXML.clone();
+		
+		if(moduleXML!=null && parentXML!=null){
+			//remove	
+			try {
+				returner = XMLWriter.removeElement(parentXML,moduleXML,false);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				throw new Exception(e.getMessage());
+			}
+			
+			if(returner){
+				returner = XMLWriter.insertElementLastIntoParentOrRegion(page, pageKey, regionId, regionLabel,moduleXMLCopy);
+			}		
+			
+			if(!returner){
+				return false;
+			}
+			
+			return page.store();
+		}
+		
+		return returner;
+		
+	}
+	
 	
 	/**
-	 * Copies, cuts and then pastes the module
+	 * Copies, cuts and then pastes the module below another module
 	 * @param iwc
 	 * @param objectId
 	 * @param pageKey
@@ -1104,13 +1150,13 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 * @throws Exception 
 	 */
-	public boolean moveModule(IWUserContext iwc, String instanceId, String pageKey, String formerParentId, String newParentId, String objectIdToPasteBelow) throws Exception{
+	public boolean moveModule(IWUserContext iwc, String instanceId, String pageKey, String formerParentId, String newParentId, String instanceIdToPasteBelow) throws Exception{
 
-		System.out.println("pageKey = " + pageKey);
-		System.out.println("parentID = " + formerParentId);
-		System.out.println("instanceId = " + instanceId);
-		System.out.println("newparentID = " + 	newParentId);
-		System.out.println("instanceIdToPasteBelow = " +objectIdToPasteBelow);
+//		System.out.println("pageKey = " + pageKey);
+//		System.out.println("parentID = " + formerParentId);
+//		System.out.println("instanceId = " + instanceId);
+//		System.out.println("newparentID = " + 	newParentId);
+//		System.out.println("instanceIdToPasteBelow = " +objectIdToPasteBelow);
 		
 		boolean returner = false;
 		
@@ -1137,7 +1183,7 @@ public class BuilderLogic implements Singleton {
 			if(!returner) return false;
 			//insert
 
-			returner = XMLWriter.insertElementBelow(page,newParentId,moduleXMLCopy,objectIdToPasteBelow);
+			returner = XMLWriter.insertElementBelow(page,newParentId,moduleXMLCopy,instanceIdToPasteBelow);
 			if(!returner){
 				return false;
 			}
@@ -1821,12 +1867,9 @@ public class BuilderLogic implements Singleton {
 		 	"}});";
 	}
 	
-	public String getRegionDroppableScript(String regionMarkerId, String pageKey, String parentKey, String label, String acceptableStyleClasses, String hoverStyleClass, String webServiceURI) {
-//		addLayer.add(new HiddenInput(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc)));
-//		addLayer.add(new HiddenInput(BuilderLogic.IB_PARENT_PARAMETER, parentKey));
-//		addLayer.add(new HiddenInput(BuilderLogic.IB_LABEL_PARAMETER, label));
-		
-		 return "Droppables.add('"+regionMarkerId+"',{accept:['"+acceptableStyleClasses+"'],hoverclass:'"+hoverStyleClass+"'," +
+	public String getModuleToRegionDroppableScript(String regionMarkerId, String pageKey, String regionId, String regionLabel, String acceptableStyleClasses, String hoverStyleClass, String webServiceURI) {
+
+		return "Droppables.add('"+regionMarkerId+"',{accept:['"+acceptableStyleClasses+"'],hoverclass:'"+hoverStyleClass+"'," +
 			"onDrop: " +
 			"function(element) { \n" +
 			"	var elementContainerId = element.id; \n" +
@@ -1835,20 +1878,17 @@ public class BuilderLogic implements Singleton {
 		 	"   var elementInstanceId = $('instanceId_'+elementContainerId).value; \n" +
 		 	"   var currentPageKey =  '"+pageKey+"' \n" +
 		 	"   var formerParentId =  $('parentId_'+elementContainerId).value; \n" +
-		 	"   var newParentId = '"+parentKey+"'; \n" +
-		 	"   var labelName = '"+label+"'\n" +
-		 	"   dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
-//		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
-//		 	"	var query = 'method=moveModule&objectId='+elementInstanceId+'&pageKey='+currentPageKey+'&formerParentId='+formerParentId+'&newParentId='+newParentId+'&objectIdToPasteBelow='+dropTargetInstanceId;  \n" +	
-//		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
-//		 	"			onComplete: function(request) { \n" +
-//		 	"				if(request.responseText.indexOf('iwbuilder-ok')>=0){ \n" +
-//		 	"					$('parentId_'+elementContainerId).value = newParentId; " +
-//		 	"		 	 		dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
-//		 	" 					element.parentNode.insertBefore(dropTarget,element);  \n" +
-//		 	" 					$('parentId_'+elementContainerId).value = newParentId; \n"	 +
-//		 	"				}else { alert(request.responseText); } \n" +
-//		 	"			}, method: 'GET',asynchronous: true}) " +
+		 	"   var regionId = '"+regionId+"'; \n" +
+		 	"   var regionLabel = '"+regionLabel+"'\n" +
+		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
+		 	"	var query = 'method=moveModuleIntoRegion&instanceId='+elementInstanceId+'&formerParentId='+formerParentId+'&pageKey='+currentPageKey+'&regionId='+regionId+'&regionLabel='+regionLabel;  \n" +	
+		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
+		 	"			onComplete: function(request) { \n" +
+		 	"				if(request.responseText.indexOf('iwbuilder-ok')>=0){ \n" +
+		 	"		 	 		dropTarget.parentNode.insertBefore(element,dropTarget);  \n" +
+		 	"					$('parentId_'+elementContainerId).value = regionId; " +
+		 	"				}else { alert(request.responseText); } \n" +
+		 	"			}, method: 'GET',asynchronous: true}) " +
 		 	"}});";
 	}
 	

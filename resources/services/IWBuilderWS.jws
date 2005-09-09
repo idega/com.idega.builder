@@ -26,6 +26,30 @@ public class IWBuilderWS {
 	    }
 	}
 	
+
+	public String moveModuleIntoRegion(String instanceId, String formerParentId, String pageKey, String regionId, String regionLabel){
+	   try {
+	         IWUserContext iwuc = com.idega.axis.util.AxisUtil.getIWUserContext();
+	         if(iwuc.isLoggedOn()){
+		         BuilderLogic logic = BuilderLogic.getInstance();
+		         boolean success = logic.moveModuleIntoRegion(iwuc, instanceId, formerParentId, pageKey, regionId, regionLabel);
+	   
+		         if(success){
+		         	return "iwbuilder-ok";
+		         }
+		         else{
+		         	return "failed to move module";
+		         }
+	        }
+	        else return "not logged on!";
+	    
+	    }
+	    catch (Exception e) {
+	            e.printStackTrace();
+	            return "Service failed to move the module. The error message was :"+e.getMessage();
+	    }
+	}
+	
 	public String deleteModule(String pageKey, String parentId, String instanceId){
 	   try {
 	         IWUserContext iwc = com.idega.axis.util.AxisUtil.getIWUserContext();
