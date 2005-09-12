@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.186 2005/09/09 16:28:00 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.187 2005/09/12 15:44:36 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -44,6 +44,7 @@ import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.HtmlPage;
 import com.idega.presentation.HtmlPageRegion;
 import com.idega.presentation.IFrameContainer;
@@ -299,11 +300,11 @@ public class BuilderLogic implements Singleton {
 
 	public Layer getLabelMarker(String label) {
 		Layer marker = new Layer(Layer.DIV);
+		marker.add(new CSSSpacer());
 		marker.setStyleClass("regionLabel");
 		if(label!=null){
 			marker.add(label);
 		}
-		
 		return marker;
 	}
 
@@ -1341,6 +1342,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getPasteIcon(String parentKey,String regionLabel, IWContext iwc) {
 		Image pasteImage = getBuilderBundle().getImage("paste.gif", "Paste component");
 		Link link = new Link(pasteImage);
+		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBPasteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(IB_CONTROL_PARAMETER, ACTION_PASTE);
@@ -1649,6 +1651,7 @@ public class BuilderLogic implements Singleton {
 		Image addImage = getBuilderBundle().getImage("add.gif", "Add new component");
 
 		Link link = new Link(addImage);
+		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBAddModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
@@ -1668,6 +1671,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getLockedIcon(String parentKey, IWContext iwc, String label){
 		Image lockImage = getBuilderBundle().getImage("las_close.gif", "Unlock region");
 		Link link = new Link(lockImage);
+		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_UNLOCK_REGION);
@@ -1685,6 +1689,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getUnlockedIcon(String parentKey, IWContext iwc){
 		Image lockImage = getBuilderBundle().getImage("las_open.gif", "Lock region");
 		Link link = new Link(lockImage);
+		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LOCK_REGION);
@@ -1698,6 +1703,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label){
 		Image labelImage = getBuilderBundle().getImage("label.gif", "Put label on region");
 		Link link = new Link(labelImage);
+		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBAddRegionLabelWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
@@ -1712,6 +1718,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc){
 		Image cutImage = getBuilderBundle().getImage("shared/menu/cut.gif", "Cut component");
 		Link link = new Link(cutImage);
+		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBCutModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
@@ -1727,6 +1734,7 @@ public class BuilderLogic implements Singleton {
 		Image copyImage = getBuilderBundle().getImage("shared/menu/copy.gif", "Copy component");
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(copyImage);
+		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBCopyModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
@@ -1738,6 +1746,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc){
 		Image deleteImage = getBuilderBundle().getImage("shared/menu/delete.gif", "Delete component");
 		Link link = new Link(deleteImage);
+		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBDeleteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_DELETE);
@@ -1749,6 +1758,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getPermissionIcon(String key, IWContext iwc){
 		Image editImage = getBuilderBundle().getImage("shared/menu/permission.gif", "Set permissions");
 		Link link = new Link(editImage);
+		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPermissionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PERMISSION);
@@ -1762,6 +1772,7 @@ public class BuilderLogic implements Singleton {
 	public PresentationObject getEditIcon(String key, IWContext iwc){
 		Image editImage = getBuilderBundle().getImage("shared/menu/edit.gif", "Properties");
 		Link link = new Link(editImage);
+		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPropertiesWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
@@ -1777,6 +1788,7 @@ public class BuilderLogic implements Singleton {
 		Image pasteImage = getBuilderBundle().getImage("shared/menu/paste.gif", "Paste above component");
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(pasteImage);
+		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPasteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PASTE_ABOVE);
