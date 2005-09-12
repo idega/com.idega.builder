@@ -58,6 +58,11 @@
 	#display: inline;
 }
 
+.moduleContainer .moduleDropArea .moduleButtons img {
+	margin : 0px 0px 0px 0px;
+	border : none;
+}
+
 .DnDAreaTable{
 	margin:0px;
 	background-color: #D7DBE7;
