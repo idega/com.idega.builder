@@ -58,9 +58,15 @@
 	#display: inline;
 }
 
-.moduleContainer .moduleDropArea .moduleButtons img {
-	margin : 0px 0px 0px 0px;
-	border : none;
+.moduleContainer .moduleDropArea .moduleButtons .moduleButton {
+	padding:0px;
+	margin:2px;
+	border: none;
+}
+
+.moduleContainer .moduleDropArea .moduleButtons .moduleButton img {
+	margin: 0px;
+	border: none;
 }
 
 .DnDAreaTable{
@@ -95,10 +101,13 @@
     clear:both;
 }
 
-.regionLabel a{
-    margin: 2px;
+.regionLabel .regionButton {
+	margin: 2px;
+	padding: 0px;
 }
-
+.regionLabel .regionButton img {
+	margin: 0px;
+}
 
 #.table{
 #	border: 1px grey dotted;
