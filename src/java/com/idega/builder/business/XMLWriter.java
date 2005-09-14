@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.40 2005/09/09 04:39:50 eiki Exp $
+ * $Id: XMLWriter.java,v 1.41 2005/09/14 22:13:46 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -523,6 +523,11 @@ public class XMLWriter {
 
 	public static boolean addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
 			String regionId, String label) {
+		
+		if(label==null || "null".equals(label)){
+			label = regionId; 
+		}
+		
 		XMLElement region = findRegion(xml, label, regionId);
 		if (region == null) {
 			region = createRegion(regionId, label);
@@ -906,7 +911,7 @@ public class XMLWriter {
 		XMLElement parent = findXMLElementWithId(xml, parentInstanceId, null);
 		if (parent != null) {
 			parent.addContent(element);
-			return (true);
+			return true;
 		}
 		else {
 			int index = parentInstanceId.indexOf(".");
@@ -923,15 +928,28 @@ public class XMLWriter {
 					region.setAttribute(labelAttr);
 				}
 				
-				if (regionParent != null)
+				if (regionParent != null){
 					regionParent.addContent(region);
-				else
+				}
+				else{
 					xml.getPageRootElement().addContent(region);
+				}
+				
 				region.addContent(element);
-				return (true);
+				return true;
+			}
+			else{
+				XMLElement region = findRegion(xml, label, parentInstanceId);
+				if (region == null) {
+					//add the region 
+					region = createRegion(parentInstanceId, label);
+					//This is in a page that is extending a template
+					xml.getPageRootElement().addContent(region);
+				}
+				region.addContent(element);
+				return true;
 			}
 		}
-		return (false);
 	}
 
 	public static boolean pasteElementBelow(IBXMLAble xml, String pageKey, String parentObjectInstanceID,String objectId, XMLElement element) {

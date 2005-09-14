@@ -14,7 +14,7 @@
 	background-color: #D7DBE7;
 	border-bottom: 1px #000000 solid;	
 	cursor: default;
-	height: 18px;
+	height: 16px;
 	clear: both;
 	padding:0px;
 }
@@ -24,16 +24,14 @@
 }
 
 .moduleName{
-	font-size: 14px;
+	font-size: 12px;
 	font-family: Arial;
-	height: 18px;
-	#float: left;
-	#clear:left;
+	height: 16px;
 	cursor: move;
 	background-color: #d7dbe7;
-	#display: inline;
 	white-space: nowrap;
-	padding: 0px;
+	padding-left: 2px;
+        padding-top:3px;
 }
 
 .moduleDropArea{
@@ -48,25 +46,37 @@
 }
 
 .moduleButtons{
-	#background-color:#d7dbe7;
 	cursor: default;
 	float: right;
 	clear:right;
 	text-align:right;
-	#width: 90%;
-	margin: 1px;
-	#display: inline;
+	padding-top:1px;
 }
 
 .moduleContainer .moduleDropArea .moduleButtons .moduleButton {
+	margin-left: 1px;
+        margin-right: 1px;
 	padding:0px;
-	margin:2px;
 	border: none;
 }
 
 .moduleContainer .moduleDropArea .moduleButtons .moduleButton img {
 	margin: 0px;
 	border: none;
+}
+
+.toolbarButton{
+   float: left;
+   margin-right: 3px;
+   margin-left: 3px;
+   margin-top: 3px;
+}
+
+.toolbarLocaleMenu{
+	font-family:Arial,Helvetica,sans-serif;font-size: 7pt; 
+	border: 1 solid #000000;
+	margin-top: 3px;
+	float: left;
 }
 
 .DnDAreaTable{

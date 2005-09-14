@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.187 2005/09/12 15:44:36 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.188 2005/09/14 22:13:47 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -305,6 +305,7 @@ public class BuilderLogic implements Singleton {
 		if(label!=null){
 			marker.add(label);
 		}
+
 		return marker;
 	}
 
@@ -570,11 +571,12 @@ public class BuilderLogic implements Singleton {
 							}
 							else{
 								marker.add(getUnlockedIcon(newParentKey, iwc));
-								Script drop = new Script();
-								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-								tab.add(drop,x,y);
 							}
 						}
+						//always add the drop area
+						Script drop = new Script();
+						drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+						tab.add(drop,x,y);
 					}
 				}
 				else {
@@ -593,10 +595,10 @@ public class BuilderLogic implements Singleton {
 						}
 						else{
 							marker.add(getUnlockedIcon(newParentKey, iwc));
-							Script drop = new Script();
-							drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-							tab.add(drop,x,y);
 						}
+						Script drop = new Script();
+						drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+						tab.add(drop,x,y);
 					}
 					
 				}
@@ -1119,7 +1121,9 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean moveModuleIntoRegion(IWUserContext iwc, String instanceId, String formerParentId, String pageKey, String regionId, String regionLabel) throws Exception {
 		boolean returner = false;
-	
+		if("null".equals(regionLabel)){
+			regionLabel = null;
+		}
 		IBXMLPage page = getIBXMLPage(pageKey);
 		//find
 		XMLElement moduleXML =  XMLWriter.findModule(page,instanceId);
@@ -1716,7 +1720,7 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc){
-		Image cutImage = getBuilderBundle().getImage("shared/menu/cut.gif", "Cut component");
+		Image cutImage = getBuilderBundle().getImage("cut_16.gif", "Cut component",16,16);
 		Link link = new Link(cutImage);
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBCutModuleWindow.class);
@@ -1731,7 +1735,7 @@ public class BuilderLogic implements Singleton {
 	 *
 	 */
 	public PresentationObject getCopyIcon(String key, String parentKey, IWContext iwc){
-		Image copyImage = getBuilderBundle().getImage("shared/menu/copy.gif", "Copy component");
+		Image copyImage = getBuilderBundle().getImage("copy_16.gif", "Copy component",16,16);
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(copyImage);
 		link.setStyleClass("moduleButton");
@@ -1744,7 +1748,7 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc){
-		Image deleteImage = getBuilderBundle().getImage("shared/menu/delete.gif", "Delete component");
+		Image deleteImage = getBuilderBundle().getImage("del_16.gif", "Delete component",16,16);
 		Link link = new Link(deleteImage);
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBDeleteModuleWindow.class);
@@ -1756,7 +1760,7 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public PresentationObject getPermissionIcon(String key, IWContext iwc){
-		Image editImage = getBuilderBundle().getImage("shared/menu/permission.gif", "Set permissions");
+		Image editImage = getBuilderBundle().getImage("lock_16.gif", "Set permissions",16,16);
 		Link link = new Link(editImage);
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPermissionWindow.class);
@@ -1770,7 +1774,7 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public PresentationObject getEditIcon(String key, IWContext iwc){
-		Image editImage = getBuilderBundle().getImage("shared/menu/edit.gif", "Properties");
+		Image editImage = getBuilderBundle().getImage("prefs_16.gif", "Properties",16,16);
 		Link link = new Link(editImage);
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPropertiesWindow.class);
@@ -1785,7 +1789,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public PresentationObject getPasteAboveIcon(String key, String parentKey, IWContext iwc)
 	{
-		Image pasteImage = getBuilderBundle().getImage("shared/menu/paste.gif", "Paste above component");
+		Image pasteImage = getBuilderBundle().getImage("paste_16.gif", "Paste above component",16,16);
 		//copyImage.setAttribute("style","z-index: 0;");
 		Link link = new Link(pasteImage);
 		link.setStyleClass("moduleButton");
