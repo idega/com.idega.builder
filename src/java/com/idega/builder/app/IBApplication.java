@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.89 2005/09/14 22:13:47 eiki Exp $
+ *  $Id: IBApplication.java,v 1.90 2005/09/15 00:44:15 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,8 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.core.view.ViewManager;
+import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWMainApplication;
@@ -891,7 +893,7 @@ public class IBApplication extends IWApplication {
 				 *  text1.setFontSize(1);
 				 *  text1.setFontColor("Black");
 				 */
-				Table toolTable = new Table(4, 1);
+				Table toolTable = new Table(5, 1);
 				toolTable.setWidth("100%");
 				toolTable.setCellpadding(0);
 				toolTable.setCellspacing(0);
@@ -930,6 +932,20 @@ public class IBApplication extends IWApplication {
 					Link sourceLink = new Link(sourceImage, IBSourceView.class);
 					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
 					toolTable.add(sourceLink, 4, 1);
+				}
+				
+				
+				//Display the simple template page
+				if (isSuperUser||isBuilderUser) {
+					String settingsUrl;
+					ViewNode settingsNode = ViewManager.getInstance(iwc).getWorkspaceRoot().getChild("content").getChild("pages").getChild("templatesettings");
+					settingsUrl = settingsNode.getURI();
+					//Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
+					//sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
+					Link sourceLink = new Link("Simple template settings");
+					sourceLink.setURL(settingsUrl);
+					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+					toolTable.add(sourceLink, 5, 1);
 				}
 				
 				String id=null;
@@ -995,10 +1011,12 @@ public class IBApplication extends IWApplication {
 				
 				if(templateKey!=null){
 					CachedBuilderPage template = BuilderLogic.getInstance().getCachedBuilderPage(templateKey);
-					String templateNameS = " ["+template.getName()+"]";
-					Text templateName = new Text(templateNameS);
-					templateName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-					toolbarTable.add(templateName, 2, 1);
+					if(template!=null){
+						String templateNameS = " ["+template.getName()+"]";
+						Text templateName = new Text(templateNameS);
+						templateName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+						toolbarTable.add(templateName, 2, 1);
+					}
 				}
 				
 				if(uriLink!=null){
