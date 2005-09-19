@@ -12,7 +12,6 @@ package com.idega.builder.business;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.component.UIComponent;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
