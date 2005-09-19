@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.90 2005/09/15 00:44:15 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.91 2005/09/19 15:28:51 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -936,17 +936,17 @@ public class IBApplication extends IWApplication {
 				
 				
 				//Display the simple template page
-				if (isSuperUser||isBuilderUser) {
-					String settingsUrl;
-					ViewNode settingsNode = ViewManager.getInstance(iwc).getWorkspaceRoot().getChild("content").getChild("pages").getChild("templatesettings");
-					settingsUrl = settingsNode.getURI();
+				//if (isSuperUser||isBuilderUser) {
+				//	String settingsUrl;
+				//	ViewNode settingsNode = ViewManager.getInstance(iwc).getWorkspaceRoot().getChild("content").getChild("pages").getChild("templatesettings");
+				//	settingsUrl = settingsNode.getURI();
 					//Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
 					//sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
-					Link sourceLink = new Link("Simple template settings");
-					sourceLink.setURL(settingsUrl);
-					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-					toolTable.add(sourceLink, 5, 1);
-				}
+				//	Link sourceLink = new Link("Simple template settings");
+				//	sourceLink.setURL(settingsUrl);
+				//	sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+				//	toolTable.add(sourceLink, 5, 1);
+				//}
 				
 				String id=null;
                 try {
