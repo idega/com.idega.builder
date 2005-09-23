@@ -67,9 +67,8 @@ public class IBSourceView extends Window {
 		form.add(table);
 		// form.addParameter(IB_SOURCE_ACTION,"update");
 		add(form);
-		String format;
 		try {
-			format = getBuilderLogic().getCurrentIBPageEntity(iwc).getFormat();
+			getBuilderLogic().getCurrentIBPageEntity(iwc).getFormat();
 			String source = BuilderLogic.getInstance().getPageSource(iwc);
 //			if (BuilderLogic.getInstance().PAGE_FORMAT_HTML.equals(format)) {
 //				//HTMLArea area = new HTMLArea(SOURCE_PARAMETER, source, "100%", "500");
