@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.91 2005/09/19 15:28:51 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.92 2005/09/23 08:48:05 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,8 +33,6 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
-import com.idega.core.view.ViewManager;
-import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWMainApplication;
