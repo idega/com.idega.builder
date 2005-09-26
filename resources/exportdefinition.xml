@@ -54,6 +54,18 @@
 			</parameter>
 		</property>
 	</module>
+	<module class="com.idega.presentation.text.LinkContainer">
+		<property>
+			<name>:method:1:implied:void:setPage:com.idega.builder.data.IBPage:</name>
+			<parameter id="1">
+				<source>com.idega.core.builder.data.ICPage</source>
+				<provider>
+					<ejb>true</ejb>
+					<class>com.idega.core.builder.data.ICPage</class>
+				</provider>
+			</parameter>
+		</property>
+	</module>
 	<module class="com.idega.user.block.homepage.presentation.OwnerGroupInformationLink">
 		<property>
 			<name>:method:1:implied:void:setPage:com.idega.builder.data.IBPage:</name>
