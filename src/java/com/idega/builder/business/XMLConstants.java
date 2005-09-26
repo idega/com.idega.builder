@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.23 2004/05/05 15:14:00 gummi Exp $
+ * $Id: XMLConstants.java,v 1.24 2005/09/26 17:09:57 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -76,6 +76,7 @@ public abstract class XMLConstants {
   public static final String FILE_USED_ID = "identifier";
   public static final String FILE_ORIGINAL_NAME = "original_name";
   public static final String FILE_MIME_TYPE = "mime_type";
+  public static final String FILE_IS_MARKED_AS_DELETED = "marked_as_delete"; 
   
   // for page tree within metadata in zip file 
   public static final String PAGE_TREE_PAGES = "pages";

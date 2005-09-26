@@ -218,9 +218,8 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 */
       return toReturn;
 
-    } else {
-      return null;
-    }
+    } 
+    return null;
   }
 
   /*
@@ -252,9 +251,9 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
           if(newID == -1){
             return (-1);
           }
-          instance.changeDPTCrawlableLinkedPageId(item,((PresentationObject)item).getICObjectInstanceID(),pageIDString,String.valueOf(newID));
+          instance.changeDPTCrawlableLinkedPageId(((PresentationObject)item).getICObjectInstanceID(),pageIDString,String.valueOf(newID));
         } else {
-          instance.changeDPTCrawlableLinkedPageId(item,((PresentationObject)item).getICObjectInstanceID(),pageIDString,createdPage);
+          instance.changeDPTCrawlableLinkedPageId(((PresentationObject)item).getICObjectInstanceID(),pageIDString,createdPage);
         }
       }
 

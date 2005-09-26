@@ -98,7 +98,7 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
     }
     */
 
-    iframeContent = blogic.getIFrameContent(-1,instanceId,iwc);
+    iframeContent = blogic.getIFrameContent(instanceId,iwc);
     Page pageToPrint = null;
     if(iframeContent != null){
       if(iframeContent instanceof Page){

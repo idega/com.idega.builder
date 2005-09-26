@@ -9,11 +9,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import com.idega.builder.data.IBExportImportData;
 import com.idega.builder.io.IBExportImportDataReader;
 import com.idega.builder.io.IBExportImportDataWriter;
+import com.idega.builder.io.ObjectWriterBuilder;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
@@ -23,7 +24,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.UploadFile;
 import com.idega.io.serialization.FileObjectWriter;
 import com.idega.io.serialization.ICFileWriter;
-import com.idega.io.serialization.ObjectWriter;
+import com.idega.io.serialization.ICPageWriter;
 import com.idega.io.serialization.Storable;
 import com.idega.io.serialization.WriterToFile;
 import com.idega.io.serialization.XMLDataWriter;
@@ -40,7 +41,7 @@ import com.idega.util.xml.XMLData;
  * @version 1.0
  * Created on Mar 15, 2004
  */
-public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,ObjectWriter {
+public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,ObjectWriterBuilder {
 	
 	public final static String AUXILIARY_FOLDER = "auxiliaryDataFolder";
 	public final static String AUXILIARY_FILE = "auxililary_data_file_";
@@ -64,11 +65,11 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
 	}
 	
 	public Object write(File file, IWContext iwc) {
-		return new FileObjectWriter((Storable) file, iwc);
+		return new FileObjectWriter(file, iwc);
 	}
 	
   public Object write(ICFile file, IWContext iwc) {
-		return new ICFileWriter((Storable) file, iwc);
+		return new ICFileWriter(file, iwc);
 	}
 	
   public Object write(XMLData xmlData, IWContext iwc) {
@@ -77,6 +78,10 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
   
   public Object write(IBExportImportData metadata, IWContext iwc) {
   	return new IBExportImportDataWriter(metadata, iwc);
+  }
+  
+  public Object write(ICPage page, IWContext iwc) {
+	  return new ICPageWriter(page, iwc);
   }
   
   /** inputStream is not closed by this method */
@@ -197,6 +202,7 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
 		}
 		// do not hide an existing exception
 		catch (IOException io) {
+			// empty block
 		}
   }		
   
@@ -208,6 +214,7 @@ public class FileBusinessBean extends IBOServiceBean  implements  FileBusiness,O
   	}
   	// do not hide an existing exception
   	catch (IOException io) {
+  		// empty block
   	}
   }
 	

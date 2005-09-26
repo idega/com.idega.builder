@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.28 2005/06/28 15:54:39 gimmi Exp $
+ * $Id: IBPageBMPBean.java,v 1.29 2005/09/26 17:09:57 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -624,7 +624,9 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	
 	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
 		ICFile file = getFile();
-		if (file.isEmpty()) {
+		// special case: file is empty 
+		// do not create files of deleted pages
+		if (file.isEmpty() && ! getDeleted()) {
 			// file value is empty get a xml description of the page
 			IBXMLPage xmlPage = getBuilderLogic().getPageCacher().getIBXML(this.getPrimaryKey().toString());
 			XMLElement rootElement = xmlPage.getRootElement();
@@ -636,9 +638,8 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 			pageData.setName(getName());
 			return writer.write(pageData, iwc);
 		}
-		else {
-			return writer.write(this.getFile(), iwc);
-		}
+		// normal way to handle pages 
+		return writer.write(this, iwc);
 	}
 	
 	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {

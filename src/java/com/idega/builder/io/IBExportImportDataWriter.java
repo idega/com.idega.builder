@@ -12,12 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import com.idega.builder.data.IBExportImportData;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.file.data.ICFile;
 import com.idega.io.ZipOutputStreamIgnoreClose;
 import com.idega.io.serialization.FileObjectWriter;
 import com.idega.io.serialization.ICFileWriter;
+import com.idega.io.serialization.ICPageWriter;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.io.serialization.Storable;
 import com.idega.io.serialization.WriterToFile;
@@ -97,16 +98,19 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
 	 			WriterToFile currentWriter = (WriterToFile) element.write(this, iwc);
 	 			String originalName = currentWriter.getName();
 	 			String mimeType = currentWriter.getMimeType();
+	 			boolean markedAsDeleted = currentWriter.isMarkedAsDeleted();
 	 			String zipElementName = createZipElementName(originalName, identifierNumber++);
-	 			ZipEntry zipEntry = new ZipEntry(zipElementName);
-	 			XMLElement fileElement = metadata.modifyElementSetNameSetOriginalName(entryNumber++, zipElementName, originalName, mimeType);
-	 			alreadyStoredElements.put(element, fileElement);
-	 			zipOutputStream.putNextEntry(zipEntry);
-	 			try {
-	 				currentWriter.writeData(zipOutputStream);
-	 			}
-	 			finally {
-	 				closeEntry(zipOutputStream);
+	 			XMLElement fileElement = metadata.modifyElementSetNameSetOriginalName(entryNumber++, zipElementName, originalName, mimeType, markedAsDeleted);
+	 			if (! markedAsDeleted) {
+	 				ZipEntry zipEntry = new ZipEntry(zipElementName);
+	 				alreadyStoredElements.put(element, fileElement);
+	 				zipOutputStream.putNextEntry(zipEntry);
+	 				try {
+	 					currentWriter.writeData(zipOutputStream);
+	 				}
+	 				finally {
+	 					closeEntry(zipOutputStream);
+	 				}
 	 			}
  			}
  		}
@@ -135,11 +139,11 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
   }
 
   public Object write(File file, IWContext context) {
-  	return new FileObjectWriter((Storable) file, context);
+  	return new FileObjectWriter(file, context);
   }
   
   public Object write(ICFile file, IWContext context) {
-		return new ICFileWriter((Storable) file, context);
+		return new ICFileWriter(file, context);
 	}
 
   public Object write(XMLData xmlData, IWContext context) {
@@ -148,6 +152,10 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
   
   public Object write(IBExportImportData metadata, IWContext context) {
   	return new IBExportImportDataWriter(metadata, context);
+  }
+  
+  public Object write(ICPage page, IWContext context) {
+	  return new ICPageWriter(page, context);
   }
 
   private String createZipElementName(String originalName, int entryNumber) {

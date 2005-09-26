@@ -10,11 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.FinderException;
-import com.idega.builder.business.FileBusiness;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.XMLConstants;
-import com.idega.builder.io.IBExportImportDataReader;
+import com.idega.builder.io.ObjectReaderBuilder;
+import com.idega.builder.io.ObjectWriterBuilder;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
@@ -115,11 +115,17 @@ public class IBExportImportData implements Storable {
 	
 		
 	
-	public XMLElement modifyElementSetNameSetOriginalName(int index, String name, String originalName, String mimeType) {
+	public XMLElement modifyElementSetNameSetOriginalName(int index, String name, String originalName, String mimeType, boolean fileIsMarkedAsDeleted) {
+		return modifyElementSetNameSetOriginalName(index, name, originalName, mimeType, Boolean.toString(fileIsMarkedAsDeleted));
+	}
+		
+		
+    public XMLElement modifyElementSetNameSetOriginalName(int index, String name, String originalName, String mimeType, String fileIsMarkedAsDeleted) {
 		XMLElement fileElement = (XMLElement) fileElements.get(index);
 		fileElement.addContent(XMLConstants.FILE_USED_ID,name);
 		fileElement.addContent(XMLConstants.FILE_ORIGINAL_NAME, originalName);
 		fileElement.addContent(XMLConstants.FILE_MIME_TYPE, mimeType);
+		fileElement.addContent(XMLConstants.FILE_IS_MARKED_AS_DELETED, fileIsMarkedAsDeleted);
 		return fileElement;
 	}
 	
@@ -127,7 +133,8 @@ public class IBExportImportData implements Storable {
 		String name = fileElement.getTextTrim(XMLConstants.FILE_USED_ID);
 		String originalName = fileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
 		String mimeType = fileElement.getTextTrim(XMLConstants.FILE_MIME_TYPE);
-		return modifyElementSetNameSetOriginalName(index, name, originalName, mimeType);
+		String fileIsMarkedAsDeleted = fileElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+		return modifyElementSetNameSetOriginalName(index, name, originalName, mimeType, fileIsMarkedAsDeleted);
 	}
 		
 	public void addPageTree(IWContext iwc) throws IDOLookupException, FinderException {
@@ -208,11 +215,27 @@ public class IBExportImportData implements Storable {
 	}	
 	
 	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
-		return ((FileBusiness)writer).write(this, iwc);
+		try {
+			// try to use the extended interface assumming that the writer is an ObjectWriterBuilder
+			return ((ObjectWriterBuilder) writer).write(this, iwc);
+		}
+		catch (ClassCastException ex) {
+			// this file can not be written by a normal object reader
+			// do nothing
+			return null;
+		}
 	}
 	
 	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
-		return ((IBExportImportDataReader) reader).read(this, iwc);
+		try {
+			// try to use the extended interface assumming that the reader is an ObjectReaderBuilder
+			return ((ObjectReaderBuilder) reader).read(this, iwc);
+		}
+		catch (ClassCastException ex) {
+			// this file can not be read by a normal object reader
+			// do nothing
+			return null;
+		}
 	}
 	
 	public XMLData createMetadataSummary() {

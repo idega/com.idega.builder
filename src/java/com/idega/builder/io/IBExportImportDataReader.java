@@ -35,7 +35,6 @@ import com.idega.io.UploadFile;
 import com.idega.io.ZipInputStreamIgnoreClose;
 import com.idega.io.serialization.FileObjectReader;
 import com.idega.io.serialization.ICFileReader;
-import com.idega.io.serialization.ObjectReader;
 import com.idega.io.serialization.ReaderFromFile;
 import com.idega.io.serialization.Storable;
 import com.idega.io.serialization.StorableHolder;
@@ -55,7 +54,7 @@ import com.idega.xml.XMLElement;
  * @version 1.0
  * Created on Mar 26, 2004
  */
-public class IBExportImportDataReader extends ReaderFromFile implements ObjectReader {
+public class IBExportImportDataReader extends ReaderFromFile implements ObjectReaderBuilder {
 	
 	// moduleName :  propertyName : parameterId : value -> zipEntryName
 	private HashMatrix modulePropertyParameterIdValueEntryName = null;
@@ -118,8 +117,10 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		while (nonPageIterator.hasNext()) {
 			XMLElement nonPageElement = (XMLElement) nonPageIterator.next();
 			String zipEntryName = nonPageElement.getTextTrim(XMLConstants.FILE_USED_ID);
+			String fileIsMarkedAsDeleted = nonPageElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+			boolean isMarkedAsDeleted = Boolean.valueOf(fileIsMarkedAsDeleted).booleanValue();
 			// avoid errors if the metadata is corrupt
-			if (! entryNameHolder.containsKey(zipEntryName)) {
+			if (! isMarkedAsDeleted && ! entryNameHolder.containsKey(zipEntryName)) {
 				StorableHolder holder = references.createSourceFromElement(nonPageElement);
 				ZipInputStreamIgnoreClose inputStream = getZipInputStream(zipEntryName, sourceFile);
 				ReaderFromFile currentReader = (ReaderFromFile) holder.getStorable().read(this, iwc);
@@ -162,8 +163,10 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		while (pageIterator.hasNext()) {
 			XMLElement pageFileElement = (XMLElement) pageIterator.next();
 			String zipEntryName = pageFileElement.getTextTrim(XMLConstants.FILE_USED_ID);
+			String fileIsMarkedAsDeleted = pageFileElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+			boolean markedAsDeleted = Boolean.valueOf(fileIsMarkedAsDeleted).booleanValue();
 			// avoid errors if the metadata is corrupt
-			if (! entryNameHolder.containsKey(zipEntryName)) {
+			if (! markedAsDeleted && ! entryNameHolder.containsKey(zipEntryName)) {
 				createPage(pageFileElement, zipEntryName, sourceFile, pageHelper, pageTree);
 			}
 		}
@@ -175,8 +178,10 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		while (pageIterator.hasNext()) {
 			XMLElement pageFileElement = (XMLElement) pageIterator.next();
 			String zipEntryName = pageFileElement.getTextTrim(XMLConstants.FILE_USED_ID);
+			String fileIsMarkedAsDeleted = pageFileElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+			boolean isMarkedAsDeleted = Boolean.valueOf(fileIsMarkedAsDeleted).booleanValue();
 			// avoid errors if the metadata is corrupt
-			if (! localPages.contains(zipEntryName)) {
+			if (! isMarkedAsDeleted && ! localPages.contains(zipEntryName)) {
 				localPages.add(zipEntryName);
 				String originalName = pageFileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
 				modifyPageContent(zipEntryName, originalName, sourceFile);
@@ -400,7 +405,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 						String entryName = (String) parameterIdValueEntryNameMap.get(parameterId, value);
 						StorableHolder holder = (StorableHolder) entryNameHolder.get(entryName);
 						// set the value
-						String newValue = holder.getValue();
+						String newValue = (holder != null) ? holder.getValue() :""; 
 						valueElement.setText(newValue);
 					}
 				}
@@ -494,8 +499,8 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	/* (non-Javadoc)
 	 * @see com.idega.io.IBObjectReader#read(com.idega.builder.data.IBExportImportData)
 	 */
-	public Object read(IBExportImportData metadata, IWContext context) throws RemoteException {
-		// TODO Auto-generated method stub
+	public Object read(IBExportImportData metadata, IWContext context)  {
+		// not needed yet, not implemented yet
 		return null;
 	}
 
@@ -503,7 +508,8 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	/* (non-Javadoc)
 	 * @see com.idega.io.IBObjectReader#read(com.idega.core.builder.data.ICPage)
 	 */
-	public Object read(ICPage page, IWContext context) throws RemoteException {
+	public Object read(ICPage page, IWContext context) {
+		// not needed yet, not implemented yet
 		return null;
 	}
 
