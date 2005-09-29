@@ -8,7 +8,7 @@ public class IWBuilderWS {
 	         IWUserContext iwc = com.idega.axis.util.AxisUtil.getIWUserContext();
 	         if(iwc.isLoggedOn()){
 		         BuilderLogic logic = BuilderLogic.getInstance();
-		         boolean success = logic.moveModule(iwc, objectId, pageKey, formerParentId, newParentId, objectIdToPasteBelow);
+		         boolean success = logic.moveModule(objectId, pageKey, formerParentId, newParentId, objectIdToPasteBelow);
 	
 		         if(success){
 		         	return "iwbuilder-ok";
@@ -32,7 +32,7 @@ public class IWBuilderWS {
 	         IWUserContext iwuc = com.idega.axis.util.AxisUtil.getIWUserContext();
 	         if(iwuc.isLoggedOn()){
 		         BuilderLogic logic = BuilderLogic.getInstance();
-		         boolean success = logic.moveModuleIntoRegion(iwuc, instanceId, formerParentId, pageKey, regionId, regionLabel);
+		         boolean success = logic.moveModuleIntoRegion(instanceId, formerParentId, pageKey, regionId, regionLabel);
 	   
 		         if(success){
 		         	return "iwbuilder-ok";
