@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateHandler.java,v 1.9 2004/06/28 14:07:21 thomas Exp $
+ * $Id: IBTemplateHandler.java,v 1.10 2005/10/03 14:50:15 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -76,12 +76,17 @@ public class IBTemplateHandler implements ICPropertyHandler {
             int v = Integer.parseInt(value);
             instance.changeTemplateId(value,iwc);
             IBPageUpdater.updateTemplateId(p,v);
-            Page template = instance.getIBXMLPage(value).getPopulatedPage();
-            if (template != null) {
-              if (template.isLocked())
-                instance.lockRegion(currPage,"-1");
-              else
-                instance.unlockRegion(currPage,"-1",null);
+            try{
+	            Page template = instance.getIBXMLPage(value).getPopulatedPage();
+	            if (template != null) {
+	              if (template.isLocked())
+	                instance.lockRegion(currPage,"-1");
+	              else
+	                instance.unlockRegion(currPage,"-1",null);
+	            }
+            }
+            catch(ClassCastException ce){
+            		//this happens when the template is of type html or not ibxml
             }
           }
 
