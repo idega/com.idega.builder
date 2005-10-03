@@ -1,18 +1,29 @@
 package com.idega.builder.data;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import javax.ejb.EJBLocalObject;
 import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.XMLConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.io.serialization.StorableHolder;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.repository.data.NonEJBResource;
+import com.idega.repository.data.PropertyDescription;
+import com.idega.repository.data.RefactorClassRegistry;
+import com.idega.repository.data.Resource;
+import com.idega.repository.data.ResourceDescription;
+import com.idega.util.reflect.MethodIdentifierCache;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
@@ -27,43 +38,34 @@ import com.idega.xml.XMLElement;
  */
 public class IBReferences {
 	
-	public static final String EXPORT_DEFINITION = "exportdefinition.xml";
+	private IWContext iwc = null;
 	
 	private Map moduleReference = null;
 	
+	private MethodIdentifierCache methodIdendifierCache = null;
+	
 	public IBReferences(IWContext iwc) throws IOException  {
-		initialize(iwc);
+		this.iwc = iwc;
 	}
 	
-	private void initialize(IWContext iwc) throws IOException {
-		moduleReference = new HashMap();
-		IWBundle bundle = iwc.getIWMainApplication().getBundle(IBApplication.IB_BUNDLE_IDENTIFIER);
-		String exportDefinitionPath = bundle.getRealPathWithFileNameString(EXPORT_DEFINITION);
-		XMLData exportDefinition = XMLData.getInstanceForFile(exportDefinitionPath);
-		XMLElement root = exportDefinition.getDocument().getRootElement();
-		List children = root.getChildren(XMLConstants.EXPORT_MODULE);
-		Iterator iterator = children.iterator();
-		while (iterator.hasNext()) {
-			XMLElement module = (XMLElement) iterator.next();
-			IBReference reference = new IBReference(module, iwc);
-			moduleReference.put(reference.getModuleClass(), reference);
-		}
-	}
-
 	public StorableHolder createSourceFromElement(XMLElement metaDataFileElement) throws IOException {
 		String moduleName = metaDataFileElement.getTextTrim(XMLConstants.FILE_MODULE);
-		IBReference reference = (IBReference) moduleReference.get(moduleName);
+		IBReference reference = getReferenceOrNull(moduleName);
 		if (reference == null) {
 			// shouldn't happen
 			return null;
 		}
-		String name = metaDataFileElement.getTextTrim(XMLConstants.FILE_NAME);
 		String parameterId = metaDataFileElement.getTextTrim(XMLConstants.FILE_PARAMETER_ID);
 		String value = metaDataFileElement.getTextTrim(XMLConstants.FILE_VALUE);
-		IBReference.Entry entry = reference.getReferenceByName(name, parameterId);
+		String name = checkAndUpdateName(metaDataFileElement);
+		IBReferenceEntry entry = reference.getReferenceByName(name, parameterId);
 		return entry.createSource(value);
 	}
 		
+	public String checkAndUpdateName(XMLElement metadataFileElement) {
+		String name = metadataFileElement.getTextTrim(XMLConstants.FILE_NAME);
+		return getMethodIdentiferCache().getUpdatedMethodIdentifier(name);
+	}
 			
 	
 	public void checkElementForReferencesNoteNecessaryModules(XMLElement element,IBExportImportData metadata) throws IOException {
@@ -72,19 +74,19 @@ public class IBReferences {
 		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement) || 
 				XMLConstants.PAGE_STRING.equalsIgnoreCase(nameOfElement)) {
 			// ask for the class
-			String moduleClass = element.getAttributeValue(XMLConstants.CLASS_STRING);
+			String moduleClassName = element.getAttributeValue(XMLConstants.CLASS_STRING);
 			// special case: pages aren't modules
-			if (moduleClass == null) {
-				moduleClass = ICPage.class.getName();
+			if (moduleClassName == null) {
+				moduleClassName = Page.class.getName();
 			}
 			// mark the module as necessary
-			metadata.addNecessaryModule(moduleClass);
-			if (moduleReference.containsKey(moduleClass)) {
-				IBReference reference = (IBReference) moduleReference.get(moduleClass);
+			metadata.addNecessaryModule(moduleClassName);
+			IBReference reference = getReferenceOrNull(moduleClassName);
+			if (reference != null) {
 				Collection entries = reference.getEntries();
 				Iterator iterator = entries.iterator();
 				while (iterator.hasNext()) {
-					IBReference.Entry entry = (IBReference.Entry) iterator.next();
+					IBReferenceEntry entry = (IBReferenceEntry) iterator.next();
 					entry.addSource(element, metadata);
 				}
 			}
@@ -99,5 +101,127 @@ public class IBReferences {
 		}
 	}
 	
+	private IBReference getReferenceOrNull(String moduleClassName) {
+		IBReference reference  = null;
+		if (moduleReference.containsKey(moduleClassName)) {
+			reference = (IBReference) moduleReference.get(moduleClassName);
+		}
+		else {
+			// create an IBReference
+			reference = createIBReference(moduleClassName);
+			// put into map even if it is null
+			// if the reference is null the module class has no references at all
+			// put null into the map to avoid checking the module class again
+			moduleReference.put(moduleClassName, reference);
+		}
+		return reference;
+	}
+	
+	// returns a reference or null
+	private IBReference createIBReference(String moduleClassName) {
+		Class moduleClass = null;
+		try {
+			moduleClass = RefactorClassRegistry.forName(moduleClassName);
+		}
+		catch (ClassNotFoundException ex) {
+			return null;
+		}
+		List entries = new ArrayList();
+		List alreadyCheckedMethods = new ArrayList();
+		MethodIdentifierCache methodIdentifierCache = getMethodIdentiferCache();
+		if (PresentationObject.class.isAssignableFrom(moduleClass)) {
+			addEntriesDefinedByModule(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdentifierCache);
+		}
+
+		addEntriesByScanningModuleClass(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdentifierCache);
+		if (entries.isEmpty()) {
+			return null;
+		}
+		IBReference reference = new IBReference(moduleClassName, getMethodIdentiferCache(),iwc);
+		Iterator iterator = entries.iterator();
+		while (iterator.hasNext()) {
+			IBReferenceEntry entry = (IBReferenceEntry) iterator.next();
+			reference.add(entry);
+		}
+		return reference;
+	}
+
+	private void addEntriesByScanningModuleClass(String moduleClassName, Class moduleClass, List entries, List alreadyCheckedMethods, MethodIdentifierCache methodIdentifierCache) {
+		Method[] method = moduleClass.getMethods();
+		for (int i = 0; i < method.length; i++) {
+			Method tempMethod = method[i];
+			String methodName = tempMethod.getName();
+			if (methodName.startsWith("set")) {
+				Class[] parameterType = tempMethod.getParameterTypes();
+				int parameterId = 0;
+				while (parameterId < parameterType.length) {
+					Class parameterClass = parameterType[parameterId++];
+					// increase parameter by one before using it further
+					if (Resource.class.isAssignableFrom(parameterClass)) {
+						IBReferenceEntry entry = new IBReferenceEntry(moduleClassName, methodIdentifierCache, iwc);
+						String valueName = methodIdentifierCache.getMethodIdentifierWithoutDeclaringClass(tempMethod);
+						if (! alreadyCheckedMethods.contains(valueName)) { 
+							String sourceClassName = parameterClass.getName();
+							String providerClassName = null;
+							boolean isEJB = false;
+							if (EJBLocalObject.class.isAssignableFrom(parameterClass)) {
+								//IWApplicationContext iwac = iwc.getApplicationContext();
+								providerClassName = sourceClassName;
+								isEJB = true;
+								entry.initialize(valueName,Integer.toString(parameterId), sourceClassName, providerClassName, isEJB);
+								entries.add(entry);
+							}
+							else if (NonEJBResource.class.isAssignableFrom(parameterClass)){
+								try {
+									NonEJBResource nonEJBResource = (NonEJBResource) parameterClass.newInstance();
+									ResourceDescription resourceDescription = nonEJBResource.getResourceDescription();
+									entry.initialize(valueName, Integer.toString(parameterId),resourceDescription);
+									entries.add(entry);
+								}
+								catch (InstantiationException ex) {
+									// do nothing
+								}
+								catch (IllegalAccessException ex) {
+									// do nothing
+								}
+							}
+ 						}
+					}
+				}
+			}
+		}
+	}
+
+	private void addEntriesDefinedByModule(String moduleClassName, Class moduleClass, List entries, List alreadyCheckedMethods, MethodIdentifierCache methodIdentifierCache) {
+		try {
+			PresentationObject module = (PresentationObject) moduleClass.newInstance();
+			List descriptions = module.getPropertyDescriptions();
+			if (descriptions != null) {
+				Iterator iterator = descriptions.iterator();
+				while (iterator.hasNext()) {
+					PropertyDescription description = (PropertyDescription) iterator.next();
+					IBReferenceEntry entry = new IBReferenceEntry(moduleClassName, methodIdentifierCache, iwc);
+					String methodIdentifier = description.getName();
+					methodIdentifier = getMethodIdentiferCache().getUpdatedMethodIdentifier(methodIdentifier);
+					alreadyCheckedMethods.add(methodIdentifier);
+					entry.initialize(methodIdentifier,description.getParameterId(), description.getResourceDescription());
+					entries.add(entry);
+				}
+			}
+		}
+		catch (InstantiationException ex) {
+			// do nothing
+		}
+		catch (IllegalAccessException ex) {
+			// do nothing
+		}
+	}
+	
+	private MethodIdentifierCache getMethodIdentiferCache() {
+		if (methodIdendifierCache == null) {
+			methodIdendifierCache = new MethodIdentifierCache();
+		}
+		return methodIdendifierCache;
+	}
 
 }

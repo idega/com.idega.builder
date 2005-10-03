@@ -138,7 +138,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 				entryNameHolder.put(zipEntryName, holder);
 			}
 			String moduleName = nonPageElement.getTextTrim(XMLConstants.FILE_MODULE);
-			String propertyName = nonPageElement.getTextTrim(XMLConstants.FILE_NAME);
+			String propertyName = references.checkAndUpdateName(nonPageElement);
 			String parameterId = nonPageElement.getTextTrim(XMLConstants.FILE_PARAMETER_ID);
 			String value = nonPageElement.getTextTrim(XMLConstants.FILE_VALUE);
 			HashMatrix  parameterIdValueEntryMap = null;

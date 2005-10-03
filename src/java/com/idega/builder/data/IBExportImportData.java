@@ -42,6 +42,9 @@ public class IBExportImportData implements Storable {
 	public static final String EXPORT_METADATA_NAME = "metadata";
 	public static final String EXPORT_METADATA_FILE_NAME = EXPORT_METADATA_NAME + ".xml";
 	
+	private static String PAGE_PRIMARY_KEY = "page_primary_key";
+	private static String PAGE_PARAMETER_ID = "1";
+	
 	private List files = new ArrayList();
 	private List fileElements = new ArrayList(); 
 	private List necessaryModules = new ArrayList();
@@ -50,19 +53,11 @@ public class IBExportImportData implements Storable {
 	private XMLElement pagesElement = null; 
 	private XMLElement templatesElement = null;
 	private XMLData metadataSummary = null;
-
 	
 	private Map childParent = null;
 	protected List pageIds = null;
-
-	private static String PAGE_PRIMARY_KEY = "page_primary_key";
-	private static String PAGE_PARAMETER_ID = "1";
-	private static String SOURCE_CLASS_FOR_PAGE;
 	
-	static {
-		 	SOURCE_CLASS_FOR_PAGE = ICPage.class.getName();
-		}
-		
+	private final String sourceClassForPage = ICPage.class.getName();
 	
 	public String getName() {
 		return EXPORT_NAME;
@@ -79,7 +74,7 @@ public class IBExportImportData implements Storable {
 		while (iterator.hasNext()) {
 			XMLElement element = (XMLElement) iterator.next();
 			String sourceClass = element.getTextTrim(XMLConstants.FILE_SOURCE);
-			if (SOURCE_CLASS_FOR_PAGE.equals(sourceClass)) {
+			if (sourceClassForPage.equals(sourceClass)) {
 				Storable page = (Storable) files.get(index);
 				list.add(page);
 			}
@@ -167,7 +162,7 @@ public class IBExportImportData implements Storable {
 		}
 	}
 	
-	public void addFileEntry(IBReference.Entry entry, Storable storable, String value) {
+	public void addFileEntry(IBReferenceEntry entry, Storable storable, String value) {
 		files.add(storable);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
 		fileElement.addContent(XMLConstants.FILE_MODULE, entry.getModuleClass());
@@ -181,10 +176,10 @@ public class IBExportImportData implements Storable {
 	public void addFileEntry(ICPage page) {
 		files.add(page);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
-		fileElement.addContent(XMLConstants.FILE_MODULE, SOURCE_CLASS_FOR_PAGE);
+		fileElement.addContent(XMLConstants.FILE_MODULE, sourceClassForPage);
 		fileElement.addContent(XMLConstants.FILE_NAME, PAGE_PRIMARY_KEY);
 		fileElement.addContent(XMLConstants.FILE_PARAMETER_ID, PAGE_PARAMETER_ID);
-		fileElement.addContent(XMLConstants.FILE_SOURCE, SOURCE_CLASS_FOR_PAGE);
+		fileElement.addContent(XMLConstants.FILE_SOURCE, sourceClassForPage);
 		fileElement.addContent(XMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
 		fileElements.add(fileElement);
 	}
@@ -288,7 +283,7 @@ public class IBExportImportData implements Storable {
 			XMLElement fileElement = (XMLElement) iterator.next();
 			// only get file elements that represent a page
 			boolean isPageElement =	
-					SOURCE_CLASS_FOR_PAGE.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)) &&
+					sourceClassForPage.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)) &&
 					PAGE_PRIMARY_KEY.equals(fileElement.getTextTrim(XMLConstants.FILE_NAME));
 			if ((getPageElements && isPageElement) || (! getPageElements && ! isPageElement)) {
 				elements.add(fileElement);
