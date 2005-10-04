@@ -1,19 +1,14 @@
 package com.idega.builder.data;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJBLocalObject;
-import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.XMLConstants;
-import com.idega.core.builder.data.ICPage;
-import com.idega.idegaweb.IWBundle;
 import com.idega.io.serialization.StorableHolder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -24,7 +19,6 @@ import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.repository.data.Resource;
 import com.idega.repository.data.ResourceDescription;
 import com.idega.util.reflect.MethodIdentifierCache;
-import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
 /**
