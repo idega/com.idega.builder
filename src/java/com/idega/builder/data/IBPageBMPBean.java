@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.29 2005/09/26 17:09:57 thomas Exp $
+ * $Id: IBPageBMPBean.java,v 1.30 2005/10/04 17:17:48 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import com.idega.io.serialization.ObjectReader;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.io.serialization.Storable;
 import com.idega.presentation.IWContext;
+import com.idega.repository.data.Resource;
 import com.idega.util.IWTimestamp;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
@@ -44,7 +45,7 @@ import com.idega.xml.XMLElement;
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.3
  */
-public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.core.builder.data.ICPage, Storable {
+public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.core.builder.data.ICPage, Storable, Resource {
 	private final static String ENTITY_NAME = "IB_PAGE";
 	private final static String FILE_COLUMN = "FILE_ID";
 	private final static String NAME_COLUMN = "NAME";
