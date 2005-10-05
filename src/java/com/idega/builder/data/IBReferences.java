@@ -15,6 +15,7 @@ import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.repository.data.NonEJBResource;
 import com.idega.repository.data.PropertyDescription;
+import com.idega.repository.data.PropertyDescriptionHolder;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.repository.data.Resource;
 import com.idega.repository.data.ResourceDescription;
@@ -187,8 +188,12 @@ public class IBReferences {
 	}
 
 	private void addEntriesDefinedByModule(String moduleClassName, Class moduleClass, List entries, List alreadyCheckedMethods, MethodIdentifierCache methodIdentifierCache) {
+		if (! PropertyDescriptionHolder.class.isAssignableFrom(moduleClass)) {
+			//nothing to do
+			return;
+		}
 		try {
-			PresentationObject module = (PresentationObject) moduleClass.newInstance();
+			PropertyDescriptionHolder module = (PropertyDescriptionHolder) moduleClass.newInstance();
 			List descriptions = module.getPropertyDescriptions();
 			if (descriptions != null) {
 				Iterator iterator = descriptions.iterator();
