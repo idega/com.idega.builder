@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,14 @@ public class IBReferences {
 	
 	private MethodIdentifierCache methodIdendifierCache = null;
 	
-	public IBReferences(IWContext iwc) throws IOException  {
+	public IBReferences(IWContext iwc)  {
+		initialize(iwc);
+	}
+	
+	private void initialize(IWContext iwc)	 {
 		this.iwc = iwc;
+		moduleReference = new HashMap();
+		methodIdendifierCache = new MethodIdentifierCache();
 	}
 	
 	public StorableHolder createSourceFromElement(XMLElement metaDataFileElement) throws IOException {
@@ -59,7 +66,7 @@ public class IBReferences {
 		
 	public String checkAndUpdateName(XMLElement metadataFileElement) {
 		String name = metadataFileElement.getTextTrim(XMLConstants.FILE_NAME);
-		return getMethodIdentiferCache().getUpdatedMethodIdentifier(name);
+		return methodIdendifierCache.getUpdatedMethodIdentifier(name);
 	}
 			
 	
@@ -123,16 +130,15 @@ public class IBReferences {
 		}
 		List entries = new ArrayList();
 		List alreadyCheckedMethods = new ArrayList();
-		MethodIdentifierCache methodIdentifierCache = getMethodIdentiferCache();
 		if (PresentationObject.class.isAssignableFrom(moduleClass)) {
-			addEntriesDefinedByModule(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdentifierCache);
+			addEntriesDefinedByModule(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdendifierCache);
 		}
 
-		addEntriesByScanningModuleClass(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdentifierCache);
+		addEntriesByScanningModuleClass(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdendifierCache);
 		if (entries.isEmpty()) {
 			return null;
 		}
-		IBReference reference = new IBReference(moduleClassName, getMethodIdentiferCache(),iwc);
+		IBReference reference = new IBReference(moduleClassName, methodIdendifierCache,iwc);
 		Iterator iterator = entries.iterator();
 		while (iterator.hasNext()) {
 			IBReferenceEntry entry = (IBReferenceEntry) iterator.next();
@@ -201,7 +207,7 @@ public class IBReferences {
 					PropertyDescription description = (PropertyDescription) iterator.next();
 					IBReferenceEntry entry = new IBReferenceEntry(moduleClassName, methodIdentifierCache, iwc);
 					String methodIdentifier = description.getName();
-					methodIdentifier = getMethodIdentiferCache().getUpdatedMethodIdentifier(methodIdentifier);
+					methodIdentifier = methodIdendifierCache.getUpdatedMethodIdentifier(methodIdentifier);
 					alreadyCheckedMethods.add(methodIdentifier);
 					entry.initialize(methodIdentifier,description.getParameterId(), description.getResourceDescription());
 					entries.add(entry);
@@ -214,13 +220,6 @@ public class IBReferences {
 		catch (IllegalAccessException ex) {
 			// do nothing
 		}
-	}
-	
-	private MethodIdentifierCache getMethodIdentiferCache() {
-		if (methodIdendifierCache == null) {
-			methodIdendifierCache = new MethodIdentifierCache();
-		}
-		return methodIdendifierCache;
 	}
 
 }
