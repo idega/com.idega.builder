@@ -71,6 +71,11 @@ public class IBReferences {
 			
 	
 	public void checkElementForReferencesNoteNecessaryModules(XMLElement element,IBExportImportData metadata) throws IOException {
+		if (element == null) {
+			// one child in the list is null
+			// very strange, ignore it
+			return;
+		}
 		String nameOfElement = element.getName();
 		// is it a module or a page?
 		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement) || 
