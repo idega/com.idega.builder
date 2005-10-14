@@ -199,14 +199,19 @@ public class IBExportImportData implements Storable {
 				return; 
 			}
 		}
-		ICObject module = getICObject(moduleClassName);
-		String bundle = module.getBundleIdentifier();
-		String type = module.getObjectType();
-		XMLElement moduleElement = new XMLElement(XMLConstants.MODULE_MODULE);
-		moduleElement.addContent(XMLConstants.MODULE_CLASS, moduleClassName);
-		moduleElement.addContent(XMLConstants.MODULE_TYPE, type);
-		moduleElement.addContent(XMLConstants.MODULE_BUNDLE, bundle);
-		necessaryModules.add(moduleElement);
+		try {
+			ICObject module = getICObject(moduleClassName);
+			String bundle = module.getBundleIdentifier();
+			String type = module.getObjectType();
+			XMLElement moduleElement = new XMLElement(XMLConstants.MODULE_MODULE);
+			moduleElement.addContent(XMLConstants.MODULE_CLASS, moduleClassName);
+			moduleElement.addContent(XMLConstants.MODULE_TYPE, type);
+			moduleElement.addContent(XMLConstants.MODULE_BUNDLE, bundle);
+			necessaryModules.add(moduleElement);
+		}
+		catch (IOException ex) {
+			// ignore it, some modules do not have an entry in ic object table
+		}
 	}	
 	
 	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
