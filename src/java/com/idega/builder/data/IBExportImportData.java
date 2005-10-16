@@ -56,6 +56,7 @@ public class IBExportImportData implements Storable {
 	
 	private Map childParent = null;
 	protected List pageIds = null;
+	private int pageStartIndex = -1; 
 	
 	private final String sourceClassForPage = ICPage.class.getName();
 	
@@ -83,7 +84,12 @@ public class IBExportImportData implements Storable {
 		return list;
 	}
 			
-			
+	public boolean isTemplate(String id) {
+		if (pageIds == null) {
+			return false;
+		}
+		return (pageIds.indexOf(id) < pageStartIndex);
+	}
 	
 	public String getParentIdForPageId(String id) {
 		return (String) ((childParent == null) ? null : childParent.get(id));
@@ -307,6 +313,7 @@ public class IBExportImportData implements Storable {
 		if (templatesElement != null) {
 			buildPageHierarchy(null, templatesElement);
 		}
+		pageStartIndex = pageIds.size(); 
 		if (pagesElement != null) {
 			buildPageHierarchy(null, pagesElement);
 		}
