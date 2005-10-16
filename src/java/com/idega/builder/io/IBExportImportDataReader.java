@@ -104,7 +104,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		// method createExternalData
 		// if a non page element has a reference to a page the page doesn't need to be created - 
 		// it was already created.
-		createPages(pageElements, sourceFile);
+		createPages(pageElements, sourceFile, (IBExportImportData) storable);
 		createExternalData(sourceFile);
 		modifyPages(pageElements, sourceFile);
 	}	
@@ -155,7 +155,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		}
 	}
 
-	private void createPages(List pageFileElements, File sourceFile) throws IOException {
+	private void createPages(List pageFileElements, File sourceFile, IBExportImportData exportImportData) throws IOException {
 		pageIdHolder = new HashMap(); 
 		IBPageHelper pageHelper = IBPageHelper.getInstance();
 		Map pageTree = PageTreeNode.getTree(iwc);
@@ -167,7 +167,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			boolean markedAsDeleted = Boolean.valueOf(fileIsMarkedAsDeleted).booleanValue();
 			// avoid errors if the metadata is corrupt
 			if (! markedAsDeleted && ! entryNameHolder.containsKey(zipEntryName)) {
-				createPage(pageFileElement, zipEntryName, sourceFile, pageHelper, pageTree);
+				createPage(pageFileElement, zipEntryName, sourceFile, pageHelper, pageTree, exportImportData);
 			}
 		}
 	}	
@@ -198,7 +198,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	 * @throws IOException
 	 * @throws RemoteException
 	 */
-	private void createPage(XMLElement pageFileElement, String zipEntryName, File sourceFile, IBPageHelper pageHelper, Map pageTree) throws IOException, RemoteException {
+	private void createPage(XMLElement pageFileElement, String zipEntryName, File sourceFile, IBPageHelper pageHelper, Map pageTree, IBExportImportData exportImportData) throws IOException, RemoteException {
 		// note: here the page data is never stored! It is just used to get some data for creating the page entity!
 		// the content of the xml file is stored in the method modify page content!
 		XMLData pageData = XMLData.getInstanceWithoutExistingFile();
@@ -213,18 +213,30 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		}
 		
 		XMLElement pageElement = pageData.getDocument().getRootElement().getChild(XMLConstants.PAGE_STRING);
-		// set template --------------------------------
-		String exportTemplate = pageElement.getAttributeValue(XMLConstants.TEMPLATE_STRING);
 		String importTemplateValue = null;
-		if (exportTemplate != null) {
-			// find new id 
-			StorableHolder templateHolder = (StorableHolder) pageIdHolder.get(exportTemplate);
-			if (templateHolder == null) {
-				throw new IOException("[IBExportImportDataReader] Couldn't find template with id "+ exportTemplate);
+		String type = null;
+		if (pageElement != null) {
+			// set template --------------------------------
+			String exportTemplate = pageElement.getAttributeValue(XMLConstants.TEMPLATE_STRING);
+			if (exportTemplate != null) {
+				// find new id 
+				StorableHolder templateHolder = (StorableHolder) pageIdHolder.get(exportTemplate);
+				if (templateHolder == null) {
+					throw new IOException("[IBExportImportDataReader] Couldn't find template with id "+ exportTemplate);
+				}
+				importTemplateValue = templateHolder.getValue();
 			}
-			importTemplateValue = templateHolder.getValue();
+			type = pageElement.getAttributeValue(XMLConstants.PAGE_TYPE);
 		}
-		String type = pageElement.getAttributeValue(XMLConstants.PAGE_TYPE);
+		else {
+			String id = pageFileElement.getText(XMLConstants.FILE_VALUE);
+			if (exportImportData.isTemplate(id)) {
+				type = XMLConstants.PAGE_TYPE_TEMPLATE;
+			}
+			else {
+				type = XMLConstants.PAGE_TYPE_PAGE;
+			}
+		}
 		// set name ---------------------------------------
 		String originalName = pageFileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
 		// set parent and child ----------------------------
@@ -270,18 +282,20 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		}
 		
 		XMLElement pageElement = pageData.getDocument().getRootElement().getChild(XMLConstants.PAGE_STRING);
-		// set template --------------------------------
-		String exportTemplate = pageElement.getAttributeValue(XMLConstants.TEMPLATE_STRING);
-		String importTemplateValue = null;
-		if (exportTemplate != null) {
-			// find new id 
-			StorableHolder templateHolder = (StorableHolder) pageIdHolder.get(exportTemplate);
-			if (templateHolder == null) {
-				throw new IOException("[IBExportImportDataReader] Couldn't find template with id "+ exportTemplate);
+		if (pageElement != null) {
+			// if the pageElement is null nothing to do!
+			// set template --------------------------------
+			String exportTemplate = pageElement.getAttributeValue(XMLConstants.TEMPLATE_STRING);
+			if (exportTemplate != null) {
+				// find new id 
+				StorableHolder templateHolder = (StorableHolder) pageIdHolder.get(exportTemplate);
+				if (templateHolder == null) {
+					throw new IOException("[IBExportImportDataReader] Couldn't find template with id "+ exportTemplate);
+				}
+				String importTemplateValue = templateHolder.getValue();
+				// set template entry in xml file
+				pageElement.setAttribute(XMLConstants.TEMPLATE_STRING, importTemplateValue);
 			}
-			importTemplateValue = templateHolder.getValue();
-			// set template entry in xml file
-			pageElement.setAttribute(XMLConstants.TEMPLATE_STRING, importTemplateValue);
 		}
 		// get the current page
 		StorableHolder holder = (StorableHolder) entryNameHolder.get(zipEntryName);
@@ -290,17 +304,19 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 						
 		// change module references -----------------------------------------------
 		// change external references ----------------------------------------------
-		Iterator iterator = pageElement.allChildrenBreadthFirstIterator();
-		while(iterator.hasNext()) {
-			XMLElement element = (XMLElement) iterator.next();
-			checkModuleEntries(element, currentPageId);
-			checkPropertiesEntries(element);
-		}
-		// change region references
-		iterator = pageElement.allChildrenBreadthFirstIterator();
-		while (iterator.hasNext()) {
-			XMLElement element = (XMLElement) iterator.next();
-			checkRegionEntries(element);
+		if (pageElement != null) {
+			Iterator iterator = pageElement.allChildrenBreadthFirstIterator();
+			while(iterator.hasNext()) {
+				XMLElement element = (XMLElement) iterator.next();
+				checkModuleEntries(element, currentPageId);
+				checkPropertiesEntries(element);
+			}
+			// change region references
+			iterator = pageElement.allChildrenBreadthFirstIterator();
+			while (iterator.hasNext()) {
+				XMLElement element = (XMLElement) iterator.next();
+				checkRegionEntries(element);
+			}
 		}
 		// store the file value to the current page
 		ICFile currentFile = currentPage.getFile();
@@ -321,45 +337,58 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	 * In order to update the references in the other pages keep the new module id in
 	 * oldNewInstanceId 
 	 * 
+	 * added at 15.10.2005
+	 * extended to handle JSF componets
+	 * <module id="articleViewerFrontpage" class="com.idega.block.article.component.ArticleListViewer">
+	 * Nothing is changed. The existing id is not changed and therefore an entry in oldNewInstanceId is not necessary.
+	 * 
 	 */
 	private void checkModuleEntries(XMLElement element, int pageId) throws IOException {
 		String nameOfElement = element.getName();
 		// is it a module?
-		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement)) {
-			// ask for the class
-			String moduleClass = element.getAttributeValue(XMLConstants.CLASS_STRING);
-			String importInstanceId = element.getAttributeValue(XMLConstants.ID_STRING); 
-			// figure out what the current module class id is
-			ICObject icObject = null;
-			try {
-				 icObject = findICObject(moduleClass);
-			}
-			catch (FinderException findEx) {
-				throw new IOException("[IBExportImportDataReader] Couldn't find module class "+moduleClass);
-			}
-			catch (IDOLookupException lookUpEx) {
-				throw new IOException("[IBExportImportDataReader] Couldn't look up home of ICObject");
-			}
-			// set id of ICObject 
-			element.setAttribute(XMLConstants.IC_OBJECT_ID_STRING, icObject.getPrimaryKey().toString());
-			// create new instance of ICObjectInstance
-			String instanceId = null;
-			try {
-				instanceId = createNewObjectInstance(icObject, pageId);
-			}
-			catch (CreateException createEx) {
-				throw new IOException("[IBExportImportDataReader] Couldn't create new ic object instance");
-			}
-			catch (IDOLookupException lookUpEx) {
-				throw new IOException("[IBExportImportDataReader] Couldn't look up home of ICObjectInstance");
-			}
-			if (oldNewInstanceId == null) {
-				oldNewInstanceId = new HashMap();
-			}
-			// set new id of ICObjectInstance 
-			element.setAttribute(XMLConstants.ID_STRING, instanceId);
-			oldNewInstanceId.put(importInstanceId, instanceId);			
+		if (! XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement)) {
+			// non module, return....
+			return;
 		}
+		// okay, it is a module...
+		// check if the module is a JSF component by checking if the ic_object_id attribute is there
+		if (element.getAttributeValue(XMLConstants.IC_OBJECT_ID_STRING) == null) {
+			// nothing to do, JSF component, ic_object_id is missing
+			return;
+		}
+		// ask for the class
+		String moduleClass = element.getAttributeValue(XMLConstants.CLASS_STRING);
+		String importInstanceId = element.getAttributeValue(XMLConstants.ID_STRING); 
+		// figure out what the current module class id is
+		ICObject icObject = null;
+		try {
+			 icObject = findICObject(moduleClass);
+		}
+		catch (FinderException findEx) {
+			throw new IOException("[IBExportImportDataReader] Couldn't find module class "+moduleClass);
+		}
+		catch (IDOLookupException lookUpEx) {
+			throw new IOException("[IBExportImportDataReader] Couldn't look up home of ICObject");
+		}
+		// set id of ICObject 
+		element.setAttribute(XMLConstants.IC_OBJECT_ID_STRING, icObject.getPrimaryKey().toString());
+		// create new instance of ICObjectInstance
+		String instanceId = null;
+		try {
+			instanceId = createNewObjectInstance(icObject, pageId);
+		}
+		catch (CreateException createEx) {
+			throw new IOException("[IBExportImportDataReader] Couldn't create new ic object instance");
+		}
+		catch (IDOLookupException lookUpEx) {
+			throw new IOException("[IBExportImportDataReader] Couldn't look up home of ICObjectInstance");
+		}
+		if (oldNewInstanceId == null) {
+			oldNewInstanceId = new HashMap();
+		}
+		// set new id of ICObjectInstance 
+		element.setAttribute(XMLConstants.ID_STRING, instanceId);
+		oldNewInstanceId.put(importInstanceId, instanceId);			
 	}
 	
 	/**change the property element within the module element:
