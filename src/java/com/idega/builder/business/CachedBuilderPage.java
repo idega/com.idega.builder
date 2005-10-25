@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.2 2005/03/01 23:25:03 tryggvil Exp $
+ * $Id: CachedBuilderPage.java,v 1.3 2005/10/25 05:10:56 tryggvil Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -347,6 +347,20 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	
 	public void setPageUri(String pageUri){
 		this.pageUri=pageUri;
+	}
+	
+	
+	public String getURI(){
+		
+		ViewNode parent = getParent();
+		
+		String parentUri = parent.getURI();
+		if(parentUri.endsWith(SLASH)){
+			//strip the last slash off:
+			parentUri = parentUri.substring(0,parentUri.length()-1);
+		}
+		String theReturn = parentUri+this.getPageUri();
+		return theReturn;
 	}
 	
 }
