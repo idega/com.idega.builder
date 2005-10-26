@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.4 2005/09/06 12:26:31 tryggvil Exp $
+ * $Id: JspPage.java,v 1.5 2005/10/26 23:21:01 tryggvil Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,19 +24,20 @@ import com.idega.idegaweb.IWMainApplication;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2005/09/06 12:26:31 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/10/26 23:21:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class JspPage extends CachedBuilderPage {
 	
 	public String getURI() {
-		String parentUri = getParent().getURI();
+		/*String parentUri = getParent().getURI();
 		String pageUri = getPageUri();
 		
 		String newUri = parentUri+pageUri;
-		return newUri;
+		return newUri;*/
+		return super.getURI();
 		
 	}
 	private static Logger log = Logger.getLogger(JspPage.class.getName());
@@ -145,6 +146,26 @@ public class JspPage extends CachedBuilderPage {
 				resourceURI="/"+getJspFilesFolderName()+"/"+getJSPFileName();
 			}
 			return resourceURI;
+		}
+		
+		public void initializeEmptyPage(){
+			
+			String templateKey = this.getTemplateKey();
+			String templateReference = "";
+			if(templateKey!=null){
+				if (!templateKey.equals("-1")){
+					templateReference="template=\""+templateKey+"\"";
+				}
+			}
+			String source = "<?xml version=\"1.0\"?>\n<jsp:root xmlns:jsp=\"http://java.sun.com/JSP/Page\"\nxmlns:h=\"http://java.sun.com/jsf/html\"\nxmlns:jsf=\"http://java.sun.com/jsf/core\"\nxmlns:builder=\"http://xmlns.idega.com/com.idega.builder\"\n version=\"1.2\">\n<jsp:directive.page contentType=\"text/html;charset=UTF-8\" pageEncoding=\"UTF-8\"/>\n<jsf:view>\n<builder:page id=\"builderpage_"+getPageKey()+"\" "+templateReference+">\n</builder:page>\n</jsf:view>\n</jsp:root>";
+			try {
+				setSourceFromString(source);
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		
 }
