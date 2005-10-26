@@ -30,12 +30,13 @@ public class IBPageWindow extends IWAdminWindow {
   protected static final String TEMPLATE_CHOOSER_NAME = IBPropertyHandler.TEMPLATE_CHOOSER_NAME;
   protected static final String PAGE_TYPE             = "ib_page_type";
   protected static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
+  protected static final String PAGE_FORMAT = "ib_page_format";
 
   private static final String TOP_LEVEL = "top_level";
 
   public IBPageWindow() {
-    setWidth(300);
-    setHeight(200);
+    setWidth(330);
+    setHeight(230);
     setScrollbar(false);
     this.setResizable(true);
   }

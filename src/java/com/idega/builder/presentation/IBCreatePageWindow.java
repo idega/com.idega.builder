@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.44 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.45 2005/10/26 23:21:38 tryggvil Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,9 @@
  */
 package com.idega.builder.presentation;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import com.idega.builder.business.BuilderLogic;
@@ -135,6 +137,20 @@ public class IBCreatePageWindow extends IBPageWindow {
 			IBTemplateChooser templateChooser = getTemplateChooser(TEMPLATE_CHOOSER_NAME, iwc, type);
 			tab.add(templateChooser, 2, row++);
 		}
+		
+		Text usingText = new Text(iwrb.getLocalizedString("with_format", "With format") + ":");
+		usingText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		tab.add(usingText, 1, row);
+		DropdownMenu formatsMenu = new DropdownMenu(PAGE_FORMAT);
+		Map formats = BuilderLogic.getInstance().getPageFormatsSupportedAndDescription();
+		Set keySet = formats.keySet();
+		for (Iterator iter = keySet.iterator(); iter.hasNext();) {
+			String format = (String) iter.next();
+			String description = (String) formats.get(format);
+			formatsMenu.addMenuElement(format,description);
+		}
+		formatsMenu.setSelectedElement(BuilderLogic.getInstance().PAGE_FORMAT_IBXML);
+		tab.add(formatsMenu, 2, row++);
 
 		SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "submit");
 		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("close", "Close"));
@@ -149,6 +165,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 			String name = iwc.getParameter(PAGE_NAME_PARAMETER);
 			type = iwc.getParameter(PAGE_TYPE);
 			String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
+			String format = iwc.getParameter(PAGE_FORMAT);
 			if (type.equals(IBPageHelper.TEMPLATE))
 				parentPageId = templateId;
 			//      String topLevelString = iwc.getParameter(TOP_LEVEL);
@@ -157,13 +174,13 @@ public class IBCreatePageWindow extends IBPageWindow {
 			int id = -1;
 			// create multiple pages
 			if(!allowMultiplePageCreation){
-				id = createPage(iwc, type, topLevelString, parentPageId, name, templateId, tree, id);
+				id = createPage(iwc, type, topLevelString, parentPageId, name, templateId, tree, id,format);
 			}
 			else{
 				StringTokenizer tokener = new StringTokenizer(name,";");
 				while(tokener.hasMoreTokens()){
 					name = tokener.nextToken();
-					id = createPage(iwc, type, topLevelString, parentPageId, name, templateId, tree, id);
+					id = createPage(iwc, type, topLevelString, parentPageId, name, templateId, tree, id,format);
 				} // loop ends
 			}
 
@@ -185,22 +202,32 @@ public class IBCreatePageWindow extends IBPageWindow {
 		}
 	}
 
-	private int createPage(IWContext iwc, String type, String topLevelString, String parentPageId, String name, String templateId, Map tree, int id) {
+	private int createPage(IWContext iwc, String type, String topLevelString, String parentPageId, String name, String templateId, Map tree, int id,String format) {
+		int domainId = -1;
 		if (topLevelString == null) {
 			if (parentPageId != null) {
-				id = IBPageHelper.getInstance().createNewPage(parentPageId, name, type, templateId, tree, iwc);
+				domainId =-1;
+				//id = IBPageHelper.getInstance().createNewPage(parentPageId, name, type, templateId, tree, iwc,null,);
 			}
 		}
 		else {
-			int domainId = BuilderLogic.getInstance().getCurrentDomain(iwc).getID();
+			domainId = BuilderLogic.getInstance().getCurrentDomain(iwc).getID();
+			parentPageId=null;
+			tree=null;
 			if (type.equals(IBPageHelper.TEMPLATE)) {
-				id = IBPageHelper.getInstance().createNewPage(null, name, type, null, tree, iwc, null, domainId);
+				//id = IBPageHelper.getInstance().createNewPage(null, name, type, null, tree, iwc, null, domainId);
+				templateId=null;
 			}
 			else {
-				id = IBPageHelper.getInstance().createNewPage(null, name, type, templateId, tree, iwc, null, domainId);
+				//id = IBPageHelper.getInstance().createNewPage(null, name, type, templateId, tree, iwc, null, domainId);
 			}
 		}
+		String sourceMarkup=null;
+		String pageUri = null;
+		String subType=null;
+		id = IBPageHelper.getInstance().createNewPage(parentPageId, name, type, templateId, pageUri, tree, iwc, subType, domainId,format,sourceMarkup);
 		return id;
+		
 	}
 
 }

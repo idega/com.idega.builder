@@ -1,13 +1,15 @@
 /*
- * $Id: BuilderLogic.java,v 1.189 2005/09/26 17:09:57 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.190 2005/10/26 23:20:06 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import javax.ejb.FinderException;
@@ -1621,6 +1623,20 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	/**
+	 * <p>
+	 * Returns a map with pageFormat as key and descripton as value
+	 * </p>
+	 * @return
+	 */
+	public Map getPageFormatsSupportedAndDescription(){
+		Map map = new HashMap();
+		map.put(this.PAGE_FORMAT_IBXML,"Builder (IBXML)");
+		map.put(this.PAGE_FORMAT_HTML,"HTML");
+		map.put(this.PAGE_FORMAT_JSP_1_2,"JSP 1.2");
+		return map;
+	}
+	
+	/**
 	 * gets the default page format:
 	 * @return
 	 */
@@ -1790,7 +1806,10 @@ public class BuilderLogic implements Singleton {
 	
 	public String getInstanceId(UIComponent object) {
 		if(object instanceof PresentationObject){
-			return Integer.toString(((PresentationObject)object).getICObjectInstanceID());
+			int icObjectInstanceId = ((PresentationObject)object).getICObjectInstanceID();
+			if(icObjectInstanceId!=-1){
+				return Integer.toString(icObjectInstanceId);
+			}
 		}
 		//set from the xml
 		return object.getId();

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.50 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBPageHelper.java,v 1.51 2005/10/26 23:20:06 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TreeViewer;
 import com.idega.repository.data.Singleton;
+import com.idega.servlet.filter.IWWelcomeFilter;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 /**
@@ -372,33 +373,43 @@ public class IBPageHelper implements Singleton  {
 			return (-1);
 		}
 		
-		if (tid != -1 && (IBPageBMPBean.FORMAT_IBXML.equals(ibPage.getFormat()))) {
-//			System.out.println("Creating page = " + ibPage.getName());
-			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
-			Page current = currentXMLPage.getPopulatedPage();
-			List children = current.getChildrenRecursive();
-//			System.out.println("children size = " + children.size());
-			if (children != null) {
-				Iterator it = children.iterator();
-				boolean copyInstancePermissions = false;
-				try {
-					copyInstancePermissions = ((DPTCopySession)IBOLookup.getSessionInstance(creatorContext,DPTCopySession.class)).doCopyInstancePermissions();
-				} catch (IBOLookupException e2) {
-					e2.printStackTrace();
-				} catch (RemoteException e2) {
-					e2.printStackTrace();
-				}
-				while (it.hasNext()) {
-					PresentationObject obj = (PresentationObject) it.next();
-					boolean ok = changeInstanceId(obj, currentXMLPage, copyInstancePermissions,creatorContext);
-					if (!ok) {
-//						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
-						return (-1);
+		if(IBPageBMPBean.FORMAT_IBXML.equals(ibPage.getFormat())) {
+			//Special handling of the format IBXML
+			if(tid != -1 ){
+	//			System.out.println("Creating page = " + ibPage.getName());
+				IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
+				Page current = currentXMLPage.getPopulatedPage();
+				List children = current.getChildrenRecursive();
+	//			System.out.println("children size = " + children.size());
+				if (children != null) {
+					Iterator it = children.iterator();
+					boolean copyInstancePermissions = false;
+					try {
+						copyInstancePermissions = ((DPTCopySession)IBOLookup.getSessionInstance(creatorContext,DPTCopySession.class)).doCopyInstancePermissions();
+					} catch (IBOLookupException e2) {
+						e2.printStackTrace();
+					} catch (RemoteException e2) {
+						e2.printStackTrace();
+					}
+					while (it.hasNext()) {
+						PresentationObject obj = (PresentationObject) it.next();
+						boolean ok = changeInstanceId(obj, currentXMLPage, copyInstancePermissions,creatorContext);
+						if (!ok) {
+	//						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
+							return (-1);
+						}
 					}
 				}
+				
+				currentXMLPage.store();
 			}
-			
-			currentXMLPage.store();
+		}
+		else{
+			//handling for all other formats than IBXML
+			CachedBuilderPage cPage = getBuilderLogic().getCachedBuilderPage(ibPage.getPageKey());
+			cPage.initializeEmptyPage();
+			cPage.store();
+
 		}
 		int id = ibPage.getID();
 		if (tree != null) {
@@ -424,6 +435,8 @@ public class IBPageHelper implements Singleton  {
 				// of other formats than IBXML
 			}
 		}
+		//This resets the IWWelcomeFilter if a new page is created (and resets the redirect to /pages or /workspace)
+		IWWelcomeFilter.unload();
 		return (id);
 	}
 	

@@ -1,5 +1,8 @@
 package com.idega.builder.presentation;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.HtmlTemplateGrabber;
 import com.idega.core.builder.data.ICPage;
@@ -150,11 +153,17 @@ public class IBSourceView extends Window {
 			e.printStackTrace();
 		}
 		DropdownMenu menu = new DropdownMenu(IB_PAGE_FORMAT);
-		String[] formats = getBuilderLogic().getPageFormatsSupported();
-		for (int i = 0; i < formats.length; i++) {
+		Map formats = getBuilderLogic().getPageFormatsSupportedAndDescription();
+		Set keySet = formats.keySet();
+		for (Iterator iter = keySet.iterator(); iter.hasNext();) {
+			String format = (String) iter.next();
+			String description = (String) formats.get(format);
+			menu.addMenuElement(format,description);
+		}
+		/*for (int i = 0; i < formats.length; i++) {
 			String formatKey = formats[i];
 			menu.addMenuElement(formatKey);
-		}
+		}*/
 		// menu.addMenuElement("IBXML");
 		// menu.addMenuElement("HTML");
 		menu.setSelectedElement(pageFormat);

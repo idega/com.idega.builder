@@ -1,5 +1,5 @@
 /*
- * $Id: HtmlBasedPage.java,v 1.10 2005/07/29 16:59:45 tryggvil Exp $
+ * $Id: HtmlBasedPage.java,v 1.11 2005/10/26 23:20:07 tryggvil Exp $
  * Created on Created on 1.6.2004 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.presentation.Page;
  * This class is responsible for reading the HTML page stream but the parsing of the 
  * Html code and Region tags is handled by the class com.idega.presentation.HtmlPage.
  * 
- *  Last modified: $Date: 2005/07/29 16:59:45 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/10/26 23:20:07 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPage{
 
@@ -114,6 +114,16 @@ public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPa
 	public UIComponent createComponent(FacesContext context){
 		IWContext iwc = IWContext.getIWContext(context);
 		return getPage(iwc);
-	}	
+	}
+	
+	public void initializeEmptyPage(){
+		try {
+			setSourceFromString("<html>\n<head>\n</head>\n<body>\n</body>\n</html>");
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }
