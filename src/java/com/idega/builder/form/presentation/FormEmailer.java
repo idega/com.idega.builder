@@ -41,7 +41,7 @@ public class FormEmailer extends Block {
 
 	private String _beginningText;
 
-	private boolean sendReceipt = true;
+	private boolean sendReceipt = false;
 
 	private String receiptEmailParameter;
 
