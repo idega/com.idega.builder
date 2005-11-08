@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.92 2005/09/23 08:48:05 laddi Exp $
+ *  $Id: IBApplication.java,v 1.93 2005/11/08 02:50:22 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -676,7 +676,7 @@ public class IBApplication extends IWApplication {
 				add(propertiesIcon);
 				PresentationObject permissionIcon = getPermissionIcon(iwc);
 				add(permissionIcon);
-				add(separator);
+				add((Image) separator.clone());
 
 //				Image tool_1 = iwb.getImage("shared/toolbar/back.gif", "shared/toolbar/back1.gif", "Go back", 20, 20);
 //				tool_1.setHorizontalSpacing(2);
@@ -728,7 +728,7 @@ public class IBApplication extends IWApplication {
 				
 				add(leftMenuLink);
 				
-				add(separator);
+				add((Image) separator.clone());
 		
 				add(getLocaleMenu(iwc));
 				/**
@@ -749,7 +749,7 @@ public class IBApplication extends IWApplication {
 						IBToolbarButton b = (IBToolbarButton) it.next();
 						
 						if (b.getIsSeparator()){
-							add(separator);
+							add((Image) separator.clone());
 						}
 						else{
 							Link bLink = (Link)b.getLink().clone();

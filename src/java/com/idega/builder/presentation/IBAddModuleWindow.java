@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.41 2005/09/09 16:25:23 eiki Exp $
+ * $Id: IBAddModuleWindow.java,v 1.42 2005/11/08 02:48:18 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -268,7 +268,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				item = (ICObject) iter.next();
 				try{
 					//iconLink = new Link(getIconForObject(item, iwc));
-					iconLink = getIconForObject(item, iwc);
+					iconLink = (Image) getIconForObject(item, iwc).clone();
 					
 					String bundleIdentifier = item.getBundleIdentifier();
 					String objectName = item.getClassName();
