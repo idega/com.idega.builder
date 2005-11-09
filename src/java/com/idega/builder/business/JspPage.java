@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.5 2005/10/26 23:21:01 tryggvil Exp $
+ * $Id: JspPage.java,v 1.6 2005/11/09 17:56:05 thomas Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.StringHandler;
 
 
 /**
@@ -24,12 +25,44 @@ import com.idega.idegaweb.IWMainApplication;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2005/10/26 23:21:01 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/11/09 17:56:05 $ by $Author: thomas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class JspPage extends CachedBuilderPage {
+	
+	private static final String BUILDERPAGE_PREFIX = "builderpage_";
+	private static final int BUILDERPAGE_PREFIX_LENGTH = BUILDERPAGE_PREFIX.length();
+	private static final String JSP_PAGE_EXTENSION_WITH_DOT = ".jsp";
+	private static final int JSP_PAGE_EXTENSION_WITH_DOT_LENGTH = JSP_PAGE_EXTENSION_WITH_DOT.length();
+	
+	/**
+	 * Returns page key if the view id represents a JSPPage else null. 
+	 * 
+	 * @param viewId
+	 * @return
+	 */
+	public static String getPageKey(String viewId) {
+		// we are looking for something like "/jsps/builderpage_12.jsp"
+		// quick check at the beginning
+		if (! viewId.endsWith(JSP_PAGE_EXTENSION_WITH_DOT)) {
+			// no jsp page at all
+			return null;
+		}
+		int startIndex = viewId.lastIndexOf(BUILDERPAGE_PREFIX);
+		if (startIndex < 0) {
+			// jsp page but not a builder page
+			return null;
+		}
+		startIndex += BUILDERPAGE_PREFIX_LENGTH;
+		int endIndex = viewId.length() - JSP_PAGE_EXTENSION_WITH_DOT_LENGTH;
+		String key = viewId.substring(startIndex, endIndex);
+		if (StringHandler.isNaturalNumber(key)) {
+			return key;
+		}
+		return null;
+	}
 	
 	public String getURI() {
 		/*String parentUri = getParent().getURI();
@@ -59,7 +92,10 @@ public class JspPage extends CachedBuilderPage {
 		}
 		
 		private String getJSPFileName(){
-			return "builderpage_"+getPageKey()+".jsp";
+			String pageUri = getPageUri();
+			StringBuffer buffer = new StringBuffer(BUILDERPAGE_PREFIX);
+			buffer.append(getPageKey()).append(JSP_PAGE_EXTENSION_WITH_DOT);
+			return buffer.toString();
 		}
 		
 		private String getJspFilesFolderName(){
