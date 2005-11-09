@@ -42,6 +42,8 @@ import com.idega.repository.data.SingletonRepository;
  * Created on Jun 10, 2004
  */
 public class IWBundleStarter implements IWBundleStartable {
+	
+	public static final String BUILDER_ROOT_VIEW_NODE_NAME = "pages";
 
 	static Logger log = Logger.getLogger(IWBundleStarter.class.getName());
 	
@@ -67,7 +69,7 @@ public class IWBundleStarter implements IWBundleStartable {
 			IWMainApplication iwma = starterBundle.getApplication();
 			//IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			ViewManager viewManager = ViewManager.getInstance(iwma);
-			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode("pages",viewManager.getApplicationRoot());
+			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode(BUILDER_ROOT_VIEW_NODE_NAME,viewManager.getApplicationRoot());
 			pagesViewNode.setKeyboardShortcut(new KeyboardShortcut("p"));
 			
 		}
