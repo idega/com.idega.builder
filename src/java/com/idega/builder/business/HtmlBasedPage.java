@@ -1,5 +1,5 @@
 /*
- * $Id: HtmlBasedPage.java,v 1.11 2005/10/26 23:20:07 tryggvil Exp $
+ * $Id: HtmlBasedPage.java,v 1.12 2005/11/15 16:56:33 eiki Exp $
  * Created on Created on 1.6.2004 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,9 +13,10 @@ package com.idega.builder.business;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import javax.ejb.EJBException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-
+import com.idega.core.builder.data.ICPage;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.HtmlPage;
 import com.idega.presentation.IWContext;
@@ -26,10 +27,10 @@ import com.idega.presentation.Page;
  * This class is responsible for reading the HTML page stream but the parsing of the 
  * Html code and Region tags is handled by the class com.idega.presentation.HtmlPage.
  * 
- *  Last modified: $Date: 2005/10/26 23:20:07 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/11/15 16:56:33 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPage{
 
@@ -84,6 +85,13 @@ public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPa
 		if(this._populatedPage==null){
 			HtmlPage hPage = new HtmlPage();
 			hPage.setHtml(this.getSourceAsString());
+			try {
+				ICPage icpage = this.getICPage();
+				_populatedPage.setPageID(((Integer)icpage.getPrimaryKey()).intValue());
+			}
+			catch (EJBException e) {
+				e.printStackTrace();
+			}
 			setPopulatedPage(hPage);
 		}
 		return _populatedPage;
@@ -125,5 +133,4 @@ public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPa
 			e.printStackTrace();
 		}
 	}
-	
 }
