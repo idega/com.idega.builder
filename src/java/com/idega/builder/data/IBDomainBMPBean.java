@@ -1,5 +1,5 @@
 /*
- * $Id: IBDomainBMPBean.java,v 1.18 2005/08/15 14:18:11 thomas Exp $
+ * $Id: IBDomainBMPBean.java,v 1.19 2005/11/25 15:30:56 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,6 +44,9 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   public static final String start_template = "START_IB_TEMPLATE_ID";
   public static final String COLUMNNAME_GROUP_ID = "GROUP_ID";
   public static final String COLUMNNAME_SERVER_NAME = "SERVER_NAME";
+  public static final String COLUMNNAME_SERVER_PORT = "SERVER_PORT";
+  public static final String COLUMNNAME_SERVER_PROTOCOL = "SERVER_PROTOCOL";
+  public static final String COLUMNNAME_SERVER_CONTEXT_PATH = "SERVER_CONTEXT_PATH";
 
   private static Map cachedDomains;
 
@@ -68,6 +71,9 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
 
     //Add a UUID column to uniquely identify the domain:
     super.addUniqueIDColumn();
+    addAttribute(COLUMNNAME_SERVER_PORT,"Server port",Integer.class);
+    addAttribute(COLUMNNAME_SERVER_PROTOCOL,"Server protocol",String.class,30);
+    addAttribute(COLUMNNAME_SERVER_CONTEXT_PATH,"Server context path",String.class);
     
   }
 
@@ -183,16 +189,16 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
     return(getStringColumnValue(getColumnDomainName()));
   }
   
-  public void setDomainName(String name) {
-  	setName(name);
+  public void setDomainName(String domainName){
+	  setColumn(getColumnDomainName(),domainName);
   }
 
   public String getURL() {
     return(getStringColumnValue(getColumnURL()));
   }
   
-  public void setURL(String url) {
-  	setStringColumn(getColumnURL(), url);
+  public void setURL(String url){
+	  setColumn(getColumnURL(),url);
   }
 
   public Collection getTopLevelGroupsUnderDomain() throws IDORelationshipException, RemoteException, FinderException{
@@ -230,6 +236,24 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   public String getServerName(){
       return getStringColumnValue(COLUMNNAME_SERVER_NAME);
   }
+  
+  
+  public void setServerPort(int serverPort){
+      setColumn(COLUMNNAME_SERVER_PORT,serverPort);
+  }
+  
+  public int getServerPort(){
+      return getIntColumnValue(COLUMNNAME_SERVER_PORT);
+  } 
+  
+  
+  public void setServerContextPath(String serverContextPath){
+      setColumn(COLUMNNAME_SERVER_CONTEXT_PATH,serverContextPath);
+  }
+  
+  public String getServerContextPath(){
+      return getStringColumnValue(COLUMNNAME_SERVER_CONTEXT_PATH);
+  } 
 
   public Collection ejbFindAllDomains() throws FinderException {
     String sql = "select * from " + getTableName();
@@ -241,6 +265,19 @@ public class IBDomainBMPBean extends GenericEntity implements ICDomain {
   	query.appendWhereEqualsWithSingleQuotes(COLUMNNAME_SERVER_NAME,serverName);
   	System.out.println(query.toString());
   	return idoFindPKsByQuery(query);
+  }
+  
+  public String getURLWithoutLastSlash(){
+	  String url = getURL();
+	  if(url!=null){
+		  if(url.endsWith("/")){
+			  return url.substring(0,url.length()-1);
+		  }
+		  return url;
+	  }
+	  else{
+		  return null;
+	  }
   }
   
   /**
