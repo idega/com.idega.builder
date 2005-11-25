@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.30 2005/10/04 17:17:48 thomas Exp $
+ * $Id: IBPageBMPBean.java,v 1.31 2005/11/25 11:01:54 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -605,7 +605,7 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 
 	public void setOwner(IWUserContext iwuc) {
 		try {
-			iwuc.getAccessController().setCurrentUserAsOwner(this, iwuc);
+			iwuc.getApplicationContext().getIWMainApplication().getAccessController().setCurrentUserAsOwner(this, iwuc);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
