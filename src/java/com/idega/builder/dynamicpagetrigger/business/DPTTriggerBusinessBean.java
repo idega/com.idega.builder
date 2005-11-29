@@ -200,7 +200,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   }
 
   public List getPageLinkRecords(ICObjectInstance instance) throws SQLException{
-    List listOfCopyRules = EntityFinder.findRelated(instance,((PageLink)com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class)));
+    List listOfCopyRules = EntityFinder.findRelated(instance,(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class)));
 
     if (listOfCopyRules != null) {
       List toReturn = new Vector();

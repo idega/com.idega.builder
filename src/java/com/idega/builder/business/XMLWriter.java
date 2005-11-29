@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.41 2005/09/14 22:13:46 eiki Exp $
+ * $Id: XMLWriter.java,v 1.42 2005/11/29 15:29:11 laddi Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -780,7 +780,7 @@ public class XMLWriter {
 		while (iter.hasNext()) {
 			XMLElement item = (XMLElement) iter.next();
 			if (item.getName().equals(XMLConstants.REGION_STRING)) {
-				children.addAll(getChildModules((XMLElement) item));
+				children.addAll(getChildModules(item));
 			}
 			else if (!item.getName().equals(XMLConstants.MODULE_STRING)) {
 				iter.remove();

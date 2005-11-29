@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.51 2005/10/26 23:20:06 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.52 2005/11/29 15:29:11 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,7 +28,6 @@ import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
 import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
@@ -550,7 +549,7 @@ public class IBPageHelper implements Singleton  {
 						return false;
 					}
 					if (obj instanceof ICDynamicPageTriggerInheritable) {
-							boolean ok = ((ICDynamicPageTriggerInheritable) obj).copyICObjectInstance(xmlpage.getPageKey(),instance.getID(),(ICDynamicPageTriggerCopySession) cSession);
+							boolean ok = ((ICDynamicPageTriggerInheritable) obj).copyICObjectInstance(xmlpage.getPageKey(),instance.getID(),cSession);
 							if (!ok) {
 								System.err.println("changeInstanceId - copyICObjectInstance failed");
 								return false;

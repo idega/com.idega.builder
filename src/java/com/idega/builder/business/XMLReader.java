@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.63 2005/09/09 00:03:01 eiki Exp $
+ * $Id: XMLReader.java,v 1.64 2005/11/29 15:29:11 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -101,7 +101,7 @@ public class XMLReader {
 				}
 			}
 			else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
-				pageKey = (String) at.getValue();
+				pageKey = at.getValue();
 			}
 			else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
 				if (at.getValue().equals("true"))
@@ -110,7 +110,7 @@ public class XMLReader {
 					isLocked = false;
 			} 
 			else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
-				dptRootPage = (String)at.getValue();
+				dptRootPage = at.getValue();
 			}
 		}
 
@@ -521,7 +521,7 @@ public class XMLReader {
 							setProperty(child, firstUICInstance);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-							parseElement(child, (PresentationObjectContainer) firstUICInstance, ibxml);
+							parseElement(child, firstUICInstance, ibxml);
 						}
 						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
 							parseRegion(child, (PresentationObjectContainer) firstUICInstance, ibxml);

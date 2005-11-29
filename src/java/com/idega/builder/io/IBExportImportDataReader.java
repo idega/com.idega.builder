@@ -510,7 +510,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 
 				
   public Object read(ICFile file, IWContext context) {
-		return new ICFileReader((Storable) file, context);
+		return new ICFileReader(file, context);
 	}
 
   public Object read(UploadFile file, IWContext context) {
@@ -617,7 +617,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
 			ICPage page = home.findByPrimaryKey(pageId);
 			StorableHolder holder = new StorableHolder();
-			holder.setStorable((Storable) page);
+			holder.setStorable(page);
 			holder.setValue(Integer.toString(pageId));
 			return holder;
 		}
