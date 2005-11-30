@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.6 2005/11/09 17:56:05 thomas Exp $
+ * $Id: JspPage.java,v 1.7 2005/11/30 09:35:50 laddi Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.util.StringHandler;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2005/11/09 17:56:05 $ by $Author: thomas $
+ *  Last modified: $Date: 2005/11/30 09:35:50 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class JspPage extends CachedBuilderPage {
 	
@@ -92,7 +92,6 @@ public class JspPage extends CachedBuilderPage {
 		}
 		
 		private String getJSPFileName(){
-			String pageUri = getPageUri();
 			StringBuffer buffer = new StringBuffer(BUILDERPAGE_PREFIX);
 			buffer.append(getPageKey()).append(JSP_PAGE_EXTENSION_WITH_DOT);
 			return buffer.toString();
