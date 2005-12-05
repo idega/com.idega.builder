@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.64 2005/11/29 15:29:11 laddi Exp $
+ * $Id: XMLReader.java,v 1.65 2005/12/05 19:41:54 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -359,6 +359,10 @@ public class XMLReader {
 					e.printStackTrace();	
 				}
 			}
+			else if(key.startsWith(XMLConstants.COMPONENT_PROPERTY)) {
+				setComponentProperty(object, key, values);
+				
+			}
 			else {
 				//Backward compatability and possibly good for beanproperties, used by Image,Page and Table at least...
 				//NOT into PropertyCache....
@@ -384,6 +388,10 @@ public class XMLReader {
 	 */
 	static void setReflectionProperty(UIComponent instance, String methodIdentifier, List stringValues) {
 		ComponentPropertyHandler.getInstance().setReflectionProperty(instance, methodIdentifier, stringValues);
+	}
+	
+	static void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
+		ComponentPropertyHandler.getInstance().setComponentProperty(instance, componentProperty, stringValues);
 	}
 
 	/**
