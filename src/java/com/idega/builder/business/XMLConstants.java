@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.24 2005/09/26 17:09:57 thomas Exp $
+ * $Id: XMLConstants.java,v 1.25 2005/12/05 19:36:07 thomas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,6 +52,9 @@ public abstract class XMLConstants {
 
   public static final String FRAGMENT_TYPE_LIBRARY = "library";
   public static final String FRAGMENT_TYPE_CLIPBOARD = "clipboard";
+  
+ // extension for JSF Components
+  public static final String COMPONENT_PROPERTY=":componentProperty";
   
   // for exporting, export definition file
   public static final String EXPORT_MODULE = "module";
