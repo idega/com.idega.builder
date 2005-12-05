@@ -16,6 +16,7 @@ import javax.faces.component.UIComponent;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
+import com.idega.util.reflect.ComponentProperty;
 import com.idega.util.reflect.Property;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLElement;
@@ -41,21 +42,30 @@ public class ComponentPropertyHandler implements Singleton {
       if(method==null){
         throw new RuntimeException("Method: "+methodIdentifier+" not found");
       }
-      else{
-        setReflectionProperty(instance,method,stringValues);
-      }
-    }
-
+      setReflectionProperty(instance,method,stringValues);
+     }
+     
+     void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
+    	 ComponentProperty property = new ComponentProperty(componentProperty);
+    	 setPropertyValues(instance, property, stringValues);
+     }
      
      private static String[] emptyStringArray = new String[0];
+     
      void setReflectionProperty(UIComponent instance,Method method,List stringPropertyValues){
      	Property property = new Property(method);
+     	setPropertyValues(instance, property, stringPropertyValues);
+     }
+     
+     void setPropertyValues(UIComponent instance, Property property, List stringPropertyValues) {
      	String[] sPropertyValuesArray = (String[])stringPropertyValues.toArray(emptyStringArray);
      	property.setPropertyValues(sPropertyValuesArray);
      	
      	PropertyCache.getInstance().addProperty(BuilderLogic.getInstance().getInstanceId(instance),property);
      	property.setPropertyOnInstance(instance);
      }
+     
+     
      
      /*
      void setReflectionProperty(PresentationObject instance,Method method,Vector stringValues){
