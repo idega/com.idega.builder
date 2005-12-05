@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.190 2005/10/26 23:20:06 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.191 2005/12/05 19:26:37 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1828,10 +1828,21 @@ public class BuilderLogic implements Singleton {
 			newComponent = (UIComponent) component.getClass().newInstance();
 			newComponent.setId(instanceId);
 			PropertyCache.getInstance().setAllCachedPropertiesOnInstance(instanceId, newComponent);
+			List childrenList = component.getChildren();
+			Iterator childrenListIterator = childrenList.iterator();
+			while (childrenListIterator.hasNext()) {
+				UIComponent childComponent = (UIComponent) childrenListIterator.next();
+				UIComponent newChildComponent = getCopyOfUIComponentFromIBXML(childComponent);
+				if (newChildComponent != null) {
+					newComponent.getChildren().add(newChildComponent);
+				}
+			}
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return component;
+		catch (InstantiationException ex) {
+			return null;
+		}
+		catch (IllegalAccessException ex) {
+			return null;
 		}
 		return newComponent;
 	}
