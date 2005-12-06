@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.65 2005/12/05 19:41:54 thomas Exp $
+ * $Id: XMLReader.java,v 1.66 2005/12/06 19:04:39 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -335,6 +335,20 @@ public class XMLReader {
 		String key = null;
 		List values = new ArrayList();
 
+		
+		//1. First check for <property name="" value="">:
+		
+		String propertyName = property.getAttributeValue(XMLConstants.NAME_STRING);
+		String propertyValue = property.getAttributeValue(XMLConstants.VALUE_STRING);
+		
+		if(propertyValue!=null && propertyValue !=null){
+			values.add(propertyValue);
+			setComponentProperty(object, propertyName, values);
+			return;
+		}
+		
+		//2. If this isn't set after this check for children of the <property> element, this is the older way:
+		
 		List li = property.getChildren();
 		Iterator it = li.iterator();
 
@@ -358,10 +372,6 @@ public class XMLReader {
 				catch(Exception e) {
 					e.printStackTrace();	
 				}
-			}
-			else if(key.startsWith(XMLConstants.COMPONENT_PROPERTY)) {
-				setComponentProperty(object, key, values);
-				
 			}
 			else {
 				//Backward compatability and possibly good for beanproperties, used by Image,Page and Table at least...
@@ -409,7 +419,8 @@ public class XMLReader {
 			return null;
 		}
 		String className = null;
-		String icObjectInstanceId = null;
+		//String icObjectInstanceId = null;
+		String componentId = null;
 		String icObjectId = null;
 		ICObjectInstance icObjectInstance = null;
 		
@@ -422,7 +433,8 @@ public class XMLReader {
 				className = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
-				icObjectInstanceId = attr.getValue();
+				//icObjectInstanceId = attr.getValue();
+				componentId=attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.IC_OBJECT_ID_STRING)) {
 				icObjectId = attr.getValue();
@@ -448,12 +460,16 @@ public class XMLReader {
 					throw new Exception("Invalid Class tag for module");
 				}
 			}
-			else if(icObjectInstanceId!=null){
-				icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(icObjectInstanceId));
-				firstUICInstance = icObjectInstance.getNewInstance();
+			//else if(icObjectInstanceId!=null){
+			else if(componentId!=null){
+				int icObjectInstanceId = getICObjectInstanceIdFromComponentId(componentId);
+				icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId);
+				//firstUICInstance = icObjectInstance.getNewInstance();
+				Class objectClass = icObjectInstance.getObject().getObjectClass();
+				firstUICInstance = (UIComponent)objectClass.newInstance();
 			}
 			
-			setInstanceId(ibxml, firstUICInstance, icObjectInstanceId, icObjectId, icObjectInstance);	
+			setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);	
 			
 			
 			//TODO JSF Compat IS this necesery?
@@ -562,6 +578,11 @@ public class XMLReader {
 		return firstUICInstance;
 	}
 
+	protected static int getICObjectInstanceIdFromComponentId(String componentId){
+		//TODO: Fix this:
+		return Integer.parseInt(componentId);
+	}
+	
 	/**
 	 * @param ibxml
 	 * @param firstUICInstance
@@ -570,7 +591,8 @@ public class XMLReader {
 	 * @param icObjectInstance
 	 * @return
 	 */
-	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String icObjectInstanceId, String icObjectId, ICObjectInstance icObjectInstance) {
+	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String componentId, String icObjectId, ICObjectInstance icObjectInstance) {
+		
 		if(firstUICInstance instanceof PresentationObject){
 			PresentationObject presentationObject = (PresentationObject) firstUICInstance;
 			presentationObject.setICObjectInstance(icObjectInstance);
@@ -584,14 +606,14 @@ public class XMLReader {
 			
 			//TODO JSF COMPAT FIND OUT WHAT THIS IS for??
 			// added by gummi@idega.is // - cache ObjectInstance
-			if (!"0".equals(icObjectInstanceId)) {
-				setObjectInstance(ibxml, icObjectInstanceId, presentationObject);
+			if (!"0".equals(componentId)) {
+				setObjectInstance(ibxml, componentId, presentationObject);
 			}
 			
 		}
 		else{
 			//set the instance id for a UIComponent
-			firstUICInstance.setId(icObjectInstanceId);
+			firstUICInstance.setId(componentId);
 		}
 	}
 
