@@ -46,7 +46,7 @@ public class ComponentPropertyHandler implements Singleton {
      }
      
      void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
-    	 ComponentProperty property = new ComponentProperty(componentProperty);
+    	 ComponentProperty property = new ComponentProperty(componentProperty,instance.getClass());
     	 setPropertyValues(instance, property, stringValues);
      }
      
