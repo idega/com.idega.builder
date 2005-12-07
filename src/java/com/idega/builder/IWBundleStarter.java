@@ -122,7 +122,7 @@ public class IWBundleStarter implements IWBundleStartable {
 			DefaultViewNode applicationNode = new BuilderApplicationViewNode("application");
 			applicationNode.setParent(builderNode);
 			applicationNode.setVisibleInMenus(false);
-			builderNode.setFrameUrl(applicationNode.getURIWithContextPath());
+			builderNode.setFrameUrl(applicationNode.getURI());
 			
 			ComponentClassViewNode afterinitialsetupNode = new ComponentClassViewNode("afterinitialsetup");
 			afterinitialsetupNode.setParent(builderNode);
