@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.7 2005/11/30 09:35:50 laddi Exp $
+ * $Id: JspPage.java,v 1.8 2005/12/07 21:38:52 tryggvil Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.util.StringHandler;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2005/11/30 09:35:50 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/12/07 21:38:52 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class JspPage extends CachedBuilderPage {
 	
@@ -64,13 +64,13 @@ public class JspPage extends CachedBuilderPage {
 		return null;
 	}
 	
-	public String getURI() {
+	public String getURIWithContextPath() {
 		/*String parentUri = getParent().getURI();
 		String pageUri = getPageUri();
 		
 		String newUri = parentUri+pageUri;
 		return newUri;*/
-		return super.getURI();
+		return super.getURIWithContextPath();
 		
 	}
 	private static Logger log = Logger.getLogger(JspPage.class.getName());
@@ -136,7 +136,7 @@ public class JspPage extends CachedBuilderPage {
 				pageStream.close();
 				jspStream.close();*/
 				
-				log.finer("Streaming builder page with uri: "+getURI()+" to disk in file: "+jspFile.toURL().toString());
+				log.finer("Streaming builder page with uri: "+getURIWithContextPath()+" to disk in file: "+jspFile.toURL().toString());
 				
 				InputStreamReader reader = new InputStreamReader(pageStream,"UTF-8");//,encoding);
 				int bufferlength=1000;

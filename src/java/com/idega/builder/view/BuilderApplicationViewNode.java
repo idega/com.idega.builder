@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderApplicationViewNode.java,v 1.1 2005/12/07 11:35:50 tryggvil Exp $
+ * $Id: BuilderApplicationViewNode.java,v 1.2 2005/12/07 21:38:52 tryggvil Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * TODO tryggvil Describe Type BuilderApplicationViewNode
  * </p>
- *  Last modified: $Date: 2005/12/07 11:35:50 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/12/07 21:38:52 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BuilderApplicationViewNode extends DefaultViewNode {
 
@@ -59,7 +59,7 @@ public class BuilderApplicationViewNode extends DefaultViewNode {
 	 */
 	public String getResourceURI() {
 		if(getBuilderLogic().isFirstBuilderRun()){
-			return getParent().getChild("initialsetup").getURI();
+			return getParent().getChild("initialsetup").getURIWithContextPath();
 		}
 		else{
 			return getIWMainApplication().getWindowOpenerURI(IBApplication.class);

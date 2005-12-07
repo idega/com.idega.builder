@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.192 2005/12/07 11:35:50 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.193 2005/12/07 21:38:52 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -701,7 +701,7 @@ public class BuilderLogic implements Singleton {
 		Iterator iter = getPageCacher().getPageCacheMap().values().iterator();
 		while(iter.hasNext()){
 			CachedBuilderPage page = (CachedBuilderPage)iter.next();
-			String cachedPageUri = page.getURI();
+			String cachedPageUri = page.getURIWithContextPath();
 			if(cachedPageUri!=null){
 				if(cachedPageUri.equals(pageUri)){
 					return page.getPageKey();
