@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.43 2005/12/07 11:35:50 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.44 2005/12/07 15:08:23 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,9 +52,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
 	private static final String INTERNAL_CONTROL_PARAMETER = "ib_adminwindow_par";
 
-	public static final String ELEMENT_LIST = "element_builder_list";
-	public static final String BLOCK_LIST = "block_builder_list";
-	public static final String JSF_LIST = "jsf_builder_list";
+	public static final String ELEMENT_LIST = "element_list";
+	public static final String BLOCK_LIST = "block_list";
 	final static String STYLE_NAME = "add_module";
 	
 	private Image elementImage;
@@ -66,8 +65,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	//Image button;
 
 	public IBAddModuleWindow() {
-		setWidth(640);
-		setHeight(500);
+		setWidth(340);
+		setHeight(400);
 		setResizable(true);
 		setScrollbar(true);
 		failedBundles = new ArrayList();
@@ -197,12 +196,10 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		try {
 			List elements = null;
 			List blocks = null;
-			List jsfuicomponents = null;
 
 			try {
 				elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
 				blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
-				jsfuicomponents = (List) iwc.getApplicationAttribute(JSF_LIST + "_" + iwc.getCurrentLocaleId());
 			}
 			catch (Exception e) {
 				elements = null;
@@ -212,7 +209,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			if (elements == null && blocks == null) {
 				elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
 				blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
-				jsfuicomponents = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT);
 
 				ModuleComparator comparator = new ModuleComparator(iwc);
 				if (elements != null) {
@@ -223,7 +219,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				}
 				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
 				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
-				iwc.setApplicationAttribute(JSF_LIST + "_" + iwc.getCurrentLocaleId(), jsfuicomponents);
 				
 				failedBundles = comparator.getFailedBundles();
 				bundles = comparator.getBundles();
@@ -232,14 +227,10 @@ public class IBAddModuleWindow extends IBAdminWindow {
 
 			String sElements = iwrb.getLocalizedString("elements_header", "Elements");
 			String sBlocks = iwrb.getLocalizedString("blocks_header", "Blocks");
-			String sJSF = iwrb.getLocalizedString("jsfuicomponents_header", "JSF Components");
 
 			addSubComponentList(sElements, elements, theReturn, 1, 1, iwc);
 			addSubComponentList(sBlocks, blocks, theReturn, 1, 2, iwc);
-			if(jsfuicomponents!=null && jsfuicomponents.size()>0){
-				addSubComponentList(sJSF, jsfuicomponents, theReturn, 1, 3, iwc);
-				theReturn.setColumnVerticalAlignment(3, "top");
-			}
+
 			theReturn.setColumnVerticalAlignment(1, "top");
 			theReturn.setColumnVerticalAlignment(2, "top");
 		}
