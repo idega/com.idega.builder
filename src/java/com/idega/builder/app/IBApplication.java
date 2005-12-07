@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.93 2005/11/08 02:50:22 laddi Exp $
+ *  $Id: IBApplication.java,v 1.94 2005/12/07 11:35:50 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,8 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.core.view.ViewManager;
+import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWMainApplication;
@@ -179,7 +181,7 @@ public class IBApplication extends IWApplication {
 		startIBApplication(iwc);
 		
 	    IWMainApplication iwma = iwc.getIWMainApplication();
-	    if(iwma.getProductInfo().isMajorVersionEqualOrHigherThan(3)){
+	    if(iwma.getProductInfo().isMajorPlatformVersionEqualOrHigherThan(3)){
 	    		//Not add the top for new versions
 	    }
 	    else{
@@ -934,17 +936,17 @@ public class IBApplication extends IWApplication {
 				
 				
 				//Display the simple template page
-				//if (isSuperUser||isBuilderUser) {
-				//	String settingsUrl;
-				//	ViewNode settingsNode = ViewManager.getInstance(iwc).getWorkspaceRoot().getChild("content").getChild("pages").getChild("templatesettings");
-				//	settingsUrl = settingsNode.getURI();
+				if (isSuperUser||isBuilderUser) {
+					String settingsUrl;
+					ViewNode settingsNode = ViewManager.getInstance(iwc).getWorkspaceRoot().getChild("content").getChild("pages").getChild("templatesettings");
+					settingsUrl = settingsNode.getURI();
 					//Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
 					//sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
-				//	Link sourceLink = new Link("Simple template settings");
-				//	sourceLink.setURL(settingsUrl);
-				//	sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-				//	toolTable.add(sourceLink, 5, 1);
-				//}
+					Link sourceLink = new Link("Simple template settings");
+					sourceLink.setURL(settingsUrl);
+					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+					toolTable.add(sourceLink, 5, 1);
+				}
 				
 				String id=null;
                 try {

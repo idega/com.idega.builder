@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.191 2005/12/05 19:26:37 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.192 2005/12/07 11:35:50 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -12,6 +12,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 import com.idega.builder.presentation.IBAddModuleWindow;
@@ -1549,14 +1550,22 @@ public class BuilderLogic implements Singleton {
 	public String getCurrentPageHtml(IWContext iwc) {
 		String ibpage = getCurrentIBPage(iwc);
 		ICDomain domain = getCurrentDomain(iwc);
-		StringBuffer url = new StringBuffer(domain.getURL());
+		String sUrl = domain.getURL();
+		//cut the last '/' away to avoid double '/'
+		if(sUrl!=null){
+			if(sUrl.endsWith("/")){
+				sUrl = sUrl.substring(0,sUrl.length()-1);
+			}
+		}
+		StringBuffer url = new StringBuffer(sUrl);
 		//    url.append(IWMainApplication.BUILDER_SERVLET_URL);
 		//    url.append(iwc.getApplication().getBuilderServletURI());
 		//    url.append("?");
 		//    url.append(IB_PAGE_PARAMETER);
 		//    url.append("=");
-		url.append(this.getIBPageURL(iwc, Integer.parseInt(ibpage)));
 
+		url.append(this.getIBPageURL(iwc, Integer.parseInt(ibpage)));
+		
 		if (url.toString().indexOf("http") == -1)
 			url.insert(0, "http://");
 
@@ -1932,4 +1941,71 @@ public class BuilderLogic implements Singleton {
 	public IWBundle getBuilderBundle(){
 		return IWMainApplication.getDefaultIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 	}
+	
+	
+	public boolean isFirstBuilderRun(){
+		ICDomain domain =  getCurrentDomain();
+		if(domain.getStartPageID()==-1){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method initializeBuilderStructure
+	 * </p>
+	 * @param domain
+	 * @param frontPageName
+	 * @throws Exception 
+	 */
+	public void initializeBuilderStructure(ICDomain domain, String frontPageName) throws Exception {
+	    
+		ICPageHome pageHome = getICPageHome();
+
+	    ICPage page = pageHome.create();
+	    String rootPageName = frontPageName;
+	    page.setName(rootPageName);
+	    page.setDefaultPageURI("/");
+	    page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+	    page.store();
+	    unlockRegion(page.getPrimaryKey().toString(),"-1",null);
+
+	    ICPage page2 = pageHome.create();
+	    page2.setName(frontPageName+" - Template");
+	    page2.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
+	    page2.store();
+
+	    unlockRegion(page2.getPageKey(),"-1",null);
+
+	    page.setTemplateKey(page2.getPageKey());
+	    page.store();
+
+	    domain.setIBPage(page);
+	    domain.setStartTemplate(page2);
+	    domain.store();
+
+	    setTemplateId(page.getPrimaryKey().toString(),page2.getPrimaryKey().toString());
+	    getIBXMLPage(page2.getPrimaryKey().toString()).addPageUsingThisTemplate(page.getPrimaryKey().toString());
+	    
+	    clearAllCachedPages();
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method getICPageHome
+	 * </p>
+	 * @return
+	 */
+	private ICPageHome getICPageHome() {
+		try {
+			return (ICPageHome)IDOLookup.getHome(ICPage.class);
+		}
+		catch (IDOLookupException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 }

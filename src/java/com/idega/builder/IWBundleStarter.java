@@ -1,26 +1,33 @@
 package com.idega.builder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import javax.ejb.FinderException;
+import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.ComponentPropertyHandler;
 import com.idega.builder.business.IBMainServiceBean;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.PageUrl;
-import com.idega.builder.data.IBDomainBMPBean;
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
 import com.idega.builder.presentation.InvisibleInBuilder;
+import com.idega.builder.view.BuilderApplicationViewNode;
 import com.idega.builder.view.BuilderRootViewNode;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderService;
-import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.view.ComponentClassViewNode;
+import com.idega.core.view.DefaultViewNode;
+import com.idega.core.view.FramedApplicationViewNode;
+import com.idega.core.view.FramedWindowClassViewNode;
 import com.idega.core.view.KeyboardShortcut;
 import com.idega.core.view.ViewManager;
+import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
@@ -59,10 +66,32 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.addImplementor(ICDynamicPageTrigger.class, DynamicPageTrigger.class);
 		
 		// services registration
-		IBOLookup.registerImplementationForBean(ICDomain.class, IBDomainBMPBean.class);
+		//IBOLookup.registerImplementationForBean(ICDomain.class, IBDomainBMPBean.class);
 		IBOLookup.registerImplementationForBean(ICPage.class, IBPageBMPBean.class);
 		IBOLookup.registerImplementationForBean(BuilderService.class, IBMainServiceBean.class);
 		
+		//Registering the views:
+		//This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
+		/*if(starterBundle!=null){
+			IWMainApplication iwma = starterBundle.getApplication();
+			//IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
+			ViewManager viewManager = ViewManager.getInstance(iwma);
+			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode(BUILDER_ROOT_VIEW_NODE_NAME,viewManager.getApplicationRoot());
+			pagesViewNode.setKeyboardShortcut(new KeyboardShortcut("p"));
+		}*/
+		
+		addViewNodes(starterBundle);
+		
+		updateBuilderPageUris();
+		
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method addViewNodes
+	 * </p>
+	 */
+	private void addViewNodes(IWBundle starterBundle) {
 		//Registering the views:
 		//This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
 		if(starterBundle!=null){
@@ -72,10 +101,35 @@ public class IWBundleStarter implements IWBundleStartable {
 			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode(BUILDER_ROOT_VIEW_NODE_NAME,viewManager.getApplicationRoot());
 			pagesViewNode.setKeyboardShortcut(new KeyboardShortcut("p"));
 			
+			ViewNode workspaceNode = viewManager.getWorkspaceRoot();
+			
+			//Class applicationClass = IBApplication.class;
+			FramedApplicationViewNode builderNode = new FramedApplicationViewNode("builder",workspaceNode);
+			Collection roles = new ArrayList();
+			roles.add(StandardRoles.ROLE_KEY_BUILDER);
+			builderNode.setAuthorizedRoles(roles);
+			//builderNode.setWindowClass(applicationClass);
+			//builderNode.setJspUri(workspaceNode.getResourceURI());
+			builderNode.setJspUri(starterBundle.getJSPURI("builderapp.jsp"));
+			builderNode.setKeyboardShortcut(new KeyboardShortcut("2"));
+			
+			
+			DefaultViewNode setupNode = new DefaultViewNode("initialsetup",builderNode);
+			setupNode.setJspUri(starterBundle.getJSPURI("initialSetup.jsp"));
+			setupNode.setName("#{localizedStrings['com.idega.builder']['initialsetup']}");
+			setupNode.setVisibleInMenus(false);
+			
+			DefaultViewNode applicationNode = new BuilderApplicationViewNode("application");
+			applicationNode.setParent(builderNode);
+			applicationNode.setVisibleInMenus(false);
+			builderNode.setFrameUrl(applicationNode.getURI());
+			
+			ComponentClassViewNode afterinitialsetupNode = new ComponentClassViewNode("afterinitialsetup");
+			afterinitialsetupNode.setParent(builderNode);
+			afterinitialsetupNode.setComponentClass(IBApplication.class);
+			afterinitialsetupNode.setVisibleInMenus(false);
+			
 		}
-		
-		updateBuilderPageUris();
-		
 	}
 
 	/**

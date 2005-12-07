@@ -91,7 +91,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 		int pageId = getRootPageId();
 		try
 		{
-			return getIBPageHome().findByPrimaryKey(pageId);
+			if(pageId==-1){
+				return null;
+			}
+			else{
+				return getIBPageHome().findByPrimaryKey(pageId);
+			}
 		}
 		catch (FinderException e)
 		{

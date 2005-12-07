@@ -21,4 +21,19 @@
 		<managed-bean-scope>request</managed-bean-scope>
 	</managed-bean>
     
+	<managed-bean>
+		<managed-bean-name>BuilderInitialSetup</managed-bean-name>
+		<managed-bean-class>com.idega.builder.bean.BuilderInitialSetup</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+	
+	<navigation-rule>
+  		<from-view-id>/workspace/builder/initialsetup/</from-view-id>
+  		<navigation-case>
+    			<from-outcome>next</from-outcome>
+    			<to-view-id>/workspace/builder/afterinitialsetup/</to-view-id>
+  		</navigation-case>
+	</navigation-rule>
+    
 </faces-config>

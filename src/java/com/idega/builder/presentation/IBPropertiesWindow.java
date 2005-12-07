@@ -38,8 +38,8 @@ public class IBPropertiesWindow extends FrameSet{
    private final static String HEADER_TEXT_PARAMETER = "ib_prop_win_header";
 
 public IBPropertiesWindow() {
-  super.setWidth(420);
-  super.setHeight(350);
+  super.setWidth(500);
+  super.setHeight(400);
 }
 
   public void main(IWContext iwc) throws Exception{

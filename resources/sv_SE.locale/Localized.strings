@@ -1,4 +1,3 @@
-#Mon Oct 27 01:32:56 CET 2003
 Label=Label
 add=Add
 add_region_label=Add region label
@@ -24,6 +23,7 @@ formemailer.error3=
 formemailer.error4=
 formemailer.send=Skicka
 formemailer.successfully=Skickningen lyckades
+frontPageName=Startsidans namn
 group_description=Description
 group_name=Group name
 home_page=Select homepage
@@ -33,6 +33,7 @@ iw.component.com.idega.builder.form.presentation.FormEmailer.name=FormEmailer
 label=Label
 lock_region=Lock region
 lock_region_window=Lock region window
+mainDomainName=Webbapplikationens namn
 move_not_allowed=Move of a page of this type is not supported
 move_page=Move page
 move_page_text=Select page to move this page to under
