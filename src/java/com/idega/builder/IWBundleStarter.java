@@ -24,7 +24,6 @@ import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.view.ComponentClassViewNode;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.FramedApplicationViewNode;
-import com.idega.core.view.FramedWindowClassViewNode;
 import com.idega.core.view.KeyboardShortcut;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;

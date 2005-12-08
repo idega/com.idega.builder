@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderApplicationViewNode.java,v 1.3 2005/12/07 21:58:10 tryggvil Exp $
+ * $Id: BuilderApplicationViewNode.java,v 1.4 2005/12/08 17:56:52 laddi Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,7 +14,6 @@ import javax.faces.context.FacesContext;
 import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.view.DefaultViewNode;
-import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWMainApplication;
 
 
@@ -22,10 +21,10 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * TODO tryggvil Describe Type BuilderApplicationViewNode
  * </p>
- *  Last modified: $Date: 2005/12/07 21:58:10 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2005/12/08 17:56:52 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class BuilderApplicationViewNode extends DefaultViewNode {
 
@@ -35,7 +34,6 @@ public class BuilderApplicationViewNode extends DefaultViewNode {
 	 */
 	public BuilderApplicationViewNode(String viewId) {
 		super(viewId);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -43,14 +41,12 @@ public class BuilderApplicationViewNode extends DefaultViewNode {
 	 */
 	public BuilderApplicationViewNode(IWMainApplication iwma) {
 		super(iwma);
-		// TODO Auto-generated constructor stub
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.core.view.DefaultViewNode#createComponent(javax.faces.context.FacesContext)
 	 */
 	public UIComponent createComponent(FacesContext context) {
-		// TODO Auto-generated method stub
 		return super.createComponent(context);
 	}
 
@@ -90,6 +86,4 @@ public class BuilderApplicationViewNode extends DefaultViewNode {
 	public boolean getRedirectsToResourceUri() {
 		return true;
 	}
-
-	
 }
