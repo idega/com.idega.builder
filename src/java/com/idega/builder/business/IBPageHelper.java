@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.52 2005/11/29 15:29:11 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.53 2005/12/12 06:44:28 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -391,11 +391,15 @@ public class IBPageHelper implements Singleton  {
 						e2.printStackTrace();
 					}
 					while (it.hasNext()) {
-						PresentationObject obj = (PresentationObject) it.next();
-						boolean ok = changeInstanceId(obj, currentXMLPage, copyInstancePermissions,creatorContext);
-						if (!ok) {
-	//						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
-							return (-1);
+						//TODO Is it safe?!?
+						Object next = it.next();
+						if (next instanceof PresentationObject) {
+							PresentationObject obj = (PresentationObject) next;
+							boolean ok = changeInstanceId(obj, currentXMLPage, copyInstancePermissions,creatorContext);
+							if (!ok) {
+		//						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
+								return (-1);
+							}
 						}
 					}
 				}
