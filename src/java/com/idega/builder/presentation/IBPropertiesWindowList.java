@@ -94,9 +94,9 @@ public class IBPropertiesWindowList extends Page {
 						+ IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME + "('" + methodIdentifier + "')");
 				if (BuilderLogic.getInstance().isPropertySet(pageKey, instanceId, methodIdentifier,
 						iwc.getIWMainApplication()))
-					table.add(hoverButton, 1, counter);
+					table.add((Image) hoverButton.clone(), 1, counter);
 				else
-					table.add(button, 1, counter);
+					table.add((Image) button.clone(), 1, counter);
 				table.add(link, 2, counter);
 				counter++;
 			}
