@@ -288,6 +288,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 
 	private Table getColorPalette(IWContext iwc) {
 		IWPropertyList list = iwc.getIWMainApplication().getSettings().getLegacyApplicationSettings().getIWPropertyList("color_palette");
+		// list is not being modified, call of store not necessary
 		if (list != null) {
 			Table table = new Table();
 			table.setCellpadding(0);
@@ -389,18 +390,23 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 	private void doBusiness(IWContext iwc, boolean remove) {
 		IWPropertyList oldApplicationList = iwc.getIWMainApplication().getSettings().getLegacyApplicationSettings();
 		IWPropertyList list = oldApplicationList.getIWPropertyList("color_palette");
-		if (list != null)
-			if (remove)
+		if (list != null) {
+			if (remove) {
 				list.removeProperty(_colorString);
-			else
+			}
+			else {
 				list.setProperty(_colorString, _colorString);
-		else
+			}
+		}
+		else {
 			oldApplicationList.getNewPropertyList("color_palette").setProperty(_colorString, _colorString);
+		}
 		oldApplicationList.store();
 	}
 
 	private boolean isInCustomColors(IWContext iwc, String color) {
 		IWPropertyList list = iwc.getIWMainApplication().getSettings().getLegacyApplicationSettings().getIWPropertyList("color_palette");
+		// list is not being modified, call of store not necessary
 		if (list != null) {
 			String returnString = list.getProperty(color);
 			if (returnString != null)
