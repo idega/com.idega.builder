@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.45 2006/01/15 17:31:10 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.46 2006/01/15 19:29:33 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -191,8 +191,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			List blocks = null;
 
 			try {
-				//elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
-				//blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
+				elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
+				blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
 			}
 			catch (Exception e) {
 				elements = null;
