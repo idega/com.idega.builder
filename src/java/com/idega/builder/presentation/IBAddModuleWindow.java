@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.44 2005/12/07 15:08:23 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.45 2006/01/15 17:31:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,23 +9,16 @@
  */
 package com.idega.builder.presentation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.ModuleComparator;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.EntityFinder;
-import com.idega.exception.IWBundleDoesNotExist;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -59,18 +52,18 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	private Image elementImage;
 	private Image blockImage;
 	
-	private Map bundles;
-	private List failedBundles;
+	//private Map bundles;
+	//private List failedBundles;
 	
 	//Image button;
 
 	public IBAddModuleWindow() {
-		setWidth(340);
+		setWidth(400);
 		setHeight(400);
 		setResizable(true);
 		setScrollbar(true);
-		failedBundles = new ArrayList();
-		bundles = new HashMap();
+		//failedBundles = new ArrayList();
+		//bundles = new HashMap();
 	}
 
 	/**
@@ -198,8 +191,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			List blocks = null;
 
 			try {
-				elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
-				blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
+				//elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
+				//blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
 			}
 			catch (Exception e) {
 				elements = null;
@@ -207,21 +200,24 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			}
 
 			if (elements == null && blocks == null) {
-				elements = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT);
-				blocks = EntityFinder.findAllByColumn(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK);
+				elements = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT, "OBJECT_NAME");
+				blocks = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK, "OBJECT_NAME");
 
-				ModuleComparator comparator = new ModuleComparator(iwc);
+				/*ModuleComparator comparator = new ModuleComparator(iwc);
 				if (elements != null) {
 					java.util.Collections.sort(elements,comparator );
 				}
+				System.out.println("Sorting elements: " + (System.currentTimeMillis() - time) + " ms");
+				time = System.currentTimeMillis();
 				if (blocks != null) {
 					java.util.Collections.sort(blocks,comparator);
 				}
+				System.out.println("Sorting blocks: " + (System.currentTimeMillis() - time) + " ms");*/
 				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
 				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
 				
-				failedBundles = comparator.getFailedBundles();
-				bundles = comparator.getBundles();
+				/*failedBundles = comparator.getFailedBundles();
+				bundles = comparator.getBundles();*/
 				
 			}
 
@@ -249,8 +245,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		
 		table.add(subComponentTable, xpos, ypos);
 		
-		IWMainApplication iwma = iwc.getIWMainApplication();
-		Locale currentLocale = iwc.getCurrentLocale();
+		//IWMainApplication iwma = iwc.getIWMainApplication();
+		//Locale currentLocale = iwc.getCurrentLocale();
 
 		Text header = new Text(name, true, false, false);
 		header.setFontSize(Text.FONT_SIZE_12_HTML_3);
@@ -270,9 +266,10 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					//iconLink = new Link(getIconForObject(item, iwc));
 					iconLink = (Image) getIconForObject(item, iwc).clone();
 					
-					String bundleIdentifier = item.getBundleIdentifier();
+					//String bundleIdentifier = item.getBundleIdentifier();
 					String objectName = item.getClassName();
-					try {
+					objectName = objectName.substring(objectName.lastIndexOf(".") + 1);
+					/*try {
 						if (!failedBundles.contains(bundleIdentifier)) {
 							IWBundle bundle = (IWBundle) bundles.get(bundleIdentifier);
 							if (bundle == null) {
@@ -289,25 +286,12 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					
 					if(objectName==null){
 						objectName = item.getClassName();
-					}
+					}*/
 					
 					link = new Link(objectName);
 					link.setStyle(STYLE_NAME);
-					//link.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
 					link.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
 					link.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getPrimaryKey().toString());
-					/*link.maintainParameter(IB_PAGE_PARAMETER, iwc);
-					link.maintainParameter(IB_PARENT_PARAMETER, iwc);
-					link.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
-	
-					/*System.out.println("Adding parameters to icon: " + (System.currentTimeMillis() - start) + " ms");
-					iconLink.addParameter(IB_CONTROL_PARAMETER, ACTION_ADD);
-					iconLink.addParameter(INTERNAL_CONTROL_PARAMETER, " ");
-					iconLink.addParameter(IC_OBJECT_INSTANCE_ID_PARAMETER, item.getID());
-					System.out.println("Maintaining parameters in icon: " + (System.currentTimeMillis() - start) + " ms");
-					iconLink.maintainParameter(IB_PAGE_PARAMETER, iwc);
-					iconLink.maintainParameter(IB_PARENT_PARAMETER, iwc);
-					iconLink.maintainParameter(IB_LABEL_PARAMETER, iwc);*/
 	
 					subComponentTable.add(iconLink, 1, ypos);
 					subComponentTable.add(link, 2, ypos);
