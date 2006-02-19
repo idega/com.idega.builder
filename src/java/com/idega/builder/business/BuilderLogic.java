@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.194 2005/12/08 17:55:43 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.195 2006/02/19 17:27:27 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -741,7 +741,7 @@ public class BuilderLogic implements Singleton {
 						//the string is not a number:
 						
 						//try to find the page in the cache first:
-						String pageKey = getPageKeyByURICached(uriWithoutPages);
+						String pageKey = getPageKeyByURICached(requestURI);
 						if(pageKey!=null){
 							return pageKey;
 						}
