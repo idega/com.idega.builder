@@ -28,8 +28,7 @@ public class ComponentPropertyHandler implements Singleton {
   private static final String XML_TYPE_TAG = "type";
   private static final String XML_VALUE_TAG = "value";
 
-
-  private ComponentPropertyHandler() {
+  protected ComponentPropertyHandler() {
   	// empty
   }
 

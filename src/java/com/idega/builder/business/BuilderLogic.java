@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.195 2006/02/19 17:27:27 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.196 2006/02/20 17:59:05 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -120,7 +120,7 @@ public class BuilderLogic implements Singleton {
 	
 	private String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2};
 	
-	private BuilderLogic() {
+	protected BuilderLogic() {
 		// empty
 	}
 

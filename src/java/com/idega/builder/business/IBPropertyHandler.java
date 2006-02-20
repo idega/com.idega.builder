@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.50 2006/02/20 11:02:41 laddi Exp $
+ * $Id: IBPropertyHandler.java,v 1.51 2006/02/20 17:59:05 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ public class IBPropertyHandler implements Singleton{
 	private Map propertyHandlers;
 	private IBClassesFactory builderClassesFactory;
 
-	private IBPropertyHandler() {
+	protected IBPropertyHandler() {
 		// empty
 	}
 
