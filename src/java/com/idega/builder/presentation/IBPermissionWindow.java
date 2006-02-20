@@ -153,7 +153,7 @@ public class IBPermissionWindow extends IBAdminWindow{
 	right.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE+"width:130px");
 
 
-      Map hash = (Map)iwc.getSessionAttribute(this.SessionAddressPermissionMap);
+      Map hash = (Map)iwc.getSessionAttribute(IBPermissionWindow.SessionAddressPermissionMap);
       List directGroups = null;
       if(hash != null && hash.get(permissionType)!=null){
 	directGroups = UserGroupBusiness.getGroups((String[])hash.get(permissionType));

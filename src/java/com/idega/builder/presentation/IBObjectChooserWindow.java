@@ -85,7 +85,7 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 						else
 						icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
 						
-						icoLink.setURL(icoLink.JAVASCRIPT);
+						icoLink.setURL(Link.JAVASCRIPT);
 						table.add(icoLink,col,row++);
 						//addComponentToTable(element,table,i+1,row++);
 					}

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.49 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBPropertyHandler.java,v 1.50 2006/02/20 11:02:41 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -333,7 +333,7 @@ public class IBPropertyHandler implements Singleton{
 			int numberOfParametersForMethod = MethodFinder.getInstance().getArgumentClasses(methodIdentifier).length;
 			String[] theReturn = new String[numberOfParametersForMethod];
 			for (int i = 0; i < theReturn.length; i++) {
-				theReturn[i] = getMethodParameterProperty(iwc, instanceId, methodIdentifier, i, this.METHOD_PARAMETER_PROPERTY_DESCRIPTION);
+				theReturn[i] = getMethodParameterProperty(iwc, instanceId, methodIdentifier, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_DESCRIPTION);
 			}
 			return theReturn;
 		}
@@ -435,7 +435,7 @@ public class IBPropertyHandler implements Singleton{
 				//extends block.media.presentation.FileChooser
 				int id = Integer.parseInt(stringValue);
 				IWMainApplication iwma = iwc.getIWMainApplication();
-				Cache cache = IWMainApplication.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
+				Cache cache = iwma.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
 				fileChooser.setValue(cache.getEntity());
 			}
 			catch (Exception e) {
@@ -652,7 +652,7 @@ public class IBPropertyHandler implements Singleton{
 		//IWPropertyList complist = iwb.getComponentList();
 		//IWPropertyList component = complist.getIWPropertyList(componentIdentifier);
 		IWPropertyList component = iwb.getComponentPropertyList(componentIdentifier);
-		IWPropertyList methodList = component.getIWPropertyList(this.METHODS_KEY);
+		IWPropertyList methodList = component.getIWPropertyList(IBPropertyHandler.METHODS_KEY);
 		IWPropertyList method = methodList.getIWPropertyList(methodIdentifier);
 		if (method == null) {
 			method = methodList.getNewPropertyList(methodIdentifier);

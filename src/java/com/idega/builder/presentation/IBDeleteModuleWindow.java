@@ -91,9 +91,9 @@ public class IBDeleteModuleWindow extends IBAdminWindow {
 		t.add(confirmText, 1, 1);
 		Text notAgainText = new Text("Don't ask again for 42 days");
 		notAgainText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
-		SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("yes", "Yes"), this.IB_DELETE_CONFIRM);
+		SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("yes", "Yes"), IBDeleteModuleWindow.IB_DELETE_CONFIRM);
 		SubmitButton closebutton = new SubmitButton(iwrb.getLocalizedImageButton("cancel", "Cancel"),
-				this.IB_DELETE_CLOSE);
+				IBDeleteModuleWindow.IB_DELETE_CLOSE);
 		CheckBox notAgain = new CheckBox("not_again", "true");
 		t.add(closebutton, 1, 3);
 		t.add(Text.getNonBrakingSpace(), 1, 3);

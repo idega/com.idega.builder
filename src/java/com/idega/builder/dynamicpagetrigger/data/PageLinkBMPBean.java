@@ -103,31 +103,31 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
   }
 
   public int getPageId(){
-    return this.getIntColumnValue(this._COLUMNNAME_PAGE_ID);
+    return this.getIntColumnValue(PageLinkBMPBean._COLUMNNAME_PAGE_ID);
   }
 
   public int getLinkImageId(){
-    return this.getIntColumnValue(this._COLUMNNAME_LINK_IMAGE);
+    return this.getIntColumnValue(PageLinkBMPBean._COLUMNNAME_LINK_IMAGE);
   }
 
   public int getOnClickImageId(){
-    return this.getIntColumnValue(this._COLUMNNAME_ONCLICK_IMAGE);
+    return this.getIntColumnValue(PageLinkBMPBean._COLUMNNAME_ONCLICK_IMAGE);
   }
 
   public int getOnMouseOverImageId(){
-    return this.getIntColumnValue(this._COLUMNNAME_ONMOUSEOVER_IMAGE);
+    return this.getIntColumnValue(PageLinkBMPBean._COLUMNNAME_ONMOUSEOVER_IMAGE);
   }
 
   public int getPageTriggerInfoId(){
-    return this.getIntColumnValue(this._COLUMNNAME_PAGE_TRIGGER_INFO_ID);
+    return this.getIntColumnValue(PageLinkBMPBean._COLUMNNAME_PAGE_TRIGGER_INFO_ID);
   }
 
   public String getReferencedDataId(){
-    return this.getStringColumnValue(this._COLUMNNAME_REFERENCED_DATA_ID);
+    return this.getStringColumnValue(PageLinkBMPBean._COLUMNNAME_REFERENCED_DATA_ID);
   }
 
   public String getStandardParameters(){
-    return this.getStringColumnValue(this._COLUMNNAME_STANDARD_PRM);
+    return this.getStringColumnValue(PageLinkBMPBean._COLUMNNAME_STANDARD_PRM);
   }
 
   public Group getGroup() {
@@ -141,31 +141,31 @@ public class PageLinkBMPBean extends com.idega.data.GenericEntity implements com
   }
 
   public void setPageId(int value){
-    this.setColumn(this._COLUMNNAME_PAGE_ID, value);
+    this.setColumn(PageLinkBMPBean._COLUMNNAME_PAGE_ID, value);
   }
 
   public void setLinkImageId(int value){
-    this.setColumn(this._COLUMNNAME_LINK_IMAGE, value);
+    this.setColumn(PageLinkBMPBean._COLUMNNAME_LINK_IMAGE, value);
   }
 
   public void setOnClickImageId(int value){
-    this.setColumn(this._COLUMNNAME_ONCLICK_IMAGE, value);
+    this.setColumn(PageLinkBMPBean._COLUMNNAME_ONCLICK_IMAGE, value);
   }
 
   public void setOnMouseOverImageId(int value){
-    this.setColumn(this._COLUMNNAME_ONMOUSEOVER_IMAGE, value);
+    this.setColumn(PageLinkBMPBean._COLUMNNAME_ONMOUSEOVER_IMAGE, value);
   }
 
   public void setPageTriggerInfoId(int value){
-    this.setColumn(this._COLUMNNAME_PAGE_TRIGGER_INFO_ID, value);
+    this.setColumn(PageLinkBMPBean._COLUMNNAME_PAGE_TRIGGER_INFO_ID, value);
   }
 
   public void setReferencedDataId(String value){
-    this.setColumn(this._COLUMNNAME_REFERENCED_DATA_ID, value);
+    this.setColumn(PageLinkBMPBean._COLUMNNAME_REFERENCED_DATA_ID, value);
   }
 
   public void setStandardParameters(String value){
-    this.setColumn(this._COLUMNNAME_STANDARD_PRM, value);
+    this.setColumn(PageLinkBMPBean._COLUMNNAME_STANDARD_PRM, value);
   }
   
   public void setGroup(Group group) {

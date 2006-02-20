@@ -87,7 +87,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			form.maintainParameter("from_editor");
 		}
 
-		Image image = formTable.getTransparentCell(iwc);
+		Image image = Table.getTransparentCell(iwc);
 		image.setWidth(10);
 		image.setHeight(10);
 
@@ -294,7 +294,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			table.setCellpadding(0);
 			table.setCellspacing(1);
 			table.setColor("#000000");
-			Image image = table.getTransparentCell(iwc);
+			Image image = Table.getTransparentCell(iwc);
 			image.setWidth(10);
 			image.setHeight(10);
 			Link link = null;

@@ -77,7 +77,7 @@ public class FormEmailer extends Block {
 				t.add("<pre>" + sentText + "</pre>", 1, 2);
 				Form f = new Form();
 				t.add(f, 1, 3);
-				SubmitButton button = new SubmitButton(this.CONFIRM_PARAMETER, sendText);
+				SubmitButton button = new SubmitButton(FormEmailer.CONFIRM_PARAMETER, sendText);
 				f.add(button);
 				t.setAlignment(1, 3, com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
 			}
@@ -122,7 +122,7 @@ public class FormEmailer extends Block {
 	}
 
 	private String getSentText(IWContext iwc) {
-		if (iwc.getParameter(this.CONFIRM_PARAMETER) == null) {
+		if (iwc.getParameter(FormEmailer.CONFIRM_PARAMETER) == null) {
 			String text = handler.processPlainTextFormatted(iwc);
 			iwc.setSessionAttribute(TEXT_SESSION_KEY, text);
 			return text;

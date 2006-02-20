@@ -2,7 +2,7 @@
  * Created on Nov 27, 2003
  */
 /*
- * $Id: StyledIBPageChooserWindow.java,v 1.3 2004/09/08 04:23:11 laddi Exp $
+ * $Id: StyledIBPageChooserWindow.java,v 1.4 2006/02/20 11:02:40 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -127,7 +127,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 			viewer.setTreeStyle(_linkStyle);
 			viewer.setToUseOnClick();
 			//sets the hidden input and textinput of the choosing page
-			viewer.setOnClick(SELECT_FUNCTION_NAME + "(" + viewer.ONCLICK_DEFAULT_NODE_NAME_PARAMETER_NAME + "," + viewer.ONCLICK_DEFAULT_NODE_ID_PARAMETER_NAME + ")");
+			viewer.setOnClick(SELECT_FUNCTION_NAME + "(" + TreeViewer.ONCLICK_DEFAULT_NODE_NAME_PARAMETER_NAME + "," + TreeViewer.ONCLICK_DEFAULT_NODE_ID_PARAMETER_NAME + ")");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
