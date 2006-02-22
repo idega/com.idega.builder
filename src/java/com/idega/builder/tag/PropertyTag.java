@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyTag.java,v 1.3 2005/02/03 14:26:24 laddi Exp $
+ * $Id: PropertyTag.java,v 1.4 2006/02/22 20:55:22 laddi Exp $
  * Created on 15.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.util.reflect.Property;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/03 14:26:24 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/02/22 20:55:22 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PropertyTag implements BodyTag{
 
@@ -32,7 +32,6 @@ public class PropertyTag implements BodyTag{
 	
 	private String name;
 	private String value;
-	private String[] values;
 	private String type;
 	
 	/**
@@ -92,7 +91,6 @@ public class PropertyTag implements BodyTag{
 	}
 	
 	protected void setValues(String[] values){
-		this.values=values;
 	}
 	
 	/**
@@ -168,7 +166,6 @@ public class PropertyTag implements BodyTag{
 	 */
 	public void release() {
 		this.value=null;
-		this.values=null;
 		this.name=null;
 		this.parentTag=null;
 		this.type=null;

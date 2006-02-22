@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.42 2005/11/29 15:29:11 laddi Exp $
+ * $Id: XMLWriter.java,v 1.43 2006/02/22 20:55:21 laddi Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -64,13 +64,6 @@ public class XMLWriter {
 			throw new RuntimeException("Can not find any region. Both label and regionId are null");
 		}
 		return region;
-	}
-
-	/**
-	 *  
-	 */
-	private static XMLElement findRegion(IBXMLAble xml, String id, XMLElement enclosingModule) {
-		return findXMLElementInsideWithId(xml, id, XMLConstants.REGION_STRING, enclosingModule);
 	}
 
 	/**
@@ -166,14 +159,6 @@ public class XMLWriter {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 *  
-	 */
-	private static XMLElement findProperty(IBXMLAble xml, String instanceId, String propertyName) {
-		XMLElement elem = findModule(xml, instanceId);
-		return findProperty(elem, propertyName);
 	}
 
 	/**
@@ -769,24 +754,6 @@ public class XMLWriter {
 	 */
 	private static List getChildElements(XMLElement parent) {
 		return parent.getChildren();
-	}
-
-	/**
-	 *  
-	 */
-	private static List getChildModules(XMLElement parent) {
-		List children = parent.getChildren();
-		Iterator iter = children.iterator();
-		while (iter.hasNext()) {
-			XMLElement item = (XMLElement) iter.next();
-			if (item.getName().equals(XMLConstants.REGION_STRING)) {
-				children.addAll(getChildModules(item));
-			}
-			else if (!item.getName().equals(XMLConstants.MODULE_STRING)) {
-				iter.remove();
-			}
-		}
-		return children;
 	}
 
 	/**

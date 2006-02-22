@@ -32,8 +32,6 @@ public class IBPageWindow extends IWAdminWindow {
   protected static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
   protected static final String PAGE_FORMAT = "ib_page_format";
 
-  private static final String TOP_LEVEL = "top_level";
-
   public IBPageWindow() {
     setWidth(330);
     setHeight(230);

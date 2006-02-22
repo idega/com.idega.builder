@@ -33,12 +33,9 @@ public class IBObjectControl extends PresentationObjectContainer
 	private Layer handleAndMenuLayer;
 	private Layer contentLayer;
 	private Layer buttonsLayer;
-	private Layer scriptLayer;
 	private Layer nameLayer;
 	private Layer dropAreaLayer;
 	
-	private Table tempTable;
-
 	private PresentationObjectContainer _parent;
 	private String _parentKey;
 	private UIComponent _theObject;

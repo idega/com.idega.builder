@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.13 2005/05/14 14:31:44 laddi Exp $
+ * $Id: IBTemplateChooser.java,v 1.14 2006/02/22 20:55:21 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,9 +20,6 @@ import com.idega.presentation.ui.AbstractChooser;
  * @version 1.3
  */
 public class IBTemplateChooser extends AbstractChooser {
-  private String _name = null;
-  
-  
   public IBTemplateChooser(){
   	addForm(false);
   }
@@ -33,7 +30,6 @@ public class IBTemplateChooser extends AbstractChooser {
   public IBTemplateChooser(String name) {
     addForm(false);
     setChooserParameter(name);
-    _name = name;
   }
 
   /**

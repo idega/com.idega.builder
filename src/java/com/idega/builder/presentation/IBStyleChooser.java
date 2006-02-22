@@ -16,8 +16,6 @@ import com.idega.presentation.ui.AbstractChooser;
  */
 
 public class IBStyleChooser extends AbstractChooser {
-  private String style;
-
   public IBStyleChooser(String chooserName) {
     addForm(false);
     //setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));

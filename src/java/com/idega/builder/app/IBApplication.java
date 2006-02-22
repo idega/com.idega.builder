@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.97 2005/12/08 17:54:58 laddi Exp $
+ *  $Id: IBApplication.java,v 1.98 2006/02/22 20:55:22 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -73,8 +73,6 @@ public class IBApplication extends IWApplication {
 	protected static boolean noCurtain = false;
 	// unused private static String URL = "";
 	public final static String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
-	private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
-	
 	//private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
 	//private final static String CONTENT_EDIT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
 	/**
@@ -217,7 +215,6 @@ public class IBApplication extends IWApplication {
 	 *@created    11. mars 2002
 	 */
 	public static class FrameSet1 extends FrameSet {
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 */
 		public FrameSet1() {
@@ -238,7 +235,6 @@ public class IBApplication extends IWApplication {
 	 *@created    11. mars 2002
 	 */
 	public static class FrameSet2 extends FrameSet {
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 */
 		public FrameSet2() {
@@ -290,7 +286,6 @@ public class IBApplication extends IWApplication {
 	 *@created    11. mars 2002
 	 */
 	public static class IBBanner extends Page {
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 */
 		public IBBanner() {
@@ -326,7 +321,6 @@ public class IBApplication extends IWApplication {
 	 *@created    11. mars 2002
 	 */
 	public static class PageTree extends Page {
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 *  Constructor for the PageTree object
 		 */
@@ -419,7 +413,6 @@ public class IBApplication extends IWApplication {
 	 *@created    11. mars 2002
 	 */
 	public static class TemplateTree extends Page {
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 *  Constructor for the TemplateTree object
 		 */
@@ -504,7 +497,6 @@ public class IBApplication extends IWApplication {
 	 *@created    11. mars 2002
 	 */
 	public static class IBLeftMenu extends IWApplicationComponent {
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 */
 		public IBLeftMenu() {

@@ -17,8 +17,6 @@ import com.idega.util.text.TextSoap;
  */
 
 public class IBColorChooser extends AbstractChooser {
-  private String style;
-
   public IBColorChooser(String chooserName) {
     addForm(false);
     //setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));

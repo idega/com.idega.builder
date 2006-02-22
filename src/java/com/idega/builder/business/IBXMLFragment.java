@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLFragment.java,v 1.7 2003/04/03 09:10:10 laddi Exp $
+ * $Id: IBXMLFragment.java,v 1.8 2006/02/22 20:55:21 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,8 +28,6 @@ import com.idega.xml.XMLParser;
 public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAble {
   public final static String FRAGMENT_TYPE_CLIPBOARD = XMLConstants.FRAGMENT_TYPE_CLIPBOARD;
   public final static String FRAGMENT_TYPE_LIBRARY = XMLConstants.FRAGMENT_TYPE_LIBRARY;
-  private final static String EMPTY = "";
-
   /**
    *
    */

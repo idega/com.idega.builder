@@ -36,8 +36,6 @@ import com.idega.presentation.ui.SubmitButton;
 public class IBMovePageWindow extends IBPageWindow
 {
 	private static final String PARAM_NEW_PARENT_PAGE_ID = PAGE_CHOOSER_NAME;
-	private static final String PAGE_TYPE = "ib_page_type";
-	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 	public IBMovePageWindow()
 	{
 		setWidth(240);

@@ -16,13 +16,9 @@ import com.idega.data.EntityFinder;
 public class IBObjectHandler
 {
 	private ICObject arObject;
-	private ICObjectInstance arObjectInstance;
 	public IBObjectHandler() throws SQLException
 	{
 		arObject = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
-		arObjectInstance =
-			((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class))
-				.createLegacy();
 	}
 	public int addNewObject(String PublicName, Object obj) throws Exception
 	{

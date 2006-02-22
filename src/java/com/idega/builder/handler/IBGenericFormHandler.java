@@ -20,7 +20,6 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	private List parameterNames;
 	
 	private static final String COLON = ":";
-	private static final String SPACE = " ";
 	private static final String TAB = "\t";
 	private static final String NEWLINE = "\n";
 	public static final String STRING_TYPE = JavaTypesHandler.STRING_TYPE;

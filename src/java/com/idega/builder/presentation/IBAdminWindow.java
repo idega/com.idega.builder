@@ -17,8 +17,6 @@ import com.idega.presentation.IWContext;
  */
 public class IBAdminWindow extends IWAdminWindow {
 
-	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
-
 	public void main(IWContext iwc) throws Exception {
 	}
 

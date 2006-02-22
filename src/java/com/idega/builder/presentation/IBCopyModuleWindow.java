@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.9 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBCopyModuleWindow.java,v 1.10 2006/02/22 20:55:22 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,6 @@ import com.idega.presentation.IWContext;
  */
 public class IBCopyModuleWindow extends IBAdminWindow {
   private static final String IC_OBJECT_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
-  private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
   private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String ACTION_COPY = BuilderLogic.ACTION_COPY;

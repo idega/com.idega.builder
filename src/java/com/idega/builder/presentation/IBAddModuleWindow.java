@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.46 2006/01/15 19:29:33 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.47 2006/02/22 20:55:21 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,8 +25,6 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.Window;
 
 /**
@@ -39,9 +37,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
 	private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
-	private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
-	private static final String ACTION_EDIT = BuilderLogic.ACTION_EDIT;
-	private static final String ACTION_ADD = BuilderLogic.ACTION_ADD;
 	private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
 	private static final String INTERNAL_CONTROL_PARAMETER = "ib_adminwindow_par";
 
@@ -152,15 +147,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				form.add(new Parameter(IB_LABEL_PARAMETER, label));
 			}*/
 		}
-	}
-
-	/**
-	 *
-	 */
-	private Form getForm() {
-		Form form = new Form();
-		form.add(new Parameter(INTERNAL_CONTROL_PARAMETER, "submit"));
-		return (form);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSaveAsPageWindow.java,v 1.8 2004/08/05 22:10:39 tryggvil Exp $
+ * $Id: IBSaveAsPageWindow.java,v 1.9 2006/02/22 20:55:22 laddi Exp $
 
  *
 
@@ -58,10 +58,6 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
   private static final String TEMPLATE_CHOOSER_NAME = IBPropertyHandler.TEMPLATE_CHOOSER_NAME;
 
   private static final String PAGE_TYPE             = "ib_page_type";
-
-  private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
-
-
 
   public void main(IWContext iwc) throws Exception {
 

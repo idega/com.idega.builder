@@ -39,8 +39,6 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 	public static String PRM_FILTER = "ico_filter";
 	private static final int _width = 280;
 	private static final int _height = 400;
-	private static final String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
-	
 	public IBObjectChooserWindow() {
 			setTitle("Object chooser");
 			setWidth(_width);
@@ -114,10 +112,6 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 		
 		form.add(table);
 		add(form);
-		
-	}
-	
-	private void addComponentToTable(ICObject object,Table table, int column,int row){
 		
 	}
 	

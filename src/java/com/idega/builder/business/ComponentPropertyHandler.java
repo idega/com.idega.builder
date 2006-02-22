@@ -10,7 +10,6 @@ package com.idega.builder.business;
  */
 
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.List;
 import javax.faces.component.UIComponent;
 import com.idega.repository.data.Instantiator;
@@ -158,27 +157,7 @@ public class ComponentPropertyHandler implements Singleton {
         return argument;
     }*/
 
-     private  Object[] getObjectArguments(XMLElement value){
-        List children = value.getChildren();
-        Object[] theReturn;
-        if(children!=null){
-          theReturn = new Object[children.size()];
-          Iterator iter = children.iterator();
-          int counter = 0;
-          while (iter.hasNext()) {
-            XMLElement item = (XMLElement)iter.next();
-            theReturn[counter]=handleElementProperty(item);
-            counter++;
-          }
-        }
-        else{
-          theReturn = new Object[0];
-        }
-        return theReturn;
-      }  
-     
-     
-    public Object handleElementProperty(XMLElement el){
+     public Object handleElementProperty(XMLElement el){
       XMLElement typeEl = el.getChild(XML_TYPE_TAG);
       XMLElement valueEl = el.getChild(XML_VALUE_TAG);
       String className = typeEl.getText();

@@ -19,7 +19,6 @@ import com.idega.presentation.ui.AbstractChooser;
  */
 
 public class StyledIBPageChooser extends AbstractChooser {
-	private String style;
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 
 	public StyledIBPageChooser(String chooserName) {

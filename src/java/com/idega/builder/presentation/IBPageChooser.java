@@ -17,8 +17,6 @@ import com.idega.presentation.ui.AbstractChooser;
  */
 
 public class IBPageChooser extends AbstractChooser {
-  private String style;
-  
   public IBPageChooser(){
   	addForm(false);
   }

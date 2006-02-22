@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.20 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBDeletePageWindow.java,v 1.21 2006/02/22 20:55:22 laddi Exp $
 
  *
 
@@ -35,8 +35,6 @@ import com.idega.presentation.ui.SubmitButton;
  */
 public class IBDeletePageWindow extends IWAdminWindow
 {
-	private static final String PAGE_NAME_PARAMETER = "ib_page_name";
-	private static final String PAGE_TYPE = "ib_page_type";
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 	public IBDeletePageWindow()
 	{
