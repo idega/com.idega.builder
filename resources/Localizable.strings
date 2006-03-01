@@ -57,6 +57,9 @@ save=Save
 search=
 select_a_user=
 set=SET
+sourceview.grab_button_text=Grab template from URL
+sourceview.grab_warning=Warning\: Grabbing the url will get the html and write over this template and change its type to HTML
+sourceview.template_text=Note\: Template regions in HTML templates are defined like this\:<code>&lt;\!-- TemplateBeginEditable name\="MyUniqueRegionId1" --&gt;MyUniqueRegionId1&lt;\!-- TemplateEndEditable --&gt;</code>
 submit=Submit
 target=Target
 template_name=Template name
