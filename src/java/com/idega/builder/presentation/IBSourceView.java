@@ -10,6 +10,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
+import com.idega.presentation.Page;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -38,6 +39,7 @@ public class IBSourceView extends Window {
 
 	public void main(IWContext iwc) {
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
+		
 		String action = iwc.getParameter(IB_SOURCE_ACTION);
 		if (action != null) {
 			if (action.equals("update")) {
@@ -82,6 +84,15 @@ public class IBSourceView extends Window {
 	
 		Layer sourceViewButtonsRight = new Layer();
 		sourceViewButtonsRight.setStyleClass("sourceViewButtonsRight");
+		
+		//temporary hack for opera and safari to fix their flawed handling of css height attribute
+		boolean isFubarBrowserForNow = iwc.isSafari() || iwc.isOpera();
+		if(isFubarBrowserForNow){
+			this.setDoctype(Page.DOCTYPE_HTML_4_0_1_TRANSITIONAL);
+			sourceViewButtonsLeft.setStyleAttribute("height", "15%");
+			sourceViewButtonsRight.setStyleAttribute("height", "15%");
+		}
+		////////////////
 	
 		Form form = new Form();
 		sourceView.add(form);
@@ -108,6 +119,10 @@ public class IBSourceView extends Window {
 //			else {
 				TextArea area = new TextArea(SOURCE_PARAMETER, source);
 				area.setWrap(false);
+				
+				if(isFubarBrowserForNow){
+					area.setStyleAttribute("height", "83%");
+				}
 				form.add(area);
 			//}
 		}
