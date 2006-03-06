@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.51 2006/02/20 17:59:05 laddi Exp $
+ * $Id: IBPropertyHandler.java,v 1.52 2006/03/06 13:37:09 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -673,7 +673,8 @@ public class IBPropertyHandler implements Singleton{
 			paramMap.put(METHOD_PARAMETER_PROPERTY_PRIMARY_KEY, new Boolean(primaryKeys[i]));
 		}
 		method.setProperties(options);
-		iwb.storeState();
+		component.store();
+		iwb.storeState(false);
 		return true;
 	}
 
