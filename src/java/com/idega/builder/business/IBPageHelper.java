@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.53 2005/12/12 06:44:28 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.54 2006/03/20 12:35:21 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -895,11 +895,11 @@ public class IBPageHelper implements Singleton  {
 	}
 		
 	private Collection getStartPages(ICDomain domain) throws IDOLookupException, FinderException {
-		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllPagesByDomain(((Integer) domain.getPrimaryKeyValue()).intValue());
+		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllPagesByDomain(((Integer) domain.getPrimaryKey()).intValue());
 	}
 	
 	private Collection getTemplateStartPages(ICDomain domain) throws IDOLookupException, FinderException {
-		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKeyValue()).intValue());
+		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKey()).intValue());
 	}
 	
 	protected ICPageHome getIBPageHome() {
