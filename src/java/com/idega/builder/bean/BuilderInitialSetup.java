@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderInitialSetup.java,v 1.1 2005/12/07 11:35:50 tryggvil Exp $
+ * $Id: BuilderInitialSetup.java,v 1.2 2006/03/20 12:11:19 tryggvil Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -11,6 +11,8 @@ package com.idega.builder.bean;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICDomainHome;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWMainApplication;
 
 
@@ -18,10 +20,10 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * Managed bean to back-up the page jsp/initialSetup.jsp.
  * </p>
- *  Last modified: $Date: 2005/12/07 11:35:50 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/03/20 12:11:19 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BuilderInitialSetup {
 
@@ -63,12 +65,16 @@ public class BuilderInitialSetup {
 	}
 
 	public String store(){
-		
-		ICDomain domain = getApplication().getIWApplicationContext().getDomain();
-		domain.setDomainName(getDomainName());
-		domain.store();
-		try {
-			getBuilderLogic().initializeBuilderStructure(domain,getFrontPageName());
+		try{
+			ICDomain cachedDomain = getApplication().getIWApplicationContext().getDomain();
+			cachedDomain.setDomainName(getDomainName());
+			
+			ICDomainHome domainHome = (ICDomainHome)IDOLookup.getHome(ICDomain.class);
+			ICDomain domain = domainHome.findFirstDomain();
+			domain.setDomainName(getDomainName());
+			domain.store();
+			
+			getBuilderLogic().initializeBuilderStructure(cachedDomain,getFrontPageName());
 			return "next";
 		}
 		catch (Exception e) {
