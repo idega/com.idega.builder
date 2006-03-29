@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.47 2006/02/22 20:55:21 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.48 2006/03/29 13:01:09 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -171,7 +172,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		theReturn.setColor(1, 1, "#ECECEC");
 		theReturn.setColor(2, 1, "#ECECEC");
 
-		ICObject staticICO = (ICObject) com.idega.core.component.data.ICObjectBMPBean.getStaticInstance(ICObject.class);
+		ICObject staticICO = (ICObject) GenericEntity.getStaticInstance(ICObject.class);
 		try {
 			List elements = null;
 			List blocks = null;

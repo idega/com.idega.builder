@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyTag.java,v 1.4 2006/02/22 20:55:22 laddi Exp $
+ * $Id: PropertyTag.java,v 1.5 2006/03/29 13:01:09 laddi Exp $
  * Created on 15.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.util.reflect.Property;
 
 /**
  * 
- *  Last modified: $Date: 2006/02/22 20:55:22 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/03/29 13:01:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PropertyTag implements BodyTag{
 
@@ -145,7 +145,7 @@ public class PropertyTag implements BodyTag{
 		}
 		//PropertyCache pc = PropertyCache.getInstance();
 		//pc.addProperty(key,property);
-		return BodyTag.EVAL_PAGE;
+		return Tag.EVAL_PAGE;
 	}
 
 	protected UIComponent getParentUIComponent(){

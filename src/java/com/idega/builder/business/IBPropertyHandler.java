@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.52 2006/03/06 13:37:09 gimmi Exp $
+ * $Id: IBPropertyHandler.java,v 1.53 2006/03/29 13:01:09 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -118,7 +118,7 @@ public class IBPropertyHandler implements Singleton{
 		//Hardcoded -1 for the top page
 		if ("-1".equals(instanceId) ) {
 			componentKey = "com.idega.presentation.Page";
-			iwb = iwma.getBundle(com.idega.presentation.Page.IW_BUNDLE_IDENTIFIER);
+			iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
 		}
 		else {
 			ICObjectInstance icoi = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(instanceId));

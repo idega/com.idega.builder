@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserGroupBusiness;
@@ -35,8 +36,8 @@ import com.idega.presentation.ui.SubmitButton;
 
 public class IBPermissionWindow extends IBAdminWindow{
 
-  public static final String _PARAMETERSTRING_IDENTIFIER = AccessControl._PARAMETERSTRING_IDENTIFIER;
-  public static final String _PARAMETERSTRING_PERMISSION_CATEGORY = AccessControl._PARAMETERSTRING_PERMISSION_CATEGORY;
+  public static final String _PARAMETERSTRING_IDENTIFIER = AccessController._PARAMETERSTRING_IDENTIFIER;
+  public static final String _PARAMETERSTRING_PERMISSION_CATEGORY = AccessController._PARAMETERSTRING_PERMISSION_CATEGORY;
 
   private static final String permissionKeyParameterString = "permission_type";
   private static final String lastPermissionKeyParameterString = "last_permission_key";
@@ -81,24 +82,24 @@ public class IBPermissionWindow extends IBAdminWindow{
 
       Class objectClass = null;
       switch (intPermissionCategory) {
-        case AccessControl.CATEGORY_OBJECT_INSTANCE :
+        case AccessController.CATEGORY_OBJECT_INSTANCE :
           objectClass = ICObjectBusiness.getInstance().getICObjectClassForInstance(Integer.parseInt(identifier));
           keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
           break;
-        case AccessControl.CATEGORY_OBJECT :
+        case AccessController.CATEGORY_OBJECT :
           objectClass = ICObjectBusiness.getInstance().getICObjectClass(Integer.parseInt(identifier));
           keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
           break;
-        case AccessControl.CATEGORY_BUNDLE :
+        case AccessController.CATEGORY_BUNDLE :
           keys = iwc.getAccessController().getBundlePermissionKeys(identifier);
           break;
-        case AccessControl.CATEGORY_PAGE_INSTANCE :
+        case AccessController.CATEGORY_PAGE_INSTANCE :
           keys = iwc.getAccessController().getPagePermissionKeys();
           break;
-        case AccessControl.CATEGORY_PAGE :
+        case AccessController.CATEGORY_PAGE :
           keys = iwc.getAccessController().getPagePermissionKeys();
           break;
-        case AccessControl.CATEGORY_JSP_PAGE :
+        case AccessController.CATEGORY_JSP_PAGE :
           keys = new String[0];
           break;
       }

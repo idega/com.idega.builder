@@ -29,6 +29,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -200,14 +201,14 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   }
 
   public List getPageLinkRecords(ICObjectInstance instance) throws SQLException{
-    List listOfCopyRules = EntityFinder.findRelated(instance,(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class)));
+    List listOfCopyRules = EntityFinder.findRelated(instance,(GenericEntity.getStaticInstance(PageLink.class)));
 
     if (listOfCopyRules != null) {
       List toReturn = new Vector();
       Iterator iter = listOfCopyRules.iterator();
       while (iter.hasNext()) {
         PageTriggerInfo item = (PageTriggerInfo)iter.next();
-        List linkList = EntityFinder.findAllByColumn(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class),com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_PAGE_TRIGGER_INFO_ID,item.getID());
+        List linkList = EntityFinder.findAllByColumn(GenericEntity.getStaticInstance(PageLink.class),com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_PAGE_TRIGGER_INFO_ID,item.getID());
         if(linkList != null){
           toReturn.addAll(linkList);
         }

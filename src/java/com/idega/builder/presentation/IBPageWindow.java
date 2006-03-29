@@ -13,6 +13,7 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICDomainBMPBean;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -52,7 +53,7 @@ public class IBPageWindow extends IWAdminWindow {
       if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE))
       	chooser.setSelectedPage(current.getID(),current.getName());
       else {
-      	ICDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
+      	ICDomain domain = ICDomainBMPBean.getDomain(1);
       	ICPage top = domain.getStartPage();
       	if (top != null)
       	  chooser.setSelectedPage(top.getID(),top.getName());
@@ -80,7 +81,7 @@ public class IBPageWindow extends IWAdminWindow {
       	  chooser.setSelectedPage(current);
       	else {
       	  if (type.equals(IBPageHelper.TEMPLATE)) {
-	          ICDomain domain = com.idega.builder.data.IBDomainBMPBean.getDomain(1);
+	          ICDomain domain = ICDomainBMPBean.getDomain(1);
     	      ICPage top = domain.getStartTemplate();
     	      if (top != null)
 	            chooser.setSelectedPage(top);
