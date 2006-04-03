@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.50 2006/04/03 11:33:38 sigtryggur Exp $
+ * $Id: IBAddModuleWindow.java,v 1.51 2006/04/03 12:06:01 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -259,7 +259,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					
 					String bundleIdentifier = item.getBundleIdentifier();
 					String objectName = item.getClassName();
-					objectName = objectName.substring(objectName.lastIndexOf(".") + 1);
 					try {
 						if (!failedBundles.contains(bundleIdentifier)) {
 							IWBundle bundle = (IWBundle) bundles.get(bundleIdentifier);
@@ -267,6 +266,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 								bundle = iwma.getBundle(bundleIdentifier);
 							}
 							objectName = bundle.getComponentName(objectName, currentLocale);
+						}
+						if (objectName != null && objectName.equals(item.getClassName())) {
+							objectName = objectName.substring(objectName.lastIndexOf(".") + 1);
 						}
 					}
 					catch (IWBundleDoesNotExist iwbne) {
