@@ -1,5 +1,6 @@
 package com.idega.builder.business;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,7 +12,6 @@ import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
-import com.idega.util.IsCollator;
 
 /**
  * Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -25,12 +25,14 @@ public class ModuleComparator implements Comparator {
 	private IWMainApplication iwma;
 	private Map bundles;
 	private List failedBundles;
+	private Collator theCollator;
 
 	public ModuleComparator(IWContext iwc) {
 		locale = iwc.getCurrentLocale();
 		iwma = iwc.getIWMainApplication();
 		bundles = new HashMap();
 		failedBundles = new ArrayList();
+		theCollator = Collator.getInstance(locale);
 	}
 
 	public int compare(Object o1, Object o2) {
@@ -61,7 +63,7 @@ public class ModuleComparator implements Comparator {
 				if (bundle2 == null) {
 					bundle2 = iwma.getBundle(bundleIdentifier2);
 				}
-				one = bundle2.getComponentName(obj2.getClassName(), locale);
+				two = bundle2.getComponentName(obj2.getClassName(), locale);
 			}
 		}
 		catch (IWBundleDoesNotExist iwbne) {
@@ -75,7 +77,7 @@ public class ModuleComparator implements Comparator {
 		if (two == null) {
 			two = obj2.getName();
 		}
-		int result = IsCollator.getIsCollator().compare(one, two);
+		int result = theCollator.compare(one, two);
 		return result;
 	}
 
