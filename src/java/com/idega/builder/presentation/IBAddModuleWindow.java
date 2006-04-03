@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.49 2006/04/03 11:23:02 eiki Exp $
+ * $Id: IBAddModuleWindow.java,v 1.50 2006/04/03 11:33:38 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,7 +23,10 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
+import com.idega.exception.IWBundleDoesNotExist;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -198,13 +201,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				if (elements != null) {
 					java.util.Collections.sort(elements,comparator );
 				}
-				//System.out.println("Sorting elements: " + (System.currentTimeMillis() - time) + " ms");
-				//time = System.currentTimeMillis();
 				if (blocks != null) {
 					java.util.Collections.sort(blocks,comparator);
 				}
-				
-				//System.out.println("Sorting blocks: " + (System.currentTimeMillis() - time) + " ms");*/
 				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
 				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
 				
@@ -237,8 +236,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		
 		table.add(subComponentTable, xpos, ypos);
 		
-		//IWMainApplication iwma = iwc.getIWMainApplication();
-		//Locale currentLocale = iwc.getCurrentLocale();
+		IWMainApplication iwma = iwc.getIWMainApplication();
+		Locale currentLocale = iwc.getCurrentLocale();
 
 		Text header = new Text(name, true, false, false);
 		header.setFontSize(Text.FONT_SIZE_12_HTML_3);
@@ -258,10 +257,10 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					//iconLink = new Link(getIconForObject(item, iwc));
 					iconLink = (Image) getIconForObject(item, iwc).clone();
 					
-					//String bundleIdentifier = item.getBundleIdentifier();
+					String bundleIdentifier = item.getBundleIdentifier();
 					String objectName = item.getClassName();
 					objectName = objectName.substring(objectName.lastIndexOf(".") + 1);
-					/*try {
+					try {
 						if (!failedBundles.contains(bundleIdentifier)) {
 							IWBundle bundle = (IWBundle) bundles.get(bundleIdentifier);
 							if (bundle == null) {
@@ -278,7 +277,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					
 					if(objectName==null){
 						objectName = item.getClassName();
-					}*/
+					}
 					
 					link = new Link(objectName);
 					link.setStyle(STYLE_NAME);
