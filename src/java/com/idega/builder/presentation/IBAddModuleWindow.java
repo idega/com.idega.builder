@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.48 2006/03/29 13:01:09 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.49 2006/04/03 11:23:02 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,11 +9,15 @@
  */
 package com.idega.builder.presentation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.ModuleComparator;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
@@ -48,8 +52,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	private Image elementImage;
 	private Image blockImage;
 	
-	//private Map bundles;
-	//private List failedBundles;
+	private Map bundles;
+	private List failedBundles;
 	
 	//Image button;
 
@@ -58,8 +62,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		setHeight(400);
 		setResizable(true);
 		setScrollbar(true);
-		//failedBundles = new ArrayList();
-		//bundles = new HashMap();
+		failedBundles = new ArrayList();
+		bundles = new HashMap();
 	}
 
 	/**
@@ -190,21 +194,22 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				elements = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT, "OBJECT_NAME");
 				blocks = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK, "OBJECT_NAME");
 
-				/*ModuleComparator comparator = new ModuleComparator(iwc);
+				ModuleComparator comparator = new ModuleComparator(iwc);
 				if (elements != null) {
 					java.util.Collections.sort(elements,comparator );
 				}
-				System.out.println("Sorting elements: " + (System.currentTimeMillis() - time) + " ms");
-				time = System.currentTimeMillis();
+				//System.out.println("Sorting elements: " + (System.currentTimeMillis() - time) + " ms");
+				//time = System.currentTimeMillis();
 				if (blocks != null) {
 					java.util.Collections.sort(blocks,comparator);
 				}
-				System.out.println("Sorting blocks: " + (System.currentTimeMillis() - time) + " ms");*/
+				
+				//System.out.println("Sorting blocks: " + (System.currentTimeMillis() - time) + " ms");*/
 				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
 				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
 				
-				/*failedBundles = comparator.getFailedBundles();
-				bundles = comparator.getBundles();*/
+				failedBundles = comparator.getFailedBundles();
+				bundles = comparator.getBundles();
 				
 			}
 
