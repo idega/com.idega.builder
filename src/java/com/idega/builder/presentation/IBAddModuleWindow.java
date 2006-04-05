@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.51 2006/04/03 12:06:01 sigtryggur Exp $
+ * $Id: IBAddModuleWindow.java,v 1.41.2.1 2006/04/05 10:45:02 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
