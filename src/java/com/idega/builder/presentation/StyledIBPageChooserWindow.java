@@ -2,7 +2,7 @@
  * Created on Nov 27, 2003
  */
 /*
- * $Id: StyledIBPageChooserWindow.java,v 1.4 2006/02/20 11:02:40 laddi Exp $
+ * $Id: StyledIBPageChooserWindow.java,v 1.5 2006/04/09 11:43:35 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -59,7 +59,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 	public void displaySelection(IWContext iwc) {
 		if (iwc.isParameterSet("from_editor")) {
 			addScript();
-			fromEditor = true;
+			this.fromEditor = true;
 		}
 		
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
@@ -67,7 +67,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 		addTitle(iwrb.getLocalizedString("select_page", "Select page"), TITLE_STYLECLASS);
 		setStyles();
 
-		if ( fromEditor ) {
+		if ( this.fromEditor ) {
 			Table table = new Table(2,3);
 			table.setCellpadding(1);
 			table.setCellspacing(0);
@@ -96,7 +96,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 			add(new Break());
 		}
 		Table table = new Table(1,2);
-		table.setStyleClass(mainStyleClass);
+		table.setStyleClass(this.mainStyleClass);
 		Text text = new Text(iwrb.getLocalizedString("select_page", "Select page") + ":");
 		text.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		table.add(text,1,1);
@@ -116,7 +116,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 			viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME, iwc);
 			viewer.setToMaintainParameter(VALUE_PARAMETER_NAME, iwc);
 			viewer.setDefaultOpenLevel(999);
-			if (fromEditor) {
+			if (this.fromEditor) {
 				viewer.setToMaintainParameter("from_editor", iwc);
 			}
 

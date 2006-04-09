@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.10 2004/10/13 12:52:01 thomas Exp $
+ * $Id: TreeNodeFinder.java,v 1.11 2006/04/09 11:43:34 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -153,8 +153,9 @@ public class TreeNodeFinder {
 					int childId = result.getInt("child_" + pages.getIDColumnName());
 
 					if (parentId != -1 && childId != -1) {
-						if (ret == null)
+						if (ret == null) {
 							ret = new Vector();
+						}
 
 						ret.add(new Integer(parentId));
 						ret.add(new Integer(childId));
@@ -229,8 +230,9 @@ public class TreeNodeFinder {
 					int childId = result.getInt("child_" + pages.getIDColumnName());
 
 					if (parentId != -1 && childId != -1) {
-						if (ret == null)
+						if (ret == null) {
 							ret = new Vector();
+						}
 
 						ret.add(new Integer(parentId));
 						ret.add(new Integer(childId));

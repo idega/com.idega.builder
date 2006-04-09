@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSavePageWindow.java,v 1.9 2006/02/22 20:55:22 laddi Exp $
+ * $Id: IBSavePageWindow.java,v 1.10 2006/04/09 11:43:34 laddi Exp $
 
  *
 
@@ -109,19 +109,17 @@ public class IBSavePageWindow extends IWAdminWindow {
 
     if (type != null) {
 
-      if (type.equals("2"))
-
-        tab.add(getTemplateChooser(PAGE_CHOOSER_NAME),2,3);
-
-      else
-
-        tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+      if (type.equals("2")) {
+				tab.add(getTemplateChooser(PAGE_CHOOSER_NAME),2,3);
+			}
+			else {
+				tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+			}
 
     }
-
-    else
-
-      tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+		else {
+			tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+		}
 
 
 
@@ -157,9 +155,9 @@ public class IBSavePageWindow extends IWAdminWindow {
 
         ICPage ibPage = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 
-        if (name == null)
-
-          name = "Untitled";
+        if (name == null) {
+					name = "Untitled";
+				}
 
         ibPage.setName(name);
 
@@ -169,17 +167,15 @@ public class IBSavePageWindow extends IWAdminWindow {
 
 
 
-        if (type.equals("1"))
-
-          ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
-
-        else if (type.equals("2"))
-
-          ibPage.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
-
-        else
-
-          ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+        if (type.equals("1")) {
+					ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+				}
+				else if (type.equals("2")) {
+					ibPage.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
+				}
+				else {
+					ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+				}
 
 
 
@@ -223,15 +219,15 @@ public class IBSavePageWindow extends IWAdminWindow {
 
       type = iwc.getParameter(PAGE_TYPE);
 
-      if (name != null)
+      if (name != null) {
+				inputName.setValue(name);
+			}
 
-        inputName.setValue(name);
 
 
-
-      if (type != null)
-
-        mnu.setSelectedElement(type);
+      if (type != null) {
+				mnu.setSelectedElement(type);
+			}
 
 
 

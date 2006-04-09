@@ -1,5 +1,5 @@
 /*
- * $Id: PageCacher.java,v 1.19 2005/11/08 02:48:58 laddi Exp $
+ * $Id: PageCacher.java,v 1.20 2006/04/09 11:43:34 laddi Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,10 +13,10 @@ package com.idega.builder.business;
  *  The instance of this class holds an manages a cache of Builder pages that are instances
  * of CachedBuilderPage.<br>
  * 
- *  Last modified: $Date: 2005/11/08 02:48:58 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -215,7 +215,7 @@ public class PageCacher
 	}
 	public Map getPageCacheMap()
 	{
-		return pageCache;
+		return this.pageCache;
 	}
 	private CachedBuilderPage getCachedBuilderPageFromMap(String key)
 	{
@@ -246,6 +246,6 @@ public class PageCacher
 	public synchronized void flagAllPagesInvalid()
 	{
 		//pagesValid.clear();
-		pageCache.clear();
+		this.pageCache.clear();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.6 2006/01/20 18:09:57 tryggvil Exp $
+ * $Id: CachedBuilderPage.java,v 1.7 2006/04/09 11:43:34 laddi Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -73,7 +73,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	public void setSourceFromString(String xmlRepresentation) throws Exception {
 		//htmlSource = htmlRepresentation;
 		//super.setSourceFromString(htmlRepresentation);
-		sourceAsString=xmlRepresentation;
+		this.sourceAsString=xmlRepresentation;
 	}
 	
 	public String getSourceAsString(){
@@ -81,7 +81,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	}
 	
 	public String getPageKey() {
-		return _key;
+		return this._key;
 	}
 	
 	public void setPageKey(String key){
@@ -89,7 +89,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	}
 	
 	public String getType(){
-		return type;
+		return this.type;
 	}
 	
 	public void setType(String type){
@@ -100,7 +100,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	 * @return Returns the pageFormat.
 	 */
 	public String getPageFormat() {
-		return pageFormat;
+		return this.pageFormat;
 	}
 	/**
 	 * @param pageFormat The pageFormat to set.
@@ -111,33 +111,38 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	
 	
 	public void addPageUsingThisTemplate(String id) {
-		if (pageKeysUsingThisTemplate == null)
-			pageKeysUsingThisTemplate = new Vector();
+		if (this.pageKeysUsingThisTemplate == null) {
+			this.pageKeysUsingThisTemplate = new Vector();
+		}
 
-		if (!pageKeysUsingThisTemplate.contains(id)) {
-			pageKeysUsingThisTemplate.add(id);
+		if (!this.pageKeysUsingThisTemplate.contains(id)) {
+			this.pageKeysUsingThisTemplate.add(id);
 		}
 	}
 
 	public void removePageAsUsingThisTemplate(String id) {
-		if (pageKeysUsingThisTemplate == null)
+		if (this.pageKeysUsingThisTemplate == null) {
 			return;
+		}
 
-		if (pageKeysUsingThisTemplate.contains(id))
-			pageKeysUsingThisTemplate.remove(id);
+		if (this.pageKeysUsingThisTemplate.contains(id)) {
+			this.pageKeysUsingThisTemplate.remove(id);
+		}
 	}
 
 	public List getUsingTemplate() {
-		if (pageKeysUsingThisTemplate == null)
+		if (this.pageKeysUsingThisTemplate == null) {
 			findAllPagesUsingThisTemplate();
-		return pageKeysUsingThisTemplate;
+		}
+		return this.pageKeysUsingThisTemplate;
 	}
 
 	private void findAllPagesUsingThisTemplate() {
-		pageKeysUsingThisTemplate = new Vector();
+		this.pageKeysUsingThisTemplate = new Vector();
 		List l = IBPageFinder.getAllPagesExtendingTemplate(Integer.parseInt(getPageKey()));
-		if (l == null)
+		if (l == null) {
 			return;
+		}
 		Iterator i = l.iterator();
 		while (i.hasNext()) {
 			ICPage p = (ICPage) i.next();
@@ -153,8 +158,9 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 				String invalid = (String) i.next();
 				CachedBuilderPage child = getPageCacher().getCachedBuilderPageIfInCache(invalid);
 				if (child != null) {
-					if (child.getType().equals(TYPE_TEMPLATE))
+					if (child.getType().equals(TYPE_TEMPLATE)) {
 						child.invalidateAllPagesUsingThisTemplate();
+					}
 					getPageCacher().flagPageInvalid(invalid);
 				}
 			}
@@ -180,36 +186,49 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		try{
 			setPageFormat(ibpage.getFormat());
 			readPageStream(ibpage.getPageValue());
-			if (ibpage.isPage())
+			if (ibpage.isPage()) {
 				setType(TYPE_PAGE);
-			else if (ibpage.isDraft())
+			}
+			else if (ibpage.isDraft()) {
 				setType(TYPE_DRAFT);
-			else if (ibpage.isTemplate())
+			}
+			else if (ibpage.isTemplate()) {
 				setType(TYPE_TEMPLATE);
-			else if (ibpage.isDynamicTriggeredTemplate())
+			}
+			else if (ibpage.isDynamicTriggeredTemplate()) {
 				setType(TYPE_DPT_TEMPLATE);
-			else if (ibpage.isDynamicTriggeredPage())
+			}
+			else if (ibpage.isDynamicTriggeredPage()) {
 				setType(TYPE_DPT_PAGE);
-			else
+			}
+			else {
 				setType(TYPE_PAGE);
+			}
 		}
 		catch (PageDoesNotExist pe) {
 			int template = ibpage.getTemplateId();
 			String templateString = null;
-			if (template != -1)
+			if (template != -1) {
 				templateString = Integer.toString(template);
-			if (ibpage.isPage())
+			}
+			if (ibpage.isPage()) {
 				setPageAsEmptyPage(TYPE_PAGE, templateString);
-			else if (ibpage.isDraft())
+			}
+			else if (ibpage.isDraft()) {
 				setPageAsEmptyPage(TYPE_DRAFT, templateString);
-			else if (ibpage.isTemplate())
+			}
+			else if (ibpage.isTemplate()) {
 				setPageAsEmptyPage(TYPE_TEMPLATE, templateString);
-			else if (ibpage.isDynamicTriggeredTemplate())
+			}
+			else if (ibpage.isDynamicTriggeredTemplate()) {
 				setPageAsEmptyPage(TYPE_DPT_TEMPLATE, templateString);
-			else if (ibpage.isDynamicTriggeredPage())
+			}
+			else if (ibpage.isDynamicTriggeredPage()) {
 				setPageAsEmptyPage(TYPE_DPT_PAGE, templateString);
-			else
+			}
+			else {
 				setPageAsEmptyPage(TYPE_PAGE, templateString);
+			}
 		}
 	}
 	
@@ -250,8 +269,9 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 		//setPopulatedPage(XMLReader.getPopulatedPage(this));
 		//setPopulatedPage(null);
-		if (getType().equals(TYPE_TEMPLATE))
+		if (getType().equals(TYPE_TEMPLATE)) {
 			invalidateAllPagesUsingThisTemplate();
+		}
 		
 		return true;
 	}
@@ -342,7 +362,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	
 	
 	public String getPageUri(){
-		return pageUri;
+		return this.pageUri;
 	}
 	
 	public void setPageUri(String pageUri){

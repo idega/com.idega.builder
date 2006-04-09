@@ -45,14 +45,14 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		addTitle("Style chooser", IWConstants.BUILDER_FONT_STYLE_TITLE);
 
 		if (iwc.getParameter("style") != null) {
-			_styleString = iwc.getParameter("style");
+			this._styleString = iwc.getParameter("style");
 			setMapStyles();
 		}
 
 		collectStyles(iwc);
 
 		if (iwc.isParameterSet("submit")) {
-			getParentPage().setOnLoad(SELECT_FUNCTION_NAME + "('" + _styleString + "','" + _styleString + "')");
+			getParentPage().setOnLoad(SELECT_FUNCTION_NAME + "('" + this._styleString + "','" + this._styleString + "')");
 		}
 		else {
 			drawForm(iwc);
@@ -313,9 +313,10 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		formTable.add(previewTable, 1, 3);
 
 		Paragraph paragraph = new Paragraph();
-		Text text = new Text(loremIpsum);
-		if (_styleString != null && _styleString.length() > 0)
-			paragraph.setStyleAttribute(_styleString);
+		Text text = new Text(this.loremIpsum);
+		if (this._styleString != null && this._styleString.length() > 0) {
+			paragraph.setStyleAttribute(this._styleString);
+		}
 		paragraph.add(text);
 		innerTable.add(paragraph, 1, 1);
 
@@ -329,9 +330,9 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 	}
 
 	private void collectStyles(IWContext iwc) {
-		if (_styles != null) {
-			for (int a = 0; a < _styles.length; a++) {
-				getParameter(_styles[a], iwc);
+		if (this._styles != null) {
+			for (int a = 0; a < this._styles.length; a++) {
+				getParameter(this._styles[a], iwc);
 			}
 		}
 		getMapStyleString();
@@ -340,37 +341,42 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 	private void getParameter(String attribute, IWContext iwc) {
 		String value = iwc.getParameter(attribute);
 		if (value != null && value.length() > 0) {
-			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_LINE_HEIGHT) && value.indexOf("px") == -1)
+			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_LINE_HEIGHT) && value.indexOf("px") == -1) {
 				value += "px";
-			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_LETTER_SPACING) && value.indexOf("px") == -1)
+			}
+			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_LETTER_SPACING) && value.indexOf("px") == -1) {
 				value += "px";
-			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_WORD_SPACING) && value.indexOf("px") == -1)
+			}
+			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_WORD_SPACING) && value.indexOf("px") == -1) {
 				value += "px";
-			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_LINE_HEIGHT) && value.indexOf("px") == -1)
+			}
+			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_LINE_HEIGHT) && value.indexOf("px") == -1) {
 				value += "px";
-			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_BORDER_WIDTH) && value.indexOf("px") == -1)
+			}
+			if (attribute.equalsIgnoreCase(StyleConstants.ATTRIBUTE_BORDER_WIDTH) && value.indexOf("px") == -1) {
 				value += "px";
+			}
 			setStyleValue(attribute, value);
 		}
 	}
 
 	private void getMapStyleString() {
-		Iterator iter = _styleMap.keySet().iterator();
+		Iterator iter = this._styleMap.keySet().iterator();
 		String attribute;
 		String value;
-		_styleString = "";
+		this._styleString = "";
 		while (iter.hasNext()) {
 			attribute = (String) iter.next();
-			value = (String) _styleMap.get(attribute);
+			value = (String) this._styleMap.get(attribute);
 			if (value != null) {
-				_styleString += attribute + StyleConstants.DELIMITER_COLON + value + StyleConstants.DELIMITER_SEMICOLON;
+				this._styleString += attribute + StyleConstants.DELIMITER_COLON + value + StyleConstants.DELIMITER_SEMICOLON;
 			}
 		}
 	}
 
 	private void setMapStyles() {
-		if (_styleString != null) {
-			StringTokenizer tokens = new StringTokenizer(_styleString, ";");
+		if (this._styleString != null) {
+			StringTokenizer tokens = new StringTokenizer(this._styleString, ";");
 			int a = -1;
 			String attribute;
 			String value;
@@ -387,34 +393,37 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 						attribute = tokens2.nextToken();
 						a++;
 					}
-					else if (a == 2)
+					else if (a == 2) {
 						value = tokens2.nextToken();
+					}
 				}
-				_styleMap.put(attribute, value);
+				this._styleMap.put(attribute, value);
 			}
 		}
 	}
 
 	private void setDefaultValues() {
-		if (_styleMap == null)
-			_styleMap = new HashMap();
+		if (this._styleMap == null) {
+			this._styleMap = new HashMap();
+		}
 
-		if (_styles != null) {
-			for (int a = 0; a < _styles.length; a++) {
-				_styleMap.put(_styles[a], null);
+		if (this._styles != null) {
+			for (int a = 0; a < this._styles.length; a++) {
+				this._styleMap.put(this._styles[a], null);
 			}
 		}
 	}
 
 	private void setStyleValue(String attribute, String value) {
-		_styleMap.put(attribute, value);
+		this._styleMap.put(attribute, value);
 	}
 
 	private String getStyleValue(String attribute) {
-		String value = (String) _styleMap.get(attribute);
+		String value = (String) this._styleMap.get(attribute);
 		if (value != null) {
-			if (attribute != StyleConstants.ATTRIBUTE_FONT_SIZE && value.indexOf("px") != -1)
+			if (attribute != StyleConstants.ATTRIBUTE_FONT_SIZE && value.indexOf("px") != -1) {
 				value = value.substring(0, value.indexOf("px"));
+			}
 			return value;
 		}
 		return "";

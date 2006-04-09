@@ -18,7 +18,7 @@ public class IBObjectHandler
 	private ICObject arObject;
 	public IBObjectHandler() throws SQLException
 	{
-		arObject = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
+		this.arObject = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
 	}
 	public int addNewObject(String PublicName, Object obj) throws Exception
 	{
@@ -59,7 +59,7 @@ public class IBObjectHandler
 	{
 		List myList =
 			EntityFinder.findAllByColumn(
-				arObject,
+				this.arObject,
 				com.idega.core.component.data.ICObjectBMPBean.getClassNameColumnName(),
 				obj.getClass().getName());
 		if (myList != null)

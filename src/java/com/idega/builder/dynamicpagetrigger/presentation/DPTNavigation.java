@@ -29,18 +29,18 @@ public class DPTNavigation extends Block {
   DPTTriggerBusinessBean business;
 
   public DPTNavigation() {
-    linkTable = new Table();
-    business = new DPTTriggerBusinessBean();
+    this.linkTable = new Table();
+    this.business = new DPTTriggerBusinessBean();
   }
 
 
 
   public void main(IWContext iwc) throws Exception {
     this.empty();
-    this.add(linkTable);
+    this.add(this.linkTable);
     if(this.getICObjectInstanceID() > 0){
 
-      List pLinkRecords = business.getPageLinkRecords(this.getICObjectInstance());
+      List pLinkRecords = this.business.getPageLinkRecords(this.getICObjectInstance());
 
       if(pLinkRecords != null){
         List linkList = new Vector();
@@ -67,13 +67,13 @@ public class DPTNavigation extends Block {
 
         if(linkList.size() > 0){
 
-          linkTable.resize(1,linkList.size());
+          this.linkTable.resize(1,linkList.size());
 
           ListIterator lIter = linkList.listIterator();
           while (lIter.hasNext()) {
             int index = lIter.nextIndex();
             Link lItem = (Link)lIter.next();
-            linkTable.add(lItem,1,index);
+            this.linkTable.add(lItem,1,index);
           }
 
         }

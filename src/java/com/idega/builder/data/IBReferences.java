@@ -46,8 +46,8 @@ public class IBReferences {
 	
 	private void initialize(IWContext iwc)	 {
 		this.iwc = iwc;
-		moduleReference = new HashMap();
-		methodIdendifierCache = new MethodIdentifierCache();
+		this.moduleReference = new HashMap();
+		this.methodIdendifierCache = new MethodIdentifierCache();
 	}
 	
 	public StorableHolder createSourceFromElement(XMLElement metaDataFileElement) throws IOException {
@@ -66,7 +66,7 @@ public class IBReferences {
 		
 	public String checkAndUpdateName(XMLElement metadataFileElement) {
 		String name = metadataFileElement.getTextTrim(XMLConstants.FILE_NAME);
-		return methodIdendifierCache.getUpdatedMethodIdentifier(name);
+		return this.methodIdendifierCache.getUpdatedMethodIdentifier(name);
 	}
 			
 	
@@ -110,8 +110,8 @@ public class IBReferences {
 	
 	private IBReference getReferenceOrNull(String moduleClassName) {
 		IBReference reference  = null;
-		if (moduleReference.containsKey(moduleClassName)) {
-			reference = (IBReference) moduleReference.get(moduleClassName);
+		if (this.moduleReference.containsKey(moduleClassName)) {
+			reference = (IBReference) this.moduleReference.get(moduleClassName);
 		}
 		else {
 			// create an IBReference
@@ -119,7 +119,7 @@ public class IBReferences {
 			// put into map even if it is null
 			// if the reference is null the module class has no references at all
 			// put null into the map to avoid checking the module class again
-			moduleReference.put(moduleClassName, reference);
+			this.moduleReference.put(moduleClassName, reference);
 		}
 		return reference;
 	}
@@ -136,14 +136,14 @@ public class IBReferences {
 		List entries = new ArrayList();
 		List alreadyCheckedMethods = new ArrayList();
 		if (PresentationObject.class.isAssignableFrom(moduleClass)) {
-			addEntriesDefinedByModule(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdendifierCache);
+			addEntriesDefinedByModule(moduleClassName, moduleClass, entries, alreadyCheckedMethods, this.methodIdendifierCache);
 		}
 
-		addEntriesByScanningModuleClass(moduleClassName, moduleClass, entries, alreadyCheckedMethods, methodIdendifierCache);
+		addEntriesByScanningModuleClass(moduleClassName, moduleClass, entries, alreadyCheckedMethods, this.methodIdendifierCache);
 		if (entries.isEmpty()) {
 			return null;
 		}
-		IBReference reference = new IBReference(moduleClassName, methodIdendifierCache,iwc);
+		IBReference reference = new IBReference(moduleClassName, this.methodIdendifierCache,this.iwc);
 		Iterator iterator = entries.iterator();
 		while (iterator.hasNext()) {
 			IBReferenceEntry entry = (IBReferenceEntry) iterator.next();
@@ -164,7 +164,7 @@ public class IBReferences {
 					Class parameterClass = parameterType[parameterId++];
 					// increase parameter by one before using it further
 					if (Resource.class.isAssignableFrom(parameterClass)) {
-						IBReferenceEntry entry = new IBReferenceEntry(moduleClassName, methodIdentifierCache, iwc);
+						IBReferenceEntry entry = new IBReferenceEntry(moduleClassName, methodIdentifierCache, this.iwc);
 						String valueName = methodIdentifierCache.getMethodIdentifierWithoutDeclaringClass(tempMethod);
 						if (! alreadyCheckedMethods.contains(valueName)) { 
 							String sourceClassName = parameterClass.getName();
@@ -210,9 +210,9 @@ public class IBReferences {
 				Iterator iterator = descriptions.iterator();
 				while (iterator.hasNext()) {
 					PropertyDescription description = (PropertyDescription) iterator.next();
-					IBReferenceEntry entry = new IBReferenceEntry(moduleClassName, methodIdentifierCache, iwc);
+					IBReferenceEntry entry = new IBReferenceEntry(moduleClassName, methodIdentifierCache, this.iwc);
 					String methodIdentifier = description.getName();
-					methodIdentifier = methodIdendifierCache.getUpdatedMethodIdentifier(methodIdentifier);
+					methodIdentifier = this.methodIdendifierCache.getUpdatedMethodIdentifier(methodIdentifier);
 					alreadyCheckedMethods.add(methodIdentifier);
 					entry.initialize(methodIdentifier,description.getParameterId(), description.getResourceDescription());
 					entries.add(entry);

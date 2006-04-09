@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderPageTag.java,v 1.2 2005/05/30 15:28:54 tryggvil Exp $
+ * $Id: BuilderPageTag.java,v 1.3 2006/04/09 11:43:35 laddi Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,10 +14,10 @@ import javax.faces.webapp.UIComponentTag;
 
 /**
  * 
- * Last modified: $Date: 2005/05/30 15:28:54 $ by $Author: tryggvil $
+ * Last modified: $Date: 2006/04/09 11:43:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BuilderPageTag extends UIComponentTag {
 
@@ -31,7 +31,7 @@ public class BuilderPageTag extends UIComponentTag {
 	 * @return Returns the locked.
 	 */
 	public boolean isLocked() {
-		return locked;
+		return this.locked;
 	}
 	/**
 	 * @param locked The locked to set.
@@ -43,7 +43,7 @@ public class BuilderPageTag extends UIComponentTag {
 	 * @return Returns the template.
 	 */
 	public String getTemplate() {
-		return template;
+		return this.template;
 	}
 	/**
 	 * @param template The template to set.
@@ -55,7 +55,7 @@ public class BuilderPageTag extends UIComponentTag {
 	 * @return Returns the type.
 	 */
 	public String getType() {
-		return type;
+		return this.type;
 	}
 	/**
 	 * @param type The type to set.

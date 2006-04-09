@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLFragment.java,v 1.8 2006/02/22 20:55:21 laddi Exp $
+ * $Id: IBXMLFragment.java,v 1.9 2006/04/09 11:43:34 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
    *
    */
   public IBXMLFragment(boolean verify) {
-    _parser = new XMLParser(verify);
+    this._parser = new XMLParser(verify);
 
     IBObjectLibrary lib = null;
     try {
@@ -64,8 +64,8 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
    */
   public void setXMLLibraryDescriptionFile(String URI) throws LibraryDoesNotExist {
     try {
-      _xmlDocument = _parser.parse(URI);
-      _rootElement = _xmlDocument.getRootElement();
+      this._xmlDocument = this._parser.parse(URI);
+      this._rootElement = this._xmlDocument.getRootElement();
     }
     catch(XMLException e) {
       throw new LibraryDoesNotExist();
@@ -80,9 +80,9 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
   public void setXMLLibraryDescriptionFile(InputStream stream) throws LibraryDoesNotExist {
     boolean streamopen = true;
     try {
-      _xmlDocument = _parser.parse(stream);
+      this._xmlDocument = this._parser.parse(stream);
       stream.close();
-      _rootElement = _xmlDocument.getRootElement();
+      this._rootElement = this._xmlDocument.getRootElement();
       streamopen = false;
     }
     catch(XMLException e) {
@@ -109,34 +109,38 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
    *
    */
   public void setType(String type) {
-    _type = type;
+    this._type = type;
   }
 
   /**
    *
    */
   public XMLElement getRootElement() {
-    return(_rootElement);
+    return(this._rootElement);
   }
 
   /**
    *
    */
   public XMLElement getPageRootElement() {
-    if (_rootElement != null)
-      return(_rootElement.getChild(XMLConstants.PAGE_STRING));
-    else
-      return(null);
+    if (this._rootElement != null) {
+			return(this._rootElement.getChild(XMLConstants.PAGE_STRING));
+		}
+		else {
+			return(null);
+		}
   }
 
   /**
    *
    */
   public List getAttributes(XMLElement element) {
-    if (element != null)
-      return(element.getAttributes());
-    else
-      return(null);
+    if (element != null) {
+			return(element.getAttributes());
+		}
+		else {
+			return(null);
+		}
   }
 
   /**
@@ -146,8 +150,8 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
     StringReader reader = new StringReader(xmlRepresentation);
     XMLParser parser = new XMLParser();
     XMLDocument doc = parser.parse(reader);
-    _rootElement = doc.getRootElement();
-    _xmlDocument.setRootElement(_rootElement);
+    this._rootElement = doc.getRootElement();
+    this._xmlDocument.setRootElement(this._rootElement);
     update();
   }
 

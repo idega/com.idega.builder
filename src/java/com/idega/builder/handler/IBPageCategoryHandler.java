@@ -38,8 +38,9 @@ public class IBPageCategoryHandler implements ICPropertyHandler {
 		if (values != null) {
 			String value = values[0];
 			boolean isCategory = false;
-			if (value.equalsIgnoreCase("Y"))
+			if (value.equalsIgnoreCase("Y")) {
 				isCategory = true;
+			}
 			
 			int currentPage = BuilderLogic.getInstance().getCurrentIBPageID(iwc);
 			if (currentPage != -1) {

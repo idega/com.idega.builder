@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.59 2005/09/26 17:09:57 thomas Exp $
+ * $Id: IBXMLPage.java,v 1.60 2006/04/09 11:43:34 laddi Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2005/09/26 17:09:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.59 $
+ * @version $Revision: 1.60 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -184,7 +184,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	}
 
 	public void setPopulatedPage(Page page) {
-		_populatedPage = page;
+		this._populatedPage = page;
 	}
 
 	/**
@@ -193,12 +193,12 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 */
 	public Page getPopulatedPage() {
 		//Lazily load
-		if(_populatedPage==null){
+		if(this._populatedPage==null){
 			synchronized(BuilderLogic.getInstance()){
 				setPopulatedPage(XMLReader.getPopulatedPage(this));
 			}
 		}
-		return _populatedPage;
+		return this._populatedPage;
 	}
 
 	/**
@@ -220,10 +220,10 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	}
 
 	private XMLDocument getXMLDocument(){
-		if(xmlDocument==null){
+		if(this.xmlDocument==null){
 			throw new RuntimeException(this.getClass()+": xmlDocument is not initialized");
 		}
-		return xmlDocument;
+		return this.xmlDocument;
 	}
 	
 	private void setXMLDocument(XMLDocument document) {
@@ -280,8 +280,9 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		setRootElement(_rootElement);
 		XMLElement pageElement = new XMLElement(XMLConstants.PAGE_STRING);
 
-		if (type == null)
+		if (type == null) {
 			type = XMLConstants.PAGE_TYPE_PAGE;
+		}
 
 		if ((type.equals(TYPE_DRAFT)) || (type.equals(TYPE_PAGE)) || (type.equals(TYPE_TEMPLATE)) || (type.equals(TYPE_DPT_TEMPLATE)) || (type.equals(TYPE_DPT_PAGE))) {
 			pageElement.setAttribute(XMLConstants.PAGE_TYPE, type);
@@ -292,8 +293,9 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			setType(type);
 		}
 
-		if (template != null)
+		if (template != null) {
 			pageElement.setAttribute(XMLConstants.TEMPLATE_STRING, template);
+		}
 
 		this.setXMLDocument(new XMLDocument(_rootElement));
 		_rootElement.addContent(pageElement);
@@ -314,10 +316,10 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @todo Wrap the Element class to hide all implementation of the XML parser.
 	 */
 	public XMLElement getRootElement() {
-		if(rootElement==null){
-			rootElement=getXMLDocument().getRootElement();
+		if(this.rootElement==null){
+			this.rootElement=getXMLDocument().getRootElement();
 		}
-		return rootElement;
+		return this.rootElement;
 	}
 
 	public XMLElement getPageRootElement() {
@@ -335,11 +337,13 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @todo Wrap the Element class to hide all implementation of the XML parser.
 	 */
 	List getChildren(XMLElement element) {
-		if (element == null)
+		if (element == null) {
 			return null;
+		}
 
-		if (!element.hasChildren())
+		if (!element.hasChildren()) {
 			return null;
+		}
 
 		List li = element.getChildren();
 
@@ -347,8 +351,9 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	}
 
 	public List getAttributes(XMLElement element) {
-		if (element == null)
+		if (element == null) {
 			return null;
+		}
 
 		List li = element.getAttributes();
 
@@ -356,10 +361,12 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	}
 
 	public void setType(String type) {
-		if ((type.equals(TYPE_PAGE)) || (type.equals(TYPE_TEMPLATE)) || (type.equals(TYPE_DRAFT)) || (type.equals(TYPE_DPT_TEMPLATE)) || (type.equals(TYPE_DPT_PAGE)))
+		if ((type.equals(TYPE_PAGE)) || (type.equals(TYPE_TEMPLATE)) || (type.equals(TYPE_DRAFT)) || (type.equals(TYPE_DPT_TEMPLATE)) || (type.equals(TYPE_DPT_PAGE))) {
 			super.setType(type);
-		else
+		}
+		else {
 			super.setType(TYPE_PAGE);
+		}
 	}
 	
 	public void setSourceFromString(String xmlRepresentation) throws Exception {
@@ -404,7 +411,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @return Returns the verifyXML.
 	 */
 	public boolean getIfVerifyXML() {
-		return verifyXML;
+		return this.verifyXML;
 	}
 	/**
 	 * Sets if the XML parser should verify the XML source.
@@ -417,10 +424,10 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	
 	
 	protected XMLParser getParser(){
-		if(parser==null){
-			parser=new XMLParser(this.getIfVerifyXML());
+		if(this.parser==null){
+			this.parser=new XMLParser(this.getIfVerifyXML());
 		}
-		return parser;
+		return this.parser;
 	}
 
 	
@@ -434,8 +441,9 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	    if (iwc.isParameterSet("view")) {
 	      if(getBuilderLogic().isBuilderApplicationRunning(iwc)){
 	        String view = iwc.getParameter("view");
-	        if(view.equals("builder"))
-	        		builderView=true;
+	        if(view.equals("builder")) {
+						builderView=true;
+					}
 	      }
 	    }
 	    return getPage(builderView,iwc);

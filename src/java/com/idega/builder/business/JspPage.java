@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.9 2005/12/14 00:45:22 tryggvil Exp $
+ * $Id: JspPage.java,v 1.10 2006/04/09 11:43:34 laddi Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.util.StringHandler;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2005/12/14 00:45:22 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class JspPage extends CachedBuilderPage {
 	
@@ -167,7 +167,7 @@ public class JspPage extends CachedBuilderPage {
 		 * @return Returns the isLoadedToDisk.
 		 */
 		public boolean isLoadedToDisk() {
-			return isLoadedToDisk;
+			return this.isLoadedToDisk;
 		}
 		/**
 		 * @param isLoadedToDisk The isLoadedToDisk to set.
@@ -177,10 +177,10 @@ public class JspPage extends CachedBuilderPage {
 		}
 		
 		public String getResourceURI(){
-			if(resourceURI==null){
-				resourceURI="/"+getJspFilesFolderName()+"/"+getJSPFileName();
+			if(this.resourceURI==null){
+				this.resourceURI="/"+getJspFilesFolderName()+"/"+getJSPFileName();
 			}
-			return resourceURI;
+			return this.resourceURI;
 		}
 		
 		public void initializeEmptyPage(){

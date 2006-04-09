@@ -50,13 +50,15 @@ public class IBPageWindow extends IWAdminWindow {
 
     try {
       ICPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
-      if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE))
-      	chooser.setSelectedPage(current.getID(),current.getName());
-      else {
+      if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE)) {
+				chooser.setSelectedPage(current.getID(),current.getName());
+			}
+			else {
       	ICDomain domain = ICDomainBMPBean.getDomain(1);
       	ICPage top = domain.getStartPage();
-      	if (top != null)
-      	  chooser.setSelectedPage(top.getID(),top.getName());
+      	if (top != null) {
+					chooser.setSelectedPage(top.getID(),top.getName());
+				}
       }
     }
     catch(Exception e) {
@@ -77,21 +79,24 @@ public class IBPageWindow extends IWAdminWindow {
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       if (templateId == null || templateId.equals("")) {
       	ICPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
-      	if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.TEMPLATE))
-      	  chooser.setSelectedPage(current);
-      	else {
+      	if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.TEMPLATE)) {
+					chooser.setSelectedPage(current);
+				}
+				else {
       	  if (type.equals(IBPageHelper.TEMPLATE)) {
 	          ICDomain domain = ICDomainBMPBean.getDomain(1);
     	      ICPage top = domain.getStartTemplate();
-    	      if (top != null)
-	            chooser.setSelectedPage(top);
+    	      if (top != null) {
+							chooser.setSelectedPage(top);
+						}
       	  }
       	}
       }
       else {
       	ICPage top = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(templateId));
-      	if (top != null)
-      	  chooser.setSelectedPage(top);
+      	if (top != null) {
+					chooser.setSelectedPage(top);
+				}
       }
     }
     catch(Exception e) {

@@ -32,26 +32,26 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	public static final String TIME_TYPE = JavaTypesHandler.TIME_TYPE;
 	
 	public IBGenericFormHandler() {
-		parameterDescriptions = new HashMap();
-		parameterTypes = new HashMap();
-		parameterNames = new ArrayList();
+		this.parameterDescriptions = new HashMap();
+		this.parameterTypes = new HashMap();
+		this.parameterNames = new ArrayList();
 	}
 	
 	public void addProcessedParameter(String parameterName, String parameterDescription, String parameterType) {
 		getDescMap().put(parameterName, parameterDescription);
 		getTypesMap().put(parameterName, parameterType);
-		parameterNames.add(parameterName);
+		this.parameterNames.add(parameterName);
 	}
 	
 	/*public void addProcessedParameter(String parameterName,String parameterDescription,String parameterType){
 	  addProcessedParameter(parameterName,parameterDescription,STRING_TYPE);
 	}*/
 	private Map getDescMap() {
-		return parameterDescriptions;
+		return this.parameterDescriptions;
 	}
 	
 	private Map getTypesMap() {
-		return parameterTypes;
+		return this.parameterTypes;
 	}
 	
 	/**
@@ -59,10 +59,10 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	 */
 	public String processPlainTextFormatted(IWContext iwc) {
 		StringBuffer buffer = new StringBuffer();
-		int count = parameterNames.size();
+		int count = this.parameterNames.size();
 		StringBuffer debugBuf = new StringBuffer();
 		for (int j = 0; j < count; j++) {
-			String paramName = (String) parameterNames.get(j);
+			String paramName = (String) this.parameterNames.get(j);
 			debugBuf.append(paramName).append(" ");
 			String[] paramValues = iwc.getParameterValues(paramName);
 			if (paramValues != null) {
@@ -166,7 +166,7 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 			if (this.parameterTypes != null) {
 				newHandler.parameterTypes = (Map) ((HashMap) this.parameterTypes).clone();
 			}
-			if (parameterNames != null) {
+			if (this.parameterNames != null) {
 				newHandler.parameterNames = (List) (((ArrayList) this.parameterNames).clone());
 			}
 			return newHandler;

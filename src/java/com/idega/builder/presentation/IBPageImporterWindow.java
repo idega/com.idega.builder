@@ -82,25 +82,25 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
   
   private void getContent(IWResourceBundle resourceBundle, IWContext iwc)  {
-  	int numberOfRows = (messageContainer == null) ? 6 : 7;
+  	int numberOfRows = (this.messageContainer == null) ? 6 : 7;
   	int row = 1;
   	Table table = new Table( 1, numberOfRows);
   	// add message if there is a message
-  	if (messageContainer != null) {
-  		Text text = new Text(messageContainer.getMainMessage());
+  	if (this.messageContainer != null) {
+  		Text text = new Text(this.messageContainer.getMainMessage());
   		text.setBold();
   		table.add(text,1, row++);
   	}
   	// add file input
   	table.add(getFileInput(), 1, row++);
   	// top level checkbox
-  	table.add(getTopLevelCheckBox(TOP_LEVEL_PAGE_KEY, topLevelForPagesIsChosen,  resourceBundle), 1, row++);
+  	table.add(getTopLevelCheckBox(TOP_LEVEL_PAGE_KEY, this.topLevelForPagesIsChosen,  resourceBundle), 1, row++);
 		// page chooser
-  	if (! topLevelForPagesIsChosen) {
+  	if (! this.topLevelForPagesIsChosen) {
   		table.add(getPageChooser(PAGE_CHOOSER_NAME, iwc), 1, row++);
   	}
-  	table.add(getTopLevelCheckBox(TOP_LEVEL_TEMPLATE_KEY, topLevelForTemplatesIsChosen, resourceBundle), 1, row++);
-  	if (! topLevelForTemplatesIsChosen) {
+  	table.add(getTopLevelCheckBox(TOP_LEVEL_TEMPLATE_KEY, this.topLevelForTemplatesIsChosen, resourceBundle), 1, row++);
+  	if (! this.topLevelForTemplatesIsChosen) {
   		table.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME, iwc, IBPageHelper.TEMPLATE), 1, row++);
   	}
   	Form form = new Form();
@@ -110,11 +110,11 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
   
   private void getErrorContent(IWResourceBundle resourceBundle) {
-  	List messages = messageContainer.getMessages();
+  	List messages = this.messageContainer.getMessages();
   	int numberOfRows = 1 + ((messages == null) ? 0 : messages.size());
   	Table table = new Table(1, numberOfRows);
   	int row = 1;
-  	String mainErrorMessage = messageContainer.getMainMessage();
+  	String mainErrorMessage = this.messageContainer.getMainMessage();
   	if (mainErrorMessage == null) {
   		mainErrorMessage = resourceBundle.getLocalizedString("ib_page_export_missing_modules", "Some modules are missing:");
   	}
@@ -155,10 +155,10 @@ public class IBPageImporterWindow extends IBPageWindow {
   	
   private String parseAction(IWContext iwc) {
   	String action = null;
-  	topLevelForPagesIsChosen = (new Boolean(iwc.getParameter(TOP_LEVEL_PAGE_KEY))).booleanValue();
-  	topLevelForTemplatesIsChosen = (new Boolean(iwc.getParameter(TOP_LEVEL_TEMPLATE_KEY))).booleanValue();
-  	parentPageId = getParentPageId(PAGE_CHOOSER_NAME,iwc);
-  	templatePageId = getParentPageId(TEMPLATE_CHOOSER_NAME, iwc);
+  	this.topLevelForPagesIsChosen = (new Boolean(iwc.getParameter(TOP_LEVEL_PAGE_KEY))).booleanValue();
+  	this.topLevelForTemplatesIsChosen = (new Boolean(iwc.getParameter(TOP_LEVEL_TEMPLATE_KEY))).booleanValue();
+  	this.parentPageId = getParentPageId(PAGE_CHOOSER_NAME,iwc);
+  	this.templatePageId = getParentPageId(TEMPLATE_CHOOSER_NAME, iwc);
   	if (iwc.isParameterSet(SUBMIT_IMPORT_KEY)) {
   		action = IMPORT_ACTION;
   		setOnUnLoad("window.opener.parent.parent.location.reload()");
@@ -170,7 +170,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
   
   private boolean doAction(String action, IWResourceBundle resourceBundle, IWContext iwc)  {
-  	messageContainer = null;
+  	this.messageContainer = null;
   	if (CLOSE_ACTION.equals(action)) {
   		close();
   		return true;
@@ -179,26 +179,26 @@ public class IBPageImporterWindow extends IBPageWindow {
 	  	UploadFile file = iwc.getUploadedFile();
 	  	if (file != null) {
 	  		try {
-	  			messageContainer = importPages(file, iwc);
+	  			this.messageContainer = importPages(file, iwc);
 	  		}
 	  		catch (IOException ex) {
-	  			messageContainer = new MessageContainer();
+	  			this.messageContainer = new MessageContainer();
 	  			StringBuffer mainMessage = new StringBuffer(resourceBundle.getLocalizedString("ib_page_import_error", "Import failed, but some elements might have been already imported"));
 	  			mainMessage.append(" ").append(ex.getMessage());
-	  			messageContainer.setMainMessage(mainMessage.toString());
+	  			this.messageContainer.setMainMessage(mainMessage.toString());
 	  			return false;
 	  		}
-	  		if (messageContainer == null) {
-	  			messageContainer = new MessageContainer();
-	  			messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_import_success", "Files were successfully imported"));
+	  		if (this.messageContainer == null) {
+	  			this.messageContainer = new MessageContainer();
+	  			this.messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_import_success", "Files were successfully imported"));
 	  			return true;
 	  		}
 	  		return false;
 	  	}
 	  	else {
-	  		messageContainer = new MessageContainer();
+	  		this.messageContainer = new MessageContainer();
 	  		String mainMessage = resourceBundle.getLocalizedString("ib_page_import_file_does_not_exist", "Import failed, the uploaded file couldn't be found");
-	  		messageContainer.setMainMessage(mainMessage);
+	  		this.messageContainer.setMainMessage(mainMessage);
 	  		return false;
 	  	}
 	  }
@@ -219,7 +219,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
   
   private MessageContainer importPages(UploadFile file, IWContext iwc) throws IOException { 
-  	return getPageImportBusiness(iwc).importPages(file, true, parentPageId, templatePageId, iwc);
+  	return getPageImportBusiness(iwc).importPages(file, true, this.parentPageId, this.templatePageId, iwc);
 	}
   	
   		
@@ -244,10 +244,10 @@ public class IBPageImporterWindow extends IBPageWindow {
 	}
 
 	private IBPageImportBusiness getPageImportBusiness(IWApplicationContext iwac) throws IBOLookupException {
-		if (pageImportBusiness == null) {
-			pageImportBusiness =  (IBPageImportBusiness) IBOLookup.getServiceInstance(iwac,IBPageImportBusiness.class);
+		if (this.pageImportBusiness == null) {
+			this.pageImportBusiness =  (IBPageImportBusiness) IBOLookup.getServiceInstance(iwac,IBPageImportBusiness.class);
 		}
-		return pageImportBusiness;
+		return this.pageImportBusiness;
 	}
 		
 }

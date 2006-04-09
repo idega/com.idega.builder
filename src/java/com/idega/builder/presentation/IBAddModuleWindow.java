@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.51 2006/04/03 12:06:01 sigtryggur Exp $
+ * $Id: IBAddModuleWindow.java,v 1.52 2006/04/09 11:43:35 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,8 +65,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		setHeight(400);
 		setResizable(true);
 		setScrollbar(true);
-		failedBundles = new ArrayList();
-		bundles = new HashMap();
+		this.failedBundles = new ArrayList();
+		this.bundles = new HashMap();
 	}
 
 	/**
@@ -207,8 +207,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
 				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
 				
-				failedBundles = comparator.getFailedBundles();
-				bundles = comparator.getBundles();
+				this.failedBundles = comparator.getFailedBundles();
+				this.bundles = comparator.getBundles();
 				
 			}
 
@@ -260,8 +260,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 					String bundleIdentifier = item.getBundleIdentifier();
 					String objectName = item.getClassName();
 					try {
-						if (!failedBundles.contains(bundleIdentifier)) {
-							IWBundle bundle = (IWBundle) bundles.get(bundleIdentifier);
+						if (!this.failedBundles.contains(bundleIdentifier)) {
+							IWBundle bundle = (IWBundle) this.bundles.get(bundleIdentifier);
 							if (bundle == null) {
 								bundle = iwma.getBundle(bundleIdentifier);
 							}
@@ -272,7 +272,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 						}
 					}
 					catch (IWBundleDoesNotExist iwbne) {
-						failedBundles.add(bundleIdentifier);
+						this.failedBundles.add(bundleIdentifier);
 						System.err.println("com.idega.builder.business.ModuleComparator: " + iwbne.getLocalizedMessage()
 								+ ". Please remove all references in the IC_OBJECT table");
 					}
@@ -330,22 +330,25 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			/**
 			 *@todo: Make support for dynamic icons
 			 */
-			if (elementImage == null)
-				elementImage = iwc.getIWMainApplication().getCoreBundle().getImage("elementicon16x16.gif");
-			return elementImage;
+			if (this.elementImage == null) {
+				this.elementImage = iwc.getIWMainApplication().getCoreBundle().getImage("elementicon16x16.gif");
+			}
+			return this.elementImage;
 		}
 		else if (obj.getObjectType().equals(com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK)) {
 			/**
 			  *@todo: Make support for dynamic icons
 			  */
-			if (blockImage == null)
-				blockImage = iwc.getIWMainApplication().getCoreBundle().getImage("blockicon16x16.gif");
-			return blockImage;
+			if (this.blockImage == null) {
+				this.blockImage = iwc.getIWMainApplication().getCoreBundle().getImage("blockicon16x16.gif");
+			}
+			return this.blockImage;
 		}
 		else {
-			if (elementImage == null)
-				elementImage = iwc.getIWMainApplication().getCoreBundle().getImage("elementicon16x16.gif");
-			return elementImage;
+			if (this.elementImage == null) {
+				this.elementImage = iwc.getIWMainApplication().getCoreBundle().getImage("elementicon16x16.gif");
+			}
+			return this.elementImage;
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.30 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.31 2006/04/09 11:43:34 laddi Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -60,8 +60,9 @@ public class IBPropertiesWindowSetter extends Page {
 	private boolean isChangingProperty(IWContext iwc) {
 		String sValue = iwc.getParameter(IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER);
 		if (sValue != null) {
-			if (sValue.equals("Y"))
+			if (sValue.equals("Y")) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -122,8 +123,9 @@ public class IBPropertiesWindowSetter extends Page {
 			if (propertyID != null) {
 				boolean remove = iwc.isParameterSet(REMOVE_PARAMETER);
 				String values[] = parseValues(iwc);
-				if (values == null)
+				if (values == null) {
 					doSave = false;
+				}
 				if (remove) {
 					if (values != null) {
 						propertyChange = true;
@@ -191,8 +193,9 @@ public class IBPropertiesWindowSetter extends Page {
 					 * 
 					 */
 					String langString = iwc.getParameter(valueParams[i] + "a");
-					if (langString != null)
+					if (langString != null) {
 						values[i] = values[i] + ";" + langString;
+					}
 				}
 			}
 		}
@@ -263,8 +266,9 @@ public class IBPropertiesWindowSetter extends Page {
 			ICPropertyHandler handler = null;
 			if (handlerClass != null && !handlerClass.equals("")) {
 				handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
-				if (handler != null)
+				if (handler != null) {
 					iwc.setSessionAttribute(HANDLER_PARAMETER, handler);
+				}
 			}
 			if (handler == null) {
 				iwc.removeSessionAttribute(HANDLER_PARAMETER);

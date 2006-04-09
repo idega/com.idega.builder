@@ -49,14 +49,16 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		getParameters(iwc);
 
 		if (iwc.isParameterSet("add_remove")) {
-			if (iwc.isParameterSet("addToPalette"))
+			if (iwc.isParameterSet("addToPalette")) {
 				doBusiness(iwc, false);
-			if (iwc.isParameterSet("removeFromPalette"))
+			}
+			if (iwc.isParameterSet("removeFromPalette")) {
 				doBusiness(iwc, true);
+			}
 		}
 
 		if (iwc.isParameterSet("submit")) {
-			getParentPage().setOnLoad(SELECT_FUNCTION_NAME + "('" + _colorString + "','" + _colorString + "')");
+			getParentPage().setOnLoad(SELECT_FUNCTION_NAME + "('" + this._colorString + "','" + this._colorString + "')");
 		}
 		else {
 			add(drawForm(iwc));
@@ -69,7 +71,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		IWColor color = new IWColor(0, 0, 0);
 		IWColor iwColor = null;
 		try {
-			iwColor = new IWColor(IWColor.getIntFromHex(TextSoap.findAndCut(_colorString, "#")));
+			iwColor = new IWColor(IWColor.getIntFromHex(TextSoap.findAndCut(this._colorString, "#")));
 		}
 		catch (Exception e) {
 			iwColor = null;
@@ -105,7 +107,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		webPalette.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
 		Table table = new Table();
-		if (fromEditor || iwc.getApplicationAttribute("color_palette_table") == null) {
+		if (this.fromEditor || iwc.getApplicationAttribute("color_palette_table") == null) {
 			table.setRows(12);
 			table.setColumns(18);
 			table.setCellpadding(0);
@@ -120,24 +122,30 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 
 			for (int a = 1; a <= 12; a++) {
 				for (int b = 1; b <= 18; b++) {
-					if (a <= 6 && b <= 6)
+					if (a <= 6 && b <= 6) {
 						R = 0;
-					else if (a <= 6 && b > 6 && b <= 12)
+					}
+					else if (a <= 6 && b > 6 && b <= 12) {
 						R = 51;
-					else if (a <= 6 && b > 12)
+					}
+					else if (a <= 6 && b > 12) {
 						R = 102;
-					else if (a > 6 && b <= 6)
+					}
+					else if (a > 6 && b <= 6) {
 						R = 153;
-					else if (a > 6 && b > 6 && b <= 12)
+					}
+					else if (a > 6 && b > 6 && b <= 12) {
 						R = 204;
-					else if (a > 6 && b > 12)
+					}
+					else if (a > 6 && b > 12) {
 						R = 255;
+					}
 
 					color = new IWColor(R, G, B);
 
 					link = new Link(image);
 					table.add(link, b, a);
-					if (fromEditor) {
+					if (this.fromEditor) {
 						link.setURL("#");
 						link.setOnClick("save('" + color.getHexColorString() + "')");
 					}
@@ -147,19 +155,22 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 					table.setColor(b, a, color.getHexColorString());
 
 					G += 51;
-					if (G > 255)
+					if (G > 255) {
 						G = 0;
+					}
 				}
 				B += 51;
-				if (B > 255)
+				if (B > 255) {
 					B = 0;
+				}
 			}
 			iwc.setApplicationAttribute("color_palette_table", table);
 		}
-		else
+		else {
 			table = (Table) iwc.getApplicationAttribute("color_palette_table");
+		}
 
-		if (!fromEditor) {
+		if (!this.fromEditor) {
 			Block block = new Block();
 			block.add(table);
 			block.setCacheable("web_color_palette", 0);
@@ -177,8 +188,9 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			hexInput.setLength(7);
 			hexInput.setMaxlength(7);
 			hexInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-			if (_colorString != null)
-				hexInput.setContent(_colorString);
+			if (this._colorString != null) {
+				hexInput.setContent(this._colorString);
+			}
 
 			formTable.add(hexText, column, row);
 			formTable.add(Text.getNonBrakingSpace(2), column, row);
@@ -190,20 +202,23 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			redInput.setLength(3);
 			redInput.setMaxlength(3);
 			redInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-			if (iwColor != null)
+			if (iwColor != null) {
 				redInput.setContent(Integer.toString(iwColor.getRed()));
+			}
 			TextInput greenInput = new TextInput("green");
 			greenInput.setLength(3);
 			greenInput.setMaxlength(3);
 			greenInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-			if (iwColor != null)
+			if (iwColor != null) {
 				greenInput.setContent(Integer.toString(iwColor.getGreen()));
+			}
 			TextInput blueInput = new TextInput("blue");
 			blueInput.setLength(3);
 			blueInput.setMaxlength(3);
 			blueInput.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
-			if (iwColor != null)
+			if (iwColor != null) {
 				blueInput.setContent(Integer.toString(iwColor.getBlue()));
+			}
 
 			formTable.add(rgbText, column, row);
 			formTable.add(Text.getBreak(), column, row);
@@ -217,8 +232,9 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			inputTable.setWidth(2, "3");
 			inputTable.setColumnVerticalAlignment(1, Table.VERTICAL_ALIGN_TOP);
 			inputTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_RIGHT);
-			if (_colorString != null)
-				inputTable.setColor(3, 1, _colorString);
+			if (this._colorString != null) {
+				inputTable.setColor(3, 1, this._colorString);
+			}
 
 			Text previewText = new Text("Preview:");
 			previewText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -241,8 +257,8 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			paletteText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 			CheckBox addToPalette = new CheckBox("addToPalette");
 
-			boolean isInCustom = isInCustomColors(iwc, _colorString);
-			if (_colorString != null && isInCustom) {
+			boolean isInCustom = isInCustomColors(iwc, this._colorString);
+			if (this._colorString != null && isInCustom) {
 				formTable.add(removeFromPalette, column, row);
 				formTable.add(removeText, column, row);
 				formTable.add(Text.getBreak(), column, row);
@@ -262,8 +278,9 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 				form.add(new HiddenInput(VALUE_PARAMETER_NAME, (String) iwc.getSessionAttribute(VALUE_PARAMETER_NAME)));
 			}
 
-			if (_colorString != null)
-				form.add(new HiddenInput("old_color", _colorString));
+			if (this._colorString != null) {
+				form.add(new HiddenInput("old_color", this._colorString));
+			}
 
 			formTable.setColumnVerticalAlignment(1, Table.VERTICAL_ALIGN_TOP);
 			formTable.setColumnVerticalAlignment(2, Table.VERTICAL_ALIGN_TOP);
@@ -274,8 +291,9 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("preview", "Preview"), "preview"), column, row);
 			formTable.add(Text.getNonBrakingSpace(), column, row);
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("submit", "Submit"), "submit");
-			if (iwc.isParameterSet("from_editor"))
+			if (iwc.isParameterSet("from_editor")) {
 				submit.setOnClick("javascript:save()");
+			}
 			formTable.add(submit, column, row);
 
 			form.add(formTable);
@@ -326,8 +344,9 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 					table.mergeCells(column, row, table.getColumns(), row);
 					table.setColor(column, row, "#FFFFFF");
 				}
-				if (hasValues)
+				if (hasValues) {
 					return table;
+				}
 				return null;
 			}
 			return null;
@@ -343,16 +362,18 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		}
 
 		if (iwc.isParameterSet("color") && iwc.getParameter("color").length() > 0) {
-			_colorString = iwc.getParameter("color");
+			this._colorString = iwc.getParameter("color");
 		}
-		if (_colorString != null && _colorString.indexOf("#") == -1)
-			_colorString = "#" + _colorString;
+		if (this._colorString != null && this._colorString.indexOf("#") == -1) {
+			this._colorString = "#" + this._colorString;
+		}
 
 		if (iwc.isParameterSet("red") && iwc.isParameterSet("green") && iwc.isParameterSet("blue")) {
 			try {
 				color = new IWColor(Integer.parseInt(iwc.getParameter("red")), Integer.parseInt(iwc.getParameter("green")), Integer.parseInt(iwc.getParameter("blue")));
-				if (_colorString == null)
-					_colorString = color.getHexColorString();
+				if (this._colorString == null) {
+					this._colorString = color.getHexColorString();
+				}
 			}
 			catch (Exception e) {
 				color = null;
@@ -360,12 +381,13 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		}
 
 		if (oldColor != null && color != null) {
-			if (oldColor.equalsIgnoreCase(_colorString) && color.getHexColorString() != oldColor)
-				_colorString = color.getHexColorString();
+			if (oldColor.equalsIgnoreCase(this._colorString) && color.getHexColorString() != oldColor) {
+				this._colorString = color.getHexColorString();
+			}
 		}
 
 		if (iwc.isParameterSet("bgcolor")) {
-			_colorString = "bgcolor";
+			this._colorString = "bgcolor";
 		}
 
 		if (iwc.isParameterSet(FORM_ID_PARAMETER)) {
@@ -377,7 +399,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 
 		if (iwc.isParameterSet("from_editor")) {
 			addScript();
-			fromEditor = true;
+			this.fromEditor = true;
 		}
 	}
 
@@ -392,14 +414,14 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		IWPropertyList list = oldApplicationList.getIWPropertyList("color_palette");
 		if (list != null) {
 			if (remove) {
-				list.removeProperty(_colorString);
+				list.removeProperty(this._colorString);
 			}
 			else {
-				list.setProperty(_colorString, _colorString);
+				list.setProperty(this._colorString, this._colorString);
 			}
 		}
 		else {
-			oldApplicationList.getNewPropertyList("color_palette").setProperty(_colorString, _colorString);
+			oldApplicationList.getNewPropertyList("color_palette").setProperty(this._colorString, this._colorString);
 		}
 		oldApplicationList.store();
 	}
@@ -409,8 +431,9 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		// list is not being modified, call of store not necessary
 		if (list != null) {
 			String returnString = list.getProperty(color);
-			if (returnString != null)
+			if (returnString != null) {
 				return true;
+			}
 		}
 		return false;
 	}

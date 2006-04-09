@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateHandler.java,v 1.10 2005/10/03 14:50:15 tryggvil Exp $
+ * $Id: IBTemplateHandler.java,v 1.11 2006/04/09 11:43:35 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,8 +49,9 @@ public class IBTemplateHandler implements ICPropertyHandler {
         Map tree = PageTreeNode.getTree(iwc);
         if (tree != null) {
           PageTreeNode node = (PageTreeNode)tree.get(Integer.valueOf(value));
-          if (node != null)
-            chooser.setSelectedPage(node.getNodeID(),node.getNodeName());
+          if (node != null) {
+						chooser.setSelectedPage(node.getNodeID(),node.getNodeName());
+					}
         }
       }
     }
@@ -79,10 +80,12 @@ public class IBTemplateHandler implements ICPropertyHandler {
             try{
 	            Page template = instance.getIBXMLPage(value).getPopulatedPage();
 	            if (template != null) {
-	              if (template.isLocked())
-	                instance.lockRegion(currPage,"-1");
-	              else
-	                instance.unlockRegion(currPage,"-1",null);
+	              if (template.isLocked()) {
+									instance.lockRegion(currPage,"-1");
+								}
+								else {
+									instance.unlockRegion(currPage,"-1",null);
+								}
 	            }
             }
             catch(ClassCastException ce){

@@ -81,8 +81,8 @@ public class IBPageExporterWindow extends IBPageWindow {
   
   private void getContent(IWResourceBundle resourceBundle, IWContext iwc) throws IDOLookupException, FinderException {
   	Form form = new Form();
-  	if (messageContainer != null) {
-  		Text text = new Text(messageContainer.getMainMessage());
+  	if (this.messageContainer != null) {
+  		Text text = new Text(this.messageContainer.getMainMessage());
   		text.setBold();
   		form.add(text);
   	}
@@ -95,16 +95,16 @@ public class IBPageExporterWindow extends IBPageWindow {
   	form.add(templateViewer);
   	form.add(getButtons(resourceBundle));
   	add(form);
-  	if (downloadLink != null) {
+  	if (this.downloadLink != null) {
   		String downloadText = resourceBundle.getLocalizedString("ib_page_export_download", "Download");
-  		add(new Link(downloadText, downloadLink));
+  		add(new Link(downloadText, this.downloadLink));
   	}
   }
   	
   private String parseAction(IWContext iwc) {
   	String action = null;
-  	pageIds = getSelectedIds(PAGE_KEY, iwc);
-  	templateIds = getSelectedIds(TEMPLATE_KEY, iwc);
+  	this.pageIds = getSelectedIds(PAGE_KEY, iwc);
+  	this.templateIds = getSelectedIds(TEMPLATE_KEY, iwc);
   	if (iwc.isParameterSet(SUBMIT_EXPORT_KEY)) {
   		action = EXPORT_ACTION;
   	}
@@ -115,26 +115,26 @@ public class IBPageExporterWindow extends IBPageWindow {
   }
   
   private boolean doAction(String action, IWResourceBundle resourceBundle, IWContext iwc) throws FinderException {
-  	messageContainer = null;
+  	this.messageContainer = null;
   	if (CLOSE_ACTION.equals(action)) {
   		close();
   		return true;
   	}
   	else if (EXPORT_ACTION.equals(action)) {
   		try {
-  			downloadLink = exportPages(iwc);
+  			this.downloadLink = exportPages(iwc);
   		}
   		catch (IOException ex) {
-	  		messageContainer = new MessageContainer();
+	  		this.messageContainer = new MessageContainer();
 	  		StringBuffer mainMessage = new StringBuffer(resourceBundle.getLocalizedString("ib_page_export_error", "Export failed"));
 	  		mainMessage.append(" ");
 	  		mainMessage.append(ex.getMessage());
-	  		messageContainer.setMainMessage(mainMessage.toString());
+	  		this.messageContainer.setMainMessage(mainMessage.toString());
 	  		return false;
   		}
-  		if (downloadLink != null) {
-  			messageContainer = new MessageContainer();
-  			messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_exportt_success", "Files were successfully exported"));
+  		if (this.downloadLink != null) {
+  			this.messageContainer = new MessageContainer();
+  			this.messageContainer.setMainMessage(resourceBundle.getLocalizedString("ib_page_exportt_success", "Files were successfully exported"));
   		}
 	  	return true;
   	}
@@ -156,7 +156,7 @@ public class IBPageExporterWindow extends IBPageWindow {
   
   private String exportPages(IWContext iwc) throws IOException, FinderException {
   	// accepts null and empty values
-  	return getPageExportBusiness(iwc).exportPages(pageIds, templateIds, iwc); 
+  	return getPageExportBusiness(iwc).exportPages(this.pageIds, this.templateIds, iwc); 
   }
   		
   		
@@ -218,10 +218,10 @@ public class IBPageExporterWindow extends IBPageWindow {
 	}
 		
 	private IBPageExportBusiness getPageExportBusiness(IWApplicationContext iwac) throws IBOLookupException {
-		if (pageExportBusiness == null) {
-			pageExportBusiness =  (IBPageExportBusiness) IBOLookup.getServiceInstance(iwac,IBPageExportBusiness.class);
+		if (this.pageExportBusiness == null) {
+			this.pageExportBusiness =  (IBPageExportBusiness) IBOLookup.getServiceInstance(iwac,IBPageExportBusiness.class);
 		}
-		return pageExportBusiness;
+		return this.pageExportBusiness;
 	}
 		
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderInitialSetup.java,v 1.2 2006/03/20 12:11:19 tryggvil Exp $
+ * $Id: BuilderInitialSetup.java,v 1.3 2006/04/09 11:43:36 laddi Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * Managed bean to back-up the page jsp/initialSetup.jsp.
  * </p>
- *  Last modified: $Date: 2006/03/20 12:11:19 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/04/09 11:43:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BuilderInitialSetup {
 
@@ -46,11 +46,11 @@ public class BuilderInitialSetup {
 	 * </p>
 	 */
 	private void initialize() {
-		if(builderLogic==null){
-			builderLogic=BuilderLogic.getInstance();
+		if(this.builderLogic==null){
+			this.builderLogic=BuilderLogic.getInstance();
 		}
-		if(application==null){
-			application=IWMainApplication.getDefaultIWMainApplication();
+		if(this.application==null){
+			this.application=IWMainApplication.getDefaultIWMainApplication();
 		}
 	}
 
@@ -89,7 +89,7 @@ public class BuilderInitialSetup {
 	 * @return Returns the domainName.
 	 */
 	public String getDomainName() {
-		return domainName;
+		return this.domainName;
 	}
 
 	
@@ -105,7 +105,7 @@ public class BuilderInitialSetup {
 	 * @return Returns the frontPageName.
 	 */
 	public String getFrontPageName() {
-		return frontPageName;
+		return this.frontPageName;
 	}
 
 	
@@ -121,7 +121,7 @@ public class BuilderInitialSetup {
 	 * @return Returns the application.
 	 */
 	public IWMainApplication getApplication() {
-		return application;
+		return this.application;
 	}
 
 	
@@ -137,7 +137,7 @@ public class BuilderInitialSetup {
 	 * @return Returns the builderLogic.
 	 */
 	public BuilderLogic getBuilderLogic() {
-		return builderLogic;
+		return this.builderLogic;
 	}
 
 	

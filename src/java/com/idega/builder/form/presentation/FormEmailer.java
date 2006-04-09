@@ -52,7 +52,7 @@ public class FormEmailer extends Block {
 	private static String UPLOADED_FILENAME_SESSION_KEY = "IB_FORMEMAILER_FILE";
 
 	public FormEmailer() {
-		handler = new IBGenericFormHandler();
+		this.handler = new IBGenericFormHandler();
 	}
 
 	public void main(IWContext iwc) {
@@ -62,8 +62,8 @@ public class FormEmailer extends Block {
 			iwc.setSessionAttribute(UPLOADED_FILENAME_SESSION_KEY, uploadedFileName);
 		}
 		IWResourceBundle iwrb = super.getBundle(iwc).getResourceBundle(iwc);
-		if (subject == SUBJECT_CONSTANT) {
-			subject = iwrb.getLocalizedString("formemailer.defaultsubject", "From idegaWeb Builder");
+		if (this.subject == SUBJECT_CONSTANT) {
+			this.subject = iwrb.getLocalizedString("formemailer.defaultsubject", "From idegaWeb Builder");
 		}
 		if (doDisplayConfirmation(iwc)) {
 			try {
@@ -123,7 +123,7 @@ public class FormEmailer extends Block {
 
 	private String getSentText(IWContext iwc) {
 		if (iwc.getParameter(FormEmailer.CONFIRM_PARAMETER) == null) {
-			String text = handler.processPlainTextFormatted(iwc);
+			String text = this.handler.processPlainTextFormatted(iwc);
 			iwc.setSessionAttribute(TEXT_SESSION_KEY, text);
 			return text;
 		}
@@ -140,25 +140,25 @@ public class FormEmailer extends Block {
 		IWResourceBundle iwrb = super.getBundle(iwc).getResourceBundle(iwc);
 		String formText = getSentText(iwc);
 		String bodyText;
-		String emailFrom = senderEmail;
-		if (senderEmailParameter != null) {
-			emailFrom = iwc.getParameter(senderEmailParameter);
+		String emailFrom = this.senderEmail;
+		if (this.senderEmailParameter != null) {
+			emailFrom = iwc.getParameter(this.senderEmailParameter);
 		}
-		if (_beginningText == null) {
+		if (this._beginningText == null) {
 			bodyText = formText;
 		}
 		else {
-			bodyText = _beginningText + "\n" + formText;
+			bodyText = this._beginningText + "\n" + formText;
 		}
 		if (formText == null) {
 			// System.out.println("formText==null");
 			formText = iwrb.getLocalizedString("formemailer.error_no_email_body", "<<No email body found>>");
 		}
-		if (emailServer == null) {
+		if (this.emailServer == null) {
 			String error2 = iwrb.getLocalizedString("formemailer.error2", "Email Server not specified");
 			throw new Exception(error2);
 		}
-		if (emailToSendTo == null) {
+		if (this.emailToSendTo == null) {
 			String error3 = iwrb.getLocalizedString("formemailer.error3", "No email to send to");
 			throw new Exception(error3);
 		}
@@ -177,31 +177,31 @@ public class FormEmailer extends Block {
 			e.printStackTrace();
 		}
 		try {
-			com.idega.util.SendMail.send(emailFrom, emailToSendTo, "", "", emailServer, subject, bodyText, uploadFile);
+			com.idega.util.SendMail.send(emailFrom, this.emailToSendTo, "", "", this.emailServer, this.subject, bodyText, uploadFile);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			com.idega.util.SendMail.send(senderEmail, emailToSendTo, "", "", emailServer, subject, bodyText, uploadFile);
+			com.idega.util.SendMail.send(this.senderEmail, this.emailToSendTo, "", "", this.emailServer, this.subject, bodyText, uploadFile);
 		}
-		if (sendReceipt) {
+		if (this.sendReceipt) {
 			String receiptSubject = iwrb.getLocalizedString("formemailer.receiptSubject",
 					"The subject of the receipt email");
 			String receiptBody = iwrb.getLocalizedString("formemailer.receiptBody", "The body of the receipt email");
 			String receiptSignature = iwrb.getLocalizedString("formemailer.receiptSignature",
 					"The signature on the receipt email");
-			String emailReceiptTo = handler.getParameterValue(iwc, receiptEmailParameter);
+			String emailReceiptTo = this.handler.getParameterValue(iwc, this.receiptEmailParameter);
 			if (emailReceiptTo != null) {
 				try {
-					com.idega.util.SendMail.send(emailToSendTo, emailReceiptTo, "", "", emailServer, receiptSubject,
+					com.idega.util.SendMail.send(this.emailToSendTo, emailReceiptTo, "", "", this.emailServer, receiptSubject,
 							receiptBody + "\n" + receiptSignature);
 				}
 				catch (Exception e) {
 					try {
-						com.idega.util.SendMail.send(emailFrom, emailReceiptTo, "", "", emailServer, receiptSubject,
+						com.idega.util.SendMail.send(emailFrom, emailReceiptTo, "", "", this.emailServer, receiptSubject,
 								receiptBody + "\n" + receiptSignature);
 					}
 					catch (Exception e1) {
-						com.idega.util.SendMail.send(senderEmail, emailReceiptTo, "", "", emailServer, receiptSubject,
+						com.idega.util.SendMail.send(this.senderEmail, emailReceiptTo, "", "", this.emailServer, receiptSubject,
 								receiptBody + "\n" + receiptSignature);
 					}
 				}
@@ -211,7 +211,7 @@ public class FormEmailer extends Block {
 	}
 
 	public void setToAddRecievedParameter(String paramName, String description, String type) {
-		handler.addProcessedParameter(paramName, description, type);
+		this.handler.addProcessedParameter(paramName, description, type);
 	}
 
 	public void setTextInBeginningOfMail(String beginningText) {
@@ -260,14 +260,14 @@ public class FormEmailer extends Block {
 	}
 
 	public boolean getSendReceipt() {
-		return sendReceipt;
+		return this.sendReceipt;
 	}
 
 	public void setReceiptEmailParameter(String parameter) {
-		receiptEmailParameter = parameter;
+		this.receiptEmailParameter = parameter;
 	}
 
 	public String getReceiptEmailParameter() {
-		return receiptEmailParameter;
+		return this.receiptEmailParameter;
 	}
 }

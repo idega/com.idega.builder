@@ -48,9 +48,9 @@ public class IBPageImportBusinessBean extends IBOServiceBean  implements IBPageI
 	
 
 	private FileBusiness getFileBusiness() throws IBOLookupException {
-		if (fileBusiness == null) {
-			fileBusiness =  (FileBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), FileBusiness.class);
+		if (this.fileBusiness == null) {
+			this.fileBusiness =  (FileBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), FileBusiness.class);
 		}
-		return fileBusiness;
+		return this.fileBusiness;
 	}
 }

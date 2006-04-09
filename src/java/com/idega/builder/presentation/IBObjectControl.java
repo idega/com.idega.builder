@@ -52,11 +52,11 @@ public class IBObjectControl extends PresentationObjectContainer
 		IWContext iwc,
 		int index)
 	{
-		_parent = objectParent;
-		_theObject = obj;
-		_parentKey = theParentKey;
-		number = index;
-		isPresentationObject = _theObject instanceof PresentationObject;
+		this._parent = objectParent;
+		this._theObject = obj;
+		this._parentKey = theParentKey;
+		this.number = index;
+		this.isPresentationObject = this._theObject instanceof PresentationObject;
 		
 		
 		init(iwc);
@@ -72,33 +72,33 @@ public class IBObjectControl extends PresentationObjectContainer
 	
 		super.add(new Text("<!-- idegaweb-module starts -->"));
 		
-		containerLayer = new Layer(Layer.DIV);
-		containerLayer.setZIndex(number);
-		containerLayer.setStyleClass("moduleContainer");
+		this.containerLayer = new Layer(Layer.DIV);
+		this.containerLayer.setZIndex(this.number);
+		this.containerLayer.setStyleClass("moduleContainer");
 
 		//must have a parent before getId
-		super.add(containerLayer);
+		super.add(this.containerLayer);
 		
-		String containerId = containerLayer.getID();
+		String containerId = this.containerLayer.getID();
 		
-		handleAndMenuLayer = new Layer(Layer.DIV);
-		handleAndMenuLayer.setStyleClass("moduleHandle");
-		handleAndMenuLayer.setID("handle_"+containerId);
+		this.handleAndMenuLayer = new Layer(Layer.DIV);
+		this.handleAndMenuLayer.setStyleClass("moduleHandle");
+		this.handleAndMenuLayer.setID("handle_"+containerId);
 		
-		contentLayer = new Layer(Layer.DIV);
-		contentLayer.setStyleClass("moduleContent");
-		contentLayer.setID("content_"+containerId);
+		this.contentLayer = new Layer(Layer.DIV);
+		this.contentLayer.setStyleClass("moduleContent");
+		this.contentLayer.setID("content_"+containerId);
 		
-		buttonsLayer = new Layer(Layer.DIV);
-		buttonsLayer.setStyleClass("moduleButtons");
+		this.buttonsLayer = new Layer(Layer.DIV);
+		this.buttonsLayer.setStyleClass("moduleButtons");
 		
-		dropAreaLayer = new Layer(Layer.DIV);
-		dropAreaLayer.setStyleClass("moduleDropArea");
-		dropAreaLayer.setID("dropArea_"+containerId);
+		this.dropAreaLayer = new Layer(Layer.DIV);
+		this.dropAreaLayer.setStyleClass("moduleDropArea");
+		this.dropAreaLayer.setID("dropArea_"+containerId);
 				
-		nameLayer = new Layer(Layer.DIV);
-		nameLayer.setStyleClass("moduleName");
-		nameLayer.setID("moduleName_"+containerId);
+		this.nameLayer = new Layer(Layer.DIV);
+		this.nameLayer.setStyleClass("moduleName");
+		this.nameLayer.setID("moduleName_"+containerId);
 		
 		//temporary table solution
 		//because I cannot figure out how do the css so the drop area extends under the button layer but not the name layer
@@ -109,9 +109,9 @@ public class IBObjectControl extends PresentationObjectContainer
 		tempDragDropContainer.setCellpaddingAndCellspacing(0);
 			
 		Script drag = new Script();
-		drag.addFunction("", getBuilderLogic().getDraggableScript(containerId,nameLayer.getID()));
+		drag.addFunction("", getBuilderLogic().getDraggableScript(containerId,this.nameLayer.getID()));
 		Script drop = new Script();
-		drop.addFunction("", getBuilderLogic().getModuleToModuleDroppableScript(containerId, dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
+		drop.addFunction("", getBuilderLogic().getModuleToModuleDroppableScript(containerId, this.dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 		
 		//add scripts
 		super.add(drag);
@@ -120,62 +120,62 @@ public class IBObjectControl extends PresentationObjectContainer
 		super.add(new Text("<!-- idegaweb-module ends -->"));
 		
 		//finally add the object to the contentlayer
-		if (_theObject != null) {
+		if (this._theObject != null) {
 			Text text = null; 
 			
-			if(isPresentationObject){
-				text = new Text(((PresentationObject)_theObject).getBuilderName(iwc));
+			if(this.isPresentationObject){
+				text = new Text(((PresentationObject)this._theObject).getBuilderName(iwc));
 			}
 			else{
 				//TODO make this localizable and remove getBuilderName from PO
-				text = new Text(_theObject.getClass().getName());
+				text = new Text(this._theObject.getClass().getName());
 			}
-			nameLayer.add(text);
+			this.nameLayer.add(text);
 			
 			//TODO change icobjectinstanceid to String 
-			String instanceId = BuilderLogic.getInstance().getInstanceId(_theObject);
+			String instanceId = BuilderLogic.getInstance().getInstanceId(this._theObject);
 				
 			HiddenInput instanceIdHidden = new HiddenInput("instanceId_"+containerId,instanceId);
 			instanceIdHidden.setID("instanceId_"+containerId);
 			
-			HiddenInput parentIdHidden = new HiddenInput("parentId_"+containerId,_parentKey);
+			HiddenInput parentIdHidden = new HiddenInput("parentId_"+containerId,this._parentKey);
 			parentIdHidden.setID("parentId_"+containerId);
 			
 			HiddenInput pageIdHidden = new HiddenInput("pageId_"+containerId,BuilderLogic.getInstance().getCurrentIBPage(iwc));
 			pageIdHidden.setID("pageId_"+containerId);
 			
-			containerLayer.add(instanceIdHidden);
-			containerLayer.add(parentIdHidden);
-			containerLayer.add(pageIdHidden);
+			this.containerLayer.add(instanceIdHidden);
+			this.containerLayer.add(parentIdHidden);
+			this.containerLayer.add(pageIdHidden);
 			
 			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
 			if (pasted == null) {
-				buttonsLayer.add(getCutIcon(instanceId, _parentKey, iwc));
-				buttonsLayer.add(getCopyIcon(instanceId, _parentKey, iwc));
-				buttonsLayer.add(getDeleteIcon(instanceId, _parentKey, iwc));
-				buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-				buttonsLayer.add(getEditIcon(instanceId, iwc));
+				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
+				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
+				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
+				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
 			}
 			else {
-				buttonsLayer.add(getCutIcon(instanceId, _parentKey, iwc));
-				buttonsLayer.add(getCopyIcon(instanceId, _parentKey, iwc));
-				buttonsLayer.add(getPasteAboveIcon(instanceId, _parentKey, iwc));
-				buttonsLayer.add(getDeleteIcon(instanceId, _parentKey, iwc));
-				buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-				buttonsLayer.add(getEditIcon(instanceId, iwc));
+				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
+				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
+				this.buttonsLayer.add(getPasteAboveIcon(instanceId, this._parentKey, iwc));
+				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
+				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
 			}
 			
 			
-			dropAreaLayer.add(buttonsLayer);
+			this.dropAreaLayer.add(this.buttonsLayer);
 			
-			tempDragDropContainer.add(nameLayer,1,1);
-			tempDragDropContainer.add(dropAreaLayer,2,1);
+			tempDragDropContainer.add(this.nameLayer,1,1);
+			tempDragDropContainer.add(this.dropAreaLayer,2,1);
 
-			containerLayer.add(tempDragDropContainer);
-			containerLayer.add(contentLayer);
+			this.containerLayer.add(tempDragDropContainer);
+			this.containerLayer.add(this.contentLayer);
 			
 			//experimental so the box always is around everything
-			containerLayer.add(new CSSSpacer());
+			this.containerLayer.add(new CSSSpacer());
 			
 //			handleAndMenuLayer.add(nameLayer);
 //			handleAndMenuLayer.add(buttonsLayer);	
@@ -183,17 +183,17 @@ public class IBObjectControl extends PresentationObjectContainer
 		}
 		else {//object being added is null for some reason!
 			//setup layout
-			containerLayer.add(handleAndMenuLayer);
-			containerLayer.add(contentLayer);
+			this.containerLayer.add(this.handleAndMenuLayer);
+			this.containerLayer.add(this.contentLayer);
 			
-			handleAndMenuLayer.add(getDeleteIcon("0", _parentKey, iwc));
-			handleAndMenuLayer.add(getEditIcon("0", iwc));
+			this.handleAndMenuLayer.add(getDeleteIcon("0", this._parentKey, iwc));
+			this.handleAndMenuLayer.add(getEditIcon("0", iwc));
 		}
 	}
 		
 	public void add(UIComponent obj) {
-		contentLayer.add(obj);
-		obj.setParent(_parent);
+		this.contentLayer.add(obj);
+		obj.setParent(this._parent);
 	}
 	
 	public void add(PresentationObject obj) {
@@ -202,29 +202,29 @@ public class IBObjectControl extends PresentationObjectContainer
 		String objHeight = obj.getHeight();
 		
 		if (objWidth!=null) {
-			containerLayer.setWidth(objWidth);
+			this.containerLayer.setWidth(objWidth);
 			//handleAndContentTable.setWidth(objWidth);
 			//handleAndMenuLayer.setWidth(objWidth);
 		}
 		
 		if (objHeight!=null) {
-			containerLayer.setHeight(objHeight);
+			this.containerLayer.setHeight(objHeight);
 			//handleAndContentTable.setHeight(objHeight);
 		}
 		
 		if (obj.getHorizontalAlignment()!=null) {
-			containerLayer.setHorizontalAlignment(obj.getHorizontalAlignment());
+			this.containerLayer.setHorizontalAlignment(obj.getHorizontalAlignment());
 		}
 
 		if (obj instanceof Layer) {
 			if (obj.isMarkupAttributeSet(Layer.LEFT)){
-				containerLayer.setLeftPosition(obj.getMarkupAttribute(Layer.LEFT));
+				this.containerLayer.setLeftPosition(obj.getMarkupAttribute(Layer.LEFT));
 			}
 			if (obj.isMarkupAttributeSet(Layer.TOP)){
-				containerLayer.setTopPosition(obj.getMarkupAttribute(Layer.TOP));
+				this.containerLayer.setTopPosition(obj.getMarkupAttribute(Layer.TOP));
 			}
 			if (obj.isMarkupAttributeSet(Layer.ZINDEX)){
-				containerLayer.setZIndex(obj.getMarkupAttribute(Layer.ZINDEX));
+				this.containerLayer.setZIndex(obj.getMarkupAttribute(Layer.ZINDEX));
 			}
 			obj.removeMarkupAttribute(Layer.LEFT);
 			obj.removeMarkupAttribute(Layer.TOP);
@@ -232,9 +232,9 @@ public class IBObjectControl extends PresentationObjectContainer
 			obj.removeMarkupAttribute(Layer.ZINDEX);
 		}
 		
-		contentLayer.add(obj);
-		obj.setParentObject(_parent);
-		obj.setLocation(_parent.getLocation());
+		this.contentLayer.add(obj);
+		obj.setParentObject(this._parent);
+		obj.setLocation(this._parent.getLocation());
 		
 }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.45 2005/10/26 23:21:38 tryggvil Exp $
+ * $Id: IBCreatePageWindow.java,v 1.46 2006/04/09 11:43:34 laddi Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -56,10 +56,12 @@ public class IBCreatePageWindow extends IBPageWindow {
 
 		if (type == null) {
 			String currPageType = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc).getType();
-			if (currPageType.equals(CachedBuilderPage.TYPE_TEMPLATE))
+			if (currPageType.equals(CachedBuilderPage.TYPE_TEMPLATE)) {
 				type = IBPageHelper.TEMPLATE;
-			else
+			}
+			else {
 				type = IBPageHelper.PAGE;
+			}
 		}
 
 		if (type.equals(IBPageHelper.TEMPLATE)) {
@@ -166,9 +168,10 @@ public class IBCreatePageWindow extends IBPageWindow {
 			type = iwc.getParameter(PAGE_TYPE);
 			String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
 			String format = iwc.getParameter(PAGE_FORMAT);
-			if (type.equals(IBPageHelper.TEMPLATE))
+			if (type.equals(IBPageHelper.TEMPLATE)) {
 				parentPageId = templateId;
 			//      String topLevelString = iwc.getParameter(TOP_LEVEL);
+			}
 
 			Map tree = PageTreeNode.getTree(iwc);
 			int id = -1;
@@ -191,14 +194,17 @@ public class IBCreatePageWindow extends IBPageWindow {
 			String name = iwc.getParameter(PAGE_NAME_PARAMETER);
 			type = iwc.getParameter(PAGE_TYPE);
 
-			if (topLevelString != null)
+			if (topLevelString != null) {
 				topLevel.setChecked(true);
+			}
 
-			if (name != null)
+			if (name != null) {
 				inputName.setValue(name);
+			}
 
-			if (type != null)
+			if (type != null) {
 				mnu.setSelectedElement(type);
+			}
 		}
 	}
 

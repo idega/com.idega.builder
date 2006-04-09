@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.43 2006/02/22 20:55:21 laddi Exp $
+ * $Id: XMLWriter.java,v 1.44 2006/04/09 11:43:34 laddi Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -171,8 +171,9 @@ public class XMLWriter {
 			Iterator iter = elementList.iterator();
 			while (iter.hasNext()) {
 				XMLElement item = (XMLElement) iter.next();
-				if (hasPropertyElementSpecifiedValues(iwma, instanceId, item, values, true))
+				if (hasPropertyElementSpecifiedValues(iwma, instanceId, item, values, true)) {
 					return item;
+				}
 			}
 		}
 		return null;
@@ -188,8 +189,9 @@ public class XMLWriter {
 
 	public static boolean isPropertySet(XMLElement parentElement, String propertyName) {
 		XMLElement element = findProperty(parentElement, propertyName);
-		if (element != null)
+		if (element != null) {
 			return true;
+		}
 		return false;
 	}
 
@@ -209,13 +211,15 @@ public class XMLWriter {
 				XMLElement eValue = (XMLElement) iter.next();
 				if (withPrimaryKeyCheck) {
 					if (isPrimaryKey) {
-						if (!eValue.getText().equals(values[counter]))
+						if (!eValue.getText().equals(values[counter])) {
 							check = false;
+						}
 					}
 				}
 				else {
-					if (!eValue.getText().equals(values[counter]))
+					if (!eValue.getText().equals(values[counter])) {
 						check = false;
+					}
 				}
 			}
 			catch (Exception e) {
@@ -375,8 +379,9 @@ public class XMLWriter {
 				return false;
 			}
 			else {
-				if (s.equals(EMPTY_STRING))
+				if (s.equals(EMPTY_STRING)) {
 					return false;
+				}
 			}
 		}
 		return true;
@@ -388,8 +393,9 @@ public class XMLWriter {
 	static boolean setProperty(IWMainApplication iwma, IBXMLAble xml, String instanceId, String propertyName,
 			String[] propertyValues, boolean allowMultiValued) {
 		//Checks if the propertyValues array is correctly formatted
-		if (!isPropertyValueArrayValid(propertyValues))
+		if (!isPropertyValueArrayValid(propertyValues)) {
 			return false;
+		}
 		boolean changed = false;
 		XMLElement module = findModule(xml, instanceId);
 		XMLElement property = null;
@@ -657,8 +663,9 @@ public class XMLWriter {
 				region.setAttribute(id);
 				String parentID = parentObjectInstanceID.substring(0, index);
 				XMLElement regionParent = findModule(xml, parentID);
-				if (regionParent != null)
+				if (regionParent != null) {
 					regionParent.addContent(region);
+				}
 				XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED, "true");
 				//        region.addAttribute(lock);
 				region.setAttribute(lock);
@@ -707,8 +714,9 @@ public class XMLWriter {
 				region.setAttribute(id);
 				String parentID = parentObjectInstanceID.substring(0, index);
 				XMLElement regionParent = findModule(xml, parentID);
-				if (regionParent != null)
+				if (regionParent != null) {
 					regionParent.addContent(region);
+				}
 				XMLAttribute lock = new XMLAttribute(XMLConstants.REGION_LOCKED, "false");
 				//        region.addAttribute(lock);
 				region.setAttribute(lock);
@@ -770,8 +778,9 @@ public class XMLWriter {
 				parent.setAttribute(labelAttribute);
 			}
 			else {
-				if (parent.getAttribute(XMLConstants.LABEL_STRING) != null)
+				if (parent.getAttribute(XMLConstants.LABEL_STRING) != null) {
 					parent.removeAttribute(XMLConstants.LABEL_STRING);
+				}
 			}
 			return (true);
 		}
@@ -785,8 +794,9 @@ public class XMLWriter {
 					region.setAttribute(id);
 					String parentID = parentObjectInstanceID.substring(0, index);
 					XMLElement regionParent = findModule(xml, parentID);
-					if (regionParent != null)
+					if (regionParent != null) {
 						regionParent.addContent(region);
+					}
 					XMLAttribute labelAttribute = new XMLAttribute(XMLConstants.LABEL_STRING, label);
 					//          region.addAttribute(labelAttribute);
 					region.setAttribute(labelAttribute);
@@ -845,8 +855,9 @@ public class XMLWriter {
 	 */
 	public static boolean addNewElement(IBXMLAble xml, String parentObjectInstanceID, XMLElement element) {
 		XMLElement parent = findModule(xml, parentObjectInstanceID);
-		if (parent != null)
+		if (parent != null) {
 			parent.addContent(element);
+		}
 		return true;
 	}
 	
@@ -952,8 +963,9 @@ public class XMLWriter {
 					if (el.getName().equals(XMLConstants.MODULE_STRING)) {
 						XMLAttribute id = el.getAttribute(XMLConstants.ID_STRING);
 						if (id != null) {
-							if (id.getValue().equals(objectId))
+							if (id.getValue().equals(objectId)) {
 								break;
+							}
 						}
 					}
 				}
@@ -976,8 +988,9 @@ public class XMLWriter {
 					}
 				}
 			}
-			else
+			else {
 				parent.addContent(element); //hmmmm
+			}
 			return (true);
 		}
 		return (false);
@@ -1009,8 +1022,9 @@ public class XMLWriter {
 				Iterator it = childs.iterator();
 				while (it.hasNext()) {
 					XMLElement child = (XMLElement) it.next();
-					if (!changeModuleIds(child, pageKey))
+					if (!changeModuleIds(child, pageKey)) {
 						return (false);
+					}
 				}
 			}
 			childs = element.getChildren(XMLConstants.REGION_STRING);
@@ -1034,8 +1048,9 @@ public class XMLWriter {
 						Iterator it2 = childs2.iterator();
 						while (it2.hasNext()) {
 							XMLElement child = (XMLElement) it2.next();
-							if (!changeModuleIds(child, pageKey))
+							if (!changeModuleIds(child, pageKey)) {
 								return (false);
+							}
 						}
 					}
 				}

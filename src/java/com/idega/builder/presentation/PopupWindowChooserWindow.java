@@ -38,13 +38,13 @@ public static final String replaceMentCommon = "+";
       try {
         collectStyles(iwc);
         debug("collected");
-        debug("String = "+_windowString);
+        debug("String = "+this._windowString);
 //        _windowString = TextSoap.findAndReplace(_windowString, "'",replaceMent);
         /*_windowString = TextSoap.findAndReplace(_windowString, ",",replaceMentCommon);
         _windowString = TextSoap.findAndReplace(_windowString, "iwOpenWindow(", "");
         _windowString = TextSoap.findAndReplace(_windowString, ")", "");*/
-        _windowString = URLEncoder.encode(_windowString);
-        getParentPage().setOnLoad(SELECT_FUNCTION_NAME+"('"+_windowString+"','"+_windowString+"')");
+        this._windowString = URLEncoder.encode(this._windowString);
+        getParentPage().setOnLoad(SELECT_FUNCTION_NAME+"('"+this._windowString+"','"+this._windowString+"')");
 
       }catch (Exception e) {
         drawForm();
@@ -172,15 +172,33 @@ public static final String replaceMentCommon = "+";
     int iWidth = 500;
     int iPage = 1;
 
-    if (toolbar.equals("Y")) bToolbar = true;
-    if (location.equals("Y")) bLocation = true;
-    if (directories.equals("Y")) bDirectories = true;
-    if (statusbar.equals("Y")) bStatusbar = true;
-    if (menubar.equals("Y")) bMenubar = true;
-    if (titlebar.equals("Y")) bTitlebar = true;
-    if (scrollbars.equals("Y")) bScrollbars = true;
-    if (resizable.equals("Y")) bResizable = true;
-    if (fullscreen.equals("Y")) bFullscreen = true;
+    if (toolbar.equals("Y")) {
+			bToolbar = true;
+		}
+    if (location.equals("Y")) {
+			bLocation = true;
+		}
+    if (directories.equals("Y")) {
+			bDirectories = true;
+		}
+    if (statusbar.equals("Y")) {
+			bStatusbar = true;
+		}
+    if (menubar.equals("Y")) {
+			bMenubar = true;
+		}
+    if (titlebar.equals("Y")) {
+			bTitlebar = true;
+		}
+    if (scrollbars.equals("Y")) {
+			bScrollbars = true;
+		}
+    if (resizable.equals("Y")) {
+			bResizable = true;
+		}
+    if (fullscreen.equals("Y")) {
+			bFullscreen = true;
+		}
 
     try {
       iHeight = Integer.parseInt(heigth);
@@ -193,7 +211,7 @@ public static final String replaceMentCommon = "+";
     }catch (NumberFormatException n){}
 
 
-    _windowString = Window.getWindowCallingScript( BuilderLogic.getInstance().getIBPageURL(iwc,iPage), name, bToolbar, bLocation, bDirectories, bStatusbar, bMenubar, bTitlebar, bScrollbars, bResizable, bFullscreen, iWidth, iHeight);
+    this._windowString = Window.getWindowCallingScript( BuilderLogic.getInstance().getIBPageURL(iwc,iPage), name, bToolbar, bLocation, bDirectories, bStatusbar, bMenubar, bTitlebar, bScrollbars, bResizable, bFullscreen, iWidth, iHeight);
   }
 
 

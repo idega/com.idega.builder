@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderPage.java,v 1.2 2005/05/30 15:28:54 tryggvil Exp $
+ * $Id: BuilderPage.java,v 1.3 2006/04/09 11:43:35 laddi Exp $
  * Created on 16.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,10 +16,10 @@ import com.idega.presentation.Page;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/30 15:28:54 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/04/09 11:43:35 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BuilderPage extends Page {
 
@@ -42,8 +42,8 @@ public class BuilderPage extends Page {
 	
 	public Map getFacets(){
 		if(this.facetMap==null){
-			facetMap = new BuilderPageFacetMap(this);
+			this.facetMap = new BuilderPageFacetMap(this);
 		}
-		return facetMap;
+		return this.facetMap;
 	}
 }

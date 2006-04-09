@@ -53,19 +53,23 @@ public class LocalizedPageNameHandler implements ICPropertyHandler {
 		
 		StringTokenizer tok = new StringTokenizer(stringValue,";");
 		String menuString = null;
-		if (tok.hasMoreElements())
+		if (tok.hasMoreElements()) {
 			menuString = (String)tok.nextElement();
+		}
 		String titleString = null;
-		if (tok.hasMoreElements())
+		if (tok.hasMoreElements()) {
 			titleString = (String)tok.nextElement();
+		}
 		
     DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getIWMainApplication(),name);
-    if (menuString != null)
-	    menu.setSelectedElement(menuString);
+    if (menuString != null) {
+			menu.setSelectedElement(menuString);
+		}
     
     TextInput title = new TextInput(name+"a");
-    if (titleString != null)
-	    title.setValue(titleString);
+    if (titleString != null) {
+			title.setValue(titleString);
+		}
     
     t.add(menu,1,1);
     t.add(title,1,2);
@@ -81,10 +85,12 @@ public class LocalizedPageNameHandler implements ICPropertyHandler {
 			String locale = null;
 			String name = null;
 			StringTokenizer tok = new StringTokenizer(value,";");
-			if (tok.hasMoreElements())
+			if (tok.hasMoreElements()) {
 				locale = (String)tok.nextElement();
-			if (tok.hasMoreElements())
+			}
+			if (tok.hasMoreElements()) {
 				name = (String)tok.nextElement();
+			}
 
 			Locale loc = ICLocaleBusiness.getLocaleFromLocaleString(locale);
 			

@@ -1,5 +1,5 @@
 /*
- * $Id: IBLockRegionWindow.java,v 1.11 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBLockRegionWindow.java,v 1.12 2006/04/09 11:43:34 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -92,8 +92,9 @@ public class IBLockRegionWindow extends IBAdminWindow {
 				inputName.setLength(24);
 				tab.add(inputName, 2, 1);
 
-				if (label != null)
+				if (label != null) {
 					inputName.setValue(label);
+				}
 
 				SubmitButton button = new SubmitButton(iwrb.getLocalizedString("save", "Save"));
 				button.setAsImageButton(true);

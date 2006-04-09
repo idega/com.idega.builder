@@ -1,5 +1,5 @@
 /*
- * $Id: IBObjectLibraryBMPBean.java,v 1.7 2003/11/28 16:11:14 sigtryggur Exp $
+ * $Id: IBObjectLibraryBMPBean.java,v 1.8 2006/04/09 11:43:35 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -85,9 +85,9 @@ public class IBObjectLibraryBMPBean extends com.idega.data.TreeableEntityBMPBean
 	public ICFile getFile() {
 		int fileID = getFileID();
 		if (fileID != -1) {
-			_file = (ICFile)getColumnValue(getColumnFile());
+			this._file = (ICFile)getColumnValue(getColumnFile());
 		}
-		return (_file);
+		return (this._file);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class IBObjectLibraryBMPBean extends com.idega.data.TreeableEntityBMPBean
 	 */
 	public void setFile(ICFile file) {
 		setColumn(getColumnFile(), file);
-		_file = file;
+		this._file = file;
 	}
 
 	/**

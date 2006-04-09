@@ -50,9 +50,9 @@ public class IBPropertiesWindowList extends Page {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		button = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage(
+		this.button = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage(
 				"shared/properties/button.gif");
-		hoverButton = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage(
+		this.hoverButton = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage(
 				"shared/properties/button_hvr.gif");
 		String ic_object_id = getUsedICObjectInstanceID(iwc);
 		setStyles();
@@ -93,10 +93,12 @@ public class IBPropertiesWindowList extends Page {
 				link.setURL("javascript:parent." + PROPERTY_FRAME + "."
 						+ IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME + "('" + methodIdentifier + "')");
 				if (BuilderLogic.getInstance().isPropertySet(pageKey, instanceId, methodIdentifier,
-						iwc.getIWMainApplication()))
-					table.add((Image) hoverButton.clone(), 1, counter);
-				else
-					table.add((Image) button.clone(), 1, counter);
+						iwc.getIWMainApplication())) {
+					table.add((Image) this.hoverButton.clone(), 1, counter);
+				}
+				else {
+					table.add((Image) this.button.clone(), 1, counter);
+				}
 				table.add(link, 2, counter);
 				counter++;
 			}
@@ -140,6 +142,6 @@ public class IBPropertiesWindowList extends Page {
 	}
 
 	private void jbInit() throws Exception {
-		jButton1.setText("jButton1");
+		this.jButton1.setText("jButton1");
 	}
 }

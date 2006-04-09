@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddRegionLabelWindow.java,v 1.5 2004/06/24 20:12:24 tryggvil Exp $
+ * $Id: IBAddRegionLabelWindow.java,v 1.6 2006/04/09 11:43:35 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -95,8 +95,9 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
 				inputName.setLength(24);
 				tab.add(inputName, 2, 1);
 
-				if (label != null)
+				if (label != null) {
 					inputName.setValue(label);
+				}
 
 				SubmitButton button = new SubmitButton(iwrb.getLocalizedString("save", "Save"));
 				button.setAsImageButton(true);

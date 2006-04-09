@@ -91,27 +91,27 @@ public class IBJspHandler
 		}
 		public String getUrl()
 		{
-			return URL;
+			return this.URL;
 		}
 		public String getAttributeName()
 		{
-			return Attribute_name;
+			return this.Attribute_name;
 		}
 		public String getAttributeValue()
 		{
-			return Attribute_value;
+			return this.Attribute_value;
 		}
 		public void setUrl(String url)
 		{
-			URL = url;
+			this.URL = url;
 		}
 		public void setAttributeName(String AttributeName)
 		{
-			Attribute_name = AttributeName;
+			this.Attribute_name = AttributeName;
 		}
 		public void setAttributeValue(String AttributeValue)
 		{
-			Attribute_value = AttributeValue;
+			this.Attribute_value = AttributeValue;
 		}
 	} // inner Class ICJspHandlerVariables
 } // class ICJspHandler

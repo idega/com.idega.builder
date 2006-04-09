@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.54 2006/03/20 12:35:21 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.55 2006/04/09 11:43:34 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -253,8 +253,9 @@ public class IBPageHelper implements Singleton  {
 	 */
 	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
 		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
-		if (name == null)
+		if (name == null) {
 			name = "Untitled";
+		}
 		ibPage.setName(name);	
 		if(format != null){
 			ibPage.setFormat(format);
@@ -327,8 +328,9 @@ public class IBPageHelper implements Singleton  {
 		catch (java.lang.NumberFormatException e) {
 //			e.printStackTrace();
 		}
-		if (subType != null)
+		if (subType != null) {
 			ibPage.setSubType(subType);
+		}
 		try {
 			ibPage.insert();
 			if (creatorContext != null) {
@@ -419,8 +421,9 @@ public class IBPageHelper implements Singleton  {
 			PageTreeNode node = new PageTreeNode(id, name);
 			if (parentId != null) {
 				PageTreeNode parent = (PageTreeNode) tree.get(Integer.valueOf(parentId));
-				if (parent != null)
+				if (parent != null) {
 					parent.addChild(node);
+				}
 			}
 			tree.put(new Integer(node.getNodeID()), node);
 		}
@@ -601,12 +604,15 @@ public class IBPageHelper implements Singleton  {
 	public boolean checkDeleteChildrenOfPage(String pageId) {
 		try {
 			ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
-			if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE))
+			if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE)) {
 				return true;
-			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DRAFT))
+			}
+			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DRAFT)) {
 				return true;
-			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DPT_PAGE))
+			}
+			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DPT_PAGE)) {
 				return true;
+			}
 			else {
 				Iterator it = page.getChildrenIterator();
 				if (it != null) {
@@ -618,10 +624,12 @@ public class IBPageHelper implements Singleton  {
 							return false;
 						}
 						boolean check = true;
-						if (child.getChildCount() != 0)
+						if (child.getChildCount() != 0) {
 							check = checkDeleteChildrenOfPage((child.getPageKey()));
-						if (!check)
+						}
+						if (!check) {
 							return false;
+						}
 					}
 				}
 				return true;
@@ -805,29 +813,31 @@ public class IBPageHelper implements Singleton  {
 		if (it != null) {
 			while (it.hasNext()) {
 				ICPage child = (ICPage) it.next();
-				if (child.getChildCount() != 0)
+				if (child.getChildCount() != 0) {
 					deleteAllChildren(child, tree, userId);
+				}
 				child.delete(userId);
 				String templateId = child.getTemplateKey();
 				if (templateId != null) {
 					BuilderLogic.getInstance().getIBXMLPage(templateId).removePageAsUsingThisTemplate(child.getPageKey());
 				}
 				page.removeChild(child);
-				if (tree != null)
+				if (tree != null) {
 					tree.remove(new Integer(child.getPageKey()));
+				}
 			}
 		}
 	}
 	public TreeViewer getPageTreeViewer(IWContext iwc) {
-		return getTreeViewer(iwc, PAGEVIEWER);
+		return getTreeViewer(iwc, this.PAGEVIEWER);
 	}
 	public TreeViewer getTemplateTreeViewer(IWContext iwc) {
-		return getTreeViewer(iwc, TEMPLATEVIEWER);
+		return getTreeViewer(iwc, this.TEMPLATEVIEWER);
 	}
 	private TreeViewer getTreeViewer(IWContext iwc, int type) {
 		com.idega.core.builder.data.ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
 		int id = -1;
-		if (type == PAGEVIEWER) {
+		if (type == this.PAGEVIEWER) {
 			id = domain.getStartPageID();
 		}
 		else {
@@ -836,15 +846,18 @@ public class IBPageHelper implements Singleton  {
 		TreeViewer viewer = TreeViewer.getTreeViewerInstance(new PageTreeNode(id, iwc), iwc);
 		try {
 			java.util.Collection coll = null;
-			if (type == PAGEVIEWER)
+			if (type == this.PAGEVIEWER) {
 				coll = getStartPages(domain);
-			else
+			}
+			else {
 				coll = getTemplateStartPages(domain);
+			}
 			java.util.Iterator it = coll.iterator();
 			while (it.hasNext()) {
 				com.idega.builder.data.IBStartPage startPage = (com.idega.builder.data.IBStartPage) it.next();
-				if (startPage.getPageId() != id)
+				if (startPage.getPageId() != id) {
 					viewer.addFirstLevelNode(new PageTreeNode(startPage.getPageId(), iwc));
+				}
 			}
 		}
 		catch (Exception e) {
@@ -857,7 +870,7 @@ public class IBPageHelper implements Singleton  {
 		l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
 		l.addParameter("reload", "t");
 		viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-		viewer.setTreeStyle(LINK_STYLE);
+		viewer.setTreeStyle(this.LINK_STYLE);
 		viewer.setLinkPrototype(l);
 		return viewer;
 	}
@@ -866,20 +879,20 @@ public class IBPageHelper implements Singleton  {
 	 * @return list of PageTreeNode
 	 */
 	public List getFirstLevelPageTreeNodesDomainFirst(IWContext iwc) throws IDOLookupException, FinderException {
-		return getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(iwc, PAGEVIEWER);
+		return getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(iwc, this.PAGEVIEWER);
 	}
 	
 	/** 
 	 * @return list of PageTreeNode
 	 */
 	public List getFirstLevelPageTreeNodesTemplateDomainFirst(IWContext iwc) throws IDOLookupException, FinderException {
-		return getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(iwc, TEMPLATEVIEWER);
+		return getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(iwc, this.TEMPLATEVIEWER);
 	}
 
 	private List getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(IWContext iwc, int type) throws IDOLookupException, FinderException {
 		ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
-		int domainStartPageId = (PAGEVIEWER == type) ? domain.getStartPageID() : domain.getStartTemplateID();
-		Collection startPages = (PAGEVIEWER == type) ? getStartPages(domain) : getTemplateStartPages(domain);
+		int domainStartPageId = (this.PAGEVIEWER == type) ? domain.getStartPageID() : domain.getStartTemplateID();
+		Collection startPages = (this.PAGEVIEWER == type) ? getStartPages(domain) : getTemplateStartPages(domain);
 		List pages = new ArrayList(1 +  startPages.size());
 		pages.add(new PageTreeNode(domainStartPageId, iwc));
 		Iterator iterator = startPages.iterator();

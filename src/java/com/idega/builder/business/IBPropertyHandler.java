@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.53 2006/03/29 13:01:09 laddi Exp $
+ * $Id: IBPropertyHandler.java,v 1.54 2006/04/09 11:43:34 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -212,8 +212,9 @@ public class IBPropertyHandler implements Singleton{
 				}
 			}
 		}
-		if (availableValues.size() > 0)
+		if (availableValues.size() > 0) {
 			return (String[]) availableValues.get(0);
+		}
 		if (returnSelectedValueIfNothingFound) {
 			return selectedValues;
 		}
@@ -308,8 +309,9 @@ public class IBPropertyHandler implements Singleton{
           menuElements = new ArrayList();
         }
       Iterator iterator = menuElements.iterator();
-      while (iterator.hasNext())
-        ((DropdownMenu) handlerPresentation).addMenuElement((String) iterator.next());
+      while (iterator.hasNext()) {
+				((DropdownMenu) handlerPresentation).addMenuElement((String) iterator.next());
+			}
       }
     }
     
@@ -624,10 +626,10 @@ public class IBPropertyHandler implements Singleton{
 	
 	 */
 	private Map getPropertyHandlersMap() {
-		if (propertyHandlers == null) {
-			propertyHandlers = new HashMap();
+		if (this.propertyHandlers == null) {
+			this.propertyHandlers = new HashMap();
 		}
-		return (propertyHandlers);
+		return (this.propertyHandlers);
 	}
 
 	public ICPropertyHandler getPropertyHandler(String handlerClassName) {
@@ -683,10 +685,10 @@ public class IBPropertyHandler implements Singleton{
 	}
 	
 	private IBClassesFactory getBuilderClassesFactory() {
-		if (builderClassesFactory == null) {
-			builderClassesFactory = new IBClassesFactory();
+		if (this.builderClassesFactory == null) {
+			this.builderClassesFactory = new IBClassesFactory();
 		}
-		return builderClassesFactory;
+		return this.builderClassesFactory;
 	}
 	
 }
