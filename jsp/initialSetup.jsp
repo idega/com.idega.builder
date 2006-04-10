@@ -7,7 +7,7 @@
 	xmlns:ic="http://xmlns.idega.com/com.idega.core">
     <jsp:directive.page contentType="text/html" /><!--;charset=UTF-8" pageEncoding="UTF-8"-->
     <f:view>
-		<ic:page id="builderinitialsetuppage" styleClass="ws_body">
+		<ic:page id="builderinitialsetuppage" styleClass="ws_body centered">
 		<h:form id="builderinitialsetupform"><!-- acceptCharset="UTF-8" -->
 			<wf:wfblock id="builderinitialsetupblock" title="#{localizedStrings['com.idega.builder']['initialsetup']}">
 			<wf:container styleClass="wf_formitem" >
