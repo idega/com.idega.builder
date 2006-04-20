@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.11 2006/04/09 11:43:34 laddi Exp $
+ * $Id: TreeNodeFinder.java,v 1.12 2006/04/20 16:15:24 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
+
+import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.data.IBPageName;
 import com.idega.builder.data.IBPageNameHome;
 import com.idega.core.builder.data.ICPage;
@@ -65,6 +67,9 @@ public class TreeNodeFinder {
 			sql.append("' or ");
 			sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
 			sql.append(" is null)");
+			
+			sql.append(" order by ").append(IBPageBMPBean.getColumnTreeOrder())
+			.append(", ").append(pages.getIDColumnName());
 
 			return (EntityFinder.findAll(pages, sql.toString()));
 		}
@@ -94,6 +99,9 @@ public class TreeNodeFinder {
 			sql.append("' or ");
 			sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
 			sql.append(" is null)");
+
+			sql.append(" order by ").append(IBPageBMPBean.getColumnTreeOrder())
+			.append(", ").append(pages.getIDColumnName());
 
 			return (EntityFinder.findAll(pages, sql.toString()));
 		}
@@ -144,6 +152,8 @@ public class TreeNodeFinder {
 			sql.append(com.idega.builder.data.IBPageBMPBean.DPT_PAGE);
 			sql.append("')");
 			
+			sql.append(" order by p.").append(IBPageBMPBean.getColumnTreeOrder())
+			.append(", p.").append(pages.getIDColumnName());
 
 			result = stmt.executeQuery(sql.toString());
 
@@ -221,6 +231,8 @@ public class TreeNodeFinder {
 			sql.append(com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE);
 			sql.append("')");
 			
+			sql.append(" order by p.").append(IBPageBMPBean.getColumnTreeOrder())
+			.append(", p.").append(pages.getIDColumnName());
 
 			result = stmt.executeQuery(sql.toString());
 

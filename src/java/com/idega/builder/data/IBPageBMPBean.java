@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageBMPBean.java,v 1.32 2006/04/09 11:43:35 laddi Exp $
+ * $Id: IBPageBMPBean.java,v 1.33 2006/04/20 16:15:24 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -428,6 +428,10 @@ public class IBPageBMPBean extends com.idega.data.TreeableEntityBMPBean implemen
 	 */
 	public static String getColumnDeleted() {
 		return (DELETED_COLUMN);
+	}
+	
+	public static String getColumnTreeOrder() {
+		return (TREE_ORDER);
 	}
 
 	/**
