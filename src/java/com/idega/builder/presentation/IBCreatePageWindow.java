@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.46 2006/04/09 11:43:34 laddi Exp $
+ * $Id: IBCreatePageWindow.java,v 1.47 2006/05/03 13:51:23 eiki Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -174,6 +174,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 			}
 
 			Map tree = PageTreeNode.getTree(iwc);
+			
 			int id = -1;
 			// create multiple pages
 			if(!allowMultiplePageCreation){
@@ -219,7 +220,6 @@ public class IBCreatePageWindow extends IBPageWindow {
 		else {
 			domainId = BuilderLogic.getInstance().getCurrentDomain(iwc).getID();
 			parentPageId=null;
-			tree=null;
 			if (type.equals(IBPageHelper.TEMPLATE)) {
 				//id = IBPageHelper.getInstance().createNewPage(null, name, type, null, tree, iwc, null, domainId);
 				templateId=null;
