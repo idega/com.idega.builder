@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.31 2006/04/09 11:43:34 laddi Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.32 2006/05/03 11:58:56 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -80,6 +80,9 @@ public class IBPropertiesWindowSetter extends Page {
 				+ SAVE_PROPERTY_PARAMETER + ".value='false';" + UPDATE_PROPERTY_FUNCTION_NAME + "();}");
 		String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
 		Form form = new Form();
+		//no need for a loading layer here, only slows it down
+		form.setToShowLoadingOnSubmit(false);
+		
 		add(form);
 		form.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
 		Parameter param1 = new Parameter(SAVE_PROPERTY_PARAMETER, "true");
