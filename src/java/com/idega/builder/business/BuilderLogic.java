@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.197 2006/04/09 11:43:34 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.198 2006/05/08 13:51:58 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1298,7 +1298,7 @@ public class BuilderLogic implements Singleton {
 			IWBundle iwb = null;
 			if ("-1".equals(instanceId)) {
 				c = com.idega.presentation.Page.class;
-				iwb = iwma.getBundle(PresentationObject.IW_BUNDLE_IDENTIFIER);
+				iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
 			}
 			else {
 				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(instanceId));

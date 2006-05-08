@@ -37,8 +37,6 @@ import com.idega.util.datastructures.MessageContainer;
  */
 public class IBPageExporterWindow extends IBPageWindow {
 
-  public static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
-  
   public static final String SUBMIT_EXPORT_KEY = "ib_page_export_submit_key";
   public static final String SUBMIT_CLOSE_KEY = "ib_page_export_close_submit_key";
   public static final String PAGE_KEY = "ib_page_export_key";
