@@ -128,13 +128,23 @@ public class IBObjectControl extends PresentationObjectContainer
 			}
 			else{
 				//TODO make this localizable and remove getBuilderName from PO
-				text = new Text(this._theObject.getClass().getName());
+				String className = this._theObject.getClass().getName();
+				int indexOfDot = className.lastIndexOf(".");
+				String objectName = null;
+				if(indexOfDot!=-1){
+					objectName = className.substring(indexOfDot+1,className.length());
+				}
+				else{
+					objectName = className;
+				}
+				
+				text = new Text(objectName);
 			}
 			this.nameLayer.add(text);
 			
 			//TODO change icobjectinstanceid to String 
 			String instanceId = BuilderLogic.getInstance().getInstanceId(this._theObject);
-				
+			
 			HiddenInput instanceIdHidden = new HiddenInput("instanceId_"+containerId,instanceId);
 			instanceIdHidden.setID("instanceId_"+containerId);
 			

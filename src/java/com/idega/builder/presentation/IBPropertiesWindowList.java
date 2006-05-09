@@ -6,8 +6,9 @@ import java.util.Vector;
 import javax.swing.JButton;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyDescription;
-import com.idega.builder.business.IBPropertyDescriptionComparator;
+import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
+import com.idega.core.component.business.ComponentProperty;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
@@ -81,18 +82,18 @@ public class IBPropertiesWindowList extends Page {
 		// List methodList =
 		// IBPropertyHandler.getInstance().getMethodsListOrdered(icObjectInstanceID,iwc);
 		try {
-			List methodList = this.getMethodListOrdered(iwc, instanceId);
-			Iterator iter = methodList.iterator();
+			List propertyList = this.getPropertyListOrdered(iwc, instanceId);
+			Iterator iter = propertyList.iterator();
 			int counter = 1;
 			while (iter.hasNext()) {
-				IBPropertyDescription desc = (IBPropertyDescription) iter.next();
-				String methodIdentifier = desc.getMethodIdentifier();
-				String methodDescr = desc.getMethodDescription();
+				ComponentProperty desc = (ComponentProperty) iter.next();
+				String propertyName = desc.getName();
+				String methodDescr = desc.getDisplayName();
 				Link link = new Link(methodDescr);
 				link.setStyle(STYLE_NAME);
 				link.setURL("javascript:parent." + PROPERTY_FRAME + "."
-						+ IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME + "('" + methodIdentifier + "')");
-				if (BuilderLogic.getInstance().isPropertySet(pageKey, instanceId, methodIdentifier,
+						+ IBPropertiesWindowSetter.CHANGE_PROPERTY_FUNCTION_NAME + "('" + propertyName + "')");
+				if (BuilderLogic.getInstance().isPropertySet(pageKey, instanceId, propertyName,
 						iwc.getIWMainApplication())) {
 					table.add((Image) this.hoverButton.clone(), 1, counter);
 				}
@@ -114,8 +115,8 @@ public class IBPropertiesWindowList extends Page {
 	/**
 	 * Returns a list of IBPropertyDescription objects
 	 */
-	private List getMethodListOrdered(IWContext iwc, String instanceId) throws Exception {
-		List theReturn = new Vector();
+	private List getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
+		/*List theReturn = new Vector();
 		IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(instanceId, iwc.getIWMainApplication());
 		Iterator iter = methodList.iterator();
 		while (iter.hasNext()) {
@@ -123,10 +124,11 @@ public class IBPropertiesWindowList extends Page {
 			String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
 			String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp, iwc);
 			IBPropertyDescription desc = new IBPropertyDescription(methodIdentifier);
-			desc.setMethodDescription(methodDescr);
+			desc.setDisplayName(methodDescr);
 			theReturn.add(desc);
-		}
-		java.util.Collections.sort(theReturn, IBPropertyDescriptionComparator.getInstance());
+		}*/
+		List theReturn = IBPropertyHandler.getInstance().getComponentProperties(instanceId,iwc.getIWMainApplication(),iwc.getCurrentLocale());
+		java.util.Collections.sort(theReturn, ComponentPropertyComparator.getInstance());
 		return theReturn;
 	}
 

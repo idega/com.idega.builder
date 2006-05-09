@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.198 2006/05/08 13:51:58 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.199 2006/05/09 14:44:03 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -26,6 +26,7 @@ import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
@@ -200,7 +201,7 @@ public class BuilderLogic implements Singleton {
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/effects.js"));
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/dragdrop.js"));
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/controls.js"));
-		
+		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
 		
@@ -773,7 +774,11 @@ public class BuilderLogic implements Singleton {
 				//}
 			//}
 		//}
-		throw new RuntimeException("Page Key Can not be found from URI '"+requestURI+"'");
+		//throw new RuntimeException("Page Key Can not be found from URI '"+requestURI+"'");
+		BuilderPageException pe = new BuilderPageException("Page Cannot be Found for URI: '"+requestURI+"'");
+		pe.setCode(BuilderPageException.CODE_NOT_FOUND);
+		pe.setPageUri(requestURI);
+		throw pe;
 	}
 	
 	
@@ -1671,7 +1676,7 @@ public class BuilderLogic implements Singleton {
 		Image addImage = getBuilderBundle().getImage("add.gif", "Add new component");
 
 		Link link = new Link(addImage);
-		link.setStyleClass("regionButton");
+		link.setStyleClass("regionButton");	
 		link.setWindowToOpen(IBAddModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
@@ -1826,10 +1831,12 @@ public class BuilderLogic implements Singleton {
 	
 	public String getInstanceId(UIComponent object) {
 		if(object instanceof PresentationObject){
-			int icObjectInstanceId = ((PresentationObject)object).getICObjectInstanceID();
+			/*int icObjectInstanceId = ((PresentationObject)object).getICObjectInstanceID();
 			if(icObjectInstanceId!=-1){
 				return Integer.toString(icObjectInstanceId);
-			}
+			}*/
+			PresentationObject po = (PresentationObject)object;
+			return po.getXmlId();
 		}
 		//set from the xml
 		return object.getId();

@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.23 2006/04/09 11:43:34 laddi Exp $
+ * $Id: PageTreeNode.java,v 1.24 2006/05/09 14:44:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -290,14 +290,14 @@ public class PageTreeNode implements ICTreeNode {
 	 *
 	 */
 	public boolean isLeaf() {
-		/*int children = getChildCount();
+		int children = getChildCount();
 		if (children > 0) {
 		  return false;
 		}
 		else {
 		  return true;
-		}*/
-		return true;
+		}
+		//return true;
 	}
 
 	/**

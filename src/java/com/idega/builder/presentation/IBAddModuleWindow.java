@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.52 2006/04/09 11:43:35 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.53 2006/05/09 14:44:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.presentation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,10 +20,12 @@ import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
 import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectBMPBean;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
-import com.idega.data.EntityFinder;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
@@ -34,6 +37,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Window;
+import com.idega.util.ListUtil;
 
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -48,8 +52,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
 	private static final String INTERNAL_CONTROL_PARAMETER = "ib_adminwindow_par";
 
-	public static final String ELEMENT_LIST = "element_list";
-	public static final String BLOCK_LIST = "block_list";
+	public static final String ELEMENT_LIST = "element_builder_list";
+	public static final String BLOCK_LIST = "block_builder_list";
+	public static final String JSF_LIST = "jsf_builder_list";
 	final static String STYLE_NAME = "add_module";
 	
 	private Image elementImage;
@@ -61,8 +66,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	//Image button;
 
 	public IBAddModuleWindow() {
-		setWidth(400);
-		setHeight(400);
+		setWidth(640);
+		setHeight(500);
 		setResizable(true);
 		setScrollbar(true);
 		this.failedBundles = new ArrayList();
@@ -165,9 +170,10 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	}
 
 	/**
+	 * @throws Exception 
 	 *
 	 */
-	private Table getComponentList(IWContext iwc) {
+	private Table getComponentList(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
 		Table theReturn = new Table();
 		theReturn.setWidth("100%");
@@ -179,14 +185,17 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		theReturn.setColor(1, 1, "#ECECEC");
 		theReturn.setColor(2, 1, "#ECECEC");
 
-		ICObject staticICO = (ICObject) GenericEntity.getStaticInstance(ICObject.class);
+		//ICObject staticICO = (ICObject) GenericEntity.getStaticInstance(ICObject.class);
+		ICObjectHome icoHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
 		try {
 			List elements = null;
 			List blocks = null;
+			List jsfuicomponents = null;
 
 			try {
 				elements = (List) iwc.getApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId());
 				blocks = (List) iwc.getApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId());
+				jsfuicomponents = (List) iwc.getApplicationAttribute(JSF_LIST + "_" + iwc.getCurrentLocaleId());
 			}
 			catch (Exception e) {
 				elements = null;
@@ -194,9 +203,13 @@ public class IBAddModuleWindow extends IBAdminWindow {
 			}
 
 			if (elements == null && blocks == null) {
-				elements = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT, "OBJECT_NAME");
-				blocks = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK, "OBJECT_NAME");
-
+				//elements = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_ELEMENT, "OBJECT_NAME");
+				elements = ListUtil.convertCollectionToList(icoHome.findAllByObjectTypeOrdered(ICObjectBMPBean.COMPONENT_TYPE_ELEMENT));
+				//blocks = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_BLOCK, "OBJECT_NAME");
+				blocks = ListUtil.convertCollectionToList(icoHome.findAllByObjectTypeOrdered(ICObjectBMPBean.COMPONENT_TYPE_BLOCK));
+				//jsfuicomponents = EntityFinder.findAllByColumnOrdered(staticICO, com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT,"OBJECT_NAME");
+				jsfuicomponents = ListUtil.convertCollectionToList(icoHome.findAllByObjectTypeOrdered(ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT));
+				
 				ModuleComparator comparator = new ModuleComparator(iwc);
 				if (elements != null) {
 					java.util.Collections.sort(elements,comparator );
@@ -206,6 +219,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 				}
 				iwc.setApplicationAttribute(ELEMENT_LIST + "_" + iwc.getCurrentLocaleId(), elements);
 				iwc.setApplicationAttribute(BLOCK_LIST + "_" + iwc.getCurrentLocaleId(), blocks);
+				iwc.setApplicationAttribute(JSF_LIST + "_" + iwc.getCurrentLocaleId(), jsfuicomponents);
 				
 				this.failedBundles = comparator.getFailedBundles();
 				this.bundles = comparator.getBundles();
@@ -214,10 +228,14 @@ public class IBAddModuleWindow extends IBAdminWindow {
 
 			String sElements = iwrb.getLocalizedString("elements_header", "Elements");
 			String sBlocks = iwrb.getLocalizedString("blocks_header", "Blocks");
+			String sJSF = iwrb.getLocalizedString("jsfuicomponents_header", "JSF Components");
 
 			addSubComponentList(sElements, elements, theReturn, 1, 1, iwc);
 			addSubComponentList(sBlocks, blocks, theReturn, 1, 2, iwc);
-
+			if(jsfuicomponents!=null && jsfuicomponents.size()>0){
+				addSubComponentList(sJSF, jsfuicomponents, theReturn, 1, 3, iwc);
+				theReturn.setColumnVerticalAlignment(3, "top");
+			}
 			theReturn.setColumnVerticalAlignment(1, "top");
 			theReturn.setColumnVerticalAlignment(2, "top");
 		}
@@ -230,7 +248,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	/**
 	 *
 	 */
-	private void addSubComponentList(String name, List list, Table table, int ypos, int xpos, IWContext iwc) {
+	private void addSubComponentList(String name, Collection elements, Table table, int ypos, int xpos, IWContext iwc) {
 		//TODO set the final size
 		Table subComponentTable = new Table();
 		
@@ -243,8 +261,8 @@ public class IBAddModuleWindow extends IBAdminWindow {
 		header.setFontSize(Text.FONT_SIZE_12_HTML_3);
 		subComponentTable.add(header, 1, ypos);
 		subComponentTable.mergeCells(1, ypos, 2, ypos);
-		if (list != null) {
-			Iterator iter = list.iterator();
+		if (elements != null) {
+			Iterator iter = elements.iterator();
 			ICObject item;
 			//Link iconLink;
 			Image iconLink;

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.44 2006/04/09 11:43:34 laddi Exp $
+ * $Id: XMLWriter.java,v 1.45 2006/05/09 14:44:03 tryggvil Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -14,8 +14,13 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
+import com.idega.core.idgenerator.business.UUIDGenerator;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -171,7 +176,7 @@ public class XMLWriter {
 			Iterator iter = elementList.iterator();
 			while (iter.hasNext()) {
 				XMLElement item = (XMLElement) iter.next();
-				if (hasPropertyElementSpecifiedValues(iwma, instanceId, item, values, true)) {
+				if (hasPropertyElementSpecifiedValues(iwma, instanceId, item, propertyName,values, true)) {
 					return item;
 				}
 			}
@@ -199,33 +204,49 @@ public class XMLWriter {
 	 * Returns true if a propertyElement has the specified values, else false
 	 */
 	public static boolean hasPropertyElementSpecifiedValues(IWMainApplication iwma, String instanceId,
-			XMLElement propertyElement, String[] values, boolean withPrimaryKeyCheck) {
+			XMLElement propertyElement, String propertyName, String[] values, boolean withPrimaryKeyCheck) {
 		boolean check = true;
-		int counter = 0;
-		List valueList = propertyElement.getChildren(XMLConstants.VALUE_STRING);
-		Iterator iter = valueList.iterator();
-		while (check && counter < values.length) {
-			try {
-				String methodIdentifier = getPropertyNameForElement(propertyElement);
-				boolean isPrimaryKey = IBPropertyHandler.getInstance().isMethodParameterPrimaryKey(iwma,instanceId, methodIdentifier, counter);
-				XMLElement eValue = (XMLElement) iter.next();
-				if (withPrimaryKeyCheck) {
-					if (isPrimaryKey) {
+		boolean isMethodIdentifier = MethodFinder.getInstance().isMethodIdentifier(propertyName);
+		if(isMethodIdentifier){
+			int counter = 0;
+			List valueList = propertyElement.getChildren(XMLConstants.VALUE_STRING);
+			Iterator iter = valueList.iterator();
+			while (check && counter < values.length) {
+				try {
+					String methodIdentifier = getPropertyNameForElement(propertyElement);
+					boolean isPrimaryKey = IBPropertyHandler.getInstance().isMethodParameterPrimaryKey(iwma,instanceId, methodIdentifier, counter);
+					XMLElement eValue = (XMLElement) iter.next();
+					if (withPrimaryKeyCheck) {
+						if (isPrimaryKey) {
+							if (!eValue.getText().equals(values[counter])) {
+								check = false;
+							}
+						}
+					}
+					else {
 						if (!eValue.getText().equals(values[counter])) {
 							check = false;
 						}
 					}
 				}
-				else {
-					if (!eValue.getText().equals(values[counter])) {
-						check = false;
+				catch (Exception e) {
+					return false;
+				}
+				counter++;
+			}
+		}
+		else{
+			//Only handle a single property Value for now:
+			String propValue = propertyElement.getAttributeValue(XMLConstants.VALUE_STRING);
+			if(values.length==1){
+				String value = values[0];
+				if(value!=null){
+					if(value.equals(propValue)){
+						check=true;
+						return check;
 					}
 				}
 			}
-			catch (Exception e) {
-				return false;
-			}
-			counter++;
 		}
 		return check;
 	}
@@ -252,15 +273,34 @@ public class XMLWriter {
 					XMLElement pElement = (XMLElement) iter.next();
 					if (pElement != null) {
 						if (pElement.getName().equals(XMLConstants.PROPERTY_STRING)) {
-							XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
-							if (name != null) {
-								if (name.getText().equals(propertyName)) {
-									if (theReturn == null) {
-										theReturn = new Vector();
+							//boolean isMethodIdentifier = MethodFinder.getInstance().isMethodIdentifier(propertyName);
+							//if(isMethodIdentifier){
+								XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
+								if (name != null) {
+									if (name.getText().equals(propertyName)) {
+										if (theReturn == null) {
+											theReturn = new Vector();
+										}
+										theReturn.add(pElement);
 									}
-									theReturn.add(pElement);
 								}
-							}
+								else if(name==null){
+									String nameAttr = pElement.getAttributeValue(XMLConstants.NAME_STRING);
+									if(nameAttr!=null){
+										if(nameAttr.equals(propertyName)){
+											if (theReturn == null) {
+												theReturn = new Vector();
+											}
+											theReturn.add(pElement);
+										}
+									}
+								}
+							//}
+							//else{
+							//	XMLAttribute value = pElement.getAttribute(XMLConstants.VALUE_STRING);
+							//	theReturn = new Vector();
+							//	theReturn.add(value);
+							//}
 						}
 					}
 				}
@@ -282,10 +322,22 @@ public class XMLWriter {
 					XMLElement pElement = (XMLElement) iter.next();
 					if (pElement != null) {
 						if (pElement.getName().equals(XMLConstants.PROPERTY_STRING)) {
-							XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
-							if (name != null) {
-								if (name.getText().equals(propertyName)) {
-									return pElement;
+							boolean isMethodIdentifier = MethodFinder.getInstance().isMethodIdentifier(propertyName);
+							if(isMethodIdentifier){
+								//Older way of handling methodIdentifier Properties:
+								XMLElement name = pElement.getChild(XMLConstants.NAME_STRING);
+								if (name != null) {
+									if (name.getText().equals(propertyName)) {
+										return pElement;
+									}
+								}
+							}
+							else{
+								String name = pElement.getAttributeValue("name");
+								if(name!=null){
+									if(name.equals(propertyName)){
+										return pElement;
+									}
 								}
 							}
 						}
@@ -302,27 +354,42 @@ public class XMLWriter {
 	public static List getPropertyValues(IBXMLAble xml, String instanceId, String propertyName) {
 		XMLElement module = findModule(xml, instanceId);
 		List theReturn = com.idega.util.ListUtil.getEmptyList();
+
 		List propertyList = findProperties(module, propertyName);
 		if (propertyList != null) {
-			theReturn = new Vector();
-			Iterator iter = propertyList.iterator();
-			while (iter.hasNext()) {
-				XMLElement property = (XMLElement) iter.next();
-				if (property != null) {
-					List list = property.getChildren(XMLConstants.VALUE_STRING);
-					String[] array = new String[list.size()];
-					Iterator iter2 = list.iterator();
-					int counter = 0;
-					while (iter2.hasNext()) {
-						XMLElement el = (XMLElement) iter2.next();
-						String theString = el.getText();
-						array[counter] = theString;
-						counter++;
+			boolean isMethodIdentifier = MethodFinder.getInstance().isMethodIdentifier(propertyName);
+			if(isMethodIdentifier){
+				theReturn = new Vector();
+				Iterator iter = propertyList.iterator();
+				while (iter.hasNext()) {
+					XMLElement property = (XMLElement) iter.next();
+					if (property != null) {
+						List list = property.getChildren(XMLConstants.VALUE_STRING);
+						String[] array = new String[list.size()];
+						Iterator iter2 = list.iterator();
+						int counter = 0;
+						while (iter2.hasNext()) {
+							XMLElement el = (XMLElement) iter2.next();
+							String theString = el.getText();
+							array[counter] = theString;
+							counter++;
+						}
+						theReturn.add(array);
 					}
+				}
+			}
+			else{
+				Iterator iter = propertyList.iterator();
+				theReturn = new Vector();
+				while (iter.hasNext()) {
+					XMLElement property = (XMLElement) iter.next();
+					String propValue = property.getAttributeValue(XMLConstants.VALUE_STRING);
+					String[] array = new String[]{propValue};
 					theReturn.add(array);
 				}
 			}
 		}
+
 		return theReturn;
 	}
 
@@ -396,6 +463,7 @@ public class XMLWriter {
 		if (!isPropertyValueArrayValid(propertyValues)) {
 			return false;
 		}
+		boolean isMethodIdentifier = MethodFinder.getInstance().isMethodIdentifier(propertyName);
 		boolean changed = false;
 		XMLElement module = findModule(xml, instanceId);
 		XMLElement property = null;
@@ -411,29 +479,36 @@ public class XMLWriter {
 			changed = true;
 		}
 		else {
-			List values = property.getChildren(XMLConstants.VALUE_STRING);
-			if (values != null) {
-				Iterator iter = values.iterator();
-				int index = 0;
-				while (iter.hasNext()) {
-					String propertyValue = propertyValues[index];
-					XMLElement value = (XMLElement) iter.next();
-					String currentValue = value.getText();
-					if (!currentValue.equals(propertyValue)) {
-						value.setText(propertyValue);
+			if(isMethodIdentifier){
+				List values = property.getChildren(XMLConstants.VALUE_STRING);
+				if (values != null) {
+					Iterator iter = values.iterator();
+					int index = 0;
+					while (iter.hasNext()) {
+						String propertyValue = propertyValues[index];
+						XMLElement value = (XMLElement) iter.next();
+						String currentValue = value.getText();
+						if (!currentValue.equals(propertyValue)) {
+							value.setText(propertyValue);
+							changed = true;
+						}
+						index++;
+					}
+				}
+				else {
+					for (int index = 0; index < propertyValues.length; index++) {
+						String propertyValue = propertyValues[index];
+						XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
+						value.addContent(propertyValue);
+						property.addContent(value);
 						changed = true;
 					}
-					index++;
 				}
 			}
-			else {
-				for (int index = 0; index < propertyValues.length; index++) {
-					String propertyValue = propertyValues[index];
-					XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
-					value.addContent(propertyValue);
-					property.addContent(value);
-					changed = true;
-				}
+			else{
+				//only support one value for now:
+				String value = propertyValues[0];
+				property.setAttribute(XMLConstants.VALUE_STRING, value);
 			}
 		}
 		return changed;
@@ -443,20 +518,41 @@ public class XMLWriter {
 	 *  
 	 */
 	private static XMLElement getNewProperty(String propertyName, Object[] propertyValues) {
+		
+		
+		boolean isMethodIdentifier = MethodFinder.getInstance().isMethodIdentifier(propertyName);
+		
 		XMLElement element = new XMLElement(XMLConstants.PROPERTY_STRING);
-		XMLElement name = new XMLElement(XMLConstants.NAME_STRING);
-		for (int i = 0; i < propertyValues.length; i++) {
-			XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
-			XMLElement type = new XMLElement(XMLConstants.TYPE_STRING);
-			Object propertyValue = propertyValues[i];
-			if (i == 0) {
-				element.addContent(name);
-				name.addContent(propertyName);
+		
+		if(isMethodIdentifier){
+			XMLElement name = new XMLElement(XMLConstants.NAME_STRING);
+			for (int i = 0; i < propertyValues.length; i++) {
+				XMLElement value = new XMLElement(XMLConstants.VALUE_STRING);
+				XMLElement type = new XMLElement(XMLConstants.TYPE_STRING);
+				Object propertyValue = propertyValues[i];
+				if (i == 0) {
+					element.addContent(name);
+					name.addContent(propertyName);
+				}
+				element.addContent(value);
+				element.addContent(type);
+				value.addContent(propertyValue.toString());
+				type.addContent(propertyValue.getClass().getName());
 			}
-			element.addContent(value);
-			element.addContent(type);
-			value.addContent(propertyValue.toString());
-			type.addContent(propertyValue.getClass().getName());
+		}
+		else{
+			element.setAttribute(new XMLAttribute(XMLConstants.NAME_STRING,propertyName));
+			String strValue = null ;
+			for (int i = 0; i < propertyValues.length; i++) {
+				if(strValue==null){
+					strValue=propertyValues[i].toString();
+				}
+				else{
+					strValue=","+propertyValues[i].toString();
+				}
+			}
+			
+			element.setAttribute(new XMLAttribute(XMLConstants.VALUE_STRING,strValue));
 		}
 		return element;
 	}
@@ -468,22 +564,29 @@ public class XMLWriter {
 		//XMLElement parent = findModule(parentObjectInstanceID);
 		if (parent != null) {
 			try {
-				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).createLegacy();
+				ICObjectInstanceHome icoiHome = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+				ICObjectHome icoHome = (ICObjectHome)IDOLookup.getHome(ICObject.class);
+				
+				ICObjectInstance instance = icoiHome.create();
 				instance.setICObjectID(newICObjectTypeID);
 				instance.setIBPageByKey(pageKey);
 				instance.store();
-				ICObject obj = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHome(ICObject.class)).findByPrimaryKey(newICObjectTypeID);
+				ICObject obj = icoHome.findByPrimaryKey(new Integer(newICObjectTypeID));
 				Class theClass = obj.getObjectClass();
+				
+				String uuid = instance.getUniqueId();
+				String xmlId = XMLReader.UUID_PREFIX+uuid;
+				
 				XMLElement newElement = new XMLElement(XMLConstants.MODULE_STRING);
-				XMLAttribute aId = new XMLAttribute(XMLConstants.ID_STRING, instance.getPrimaryKey().toString());
-				XMLAttribute aIcObjectId = new XMLAttribute(XMLConstants.IC_OBJECT_ID_STRING,
-						Integer.toString(newICObjectTypeID));
+				XMLAttribute aId = new XMLAttribute(XMLConstants.ID_STRING, xmlId);
+				//XMLAttribute aIcObjectId = new XMLAttribute(XMLConstants.IC_OBJECT_ID_STRING,
+				//		Integer.toString(newICObjectTypeID));
 				XMLAttribute aClass = new XMLAttribute(XMLConstants.CLASS_STRING, theClass.getName());
 				//        newElement.addAttribute(aId);
 				//        newElement.addAttribute(aIcObjectId);
 				//        newElement.addAttribute(aClass);
 				newElement.setAttribute(aId);
-				newElement.setAttribute(aIcObjectId);
+				//newElement.setAttribute(aIcObjectId);
 				newElement.setAttribute(aClass);
 				parent.addContent(newElement);
 			}
@@ -1004,16 +1107,30 @@ public class XMLWriter {
 			XMLAttribute attribute = element.getAttribute(XMLConstants.ID_STRING);
 			XMLAttribute object_id = element.getAttribute(XMLConstants.IC_OBJECT_ID_STRING);
 			if(object_id!=null){
-				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHome(ICObjectInstance.class)).create();
+				//If a ic_object_id is found then try to generate a new ic_object_instance and take its uniqueId:
+				ICObjectInstanceHome home = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+				ICObjectInstance instance = home.create();
 				instance.setICObjectID(object_id.getIntValue());
 				instance.setIBPageByKey(pageKey);
 				instance.store();
-				String moduleId = instance.getPrimaryKey().toString();
+				//String moduleId = instance.getPrimaryKey().toString();
+				String uuid = instance.getUniqueId();
+				String moduleId = XMLReader.UUID_PREFIX+uuid;
 				attribute = new XMLAttribute(XMLConstants.ID_STRING, moduleId);
 			}
 			else{
-				//just add a "_" to the old id
-				attribute = new XMLAttribute(XMLConstants.ID_STRING, attribute.getValue()+"_");
+				String oldValue = attribute.getValue();
+				if(oldValue.startsWith(XMLReader.UUID_PREFIX)){
+					//If no ic_object_id is found then try to generate a new uuid:
+					UUIDGenerator generator = UUIDGenerator.getInstance();
+					String newUuid = generator.generateId();
+					String newValue = XMLReader.UUID_PREFIX+newUuid;
+					attribute = new XMLAttribute(XMLConstants.ID_STRING, newValue);
+				}
+				else{
+					//If all fails add a "_" to the old id
+					attribute = new XMLAttribute(XMLConstants.ID_STRING, oldValue+"_");
+				}
 			}
 			
 			element.setAttribute(attribute);

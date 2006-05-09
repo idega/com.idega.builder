@@ -1,10 +1,14 @@
 package com.idega.builder.business;
 import java.sql.SQLException;
 import java.util.List;
+import javax.ejb.CreateException;
 
 import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 /**
  * Title:        ProjectWeb
  * Description:
@@ -16,20 +20,21 @@ import com.idega.data.EntityFinder;
 public class IBObjectHandler
 {
 	private ICObject arObject;
-	public IBObjectHandler() throws SQLException
+	public IBObjectHandler() throws IDOLookupException, CreateException
 	{
-		this.arObject = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
+		this.arObject = ((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHome(ICObject.class)).create();
 	}
 	public int addNewObject(String PublicName, Object obj) throws Exception
 	{
 		int objID = getObjectID(obj);
 		if (objID == -1)
 		{
-			ICObject newObj =
-				((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy();
+			ICObjectHome icoHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
+			
+			ICObject newObj = icoHome.create();
 			newObj.setClassName(obj.getClass().getName());
 			newObj.setName(PublicName);
-			newObj.insert();
+			newObj.store();
 			return newObj.getID();
 		}
 		else
@@ -47,7 +52,7 @@ public class IBObjectHandler
 				((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class))
 					.createLegacy();
 			newInstance.setICObjectID(instID);
-			newInstance.insert();
+			newInstance.store();
 			return newInstance.getID();
 		}
 		else
@@ -57,14 +62,25 @@ public class IBObjectHandler
 	}
 	public int getObjectID(Object obj) throws Exception
 	{
-		List myList =
+		/*List myList =
 			EntityFinder.findAllByColumn(
 				this.arObject,
 				com.idega.core.component.data.ICObjectBMPBean.getClassNameColumnName(),
-				obj.getClass().getName());
-		if (myList != null)
+				obj.getClass().getName());*/
+
+		ICObjectHome home=null;
+		ICObject ico =null;
+		try {
+			String className = obj.getClass().getName();
+			home = (ICObjectHome)IDOLookup.getHome(ICObject.class);
+			ico = home.findByClassName(className);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (ico != null)
 		{
-			return ((ICObject) myList.get(0)).getID();
+			return ico.getID();
 		}
 		else
 		{

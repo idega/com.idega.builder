@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderInitialSetup.java,v 1.3 2006/04/09 11:43:36 laddi Exp $
+ * $Id: BuilderInitialSetup.java,v 1.4 2006/05/09 14:44:03 tryggvil Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package com.idega.builder.bean;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.data.CachedDomain;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDomainHome;
 import com.idega.data.IDOLookup;
@@ -20,10 +21,10 @@ import com.idega.idegaweb.IWMainApplication;
  * <p>
  * Managed bean to back-up the page jsp/initialSetup.jsp.
  * </p>
- *  Last modified: $Date: 2006/04/09 11:43:36 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/05/09 14:44:03 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class BuilderInitialSetup {
 
@@ -74,7 +75,17 @@ public class BuilderInitialSetup {
 			domain.setDomainName(getDomainName());
 			domain.store();
 			
-			getBuilderLogic().initializeBuilderStructure(cachedDomain,getFrontPageName());
+			getBuilderLogic().initializeBuilderStructure(domain,getFrontPageName());
+			
+			cachedDomain.setIBPage(domain.getStartPage());
+			cachedDomain.setStartTemplate(domain.getStartTemplate());
+			if(cachedDomain instanceof CachedDomain){
+				CachedDomain ccachedDomain = (CachedDomain)cachedDomain;
+				ccachedDomain.setStartTemplateID(domain.getStartTemplateID());
+				ccachedDomain.setStartPage(domain.getStartPage());
+				ccachedDomain.setStartPageID(domain.getStartPageID());
+			}
+			
 			return "next";
 		}
 		catch (Exception e) {

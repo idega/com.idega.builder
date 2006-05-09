@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.98 2006/02/22 20:55:22 laddi Exp $
+ *  $Id: IBApplication.java,v 1.99 2006/05/09 14:44:03 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,8 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.core.view.ViewManager;
+import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWMainApplication;
@@ -915,29 +917,30 @@ public class IBApplication extends IWApplication {
 				boolean isSuperUser = false;
 				isSuperUser = iwc.isSuperAdmin();
 				boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER,iwc);
+				
+
+				//Display the simple template page
+				if (isSuperUser||isBuilderUser) {
+					String settingsUrl;
+					ViewNode settingsNode = ViewManager.getInstance(iwc).getWorkspaceRoot().getChild("content").getChild("pages").getChild("templatesettings");
+					settingsUrl = settingsNode.getURIWithContextPath();
+					Image sourceImage = _iwrb.getImage("shared/status/settings1.gif", "Source", 64, 17);
+					sourceImage.setOnClickImage(_iwrb.getImage("shared/status/settings.gif"));
+					Link sourceLink = new Link(sourceImage);
+					sourceLink.setURL(settingsUrl);
+					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
+					toolTable.add(sourceLink, 4, 1);
+				}
+				
 				//Display the source tab only if the current user is the SuperUser
 				if (isSuperUser||isBuilderUser) {
 					Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
 					sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
 					Link sourceLink = new Link(sourceImage, IBSourceView.class);
 					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
-					toolTable.add(sourceLink, 4, 1);
-				}
-				
-				/*
-				//Display the simple template page
-				if (isSuperUser||isBuilderUser) {
-					String settingsUrl;
-					ViewNode settingsNode = ViewManager.getInstance(iwc).getWorkspaceRoot().getChild("content").getChild("pages").getChild("templatesettings");
-					settingsUrl = settingsNode.getURIWithContextPath();
-					//Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
-					//sourceImage.setOnClickImage(_iwrb.getImage("shared/status/source.gif"));
-					Link sourceLink = new Link("Simple template settings");
-					sourceLink.setURL(settingsUrl);
-					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
 					toolTable.add(sourceLink, 5, 1);
 				}
-				*/
+				
 				String id=null;
                 try {
                     id = Integer.toString(this.getBuilderService(iwc).getCurrentPageId(iwc));

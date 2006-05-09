@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderRootViewNode.java,v 1.4 2005/07/29 17:02:59 tryggvil Exp $
+ * $Id: BuilderRootViewNode.java,v 1.5 2006/05/09 14:44:03 tryggvil Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -17,6 +17,7 @@ import javax.faces.context.FacesContext;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.CachedBuilderPage;
 import com.idega.builder.business.PageCacher;
+import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWMainApplication;
@@ -30,10 +31,10 @@ import com.idega.util.StringHandler;
  * default mapped under '/pages/'. The instance of this class is the one that handles precicely this url, i.e. the 
  * one on the root for pages.
  * </p>
- *  Last modified: $Date: 2005/07/29 17:02:59 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/05/09 14:44:03 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class BuilderRootViewNode extends DefaultViewNode {
 	/**
@@ -73,7 +74,10 @@ public class BuilderRootViewNode extends DefaultViewNode {
 		//return super.loadChild(childId);
 		ViewNode node =  getPageCacher().getCachedBuilderPage(childId);
 		if(node==null){
-			throw new RuntimeException("Page with id="+childId+" not found");
+			BuilderPageException be =  new BuilderPageException("Page with id="+childId+" not found");
+			be.setCode(BuilderPageException.CODE_NOT_FOUND);
+			be.setPageUri(childId);
+			throw be;
 		}
 		return node;
 	}

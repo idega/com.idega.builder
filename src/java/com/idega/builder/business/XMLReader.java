@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.67 2006/04/09 11:43:34 laddi Exp $
+ * $Id: XMLReader.java,v 1.68 2006/05/09 14:44:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,10 +12,17 @@ package com.idega.builder.business;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.tag.BuilderPage;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.event.ObjectInstanceCacher;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
@@ -33,6 +40,7 @@ import com.idega.xml.XMLException;
  * @version 1.0
  */
 public class XMLReader {
+	public static final String UUID_PREFIX = "uuid_";
 	/**
 	 *
 	 */
@@ -476,11 +484,14 @@ public class XMLReader {
 			}
 			//else if(icObjectInstanceId!=null){
 			else if(componentId!=null){
-				int icObjectInstanceId = getICObjectInstanceIdFromComponentId(componentId);
-				icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId);
-				//firstUICInstance = icObjectInstance.getNewInstance();
-				Class objectClass = icObjectInstance.getObject().getObjectClass();
-				firstUICInstance = (UIComponent)objectClass.newInstance();
+				try{
+					int icObjectInstanceId = getICObjectInstanceIdFromComponentId(componentId,className);
+					icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId);
+					//firstUICInstance = icObjectInstance.getNewInstance();
+					Class objectClass = icObjectInstance.getObject().getObjectClass();
+					firstUICInstance = (UIComponent)objectClass.newInstance();
+				}
+				catch(NumberFormatException e){}
 			}
 			
 			setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);	
@@ -596,9 +607,87 @@ public class XMLReader {
 		return firstUICInstance;
 	}
 
-	protected static int getICObjectInstanceIdFromComponentId(String componentId){
+	public static int getICObjectInstanceIdFromComponentId(String componentId, String className){
 		//TODO: Fix this:
-		return Integer.parseInt(componentId);
+		if(componentId.startsWith(UUID_PREFIX)){
+			ICObjectInstance instance = getICObjectInstanceFromComponentId(componentId,className);
+			return instance.getID();
+		}
+		else{
+			return Integer.parseInt(componentId);
+		}
+	}
+	
+	public static ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className){
+		ICObjectInstanceHome icoHome = getICObjectInstanceHome();
+		if(componentId.startsWith(UUID_PREFIX)){
+			String uniqueId = componentId.substring(UUID_PREFIX.length(),componentId.length());
+			try{
+				ICObjectInstance ico = icoHome.findByUniqueId(uniqueId);
+				return ico;
+			}
+			catch(FinderException e){
+				ICObjectInstance instance;
+				try {
+					instance = icoHome.create();
+					instance.setUniqueId(uniqueId);
+					try {
+						ICObject ico = getICObjectHome().findByClassName(className);
+						instance.setICObject(ico);
+					}
+					catch (FinderException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					instance.store();
+					return instance;
+				}
+				catch (CreateException e1) {
+					throw new RuntimeException(e1);
+				}
+			}
+		}
+		else{
+			int id = Integer.parseInt(componentId);
+			ICObjectInstance instance;
+			try {
+				instance = icoHome.findByPrimaryKey(id);
+				return instance;
+			}
+			catch (FinderException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
+	/**
+	 * <p>
+	 * TODO tryggvil describe method getICObjectHome
+	 * </p>
+	 * @return
+	 */
+	public static ICObjectInstanceHome getICObjectInstanceHome() {
+		try {
+			return (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+		}
+		catch (IDOLookupException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method getICObjectHome
+	 * </p>
+	 * @return
+	 */
+	public static ICObjectHome getICObjectHome() {
+		try {
+			return (ICObjectHome) IDOLookup.getHome(ICObject.class);
+		}
+		catch (IDOLookupException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
@@ -609,25 +698,40 @@ public class XMLReader {
 	 * @param icObjectInstance
 	 * @return
 	 */
-	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String componentId, String icObjectId, ICObjectInstance icObjectInstance) {
+	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String componentId, String sIcObjectId, ICObjectInstance icObjectInstance) {
 		
 		if(firstUICInstance instanceof PresentationObject){
 			PresentationObject presentationObject = (PresentationObject) firstUICInstance;
-			presentationObject.setICObjectInstance(icObjectInstance);
+
+			int icObjectInstanceId=-1;
+			int icObjectId=-1;
 			
-			if (icObjectId == null) {
-				presentationObject.setICObject(icObjectInstance.getObject());
+			
+			//presentationObject.setICObjectInstance(icObjectInstance);
+			if(icObjectInstance!=null){
+				icObjectInstanceId=((Integer)icObjectInstance.getPrimaryKey()).intValue();
+			}
+			
+			if (sIcObjectId == null) {
+				//presentationObject.setICObject(icObjectInstance.getObject());
+				if(icObjectInstance!=null){
+					ICObject ico = icObjectInstance.getObject();
+					if(ico!=null){
+						icObjectId=((Integer)ico.getPrimaryKey()).intValue();
+					}
+				}
 			}
 			else {
-				presentationObject.setICObjectID(Integer.parseInt(icObjectId));
+				icObjectId=Integer.parseInt(sIcObjectId);
 			}
 			
 			//TODO JSF COMPAT FIND OUT WHAT THIS IS for??
 			// added by gummi@idega.is // - cache ObjectInstance
 			if (!"0".equals(componentId)) {
-				setObjectInstance(ibxml, componentId, presentationObject);
+				cacheObjectInstance(ibxml, componentId, presentationObject);
 			}
 			
+			presentationObject.setBuilderIds(componentId, icObjectInstanceId, icObjectId);
 		}
 		else{
 			//set the instance id for a UIComponent
@@ -704,10 +808,10 @@ public class XMLReader {
 	
 
 	public static void setTemplateObjectsForPage(CachedBuilderPage ibxml){
-	  setObjectInstance(ibxml, null, null);
+	  cacheObjectInstance(ibxml, null, null);
 	}
 
-	public static void setObjectInstance(CachedBuilderPage ibxml, String instanceKey, PresentationObject objectInstance){
+	public static void cacheObjectInstance(CachedBuilderPage ibxml, String instanceKey, PresentationObject objectInstance){
 	  if(instanceKey != null){
 		ObjectInstanceCacher.putObjectIntanceInCache(instanceKey,objectInstance);
 	  }

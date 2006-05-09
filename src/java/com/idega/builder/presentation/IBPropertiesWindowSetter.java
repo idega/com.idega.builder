@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.32 2006/05/03 11:58:56 eiki Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.33 2006/05/09 14:44:03 tryggvil Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -12,7 +12,9 @@ package com.idega.builder.presentation;
 import java.lang.reflect.Method;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
+import com.idega.builder.business.XMLReader;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.core.cache.CacheableUIComponent;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
@@ -210,7 +212,7 @@ public class IBPropertiesWindowSetter extends Page {
 		}
 	}
 
-	public PresentationObject getPropertySetterBox(String methodIdentifier, IWContext iwc, String pageID,
+	public PresentationObject getPropertySetterBox(String propertyName, IWContext iwc, String pageID,
 			String icObjectInstanceID) throws Exception {
 		if (pageID == null) {
 			pageID = BuilderLogic.getInstance().getCurrentIBPage(iwc);
@@ -218,7 +220,7 @@ public class IBPropertiesWindowSetter extends Page {
 		Table table = new Table();
 		int ypos = 1;
 		Class ICObjectClass = null;
-		int icObjectInstanceIDint = Integer.parseInt(icObjectInstanceID);
+		int icObjectInstanceIDint = XMLReader.getICObjectInstanceIdFromComponentId(icObjectInstanceID,null);
 		if (icObjectInstanceIDint == -1) {
 			ICObjectClass = com.idega.presentation.Page.class;
 		}
@@ -226,14 +228,24 @@ public class IBPropertiesWindowSetter extends Page {
 			ICObjectClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
 		}
 		String namePrefix = "ib_property_";
-		Method method = MethodFinder.getInstance().getMethod(methodIdentifier, ICObjectClass);
-		Class parameters[] = method.getParameterTypes();
+	
+		MethodFinder methodFinder = MethodFinder.getInstance();
+		Class parameters[] = null;
+		boolean isMethodIdentifier = false;
+		if(methodFinder.isMethodIdentifier(propertyName)){
+			Method method = MethodFinder.getInstance().getMethod(propertyName, ICObjectClass);
+			parameters = method.getParameterTypes();
+			isMethodIdentifier=true;
+		}
+		else{
+			parameters = new Class[]{String.class};
+		}
 		String selectedValues[] = parseValues(iwc);
 		String paramDescriptions[] = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc, icObjectInstanceID,
-				methodIdentifier);
+				propertyName);
 		boolean isChangingProperty = isChangingProperty(iwc);
 		String realValues[] = BuilderLogic.getInstance().getPropertyValues(iwc.getIWMainApplication(), pageID,
-				icObjectInstanceID, methodIdentifier, selectedValues, !isChangingProperty);
+				icObjectInstanceID, propertyName, selectedValues, !isChangingProperty);
 		for (int i = 0; i < parameters.length; i++) {
 			Class parameterClass = parameters[i];
 			String sValue = "";
@@ -246,8 +258,12 @@ public class IBPropertiesWindowSetter extends Page {
 			}
 			String sName = namePrefix + i;
 			String sParamDescription = paramDescriptions[i];
-			String handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc, icObjectInstanceID,
-					methodIdentifier, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
+			String handlerClass=null;
+			if(isMethodIdentifier){
+				handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc, icObjectInstanceID,
+					propertyName, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
+			}
+			
 			// if
 			// (handlerClass.equals("com.idega.builder.handler.LocalizedPageNameHandler"))
 			// {
@@ -265,7 +281,7 @@ public class IBPropertiesWindowSetter extends Page {
 			// sValue = tmp.toString();
 			// }
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,
-					icObjectInstanceID, methodIdentifier, i, parameterClass, sName, sValue);
+					icObjectInstanceID, propertyName, i, parameterClass, sName, sValue);
 			ICPropertyHandler handler = null;
 			if (handlerClass != null && !handlerClass.equals("")) {
 				handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
@@ -300,19 +316,23 @@ public class IBPropertiesWindowSetter extends Page {
 		return new Text(text);
 	}
 
-	public boolean setProperty(String key, String values[], String icObjectInstanceID, String pageKey,
+	public boolean setProperty(String key, String values[], String instanceId, String pageKey,
 			IWMainApplication iwma) {
 		// invalidate cache for blocks
 		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
-				Integer.parseInt(icObjectInstanceID));
+				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null));
 		/** @todo ensure the cache is invalidated for all states* */
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
 		}
-		return BuilderLogic.getInstance().setProperty(pageKey, icObjectInstanceID, key, values, iwma);
+		if(obj instanceof CacheableUIComponent){
+			CacheableUIComponent comp = (CacheableUIComponent)obj;
+			//comp.getCacher(context).clear();
+		}
+		return BuilderLogic.getInstance().setProperty(pageKey, instanceId, key, values, iwma);
 	}
 
-	public void removeProperty(IWMainApplication iwma, String key, String values[], String icObjectInstanceID,
+	public void removeProperty(IWMainApplication iwma, String key, String values[], String instanceId,
 			String pageKey) {
 		/**
 		 * @todo Change so that it removes properties of specific values for
@@ -321,10 +341,10 @@ public class IBPropertiesWindowSetter extends Page {
 		// invalidate cache for blocks
 		/** @todo ensure the cache is invalidated for all states* */
 		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
-				Integer.parseInt(icObjectInstanceID));
+				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null));
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
 		}
-		BuilderLogic.getInstance().removeProperty(iwma, pageKey, icObjectInstanceID, key, values);
+		BuilderLogic.getInstance().removeProperty(iwma, pageKey, instanceId, key, values);
 	}
 }

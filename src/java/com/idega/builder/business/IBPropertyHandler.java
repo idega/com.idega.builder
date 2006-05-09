@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.55 2006/05/08 13:51:58 laddi Exp $
+ * $Id: IBPropertyHandler.java,v 1.56 2006/05/09 14:44:03 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
 import com.idega.builder.handler.SpecifiedChoiceProvider;
@@ -23,11 +24,16 @@ import com.idega.builder.handler.TableRowsHandler;
 import com.idega.builder.presentation.TableRowColumnPropertyPresentation;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.core.component.business.ComponentInfo;
+import com.idega.core.component.business.ComponentProperty;
+import com.idega.core.component.business.ComponentRegistry;
+import com.idega.core.component.business.DefaultComponentProperty;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.file.data.ICFile;
-import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
@@ -44,6 +50,7 @@ import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
+import com.idega.util.ListUtil;
 import com.idega.util.caching.Cache;
 import com.idega.util.reflect.MethodFinder;
 /**
@@ -98,11 +105,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 
-	/**	
+	/**
 	 * Returns the IWProperty standing for the Method in the list of
 	 * registered properties for the component.
-	 *
-	 * @return
 	 */
 	public IWProperty getMethodProperty(String instanceId, String methodPropertyKey, IWMainApplication iwma) throws Exception {
 		IWPropertyList list = getMethods(instanceId, iwma);
@@ -121,7 +126,7 @@ public class IBPropertyHandler implements Singleton{
 			iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
 		}
 		else {
-			ICObjectInstance icoi = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(instanceId));
+			ICObjectInstance icoi = XMLReader.getICObjectInstanceFromComponentId(instanceId,null);
 			ICObject obj = icoi.getObject();
 			iwb = obj.getBundle(iwma);
 			componentKey = obj.getClassName();
@@ -347,10 +352,10 @@ public class IBPropertyHandler implements Singleton{
 	/**
 	 *
 	 */
-	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, Class parameterClass, String name, String stringValue) {
+	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue) {
 		PresentationObject obj = null;
 		try {
-			obj = getHandlerInstance(iwc, ICObjectInstanceID, methodIdentifier, parameterIndex, name, stringValue);
+			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue);
 		}
 		catch (Exception e) {
 		}
@@ -483,7 +488,7 @@ public class IBPropertyHandler implements Singleton{
 	 * @todo Change so that this returns the Localized description
 	
 	 */
-	public String getMethodDescription(IWProperty methodProperty, IWContext iwc) {
+	public String getMethodDescription(IWProperty methodProperty, Locale locale) {
 		if (methodProperty.getType().equals(IWProperty.MAP_TYPE)) {
 			return (methodProperty.getPropertyList().getProperty(METHOD_PROPERTY_DESCRIPTION));
 		}
@@ -498,9 +503,17 @@ public class IBPropertyHandler implements Singleton{
 	 */
 	public String getMethodDescription(String instanceId, String methodPropertyKey, IWContext iwc) {
 		try {
-			IWProperty methodProperty = getMethodProperty(instanceId, methodPropertyKey, iwc.getIWMainApplication());
+			/*IWProperty methodProperty = getMethodProperty(instanceId, methodPropertyKey, iwc.getIWMainApplication());
 			if (methodProperty != null) {
-				return (getMethodDescription(methodProperty, iwc));
+				return (getMethodDescription(methodProperty, iwc.getCurrentLocale()));
+			}*/
+			Locale locale = iwc.getCurrentLocale();
+			List properties = getComponentProperties(instanceId, iwc.getIWMainApplication(),locale);
+			for (Iterator iter = properties.iterator(); iter.hasNext();) {
+				ComponentProperty property = (ComponentProperty) iter.next();
+				if(property.getName().equals(methodPropertyKey)){
+					return property.getDisplayName(locale);
+				}
 			}
 		}
 		catch (Exception e) {
@@ -585,7 +598,8 @@ public class IBPropertyHandler implements Singleton{
 	 */
 	public List getAvailablePropertyHandlers() {
 		try {
-			return (EntityFinder.findAllByColumn(((com.idega.core.component.data.ICObjectHome) com.idega.data.IDOLookup.getHomeLegacy(ICObject.class)).createLegacy(), com.idega.core.component.data.ICObjectBMPBean.getObjectTypeColumnName(), com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_PROPERTYHANDLER));
+			ICObjectHome icoHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
+			return ListUtil.convertCollectionToList(icoHome.findAllByObjectType(com.idega.core.component.data.ICObjectBMPBean.COMPONENT_TYPE_PROPERTYHANDLER));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -689,6 +703,69 @@ public class IBPropertyHandler implements Singleton{
 			this.builderClassesFactory = new IBClassesFactory();
 		}
 		return this.builderClassesFactory;
+	}
+
+	/**
+	 * <p>
+	 * Returns a list of 'ComponentProperty' objects for the object with id instanceId.
+	 * </p>
+	 * @param instanceId
+	 * @param mainApplication
+	 * @return
+	 */
+	public List getComponentProperties(String instanceId, IWMainApplication iwma,Locale currentLocale) {
+		//List theReturn = new Vector();
+		
+
+		String componentClassName = null;
+		
+		IWBundle iwb = null;
+		//Hardcoded -1 for the top page
+		if ("-1".equals(instanceId) ) {
+			componentClassName = "com.idega.presentation.Page";
+			iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
+		}
+		else {
+			ICObjectInstance icoi = XMLReader.getICObjectInstanceFromComponentId(instanceId,null);
+			ICObject obj = icoi.getObject();
+			iwb = obj.getBundle(iwma);
+			componentClassName = obj.getClassName();
+		}
+		
+		ComponentRegistry registry = ComponentRegistry.getInstance(iwma);
+		ComponentInfo component = registry.getComponentByClassName(componentClassName);
+		if(component!=null){
+			
+			List properties = component.getProperties();
+			if(properties!=null&&properties.size()==0){
+				//Try to populate the ComponentProperties from the IWPropertyList from bundle.pxml
+				IWPropertyList pList = getMethods(iwb, componentClassName);
+				fillComponentProperties(componentClassName, iwma, currentLocale, component,properties,pList);
+			}
+			return properties;
+		}
+		return null;
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method fillComponentProperties
+	 * </p>
+	 * @param properties
+	 */
+	private void fillComponentProperties(String instanceId, IWMainApplication iwma,Locale currentLocale,ComponentInfo component,List properties,IWPropertyList methodList) {
+		//IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(instanceId, iwma);
+		Iterator iter = methodList.iterator();
+		while (iter.hasNext()) {
+			IWProperty methodProp = (IWProperty) iter.next();
+			String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
+			String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp, currentLocale);
+			DefaultComponentProperty desc = new DefaultComponentProperty(component);
+			desc.setDisplayName(methodDescr);
+			desc.setName(methodIdentifier);
+			properties.add(desc);
+		}
+		
 	}
 	
 }

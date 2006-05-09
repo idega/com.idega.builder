@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleTemplateCreationManagedBean.java,v 1.3 2006/04/09 11:43:36 laddi Exp $
+ * $Id: SimpleTemplateCreationManagedBean.java,v 1.4 2006/05/09 14:44:04 tryggvil Exp $
  * Created on 4.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:43:36 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/05/09 14:44:04 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SimpleTemplateCreationManagedBean implements ActionListener {
 
@@ -301,11 +301,14 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 		return l;
 	}
 
-	
 	public List getRegionSelectItemList(){
-		
-		
-		return null;
+		IWContext iwc = IWContext.getInstance();
+		SelectItem defaultItem = new SelectItem("main","Main");
+		List l = new ArrayList();
+		l.add(defaultItem);
+		SelectItem item2 = new SelectItem("mainContent","MainContent");
+		l.add(item2);
+		return l;
 	}
 	
 	public List getComponentSelectItemList(){
@@ -375,6 +378,9 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	 * @return Returns the selectedRegion.
 	 */
 	public String getSelectedRegion() {
+		if(selectedRegion==null){
+			return "main";
+		}
 		return this.selectedRegion;
 	}
 	/**

@@ -49,8 +49,8 @@ public class IBPermissionWindow extends IBAdminWindow{
 
 
   public IBPermissionWindow() {
-    setWidth(330);
-    setHeight(210);
+    setWidth(370);
+    setHeight(260);
     setScrollbar(false);
   }
 
