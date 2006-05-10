@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.69 2006/05/10 17:12:42 eiki Exp $
+ * $Id: XMLReader.java,v 1.70 2006/05/10 17:40:46 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -473,26 +473,38 @@ public class XMLReader {
 		try {
 			//first create an instance
 			//try to do it first by the classname (definately an UIComponent and maybe a PresentationObject)
-			if (className !=null && icObjectId == null) {
-				try {
-					firstUICInstance = (UIComponent) RefactorClassRegistry.forName(className).newInstance();
+			if (className !=null) {
+				
+				if(componentId!=null){
+					try{
+						String pageKey = ibxml.getPageKey();
+						int icObjectInstanceId = getICObjectInstanceIdFromComponentId(componentId,className,pageKey);
+						ICObjectInstanceHome icoiHome = (ICObjectInstanceHome) com.idega.data.IDOLookup.getHome(ICObjectInstance.class);
+						icObjectInstance = icoiHome.findByPrimaryKey(icObjectInstanceId);
+						
+						//icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId);
+						//firstUICInstance = icObjectInstance.getNewInstance();
+						Class objectClass = icObjectInstance.getObject().getObjectClass();
+						firstUICInstance = (UIComponent)objectClass.newInstance();
+					}
+					catch(Exception e){
+						e.printStackTrace();
+					}
 				}
-				catch (Exception e) {
-					e.printStackTrace(System.err);
-					throw new Exception("Invalid Class tag for module");
+				
+				//finally try to instanciate just from class:
+				if(firstUICInstance==null){
+					try{
+						firstUICInstance = (UIComponent) RefactorClassRegistry.forName(className).newInstance();
+					}
+					catch (Exception e) {
+						e.printStackTrace(System.err);
+						throw new Exception("Invalid Class tag for module: '"+className+"'");
+					}
 				}
 			}
 			//else if(icObjectInstanceId!=null){
-			else if(componentId!=null){
-				try{
-					int icObjectInstanceId = getICObjectInstanceIdFromComponentId(componentId,className);
-					icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId);
-					//firstUICInstance = icObjectInstance.getNewInstance();
-					Class objectClass = icObjectInstance.getObject().getObjectClass();
-					firstUICInstance = (UIComponent)objectClass.newInstance();
-				}
-				catch(NumberFormatException e){}
-			}
+			//else if
 			
 			setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);	
 			
@@ -607,10 +619,10 @@ public class XMLReader {
 		return firstUICInstance;
 	}
 
-	public static int getICObjectInstanceIdFromComponentId(String componentId, String className){
+	public static int getICObjectInstanceIdFromComponentId(String componentId, String className,String pageKey){
 		//TODO: Fix this:
 		if(componentId.startsWith(UUID_PREFIX)){
-			ICObjectInstance instance = getICObjectInstanceFromComponentId(componentId,className);
+			ICObjectInstance instance = getICObjectInstanceFromComponentId(componentId,className,pageKey);
 			return instance.getID();
 		}
 		else{
@@ -624,7 +636,7 @@ public class XMLReader {
 	 * @param className
 	 * @return
 	 */
-	public static ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className){
+	public static ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className, String pageKey){
 		ICObjectInstanceHome icoHome = getICObjectInstanceHome();
 		if(componentId.startsWith(UUID_PREFIX)){
 			String uniqueId = componentId.substring(UUID_PREFIX.length(),componentId.length());
@@ -637,6 +649,9 @@ public class XMLReader {
 				try {
 					instance = icoHome.create();
 					instance.setUniqueId(uniqueId);
+					if(pageKey!=null){
+						instance.setIBPageByKey(pageKey);
+					}
 					try {
 						ICObject ico = getICObjectHome().findByClassName(className);
 						instance.setICObject(ico);

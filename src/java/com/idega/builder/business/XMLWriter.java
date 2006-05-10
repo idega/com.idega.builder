@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.46 2006/05/10 17:12:42 eiki Exp $
+ * $Id: XMLWriter.java,v 1.47 2006/05/10 17:40:46 tryggvil Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -1137,9 +1137,8 @@ public class XMLWriter {
 				instanceIDAttribute = new XMLAttribute(XMLConstants.ID_STRING, newValue);
 				
 				if(className!=null){
-					ICObjectInstance instance = XMLReader.getICObjectInstanceFromComponentId(newValue, className);
-					instance.setIBPageByKey(pageKey);
-					instance.store();
+					//making sure there creates a new ICObjectInstance record
+					ICObjectInstance instance = XMLReader.getICObjectInstanceFromComponentId(newValue, className,pageKey);
 				}
 			}
 			

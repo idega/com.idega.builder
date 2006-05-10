@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.34 2006/05/10 08:27:07 laddi Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.35 2006/05/10 17:40:46 tryggvil Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -220,7 +220,7 @@ public class IBPropertiesWindowSetter extends Page {
 		Table table = new Table();
 		int ypos = 1;
 		Class ICObjectClass = null;
-		int icObjectInstanceIDint = XMLReader.getICObjectInstanceIdFromComponentId(icObjectInstanceID,null);
+		int icObjectInstanceIDint = XMLReader.getICObjectInstanceIdFromComponentId(icObjectInstanceID,null,pageID);
 		if (icObjectInstanceIDint == -1) {
 			ICObjectClass = com.idega.presentation.Page.class;
 		}
@@ -320,7 +320,7 @@ public class IBPropertiesWindowSetter extends Page {
 			IWMainApplication iwma) {
 		// invalidate cache for blocks
 		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
-				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null));
+				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
 		/** @todo ensure the cache is invalidated for all states* */
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
@@ -341,7 +341,7 @@ public class IBPropertiesWindowSetter extends Page {
 		// invalidate cache for blocks
 		/** @todo ensure the cache is invalidated for all states* */
 		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
-				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null));
+				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
 		}
