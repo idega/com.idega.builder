@@ -50,10 +50,13 @@ public class IBPermissionWindow extends IBAdminWindow {
 	}
 
 	private Table lineUpElements(IWContext iwc, String permissionType) throws Exception {
-		String identifier = iwc.getParameter(_PARAMETERSTRING_IDENTIFIER);
+		String componentId = iwc.getParameter(_PARAMETERSTRING_IDENTIFIER);
 		String category = iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
+		//if componentid is a uuid then convert it to icobjectid.
+		String identifier = null;
+		
 		Table frameTable = new Table(1, 4);
-		if (identifier != null && category != null) {
+		if (componentId != null && category != null) {
 			int intPermissionCategory = Integer.parseInt(category);
 			frameTable.setWidth("100%");
 			frameTable.setAlignment(1, 1, "left");
@@ -74,25 +77,32 @@ public class IBPermissionWindow extends IBAdminWindow {
 			Class objectClass = null;
 			switch (intPermissionCategory) {
 				case AccessController.CATEGORY_OBJECT_INSTANCE:
-					int instanceID = XMLReader.getICObjectInstanceIdFromComponentId(identifier, null, null);
-					objectClass = ICObjectBusiness.getInstance().getICObjectClassForInstance(instanceID);
+					int icObjectInstanceId = XMLReader.getICObjectInstanceIdFromComponentId(componentId, null, null);
+					identifier = String.valueOf(icObjectInstanceId);
+					objectClass = ICObjectBusiness.getInstance().getICObjectClassForInstance(icObjectInstanceId);
 					keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
 					break;
 				case AccessController.CATEGORY_OBJECT:
-					objectClass = ICObjectBusiness.getInstance().getICObjectClass(Integer.parseInt(identifier));
+					icObjectInstanceId = XMLReader.getICObjectInstanceIdFromComponentId(componentId, null, null);
+					identifier = String.valueOf(icObjectInstanceId);
+					objectClass = ICObjectBusiness.getInstance().getICObjectClass(icObjectInstanceId);
 					keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
 					break;
 				case AccessController.CATEGORY_BUNDLE:
-					keys = iwc.getAccessController().getBundlePermissionKeys(identifier);
+					keys = iwc.getAccessController().getBundlePermissionKeys(componentId);
+					identifier = componentId;
 					break;
 				case AccessController.CATEGORY_PAGE_INSTANCE:
 					keys = iwc.getAccessController().getPagePermissionKeys();
+					identifier = componentId;
 					break;
 				case AccessController.CATEGORY_PAGE:
 					keys = iwc.getAccessController().getPagePermissionKeys();
+					identifier = componentId;
 					break;
 				case AccessController.CATEGORY_JSP_PAGE:
 					keys = new String[0];
+					identifier = componentId;
 					break;
 			}
 			for (int i = 0; i < keys.length; i++) {
@@ -139,8 +149,7 @@ public class IBPermissionWindow extends IBAdminWindow {
 				this.collectOld = false;
 			}
 			else {
-				directGroups = iwc.getAccessController().getAllowedGroups(intPermissionCategory, identifier,
-						permissionType);
+				directGroups = iwc.getAccessController().getAllowedGroups(intPermissionCategory, identifier,permissionType);
 				this.collectOld = true;
 			}
 			Iterator iter = null;
