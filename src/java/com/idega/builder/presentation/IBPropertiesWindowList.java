@@ -2,16 +2,14 @@ package com.idega.builder.presentation;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+
 import javax.swing.JButton;
+
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBPropertyDescription;
 import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.component.business.ComponentProperty;
 import com.idega.idegaweb.IWConstants;
-import com.idega.idegaweb.IWProperty;
-import com.idega.idegaweb.IWPropertyList;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Page;

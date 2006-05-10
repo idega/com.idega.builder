@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.33 2006/05/09 14:44:03 tryggvil Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.34 2006/05/10 08:27:07 laddi Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -326,7 +326,7 @@ public class IBPropertiesWindowSetter extends Page {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
 		}
 		if(obj instanceof CacheableUIComponent){
-			CacheableUIComponent comp = (CacheableUIComponent)obj;
+			//CacheableUIComponent comp = (CacheableUIComponent)obj;
 			//comp.getCacher(context).clear();
 		}
 		return BuilderLogic.getInstance().setProperty(pageKey, instanceId, key, values, iwma);

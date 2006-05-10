@@ -15,6 +15,7 @@ import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDomainBMPBean;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
@@ -50,7 +51,7 @@ public class IBPageWindow extends IWAdminWindow {
 
     try {
       ICPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
-      if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE)) {
+      if (current.getType().equals(ICPageBMPBean.PAGE)) {
 				chooser.setSelectedPage(current.getID(),current.getName());
 			}
 			else {
@@ -79,7 +80,7 @@ public class IBPageWindow extends IWAdminWindow {
       String templateId = iwc.getParameter(TEMPLATE_CHOOSER_NAME);
       if (templateId == null || templateId.equals("")) {
       	ICPage current = BuilderLogic.getInstance().getCurrentIBPageEntity(iwc);
-      	if (current.getType().equals(com.idega.builder.data.IBPageBMPBean.TEMPLATE)) {
+      	if (current.getType().equals(ICPageBMPBean.TEMPLATE)) {
 					chooser.setSelectedPage(current);
 				}
 				else {

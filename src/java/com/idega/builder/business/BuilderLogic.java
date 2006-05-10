@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.199 2006/05/09 14:44:03 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.200 2006/05/10 08:27:08 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -29,6 +29,7 @@ import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
@@ -1987,13 +1988,13 @@ public class BuilderLogic implements Singleton {
 	    String rootPageName = frontPageName;
 	    page.setName(rootPageName);
 	    page.setDefaultPageURI("/");
-	    page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+	    page.setType(ICPageBMPBean.PAGE);
 	    page.store();
 	    unlockRegion(page.getPrimaryKey().toString(),"-1",null);
 
 	    ICPage page2 = pageHome.create();
 	    page2.setName(frontPageName+" - Template");
-	    page2.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
+	    page2.setType(ICPageBMPBean.TEMPLATE);
 	    page2.store();
 
 	    unlockRegion(page2.getPageKey(),"-1",null);

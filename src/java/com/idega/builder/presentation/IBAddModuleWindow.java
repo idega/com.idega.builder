@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.53 2006/05/09 14:44:03 tryggvil Exp $
+ * $Id: IBAddModuleWindow.java,v 1.54 2006/05/10 08:27:07 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
@@ -25,7 +26,6 @@ import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;

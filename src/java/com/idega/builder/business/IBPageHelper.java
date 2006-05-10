@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.55 2006/04/09 11:43:34 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.56 2006/05/10 08:27:08 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
@@ -53,14 +54,14 @@ import com.idega.xml.XMLElement;
  * @version 1.0
  */
 public class IBPageHelper implements Singleton  {
-	public static final String PAGE = com.idega.builder.data.IBPageBMPBean.PAGE;
-	public static final String TEMPLATE = com.idega.builder.data.IBPageBMPBean.TEMPLATE;
-	public static final String DRAFT = com.idega.builder.data.IBPageBMPBean.DRAFT;
-	public static final String FOLDER = com.idega.builder.data.IBPageBMPBean.FOLDER;
-	public static final String DPT_PAGE = com.idega.builder.data.IBPageBMPBean.DPT_PAGE;
-	public static final String DPT_TEMPLATE = com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE;
-	public static final String SUBTYPE_SIMPLE_TEMPLATE = com.idega.builder.data.IBPageBMPBean.SUBTYPE_SIMPLE_TEMPLATE;
-	public static final String SUBTYPE_SIMPLE_TEMPLATE_PAGE = com.idega.builder.data.IBPageBMPBean.SUBTYPE_SIMPLE_TEMPLATE_PAGE;
+	public static final String PAGE = ICPageBMPBean.PAGE;
+	public static final String TEMPLATE = ICPageBMPBean.TEMPLATE;
+	public static final String DRAFT = ICPageBMPBean.DRAFT;
+	public static final String FOLDER = ICPageBMPBean.FOLDER;
+	public static final String DPT_PAGE = ICPageBMPBean.DPT_PAGE;
+	public static final String DPT_TEMPLATE = ICPageBMPBean.DPT_TEMPLATE;
+	public static final String SUBTYPE_SIMPLE_TEMPLATE = ICPageBMPBean.SUBTYPE_SIMPLE_TEMPLATE;
+	public static final String SUBTYPE_SIMPLE_TEMPLATE_PAGE = ICPageBMPBean.SUBTYPE_SIMPLE_TEMPLATE_PAGE;
 	private final String LINK_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
 	private final int PAGEVIEWER = 0;
 	private final int TEMPLATEVIEWER = 1;
@@ -300,25 +301,25 @@ public class IBPageHelper implements Singleton  {
 		ibPage.setDefaultPageURI(pageUri);
 		
 		if (type.equals(PAGE)) {
-			ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+			ibPage.setType(ICPageBMPBean.PAGE);
 		}
 		else if (type.equals(TEMPLATE)) {
-			ibPage.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
+			ibPage.setType(ICPageBMPBean.TEMPLATE);
 		}
 		else if (type.equals(DRAFT)) {
-			ibPage.setType(com.idega.builder.data.IBPageBMPBean.DRAFT);
+			ibPage.setType(ICPageBMPBean.DRAFT);
 		}
 		else if (type.equals(DPT_PAGE)) {
-			ibPage.setType(com.idega.builder.data.IBPageBMPBean.DPT_PAGE);
+			ibPage.setType(ICPageBMPBean.DPT_PAGE);
 		}
 		else if (type.equals(DPT_TEMPLATE)) {
-			ibPage.setType(com.idega.builder.data.IBPageBMPBean.DPT_TEMPLATE);
+			ibPage.setType(ICPageBMPBean.DPT_TEMPLATE);
 		}
-		else if (type.equals(com.idega.builder.data.IBPageBMPBean.FOLDER)) {
-			ibPage.setType(com.idega.builder.data.IBPageBMPBean.FOLDER);
+		else if (type.equals(ICPageBMPBean.FOLDER)) {
+			ibPage.setType(ICPageBMPBean.FOLDER);
 		}
 		else {
-			ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+			ibPage.setType(ICPageBMPBean.PAGE);
 		}
 		int tid = -1;
 		try {
@@ -359,7 +360,7 @@ public class IBPageHelper implements Singleton  {
 				else if (type.equals(DPT_TEMPLATE)) {
 					page.setPageTypeTemplate();
 				}
-				else if (type.equals(com.idega.builder.data.IBPageBMPBean.FOLDER)) {
+				else if (type.equals(ICPageBMPBean.FOLDER)) {
 					page.setPageTypePage();
 				}
 				else {
@@ -604,13 +605,13 @@ public class IBPageHelper implements Singleton  {
 	public boolean checkDeleteChildrenOfPage(String pageId) {
 		try {
 			ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(pageId));
-			if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.PAGE)) {
+			if (page.getType().equals(ICPageBMPBean.PAGE)) {
 				return true;
 			}
-			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DRAFT)) {
+			else if (page.getType().equals(ICPageBMPBean.DRAFT)) {
 				return true;
 			}
-			else if (page.getType().equals(com.idega.builder.data.IBPageBMPBean.DPT_PAGE)) {
+			else if (page.getType().equals(ICPageBMPBean.DPT_PAGE)) {
 				return true;
 			}
 			else {

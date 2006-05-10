@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSaveAsPageWindow.java,v 1.10 2006/04/09 11:43:34 laddi Exp $
+ * $Id: IBSaveAsPageWindow.java,v 1.11 2006/05/10 08:27:08 laddi Exp $
 
  *
 
@@ -23,6 +23,7 @@ package com.idega.builder.presentation;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -168,13 +169,13 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
 
         if (type.equals("1")) {
-					ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+					ibPage.setType(ICPageBMPBean.PAGE);
 				}
 				else if (type.equals("2")) {
-					ibPage.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
+					ibPage.setType(ICPageBMPBean.TEMPLATE);
 				}
 				else {
-					ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+					ibPage.setType(ICPageBMPBean.PAGE);
 				}
 
 
