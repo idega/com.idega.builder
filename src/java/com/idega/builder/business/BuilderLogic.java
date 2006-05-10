@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.200 2006/05/10 08:27:08 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.201 2006/05/10 17:29:01 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -69,6 +69,7 @@ import com.idega.util.StringHandler;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
+
 
 /**
  * <p>
@@ -198,11 +199,27 @@ public class BuilderLogic implements Singleton {
 
 		IWBundle iwb = getBuilderBundle();
 		page.addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
+		
+//		Web2Business web2 = getWeb2Business();
+//		try {
+//			
+//			page.addScriptSource(web2.getBundleURIToPrototypeLib(Web2BusinessBean.SCRIPTACULOUS_VERSION_1_5_3));
+//			page.addScriptSource(web2.getBundleURIToScriptaculousLib(Web2BusinessBean.SCRIPTACULOUS_VERSION_1_5_3));
+//			page.addScriptSource(web2.getBundleURIToBehaviourLib());
+//			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/iwbuilder.js"));
+//			
+//			
+//		}
+//		catch (RemoteException e) {
+//			e.printStackTrace();
+//		}
+		
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/prototype.js"));
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/effects.js"));
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/dragdrop.js"));
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/controls.js"));
 		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
+
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
 		
@@ -1022,20 +1039,18 @@ public class BuilderLogic implements Singleton {
 	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		try {
-			int objectInstanceId = Integer.parseInt(instanceId);
-			PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(objectInstanceId);
+			ICObjectInstance instance = XMLReader.getICObjectInstanceFromComponentId(instanceId,null);
+			PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(instance.getID());
 			if (Block != null) {
 				if (Block instanceof Builderaware) {
 					((Builderaware) Block).deleteBlock(Integer.parseInt(instanceId));
 				}
 			}
 		}
-		catch (NumberFormatException ex) {
-			//its a UIComponent
-		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		
 		if (XMLWriter.deleteModule(xml, parentObjectInstanceID, instanceId)) {
 			xml.store();
 			return (true);
@@ -2026,5 +2041,17 @@ public class BuilderLogic implements Singleton {
 			throw new RuntimeException(e);
 		}
 	}
+	
+//	protected Web2Business getWeb2Business(){
+//		
+//		try {
+//			return (Web2Business) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), Web2Business.class);
+//		}
+//		catch (IBOLookupException e) {
+//			e.printStackTrace();
+//		}	
+//		
+//		return null;
+//	}
 	
 }
