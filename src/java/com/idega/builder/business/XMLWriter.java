@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.45 2006/05/09 14:44:03 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.46 2006/05/10 17:12:42 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -1104,9 +1104,13 @@ public class XMLWriter {
 	 */
 	private static boolean changeModuleIds(XMLElement element, String pageKey) {
 		try {
-			XMLAttribute attribute = element.getAttribute(XMLConstants.ID_STRING);
+			XMLAttribute instanceIDAttribute = element.getAttribute(XMLConstants.ID_STRING);
+			
+			//only for backward compatability, we now only use the ID attribute with a UUID
 			XMLAttribute object_id = element.getAttribute(XMLConstants.IC_OBJECT_ID_STRING);
+			
 			if(object_id!=null){
+				//OLD WAY
 				//If a ic_object_id is found then try to generate a new ic_object_instance and take its uniqueId:
 				ICObjectInstanceHome home = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
 				ICObjectInstance instance = home.create();
@@ -1116,24 +1120,30 @@ public class XMLWriter {
 				//String moduleId = instance.getPrimaryKey().toString();
 				String uuid = instance.getUniqueId();
 				String moduleId = XMLReader.UUID_PREFIX+uuid;
-				attribute = new XMLAttribute(XMLConstants.ID_STRING, moduleId);
+				instanceIDAttribute = new XMLAttribute(XMLConstants.ID_STRING, moduleId);
 			}
 			else{
-				String oldValue = attribute.getValue();
-				if(oldValue.startsWith(XMLReader.UUID_PREFIX)){
-					//If no ic_object_id is found then try to generate a new uuid:
-					UUIDGenerator generator = UUIDGenerator.getInstance();
-					String newUuid = generator.generateId();
-					String newValue = XMLReader.UUID_PREFIX+newUuid;
-					attribute = new XMLAttribute(XMLConstants.ID_STRING, newValue);
+				//NEW WAY
+				//If no ic_object_id is found and the instanceid is the new UUID type of id (or a made up on) then try and create a new icobjectinstance and generate a new UUID
+				UUIDGenerator generator = UUIDGenerator.getInstance();
+				XMLAttribute classNameXML = element.getAttribute(XMLConstants.CLASS_STRING);
+				String className = null;
+				if(classNameXML!=null){
+					className = classNameXML.getValue();
 				}
-				else{
-					//If all fails add a "_" to the old id
-					attribute = new XMLAttribute(XMLConstants.ID_STRING, oldValue+"_");
+				
+				String newUuid = generator.generateId();
+				String newValue = XMLReader.UUID_PREFIX+newUuid;
+				instanceIDAttribute = new XMLAttribute(XMLConstants.ID_STRING, newValue);
+				
+				if(className!=null){
+					ICObjectInstance instance = XMLReader.getICObjectInstanceFromComponentId(newValue, className);
+					instance.setIBPageByKey(pageKey);
+					instance.store();
 				}
 			}
 			
-			element.setAttribute(attribute);
+			element.setAttribute(instanceIDAttribute);
 			List childs = element.getChildren(XMLConstants.MODULE_STRING);
 			if (childs != null) {
 				Iterator it = childs.iterator();
@@ -1155,7 +1165,7 @@ public class XMLWriter {
 						int index = regId.indexOf(".");
 						if (index > -1) {
 							String sub = regId.substring(index);
-							sub = attribute.getValue() + sub;
+							sub = instanceIDAttribute.getValue() + sub;
 							regionId = new XMLAttribute(XMLConstants.ID_STRING, sub);
 							el.setAttribute(regionId);
 						}

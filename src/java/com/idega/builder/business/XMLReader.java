@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.68 2006/05/09 14:44:03 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.69 2006/05/10 17:12:42 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -618,6 +618,12 @@ public class XMLReader {
 		}
 	}
 	
+	/**
+	 * Creates a new ICObjectInstance if none is found for the componentId (UUID) and className
+	 * @param componentId
+	 * @param className
+	 * @return
+	 */
 	public static ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className){
 		ICObjectInstanceHome icoHome = getICObjectInstanceHome();
 		if(componentId.startsWith(UUID_PREFIX)){
