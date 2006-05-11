@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.71 2006/05/11 11:52:51 eiki Exp $
+ * $Id: XMLReader.java,v 1.72 2006/05/11 12:03:44 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -478,12 +478,8 @@ public class XMLReader {
 				if(componentId!=null){
 					try{
 						String pageKey = ibxml.getPageKey();
-						int icObjectInstanceId = getICObjectInstanceIdFromComponentId(componentId,className,pageKey);
-						ICObjectInstanceHome icoiHome = (ICObjectInstanceHome) com.idega.data.IDOLookup.getHome(ICObjectInstance.class);
-						icObjectInstance = icoiHome.findByPrimaryKey(icObjectInstanceId);
+						icObjectInstance = getICObjectInstanceFromComponentId(componentId,className,pageKey);
 						
-						//icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId);
-						//firstUICInstance = icObjectInstance.getNewInstance();
 						Class objectClass = icObjectInstance.getObject().getObjectClass();
 						firstUICInstance = (UIComponent)objectClass.newInstance();
 					}
