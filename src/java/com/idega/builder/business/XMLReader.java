@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.70 2006/05/10 17:40:46 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.71 2006/05/11 11:52:51 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -620,46 +620,63 @@ public class XMLReader {
 	}
 
 	public static int getICObjectInstanceIdFromComponentId(String componentId, String className,String pageKey){
-		//TODO: Fix this:
-		if(componentId.startsWith(UUID_PREFIX)){
+		try {
+			return Integer.parseInt(componentId);
+		}
+		catch (NumberFormatException e) {
 			ICObjectInstance instance = getICObjectInstanceFromComponentId(componentId,className,pageKey);
 			return instance.getID();
-		}
-		else{
-			return Integer.parseInt(componentId);
 		}
 	}
 	
 	/**
 	 * Creates a new ICObjectInstance if none is found for the componentId (UUID) and className
-	 * @param componentId
-	 * @param className
+	 * @param componentId The unique id of the object
+	 * @param className The class name of the object
+	 * @param pageKey The page id or URI of the page the object is in
 	 * @return
 	 */
-	public static ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className, String pageKey){
+	public static ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className, String pageKey) {
 		ICObjectInstanceHome icoHome = getICObjectInstanceHome();
-		if(componentId.startsWith(UUID_PREFIX)){
-			String uniqueId = componentId.substring(UUID_PREFIX.length(),componentId.length());
-			try{
+		// first try it as a number (old school) then as a uuid/uniquestring
+		try {
+			int id = Integer.parseInt(componentId);
+			ICObjectInstance instance;
+			try {
+				instance = icoHome.findByPrimaryKey(id);
+				return instance;
+			}
+			catch (FinderException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+		catch (NumberFormatException e) {
+			String uniqueId = componentId;
+			if (componentId.startsWith(UUID_PREFIX)) {
+				uniqueId = componentId.substring(UUID_PREFIX.length(), componentId.length());
+			}
+			try {
 				ICObjectInstance ico = icoHome.findByUniqueId(uniqueId);
 				return ico;
 			}
-			catch(FinderException e){
+			catch (FinderException exe) {
 				ICObjectInstance instance;
 				try {
 					instance = icoHome.create();
 					instance.setUniqueId(uniqueId);
-					if(pageKey!=null){
+					if (pageKey != null) {
 						instance.setIBPageByKey(pageKey);
 					}
-					try {
-						ICObject ico = getICObjectHome().findByClassName(className);
-						instance.setICObject(ico);
+					if(className!=null){
+						try {
+							ICObject ico = getICObjectHome().findByClassName(className);
+							instance.setICObject(ico);
+						}
+						catch (FinderException e1) {
+							e1.printStackTrace();
+						}
 					}
-					catch (FinderException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+					
 					instance.store();
 					return instance;
 				}
@@ -668,23 +685,13 @@ public class XMLReader {
 				}
 			}
 		}
-		else{
-			int id = Integer.parseInt(componentId);
-			ICObjectInstance instance;
-			try {
-				instance = icoHome.findByPrimaryKey(id);
-				return instance;
-			}
-			catch (FinderException e) {
-				throw new RuntimeException(e);
-			}
-		}
 	}
 	
 	/**
 	 * <p>
 	 * TODO tryggvil describe method getICObjectHome
 	 * </p>
+	 * 
 	 * @return
 	 */
 	public static ICObjectInstanceHome getICObjectInstanceHome() {
