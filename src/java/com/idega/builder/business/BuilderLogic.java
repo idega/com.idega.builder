@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.202 2006/05/10 17:40:46 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.203 2006/05/15 16:12:06 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1040,10 +1040,10 @@ public class BuilderLogic implements Singleton {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		try {
 			ICObjectInstance instance = XMLReader.getICObjectInstanceFromComponentId(instanceId,null,pageKey);
-			PresentationObject Block = ICObjectBusiness.getInstance().getNewObjectInstance(instance.getID());
-			if (Block != null) {
-				if (Block instanceof Builderaware) {
-					((Builderaware) Block).deleteBlock(Integer.parseInt(instanceId));
+			Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(instance.getID());
+			if (obj != null) {
+				if (obj instanceof Builderaware) {
+					((Builderaware) obj).deleteBlock(Integer.parseInt(instanceId));
 				}
 			}
 		}

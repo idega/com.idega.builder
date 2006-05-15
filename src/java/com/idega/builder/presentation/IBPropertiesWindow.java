@@ -1,7 +1,7 @@
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.BuilderConstants;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWURL;
@@ -43,25 +43,30 @@ public IBPropertiesWindow() {
 }
 
   public void main(IWContext iwc) throws Exception{
-    String title = "Properties";
-
-    //System.out.println("BuilderLogic.IB_CONTROL_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_CONTROL_PARAMETER)+" and BuilderLogic.IB_PAGE_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
-
-    try{
-      String sICObjectInstanceID = iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
-      if(sICObjectInstanceID!=null){
-	title += " : ";
-	int iInstanceID = Integer.parseInt(sICObjectInstanceID);
-	/*ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getInstance().getICObjectInstance(iInstanceID);
-	ICObject ico = instance.getObject();*/
-        PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(iInstanceID);
-	String name = obj.getBuilderName(iwc);
-	title += name;
-      }
-    }
-    catch(Exception e){
-
-    }
+	  String title = "Properties";
+	  
+	  //System.out.println("BuilderLogic.IB_CONTROL_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_CONTROL_PARAMETER)+" and BuilderLogic.IB_PAGE_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
+	  
+	  try{
+		  String sICObjectInstanceID = iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
+		  if(sICObjectInstanceID!=null){
+			  title += " : ";
+			  int iInstanceID = Integer.parseInt(sICObjectInstanceID);
+			  /*ICObjectInstance instance = com.idega.core.business.ICObjectBusiness.getInstance().getICObjectInstance(iInstanceID);
+			   ICObject ico = instance.getObject();*/
+			  Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(iInstanceID);
+			  String name = obj.getClass().getName();
+			  name = name.substring(name.lastIndexOf("."));
+			  //todo make UIComponents names localizable too
+			  if(obj instanceof PresentationObject){
+				  name = ((PresentationObject) obj).getBuilderName(iwc);
+			  }
+			  title += name;
+		  }
+	  }
+	  catch(Exception e){
+		  
+	  }
 
     super.setTitle(title);
     //add(IBPropertiesWindowTop.class);

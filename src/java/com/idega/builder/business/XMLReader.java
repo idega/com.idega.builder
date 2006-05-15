@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.72 2006/05/11 12:03:44 eiki Exp $
+ * $Id: XMLReader.java,v 1.73 2006/05/15 16:12:06 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.tag.BuilderPage;
+import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
@@ -40,7 +41,7 @@ import com.idega.xml.XMLException;
  * @version 1.0
  */
 public class XMLReader {
-	public static final String UUID_PREFIX = "uuid_";
+	public static final String UUID_PREFIX = ICObjectBusiness.UUID_PREFIX;
 	/**
 	 *
 	 */

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.35 2006/05/10 17:40:46 tryggvil Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.36 2006/05/15 16:12:06 eiki Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -319,8 +319,7 @@ public class IBPropertiesWindowSetter extends Page {
 	public boolean setProperty(String key, String values[], String instanceId, String pageKey,
 			IWMainApplication iwma) {
 		// invalidate cache for blocks
-		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
-				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
+		Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
 		/** @todo ensure the cache is invalidated for all states* */
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
@@ -340,7 +339,7 @@ public class IBPropertiesWindowSetter extends Page {
 		 */
 		// invalidate cache for blocks
 		/** @todo ensure the cache is invalidated for all states* */
-		PresentationObject obj = ICObjectBusiness.getInstance().getNewObjectInstance(
+		Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(
 				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());

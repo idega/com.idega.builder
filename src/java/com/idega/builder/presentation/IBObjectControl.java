@@ -107,14 +107,16 @@ public class IBObjectControl extends PresentationObjectContainer
 		tempDragDropContainer.setColumnWidth(1,"60");
 		tempDragDropContainer.setColumnWidth(2,"100%");
 		tempDragDropContainer.setCellpaddingAndCellspacing(0);
-			
-		Script drag = new Script();
-		drag.addFunction("", getBuilderLogic().getDraggableScript(containerId,this.nameLayer.getID()));
+		
+		//now added in the iwbuilder.js script via Behaviour
+//		Script drag = new Script();
+//		drag.addFunction("", getBuilderLogic().getDraggableScript(containerId,this.nameLayer.getID()));
+//		
 		Script drop = new Script();
 		drop.addFunction("", getBuilderLogic().getModuleToModuleDroppableScript(containerId, this.dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 		
 		//add scripts
-		super.add(drag);
+//		super.add(drag);
 		super.add(drop);		
 		
 		super.add(new Text("<!-- idegaweb-module ends -->"));
