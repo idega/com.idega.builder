@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.14 2006/05/16 09:49:03 palli Exp $
+ * $Id: TreeNodeFinder.java,v 1.15 2006/05/16 10:16:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,7 +70,7 @@ public class TreeNodeFinder {
 			sql.append(" is null)");
 			
 			sql.append(" order by ").append(ICPageBMPBean.getColumnTreeOrder())
-			.append(", ").append(pages.getIDColumnName()).append(" asc");
+			.append(", ").append(pages.getIDColumnName()).append(" desc");
 
 			return (EntityFinder.findAll(pages, sql.toString()));
 		}
@@ -102,7 +102,7 @@ public class TreeNodeFinder {
 			sql.append(" is null)");
 
 			sql.append(" order by ").append(ICPageBMPBean.getColumnTreeOrder())
-			.append(", ").append(pages.getIDColumnName()).append(" asc");
+			.append(", ").append(pages.getIDColumnName()).append(" desc");
 
 			return (EntityFinder.findAll(pages, sql.toString()));
 		}
