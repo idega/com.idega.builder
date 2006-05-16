@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.41.2.1 2006/04/05 10:45:02 sigtryggur Exp $
+ * $Id: IBAddModuleWindow.java,v 1.41.2.2 2006/05/16 15:36:44 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -62,7 +62,7 @@ public class IBAddModuleWindow extends IBAdminWindow {
 
 	public IBAddModuleWindow() {
 		setWidth(400);
-		setHeight(400);
+		setHeight(600);
 		setResizable(true);
 		setScrollbar(true);
 		failedBundles = new ArrayList();
