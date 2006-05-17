@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.48 2006/05/11 08:18:16 laddi Exp $
+ * $Id: XMLWriter.java,v 1.49 2006/05/17 10:55:19 tryggvil Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -589,6 +589,7 @@ public class XMLWriter {
 				//newElement.setAttribute(aIcObjectId);
 				newElement.setAttribute(aClass);
 				parent.addContent(newElement);
+				onObjectAdd(parent,newElement,pageKey,xmlId,obj);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -597,6 +598,39 @@ public class XMLWriter {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method onObjectAdd
+	 * </p>
+	 * @param parent
+	 * @param newElement
+	 * @param pageKey
+	 * @param obj
+	 */
+	private static void onObjectAdd(XMLElement parent, XMLElement newElement, String pageKey, String newInstanceId, ICObject obj) {
+		// TODO: Temparary hardcoding for article, move this to article block.
+		if(obj.getClassName().indexOf("ArticleItemViewer")!=-1){
+			
+			IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageKey);
+			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
+			
+			String propertyName = "resourcePath";
+			String pageUri = xml.getURI();
+			if(pageUri.startsWith("/pages")){
+					pageUri = pageUri.substring("/pages".length(),pageUri.length());
+			}
+			if(pageUri.endsWith("/")){
+				pageUri=pageUri.substring(0,pageUri.length()-1);
+			}
+			if(pageUri.equals("/")||pageUri.equals("")){
+				pageUri="/root";
+			}
+			String propertyValue = "/files/cms/article"+pageUri+".article";
+			
+			setProperty(iwma, xml, newInstanceId, propertyName, propertyValue);
+		}
 	}
 
 	/**
