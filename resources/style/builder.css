@@ -3,6 +3,7 @@
 	cursor: default;	
 	border: 1px #000000 solid;
 	margin: 1px;
+clear: both;
 }
 
 .moduleContainer:hover {	
@@ -57,7 +58,7 @@
 
 .moduleContainer .moduleDropArea .moduleButtons .moduleButton {
 	margin-left: 1px;
-        margin-right: 1px;
+	margin-right: 1px;
 	padding:0px;
 	border: none;
 }
@@ -68,6 +69,8 @@ div.moduleButtons a {
 	padding: 0 !important;
 	width: 16px !important;
 	height: 16px !important;
+	background-image: none !important;
+	background-color: transparent !important;
 }
 
 .moduleContainer .moduleDropArea .moduleButtons .moduleButton img {
@@ -78,10 +81,10 @@ div.moduleButtons a {
 }
 
 .toolbarButton{
-   float: left;
-   margin-right: 3px;
-   margin-left: 3px;
-   margin-top: 3px;
+	float: left;
+	margin-right: 3px;
+	margin-left: 3px;
+	margin-top: 3px;
 }
 
 .toolbarLocaleMenu{
@@ -106,27 +109,34 @@ div.moduleButtons a {
 }
 
 .regionLabel{
+	font-size: 11px !important;
+	font-family: Arial !important;
 	background-color: yellow;
 	border: 1px #000000 solid;	
 	float:left;
-    padding-left: 1px;
-    padding-right: 1px;
-    clear:both;
+	padding-left: 1px;
+	padding-right: 1px;
+	clear:both;
+	text-transform: none !important;
+	font-weight: normal !important;
 }
 
 div.regionLabel a {
 	padding: 0 !important;
 	width: 9px !important;
 	height: 9px !important;
+	display: inline !important;
+	background-image: none !important;
+	background-color: transparent !important;
 }
 
 .regionLabelHover{
 	background-color: green;
 	border: 1px #000000 solid;	
 	float:left;
-    padding-left: 1px;
-    padding-right: 1px;
-    clear:both;
+	padding-left: 1px;
+	padding-right: 1px;
+	clear:both;
 }
 
 .regionLabel .regionButton {
@@ -139,10 +149,10 @@ div.regionLabel a {
 
 /* The source view*/
 .sourceView {
-position: absolute;
-top: 0;
-bottom: 0;
-    width: 100%;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
     height: auto;
     margin: 0px;
     padding: 0px;
@@ -152,131 +162,108 @@ bottom: 0;
 }
 
 .sourceView form{
-     margin: 0px;
-     padding: 0px;
-
+	margin: 0px;
+	padding: 0px;
 }
 
 .sourceView textarea{
-     position: absolute;
-     top: 0;
-     bottom: 101px;
-     #font-weight: bold;
-     background-color: #fafafa;
-     font-size: 11px;
-     width: 100%;
+	position: absolute;
+	top: 0;
+	bottom: 101px;
+	background-color: #fafafa;
+	font-size: 11px;
+	width: 100%;
 
-     height: expression(
-	(
-	document.body.clientHeight) ?
-	document.body.clientHeight - 100 + 'px'
-	:
-	document.documentElement.clientHeight - 100 + 'px'
-     );
+	height: expression((document.body.clientHeight) ? document.body.clientHeight - 100 + 'px' : document.documentElement.clientHeight - 100 + 'px' );
 
-     clear: both;
-     margin: 0px;
-     padding-left: 5px;
-     padding-top: 3px;
-     border-bottom: 1px solid #bbbbbb;
+	clear: both;
+	margin: 0px;
+	padding-left: 5px;
+	padding-top: 3px;
+	border-bottom: 1px solid #bbbbbb;
 }
 
 html>body .sourceView textarea {
-     height: auto;
+	height: auto;
 }
 
 .sourceViewButtonsLeft{
-     top: expression(
-	(
-	document.body.clientHeight) ?
-	document.body.clientHeight - 100 + 'px'
-	:
-	document.documentElement.clientHeight - 100 + 'px'
-     );
+	top: expression((document.body.clientHeight) ? document.body.clientHeight - 100 + 'px' : document.documentElement.clientHeight - 100 + 'px');
 
-     position: absolute;
-     bottom: 0;
-     width: 298px;
-     height: 84px;
-     margin: 0px;
-     padding: 8px;
-     float:left;
+	position: absolute;
+	bottom: 0;
+	width: 298px;
+	height: 84px;
+	margin: 0px;
+	padding: 8px;
+	float:left;
 }
 
 html>body .sourceviewButtonsLeft {
-     top: auto;
+	top: auto;
 }
 
 .sourceView .sourceViewButtonsLeft input{
-     border: 1px solid #bbbbbb;
-     font-size: 11px;
-     margin-right:3px;
-     width: 144px;
-     clear: both;
+	border: 1px solid #bbbbbb;
+	font-size: 11px;
+	margin-right:3px;
+	width: 144px;
+	clear: both;
 }
 
 .sourceView .sourceViewButtonsLeft .helpText{
-     clear: both;
-     float: left;
-     margin-top: 10px;
+	clear: both;
+	float: left;
+	margin-top: 10px;
 }
 
 .sourceViewButtonsRight{
-     top: expression(
-	(
-	document.body.clientHeight) ?
-	document.body.clientHeight - 100 + 'px'
-	:
-	document.documentElement.clientHeight - 100 + 'px'
-     );
+	top: expression((document.body.clientHeight) ? document.body.clientHeight - 100 + 'px' : document.documentElement.clientHeight - 100 + 'px');
 
-     position: absolute;
-     bottom: 0;
-     right: 0;
-     width: 56%;
-     height: 84px;
-     margin: 0px;
-     padding: 8px;
-     float:right;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	width: 56%;
+	height: 84px;
+	margin: 0px;
+	padding: 8px;
+	float:right;
 }
 
 html>body .sourceviewButtonsLeft {
-     top: auto;
+	top: auto;
 }
 
 .sourceView .sourceViewButtonsRight .helpText{
-     float: left;
-     display: inline;
-     width: 225px;
-     text-align: left;
+	float: left;
+	display: inline;
+	width: 225px;
+	text-align: left;
 }
 
 .sourceView .sourceViewButtonsRight .helpText code{
-     font-size: 11px;
-     font-weight: bold;
+	font-size: 11px;
+	font-weight: bold;
 }
 
 .sourceView .sourceViewButtonsRight input{
-     border: 1px solid #bbbbbb;
-     font-size: 11px;
-     margin-left:5px;
-     display:inline;
-     float:right;
+	border: 1px solid #bbbbbb;
+	font-size: 11px;
+	margin-left:5px;
+	display:inline;
+	float:right;
 }
 
 .sourceView .sourceViewButtonsRight select{
-     border: 1px solid #bbbbbb;
-     display:inline;
-     float:right;
-     font-weight: bold;
-      font-size: 11px;
-     width: 125px;
-     height:17px;
+	border: 1px solid #bbbbbb;
+	display:inline;
+	float:right;
+	font-weight: bold;
+	font-size: 11px;
+	width: 125px;
+	height:17px;
 }
-
-
 
 .builderinitialsetupblock{
 	margin-top:100px;
 }
-
