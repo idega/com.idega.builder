@@ -25,20 +25,21 @@
 }
 
 .moduleName{
-	font-size: 12px;
-	font-family: Arial;
-	height: 16px;
+	font-size: 12px !important;
+	font-family: Arial !important;
+	height: 16px !important;
 	cursor: move;
-	background-color: #d7dbe7;
-	white-space: nowrap;
-	padding-left: 2px;
-        padding-top:3px;
+	background-color: #d7dbe7 !important;
+	white-space: nowrap !important;
+	padding-left: 2px !important;
+	padding-top:3px !important;
+	text-transform: none !important;
+	font-weight: normal !important;
 }
 
 .moduleDropArea{
 	cursor: default;
 	height: 18px;
-	width: 100%;
 }
 
 .moduleDropAreaHover{
@@ -61,9 +62,19 @@
 	border: none;
 }
 
+div.moduleButtons a {
+	display: block !important;
+	float: left !important;
+	padding: 0 !important;
+	width: 16px !important;
+	height: 16px !important;
+}
+
 .moduleContainer .moduleDropArea .moduleButtons .moduleButton img {
 	margin: 0px;
 	border: none;
+	width: 16px !important;
+	height: 16px !important;
 }
 
 .toolbarButton{
@@ -101,6 +112,12 @@
     padding-left: 1px;
     padding-right: 1px;
     clear:both;
+}
+
+div.regionLabel a {
+	padding: 0 !important;
+	width: 9px !important;
+	height: 9px !important;
 }
 
 .regionLabelHover{
