@@ -1,5 +1,5 @@
 /*
- * $Id: XMLWriter.java,v 1.49 2006/05/17 10:55:19 tryggvil Exp $
+ * $Id: XMLWriter.java,v 1.50 2006/05/22 15:31:10 tryggvil Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -659,7 +659,6 @@ public class XMLWriter {
 		XMLElement region = findRegion(xml, label, regionId);
 		if (region == null) {
 			region = createRegion(regionId, label);
-			addNewModule(region, pageKey, newICObjectID);
 			XMLElement parent = findModule(xml, parentObjectInstanceID);
 			if (parent != null) {
 				//This is in a page that is NOT extending a template (is a
@@ -670,6 +669,7 @@ public class XMLWriter {
 				//This is in a page that is extending a template
 				xml.getPageRootElement().addContent(region);
 			}
+			addNewModule(region, pageKey, newICObjectID);
 		}
 		else {
 			addNewModule(region, pageKey, newICObjectID);
