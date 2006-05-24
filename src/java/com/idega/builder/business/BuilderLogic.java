@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.204 2006/05/24 13:08:07 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.205 2006/05/24 17:50:11 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1904,9 +1904,11 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		catch (InstantiationException ex) {
+			ex.printStackTrace();
 			return null;
 		}
 		catch (IllegalAccessException ex) {
+			ex.printStackTrace();
 			return null;
 		}
 		return newComponent;
