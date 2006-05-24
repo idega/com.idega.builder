@@ -1,5 +1,5 @@
 /*
- * $Id: XMLConstants.java,v 1.26 2005/12/06 19:04:39 tryggvil Exp $
+ * $Id: IBXMLConstants.java,v 1.1 2006/05/24 13:08:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,10 +10,13 @@
 package com.idega.builder.business;
 
 /**
+ * <p>
+ * This class holds constants for element and attribute names in the IBXML document format.
+ * </p>
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public abstract class XMLConstants {
+public abstract class IBXMLConstants {
   public static final String ROOT_STRING = "xml";
   public static final String PAGE_STRING = "page";
   public static final String FRAGMENT_STRING = "fragment";

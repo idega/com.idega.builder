@@ -2,7 +2,7 @@ package com.idega.builder.data;
 
 import java.util.Iterator;
 import java.util.List;
-import com.idega.builder.business.XMLConstants;
+import com.idega.builder.business.IBXMLConstants;
 import com.idega.presentation.IWContext;
 import com.idega.util.datastructures.HashMatrix;
 import com.idega.util.reflect.MethodIdentifierCache;
@@ -52,13 +52,13 @@ public class IBReference {
 	
 	private void initialize(XMLElement moduleElement) {
 		this.nameParameterEntries = null;
-		this.moduleClass = moduleElement.getAttributeValue(XMLConstants.EXPORT_MODULE_CLASS);
-		List properties = moduleElement.getChildren(XMLConstants.EXPORT_PROPERTY);
+		this.moduleClass = moduleElement.getAttributeValue(IBXMLConstants.EXPORT_MODULE_CLASS);
+		List properties = moduleElement.getChildren(IBXMLConstants.EXPORT_PROPERTY);
 		Iterator propertiesIterator = properties.iterator(); 
 		while (propertiesIterator.hasNext()) {
 			XMLElement propertyElement = (XMLElement) propertiesIterator.next();
-			String propertyName =  propertyElement.getTextTrim(XMLConstants.EXPORT_PROPERTY_NAME);
-			List parameters = propertyElement.getChildren(XMLConstants.EXPORT_PROPERTY_PARAMETER);
+			String propertyName =  propertyElement.getTextTrim(IBXMLConstants.EXPORT_PROPERTY_NAME);
+			List parameters = propertyElement.getChildren(IBXMLConstants.EXPORT_PROPERTY_PARAMETER);
 			Iterator parameterIterator = parameters.iterator();
 			while (parameterIterator.hasNext()) {
 				XMLElement parameterElement = (XMLElement) parameterIterator.next();

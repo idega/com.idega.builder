@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.36 2006/05/15 16:12:06 eiki Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.37 2006/05/24 13:08:07 tryggvil Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -12,7 +12,7 @@ package com.idega.builder.presentation;
 import java.lang.reflect.Method;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.business.XMLReader;
+import com.idega.builder.business.IBXMLReader;
 import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.cache.CacheableUIComponent;
 import com.idega.core.component.business.ICObjectBusiness;
@@ -220,7 +220,7 @@ public class IBPropertiesWindowSetter extends Page {
 		Table table = new Table();
 		int ypos = 1;
 		Class ICObjectClass = null;
-		int icObjectInstanceIDint = XMLReader.getICObjectInstanceIdFromComponentId(icObjectInstanceID,null,pageID);
+		int icObjectInstanceIDint = getBuilderLogic().getIBXMLReader().getICObjectInstanceIdFromComponentId(icObjectInstanceID,null,pageID);
 		if (icObjectInstanceIDint == -1) {
 			ICObjectClass = com.idega.presentation.Page.class;
 		}
@@ -319,7 +319,7 @@ public class IBPropertiesWindowSetter extends Page {
 	public boolean setProperty(String key, String values[], String instanceId, String pageKey,
 			IWMainApplication iwma) {
 		// invalidate cache for blocks
-		Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
+		Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(getBuilderLogic().getIBXMLReader().getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
 		/** @todo ensure the cache is invalidated for all states* */
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
@@ -340,10 +340,14 @@ public class IBPropertiesWindowSetter extends Page {
 		// invalidate cache for blocks
 		/** @todo ensure the cache is invalidated for all states* */
 		Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(
-				XMLReader.getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
+				getBuilderLogic().getIBXMLReader().getICObjectInstanceIdFromComponentId(instanceId,null,pageKey));
 		if (obj instanceof com.idega.presentation.Block) {
 			iwma.getIWCacheManager().invalidateCache(((com.idega.presentation.Block) obj).getCacheKey());
 		}
-		BuilderLogic.getInstance().removeProperty(iwma, pageKey, instanceId, key, values);
+		getBuilderLogic().removeProperty(iwma, pageKey, instanceId, key, values);
+	}
+	
+	protected BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
 	}
 }

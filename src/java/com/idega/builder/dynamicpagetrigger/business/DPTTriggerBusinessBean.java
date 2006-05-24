@@ -12,7 +12,7 @@ import com.idega.builder.business.IBPageFinder;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.XMLConstants;
+import com.idega.builder.business.IBXMLConstants;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroupHome;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
@@ -300,7 +300,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     cSession.setNewValue(ICPage.class,String.valueOf(dptTemplateId),String.valueOf(id));
     
     IBXMLPage currentXMLPage = instance.getIBXMLPage(Integer.toString(id));
-	currentXMLPage.getPageRootElement().setAttribute(XMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(((rootPageID!=-1)?rootPageID:id)));
+	currentXMLPage.getPageRootElement().setAttribute(IBXMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(((rootPageID!=-1)?rootPageID:id)));
 	currentXMLPage.store();
     Page current = currentXMLPage.getPopulatedPage();
     List children = current.getChildrenRecursive();

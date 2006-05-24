@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.56 2006/05/10 08:27:08 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.57 2006/05/24 13:08:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -564,12 +564,12 @@ public class IBPageHelper implements Singleton  {
 							}
 					}
 				}
-				XMLElement element = new XMLElement(XMLConstants.CHANGE_IC_INSTANCE_ID);
-				XMLAttribute from = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_FROM, Integer.toString(ic_instance_id));
-				XMLAttribute to = new XMLAttribute(XMLConstants.IC_INSTANCE_ID_TO, String.valueOf(instancePK));
+				XMLElement element = new XMLElement(IBXMLConstants.CHANGE_IC_INSTANCE_ID);
+				XMLAttribute from = new XMLAttribute(IBXMLConstants.IC_INSTANCE_ID_FROM, Integer.toString(ic_instance_id));
+				XMLAttribute to = new XMLAttribute(IBXMLConstants.IC_INSTANCE_ID_TO, String.valueOf(instancePK));
 				element.setAttribute(from);
 				element.setAttribute(to);
-				XMLWriter.addNewElement(xmlpage, "-1", element);
+				getBuilderLogic().getIBXMLWriter().addNewElement(xmlpage, "-1", element);
 			} catch (IBOLookupException e) {
 				e.printStackTrace();
 			} catch (RemoteException e) {

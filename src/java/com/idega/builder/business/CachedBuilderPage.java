@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.7 2006/04/09 11:43:34 laddi Exp $
+ * $Id: CachedBuilderPage.java,v 1.8 2006/05/24 13:08:07 tryggvil Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -35,11 +35,11 @@ import com.idega.exception.PageDoesNotExist;
  */
 public abstract class CachedBuilderPage extends DefaultViewNode implements ViewNode {
 	
-	public final static String TYPE_PAGE = XMLConstants.PAGE_TYPE_PAGE;
-	public final static String TYPE_TEMPLATE = XMLConstants.PAGE_TYPE_TEMPLATE;
-	protected final static String TYPE_DRAFT = XMLConstants.PAGE_TYPE_DRAFT;
-	protected final static String TYPE_DPT_TEMPLATE = XMLConstants.PAGE_TYPE_DPT_TEMPLATE;
-	protected final static String TYPE_DPT_PAGE = XMLConstants.PAGE_TYPE_DPT_PAGE;
+	public final static String TYPE_PAGE = IBXMLConstants.PAGE_TYPE_PAGE;
+	public final static String TYPE_TEMPLATE = IBXMLConstants.PAGE_TYPE_TEMPLATE;
+	protected final static String TYPE_DRAFT = IBXMLConstants.PAGE_TYPE_DRAFT;
+	protected final static String TYPE_DPT_TEMPLATE = IBXMLConstants.PAGE_TYPE_DPT_TEMPLATE;
+	protected final static String TYPE_DPT_PAGE = IBXMLConstants.PAGE_TYPE_DPT_PAGE;
 	
 	private String type=TYPE_PAGE;
 	private String _key;

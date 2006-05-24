@@ -19,7 +19,7 @@ import javax.ejb.FinderException;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.XMLConstants;
+import com.idega.builder.business.IBXMLConstants;
 import com.idega.builder.data.IBExportImportData;
 import com.idega.builder.data.IBReferences;
 import com.idega.core.builder.data.ICPage;
@@ -116,16 +116,16 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		Iterator nonPageIterator = nonPages.iterator();
 		while (nonPageIterator.hasNext()) {
 			XMLElement nonPageElement = (XMLElement) nonPageIterator.next();
-			String zipEntryName = nonPageElement.getTextTrim(XMLConstants.FILE_USED_ID);
-			String fileIsMarkedAsDeleted = nonPageElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+			String zipEntryName = nonPageElement.getTextTrim(IBXMLConstants.FILE_USED_ID);
+			String fileIsMarkedAsDeleted = nonPageElement.getTextTrim(IBXMLConstants.FILE_IS_MARKED_AS_DELETED);
 			boolean isMarkedAsDeleted = Boolean.valueOf(fileIsMarkedAsDeleted).booleanValue();
 			// avoid errors if the metadata is corrupt
 			if (! isMarkedAsDeleted && ! this.entryNameHolder.containsKey(zipEntryName)) {
 				StorableHolder holder = references.createSourceFromElement(nonPageElement);
 				ZipInputStreamIgnoreClose inputStream = getZipInputStream(zipEntryName, sourceFile);
 				ReaderFromFile currentReader = (ReaderFromFile) holder.getStorable().read(this, this.iwc);
-				String originalName = nonPageElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
-				String mimeType = nonPageElement.getTextTrim(XMLConstants.FILE_MIME_TYPE);
+				String originalName = nonPageElement.getTextTrim(IBXMLConstants.FILE_ORIGINAL_NAME);
+				String mimeType = nonPageElement.getTextTrim(IBXMLConstants.FILE_MIME_TYPE);
 				currentReader.setName(originalName);
 				currentReader.setMimeType(mimeType);
 				try {
@@ -137,10 +137,10 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 				}
 				this.entryNameHolder.put(zipEntryName, holder);
 			}
-			String moduleName = nonPageElement.getTextTrim(XMLConstants.FILE_MODULE);
+			String moduleName = nonPageElement.getTextTrim(IBXMLConstants.FILE_MODULE);
 			String propertyName = references.checkAndUpdateName(nonPageElement);
-			String parameterId = nonPageElement.getTextTrim(XMLConstants.FILE_PARAMETER_ID);
-			String value = nonPageElement.getTextTrim(XMLConstants.FILE_VALUE);
+			String parameterId = nonPageElement.getTextTrim(IBXMLConstants.FILE_PARAMETER_ID);
+			String value = nonPageElement.getTextTrim(IBXMLConstants.FILE_VALUE);
 			HashMatrix  parameterIdValueEntryMap = null;
 			if (this.modulePropertyParameterIdValueEntryName.containsKey(moduleName, propertyName)) {
 				parameterIdValueEntryMap = (HashMatrix) this.modulePropertyParameterIdValueEntryName.get(moduleName, propertyName);
@@ -162,8 +162,8 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		Iterator pageIterator = pageFileElements.iterator();
 		while (pageIterator.hasNext()) {
 			XMLElement pageFileElement = (XMLElement) pageIterator.next();
-			String zipEntryName = pageFileElement.getTextTrim(XMLConstants.FILE_USED_ID);
-			String fileIsMarkedAsDeleted = pageFileElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+			String zipEntryName = pageFileElement.getTextTrim(IBXMLConstants.FILE_USED_ID);
+			String fileIsMarkedAsDeleted = pageFileElement.getTextTrim(IBXMLConstants.FILE_IS_MARKED_AS_DELETED);
 			boolean markedAsDeleted = Boolean.valueOf(fileIsMarkedAsDeleted).booleanValue();
 			// avoid errors if the metadata is corrupt
 			if (! markedAsDeleted && ! this.entryNameHolder.containsKey(zipEntryName)) {
@@ -177,13 +177,13 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		Iterator pageIterator = pageFileElements.iterator();
 		while (pageIterator.hasNext()) {
 			XMLElement pageFileElement = (XMLElement) pageIterator.next();
-			String zipEntryName = pageFileElement.getTextTrim(XMLConstants.FILE_USED_ID);
-			String fileIsMarkedAsDeleted = pageFileElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+			String zipEntryName = pageFileElement.getTextTrim(IBXMLConstants.FILE_USED_ID);
+			String fileIsMarkedAsDeleted = pageFileElement.getTextTrim(IBXMLConstants.FILE_IS_MARKED_AS_DELETED);
 			boolean isMarkedAsDeleted = Boolean.valueOf(fileIsMarkedAsDeleted).booleanValue();
 			// avoid errors if the metadata is corrupt
 			if (! isMarkedAsDeleted && ! localPages.contains(zipEntryName)) {
 				localPages.add(zipEntryName);
-				String originalName = pageFileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
+				String originalName = pageFileElement.getTextTrim(IBXMLConstants.FILE_ORIGINAL_NAME);
 				modifyPageContent(zipEntryName, originalName, sourceFile);
 			}
 		}
@@ -212,12 +212,12 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			closeStream(zipInputStream);
 		}
 		
-		XMLElement pageElement = pageData.getDocument().getRootElement().getChild(XMLConstants.PAGE_STRING);
+		XMLElement pageElement = pageData.getDocument().getRootElement().getChild(IBXMLConstants.PAGE_STRING);
 		String importTemplateValue = null;
 		String type = null;
 		if (pageElement != null) {
 			// set template --------------------------------
-			String exportTemplate = pageElement.getAttributeValue(XMLConstants.TEMPLATE_STRING);
+			String exportTemplate = pageElement.getAttributeValue(IBXMLConstants.TEMPLATE_STRING);
 			if (exportTemplate != null) {
 				// find new id 
 				StorableHolder templateHolder = (StorableHolder) this.pageIdHolder.get(exportTemplate);
@@ -226,27 +226,27 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 				}
 				importTemplateValue = templateHolder.getValue();
 			}
-			type = pageElement.getAttributeValue(XMLConstants.PAGE_TYPE);
+			type = pageElement.getAttributeValue(IBXMLConstants.PAGE_TYPE);
 		}
 		else {
-			String id = pageFileElement.getText(XMLConstants.FILE_VALUE);
+			String id = pageFileElement.getText(IBXMLConstants.FILE_VALUE);
 			if (exportImportData.isTemplate(id)) {
-				type = XMLConstants.PAGE_TYPE_TEMPLATE;
+				type = IBXMLConstants.PAGE_TYPE_TEMPLATE;
 			}
 			else {
-				type = XMLConstants.PAGE_TYPE_PAGE;
+				type = IBXMLConstants.PAGE_TYPE_PAGE;
 			}
 		}
 		// set name ---------------------------------------
-		String originalName = pageFileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
+		String originalName = pageFileElement.getTextTrim(IBXMLConstants.FILE_ORIGINAL_NAME);
 		// set parent and child ----------------------------
-		String exportValue = pageFileElement.getTextTrim(XMLConstants.FILE_VALUE);
+		String exportValue = pageFileElement.getTextTrim(IBXMLConstants.FILE_VALUE);
 		String parentId = ((IBExportImportData) this.storable).getParentIdForPageId(exportValue);
 		if (parentId == null && type != null) {
-			if (XMLConstants.PAGE_TYPE_PAGE.equals(type) && this.parentPageId > -1) {
+			if (IBXMLConstants.PAGE_TYPE_PAGE.equals(type) && this.parentPageId > -1) {
 				parentId = Integer.toString(this.parentPageId);
 			}
-			else if (XMLConstants.PAGE_TYPE_TEMPLATE.equals(type) && this.parentTemplateId > -1) {
+			else if (IBXMLConstants.PAGE_TYPE_TEMPLATE.equals(type) && this.parentTemplateId > -1) {
 				parentId = Integer.toString(this.parentTemplateId);
 			}
 		}
@@ -281,11 +281,11 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			closeStream(zipInputStream);
 		}
 		
-		XMLElement pageElement = pageData.getDocument().getRootElement().getChild(XMLConstants.PAGE_STRING);
+		XMLElement pageElement = pageData.getDocument().getRootElement().getChild(IBXMLConstants.PAGE_STRING);
 		if (pageElement != null) {
 			// if the pageElement is null nothing to do!
 			// set template --------------------------------
-			String exportTemplate = pageElement.getAttributeValue(XMLConstants.TEMPLATE_STRING);
+			String exportTemplate = pageElement.getAttributeValue(IBXMLConstants.TEMPLATE_STRING);
 			if (exportTemplate != null) {
 				// find new id 
 				StorableHolder templateHolder = (StorableHolder) this.pageIdHolder.get(exportTemplate);
@@ -294,7 +294,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 				}
 				String importTemplateValue = templateHolder.getValue();
 				// set template entry in xml file
-				pageElement.setAttribute(XMLConstants.TEMPLATE_STRING, importTemplateValue);
+				pageElement.setAttribute(IBXMLConstants.TEMPLATE_STRING, importTemplateValue);
 			}
 		}
 		// get the current page
@@ -346,19 +346,19 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	private void checkModuleEntries(XMLElement element, int pageId) throws IOException {
 		String nameOfElement = element.getName();
 		// is it a module?
-		if (! XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement)) {
+		if (! IBXMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement)) {
 			// non module, return....
 			return;
 		}
 		// okay, it is a module...
 		// check if the module is a JSF component by checking if the ic_object_id attribute is there
-		if (element.getAttributeValue(XMLConstants.IC_OBJECT_ID_STRING) == null) {
+		if (element.getAttributeValue(IBXMLConstants.IC_OBJECT_ID_STRING) == null) {
 			// nothing to do, JSF component, ic_object_id is missing
 			return;
 		}
 		// ask for the class
-		String moduleClass = element.getAttributeValue(XMLConstants.CLASS_STRING);
-		String importInstanceId = element.getAttributeValue(XMLConstants.ID_STRING); 
+		String moduleClass = element.getAttributeValue(IBXMLConstants.CLASS_STRING);
+		String importInstanceId = element.getAttributeValue(IBXMLConstants.ID_STRING); 
 		// figure out what the current module class id is
 		ICObject icObject = null;
 		try {
@@ -371,7 +371,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			throw new IOException("[IBExportImportDataReader] Couldn't look up home of ICObject");
 		}
 		// set id of ICObject 
-		element.setAttribute(XMLConstants.IC_OBJECT_ID_STRING, icObject.getPrimaryKey().toString());
+		element.setAttribute(IBXMLConstants.IC_OBJECT_ID_STRING, icObject.getPrimaryKey().toString());
 		// create new instance of ICObjectInstance
 		String instanceId = null;
 		try {
@@ -387,7 +387,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			this.oldNewInstanceId = new HashMap();
 		}
 		// set new id of ICObjectInstance 
-		element.setAttribute(XMLConstants.ID_STRING, instanceId);
+		element.setAttribute(IBXMLConstants.ID_STRING, instanceId);
 		this.oldNewInstanceId.put(importInstanceId, instanceId);			
 	}
 	
@@ -410,19 +410,19 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	private void checkPropertiesEntries(XMLElement element) {
 		String nameOfElement = element.getName();
 		// is it a property?
-		if (XMLConstants.PROPERTY_STRING.equalsIgnoreCase(nameOfElement)) {
+		if (IBXMLConstants.PROPERTY_STRING.equalsIgnoreCase(nameOfElement)) {
 			// ask for the module of the property
-			String moduleName = element.getParent().getAttributeValue(XMLConstants.CLASS_STRING);
+			String moduleName = element.getParent().getAttributeValue(IBXMLConstants.CLASS_STRING);
 			// special case: pages aren't modules
 			if (moduleName == null) {
 				moduleName = ICPage.class.getName();
 			}
 			// ask for the name of the property
-			String propertyName = element.getTextTrim(XMLConstants.NAME_STRING);
+			String propertyName = element.getTextTrim(IBXMLConstants.NAME_STRING);
 			// does a reference with that source and name exist?
 			if (this.modulePropertyParameterIdValueEntryName.containsKey(moduleName, propertyName)) {
 				HashMatrix parameterIdValueEntryNameMap = (HashMatrix) this.modulePropertyParameterIdValueEntryName.get(moduleName, propertyName);
-				List values = element.getChildren(XMLConstants.VALUE_STRING);
+				List values = element.getChildren(IBXMLConstants.VALUE_STRING);
 				Iterator valuesIterator = values.iterator();
 				int index = 1;
 				while (valuesIterator.hasNext()) {
@@ -454,11 +454,11 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	private void checkRegionEntries(XMLElement element) {
 		String nameOfElement = element.getName();
 		// is it a region?
-		if (XMLConstants.REGION_STRING.equalsIgnoreCase(nameOfElement)) {
+		if (IBXMLConstants.REGION_STRING.equalsIgnoreCase(nameOfElement)) {
 			// ask for the id 
-			String regionId = element.getAttributeValue(XMLConstants.ID_STRING);
+			String regionId = element.getAttributeValue(IBXMLConstants.ID_STRING);
 			// parse the id
-			int index = regionId.indexOf(XMLConstants.DOT_REGION_STRING);
+			int index = regionId.indexOf(IBXMLConstants.DOT_REGION_STRING);
 			boolean regionIsDotType = (index == -1) ? false : true;
 			// There are two different types of regions: 
 			// region type: <region id="12" x="1" y="2" label="main">
@@ -471,7 +471,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 				String newId = (String) this.oldNewInstanceId.get(id);
 				// set new id
 				String newRegionId = (regionIsDotType) ? StringHandler.concat(newId, regionId.substring(index)) : newId;
-				element.setAttribute(XMLConstants.ID_STRING, newRegionId);
+				element.setAttribute(IBXMLConstants.ID_STRING, newRegionId);
 			}
 		}
 	}
@@ -632,19 +632,19 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 	}
 	
 	public String convertXMLTypeElement(String xmlTypeString) throws IOException {
-		if (XMLConstants.PAGE_TYPE_PAGE.equalsIgnoreCase(xmlTypeString)) {
+		if (IBXMLConstants.PAGE_TYPE_PAGE.equalsIgnoreCase(xmlTypeString)) {
 			return IBPageHelper.PAGE;
 		}
-		else if (XMLConstants.PAGE_TYPE_DRAFT.equalsIgnoreCase(xmlTypeString)) {
+		else if (IBXMLConstants.PAGE_TYPE_DRAFT.equalsIgnoreCase(xmlTypeString)) {
 			return IBPageHelper.DRAFT;
 		}
-		else if (XMLConstants.PAGE_TYPE_TEMPLATE.equalsIgnoreCase(xmlTypeString)) {
+		else if (IBXMLConstants.PAGE_TYPE_TEMPLATE.equalsIgnoreCase(xmlTypeString)) {
 			return IBPageHelper.TEMPLATE;
 		}
-		else if (XMLConstants.PAGE_TYPE_DPT_PAGE.equalsIgnoreCase(xmlTypeString)) {
+		else if (IBXMLConstants.PAGE_TYPE_DPT_PAGE.equalsIgnoreCase(xmlTypeString)) {
 				return IBPageHelper.DPT_PAGE;
 		}
-		else if (XMLConstants.PAGE_TYPE_DPT_TEMPLATE.equalsIgnoreCase(xmlTypeString)) {
+		else if (IBXMLConstants.PAGE_TYPE_DPT_TEMPLATE.equalsIgnoreCase(xmlTypeString)) {
 			return IBPageHelper.DPT_TEMPLATE;
 		}
 		throw new IOException("[IBExportImportDataReader] Unknown page type "+ xmlTypeString);

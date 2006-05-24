@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJBLocalObject;
-import com.idega.builder.business.XMLConstants;
+import com.idega.builder.business.IBXMLConstants;
 import com.idega.io.serialization.StorableHolder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -51,21 +51,21 @@ public class IBReferences {
 	}
 	
 	public StorableHolder createSourceFromElement(XMLElement metaDataFileElement) throws IOException {
-		String moduleName = metaDataFileElement.getTextTrim(XMLConstants.FILE_MODULE);
+		String moduleName = metaDataFileElement.getTextTrim(IBXMLConstants.FILE_MODULE);
 		IBReference reference = getReferenceOrNull(moduleName);
 		if (reference == null) {
 			// shouldn't happen
 			return null;
 		}
-		String parameterId = metaDataFileElement.getTextTrim(XMLConstants.FILE_PARAMETER_ID);
-		String value = metaDataFileElement.getTextTrim(XMLConstants.FILE_VALUE);
+		String parameterId = metaDataFileElement.getTextTrim(IBXMLConstants.FILE_PARAMETER_ID);
+		String value = metaDataFileElement.getTextTrim(IBXMLConstants.FILE_VALUE);
 		String name = checkAndUpdateName(metaDataFileElement);
 		IBReferenceEntry entry = reference.getReferenceByName(name, parameterId);
 		return entry.createSource(value);
 	}
 		
 	public String checkAndUpdateName(XMLElement metadataFileElement) {
-		String name = metadataFileElement.getTextTrim(XMLConstants.FILE_NAME);
+		String name = metadataFileElement.getTextTrim(IBXMLConstants.FILE_NAME);
 		return this.methodIdendifierCache.getUpdatedMethodIdentifier(name);
 	}
 			
@@ -78,10 +78,10 @@ public class IBReferences {
 		}
 		String nameOfElement = element.getName();
 		// is it a module or a page?
-		if (XMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement) || 
-				XMLConstants.PAGE_STRING.equalsIgnoreCase(nameOfElement)) {
+		if (IBXMLConstants.MODULE_STRING.equalsIgnoreCase(nameOfElement) || 
+				IBXMLConstants.PAGE_STRING.equalsIgnoreCase(nameOfElement)) {
 			// ask for the class
-			String moduleClassName = element.getAttributeValue(XMLConstants.CLASS_STRING);
+			String moduleClassName = element.getAttributeValue(IBXMLConstants.CLASS_STRING);
 			// special case: pages aren't modules
 			if (moduleClassName == null) {
 				moduleClassName = Page.class.getName();

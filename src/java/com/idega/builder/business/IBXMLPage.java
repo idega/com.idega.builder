@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.60 2006/04/09 11:43:34 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.61 2006/05/24 13:08:07 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/05/24 13:08:07 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -195,7 +195,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		//Lazily load
 		if(this._populatedPage==null){
 			synchronized(BuilderLogic.getInstance()){
-				setPopulatedPage(XMLReader.getPopulatedPage(this));
+				setPopulatedPage(getBuilderLogic().getIBXMLReader().getPopulatedPage(this));
 			}
 		}
 		return this._populatedPage;
@@ -276,30 +276,30 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	}
 
 	public void setPageAsEmptyPage(String type, String template) {
-		XMLElement _rootElement = new XMLElement(XMLConstants.ROOT_STRING);
+		XMLElement _rootElement = new XMLElement(IBXMLConstants.ROOT_STRING);
 		setRootElement(_rootElement);
-		XMLElement pageElement = new XMLElement(XMLConstants.PAGE_STRING);
+		XMLElement pageElement = new XMLElement(IBXMLConstants.PAGE_STRING);
 
 		if (type == null) {
-			type = XMLConstants.PAGE_TYPE_PAGE;
+			type = IBXMLConstants.PAGE_TYPE_PAGE;
 		}
 
 		if ((type.equals(TYPE_DRAFT)) || (type.equals(TYPE_PAGE)) || (type.equals(TYPE_TEMPLATE)) || (type.equals(TYPE_DPT_TEMPLATE)) || (type.equals(TYPE_DPT_PAGE))) {
-			pageElement.setAttribute(XMLConstants.PAGE_TYPE, type);
+			pageElement.setAttribute(IBXMLConstants.PAGE_TYPE, type);
 			setType(type);
 		}
 		else {
-			pageElement.setAttribute(XMLConstants.PAGE_TYPE, TYPE_PAGE);
+			pageElement.setAttribute(IBXMLConstants.PAGE_TYPE, TYPE_PAGE);
 			setType(type);
 		}
 
 		if (template != null) {
-			pageElement.setAttribute(XMLConstants.TEMPLATE_STRING, template);
+			pageElement.setAttribute(IBXMLConstants.TEMPLATE_STRING, template);
 		}
 
 		this.setXMLDocument(new XMLDocument(_rootElement));
 		_rootElement.addContent(pageElement);
-		setPopulatedPage(XMLReader.getPopulatedPage(this));
+		setPopulatedPage(getBuilderLogic().getIBXMLReader().getPopulatedPage(this));
 	}
 
 	/**
@@ -324,7 +324,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 
 	public XMLElement getPageRootElement() {
 		if (getRootElement() != null) {
-			return getRootElement().getChild(XMLConstants.PAGE_STRING);
+			return getRootElement().getChild(IBXMLConstants.PAGE_STRING);
 		}
 		return null;
 	}
@@ -402,7 +402,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	}
 
 	public XMLElement copyModule(String instanceId) {
-		return XMLWriter.copyModule(this, instanceId);
+		return getBuilderLogic().getIBXMLWriter().copyModule(this, instanceId);
 	}
 	
 	/**

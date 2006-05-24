@@ -1,5 +1,5 @@
 /*
- * $Id: IBReferenceEntry.java,v 1.2 2006/04/09 11:43:35 laddi Exp $
+ * $Id: IBReferenceEntry.java,v 1.3 2006/05/24 13:08:07 tryggvil Exp $
  * Created on Sep 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import com.idega.builder.business.XMLConstants;
+import com.idega.builder.business.IBXMLConstants;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
@@ -49,12 +49,12 @@ public class IBReferenceEntry {
 	}
 	
 	public void initialize(String propertyName, XMLElement parameterElement) {
-		String tempParameterId = parameterElement.getAttributeValue(XMLConstants.EXPORT_PROPERTY_PARAMETER_ID);
-		String tempSourceClassName = parameterElement.getTextTrim(XMLConstants.EXPORT_SOURCE);
+		String tempParameterId = parameterElement.getAttributeValue(IBXMLConstants.EXPORT_PROPERTY_PARAMETER_ID);
+		String tempSourceClassName = parameterElement.getTextTrim(IBXMLConstants.EXPORT_SOURCE);
 		
-		XMLElement providerElement = parameterElement.getChild(XMLConstants.EXPORT_PROVIDER);
-		boolean tempIsEjb = (new Boolean(providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_EJB))).booleanValue();
-		String tempProviderClassName = providerElement.getTextTrim(XMLConstants.EXPORT_PROVIDER_CLASS);
+		XMLElement providerElement = parameterElement.getChild(IBXMLConstants.EXPORT_PROVIDER);
+		boolean tempIsEjb = (new Boolean(providerElement.getTextTrim(IBXMLConstants.EXPORT_PROVIDER_EJB))).booleanValue();
+		String tempProviderClassName = providerElement.getTextTrim(IBXMLConstants.EXPORT_PROVIDER_CLASS);
 		
 		initialize(propertyName, tempParameterId, tempSourceClassName, tempProviderClassName, tempIsEjb);
 	}
@@ -81,15 +81,15 @@ public class IBReferenceEntry {
 	}
 	
 	public void addSource(XMLElement moduleElement, IBExportImportData metadata) throws IOException {
-		List properties = moduleElement.getChildren(XMLConstants.PROPERTY_STRING);
+		List properties = moduleElement.getChildren(IBXMLConstants.PROPERTY_STRING);
 		Iterator iterator = properties.iterator();
 		while (iterator.hasNext()) {
 			XMLElement propertyElement = (XMLElement) iterator.next();
-			String tempValueName = propertyElement.getTextTrim(XMLConstants.NAME_STRING);
+			String tempValueName = propertyElement.getTextTrim(IBXMLConstants.NAME_STRING);
 			tempValueName = this.methodIdenfierCache.getUpdatedMethodIdentifier(tempValueName);
 			if (tempValueName.equals(this.valueName)) {
 				// right propertyElement has been found, now get the right value (properties can have more than one value)
-				List valueElements = propertyElement.getChildren(XMLConstants.VALUE_STRING);
+				List valueElements = propertyElement.getChildren(IBXMLConstants.VALUE_STRING);
 				// index starts at zero 
 				int index = Integer.parseInt(this.parameterId);
 				XMLElement valueElement = (XMLElement) valueElements.get(--index);

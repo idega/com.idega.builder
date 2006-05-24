@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.57 2006/05/10 17:40:46 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.58 2006/05/24 13:08:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -126,7 +126,7 @@ public class IBPropertyHandler implements Singleton{
 			iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
 		}
 		else {
-			ICObjectInstance icoi = XMLReader.getICObjectInstanceFromComponentId(instanceId,null,null);
+			ICObjectInstance icoi = getBuilderLogic().getIBXMLReader().getICObjectInstanceFromComponentId(instanceId,null,null);
 			ICObject obj = icoi.getObject();
 			iwb = obj.getBundle(iwma);
 			componentKey = obj.getClassName();
@@ -197,7 +197,7 @@ public class IBPropertyHandler implements Singleton{
 	 */
 	public String[] getPropertyValues(IWMainApplication iwma, IBXMLPage xml, String instanceId, String methodIdentifier, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
 		//if(selectedValues!=null){
-		List availableValues = XMLWriter.getPropertyValues(xml, instanceId, methodIdentifier);
+		List availableValues = getBuilderLogic().getIBXMLWriter().getPropertyValues(xml, instanceId, methodIdentifier);
 		if (selectedValues != null) {
 			for (int i = 0; i < selectedValues.length; i++) {
 				String selectedValue = selectedValues[i];
@@ -726,7 +726,7 @@ public class IBPropertyHandler implements Singleton{
 			iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
 		}
 		else {
-			ICObjectInstance icoi = XMLReader.getICObjectInstanceFromComponentId(instanceId,null,null);
+			ICObjectInstance icoi = getBuilderLogic().getIBXMLReader().getICObjectInstanceFromComponentId(instanceId,null,null);
 			ICObject obj = icoi.getObject();
 			iwb = obj.getBundle(iwma);
 			componentClassName = obj.getClassName();
@@ -766,6 +766,10 @@ public class IBPropertyHandler implements Singleton{
 			properties.add(desc);
 		}
 		
+	}
+	
+	public BuilderLogic getBuilderLogic(){
+		return BuilderLogic.getInstance();
 	}
 	
 }

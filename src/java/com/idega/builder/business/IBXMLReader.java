@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.73 2006/05/15 16:12:06 eiki Exp $
+ * $Id: IBXMLReader.java,v 1.1 2006/05/24 13:08:07 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,22 +36,27 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
 
 /**
+ * <p>
+ * This is the main class for parsing the 'IBXML' document format in the Builder.
+ * <p>
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>,
  * <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class XMLReader {
+public class IBXMLReader {
 	public static final String UUID_PREFIX = ICObjectBusiness.UUID_PREFIX;
 	/**
-	 *
+	 *<p>
+	 *Constructor only used by BuilderLogic
+	 *</p>
 	 */
-	private XMLReader() {
+	IBXMLReader() {
 	}
 
 	/**
 	 *
 	 */
-	private static void setAllBuilderControls(UIComponent parent, boolean setTo) {
+	private void setAllBuilderControls(UIComponent parent, boolean setTo) {
 		//List list = parent.getChildren();
 		//if (list != null) {
 			//Iterator it = list.iterator();
@@ -78,11 +83,11 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static Page getPopulatedPage(IBXMLPage ibxml) {
+	Page getPopulatedPage(IBXMLPage ibxml) {
 		Page parentContainer = null;
 		String pageKey = null;
 		XMLElement root = ibxml.getRootElement();
-		XMLElement pageXML = root.getChild(XMLConstants.PAGE_STRING);
+		XMLElement pageXML = root.getChild(IBXMLConstants.PAGE_STRING);
 		List pageAttr = pageXML.getAttributes();
 		Iterator attr = pageAttr.iterator();
 
@@ -94,7 +99,7 @@ public class XMLReader {
 		// Parse the page attributes
 		while (attr.hasNext()) {
 			XMLAttribute at = (XMLAttribute) attr.next();
-			if (at.getName().equalsIgnoreCase(XMLConstants.TEMPLATE_STRING)) {
+			if (at.getName().equalsIgnoreCase(IBXMLConstants.TEMPLATE_STRING)) {
 				hasTemplate = true;
 				String pageId = at.getValue();
 				//parentContainer = getBuilderLogic().getPageCacher().getPage(at.getValue());
@@ -103,16 +108,16 @@ public class XMLReader {
 				parentContainer.setTemplateId(at.getValue());
 				setAllBuilderControls(parentContainer, false);
 			}
-			else if (at.getName().equalsIgnoreCase(XMLConstants.PAGE_TYPE)) {
+			else if (at.getName().equalsIgnoreCase(IBXMLConstants.PAGE_TYPE)) {
 				String value = at.getValue();
-				if (value.equals(XMLConstants.PAGE_TYPE_TEMPLATE) || value.equals(XMLConstants.PAGE_TYPE_DPT_TEMPLATE)) {
+				if (value.equals(IBXMLConstants.PAGE_TYPE_TEMPLATE) || value.equals(IBXMLConstants.PAGE_TYPE_DPT_TEMPLATE)) {
 					isTemplate = true;
 				}
 			}
-			else if (at.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
+			else if (at.getName().equalsIgnoreCase(IBXMLConstants.ID_STRING)) {
 				pageKey = at.getValue();
 			}
-			else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
+			else if (at.getName().equalsIgnoreCase(IBXMLConstants.REGION_LOCKED)) {
 				if (at.getValue().equals("true")) {
 					isLocked = true;
 				}
@@ -120,7 +125,7 @@ public class XMLReader {
 					isLocked = false;
 				}
 			} 
-			else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
+			else if (at.getName().equalsIgnoreCase(IBXMLConstants.DPT_ROOTPAGE_STRING)) {
 				dptRootPage = at.getValue();
 			}
 		}
@@ -143,11 +148,11 @@ public class XMLReader {
 		//Set the type of the page
 		if (isTemplate) {
 			parentContainer.setIsTemplate();
-			ibxml.setType(XMLConstants.PAGE_TYPE_TEMPLATE);
+			ibxml.setType(IBXMLConstants.PAGE_TYPE_TEMPLATE);
 		}
 		else {
 			parentContainer.setIsPage();
-			ibxml.setType(XMLConstants.PAGE_TYPE_PAGE);
+			ibxml.setType(IBXMLConstants.PAGE_TYPE_PAGE);
 		}
 
 		//sets the id of the page
@@ -183,10 +188,10 @@ public class XMLReader {
 			while (it.hasNext()) {
 				XMLElement child = (XMLElement) it.next();
 				
-				if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
+				if (child.getName().equalsIgnoreCase(IBXMLConstants.PROPERTY_STRING)) {
 					setProperty(child, parentContainer);
 				}
-				else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
+				else if (child.getName().equalsIgnoreCase(IBXMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(IBXMLConstants.MODULE_STRING)) {
 					if (!parentContainer.getIsExtendingTemplate()) {
 						parseElement(child, parentContainer, ibxml);
 					}
@@ -194,13 +199,13 @@ public class XMLReader {
 						parseElement(child, parentContainer, ibxml);
 					}
 				}
-				else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
+				else if (child.getName().equalsIgnoreCase(IBXMLConstants.REGION_STRING)) {
 					parseRegion(child, parentContainer, ibxml);
 				}
-				else if (child.getName().equalsIgnoreCase(XMLConstants.CHANGE_PAGE_LINK)) {
+				else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_PAGE_LINK)) {
 					changeDPTCrawlableLinkedPageProperty(child, parentContainer);
 				}
-				else if (child.getName().equals(XMLConstants.CHANGE_IC_INSTANCE_ID)) {
+				else if (child.getName().equals(IBXMLConstants.CHANGE_IC_INSTANCE_ID)) {
 					changeInstanceId(child, parentContainer);
 				}
 				else {
@@ -215,7 +220,7 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, CachedBuilderPage ibxml) {
+	void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, CachedBuilderPage ibxml) {
 		List regionAttrList = reg.getAttributes();
 		UIComponent newRegionParent = regionParent;
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
@@ -227,7 +232,7 @@ public class XMLReader {
 		int y = 1;
 		boolean isLocked = true;
 
-		XMLAttribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
+		XMLAttribute locked = reg.getAttribute(IBXMLConstants.REGION_LOCKED);
 		if (locked != null) {
 			if (locked.getValue().equalsIgnoreCase("true")) {
 				isLocked = true;
@@ -237,15 +242,15 @@ public class XMLReader {
 			}
 		}
 
-		XMLAttribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
+		XMLAttribute label = reg.getAttribute(IBXMLConstants.LABEL_STRING);
 
-		XMLAttribute regionIDattr = reg.getAttribute(XMLConstants.ID_STRING);
+		XMLAttribute regionIDattr = reg.getAttribute(IBXMLConstants.ID_STRING);
 		String regionID = null;
 		if (regionIDattr != null) {
 			regionID = regionIDattr.getValue();
 			try {
 				Integer.parseInt(regionID);
-				XMLAttribute regionAttrX = reg.getAttribute(XMLConstants.X_REGION_STRING);
+				XMLAttribute regionAttrX = reg.getAttribute(IBXMLConstants.X_REGION_STRING);
 				if (regionAttrX != null) {
 					try {
 						x = regionAttrX.getIntValue();
@@ -255,7 +260,7 @@ public class XMLReader {
 						x = 1;
 					}
 				}
-				XMLAttribute regionAttrY = reg.getAttribute(XMLConstants.Y_REGION_STRING);
+				XMLAttribute regionAttrY = reg.getAttribute(IBXMLConstants.Y_REGION_STRING);
 				if (regionAttrY != null) {
 					try {
 						y = regionAttrY.getIntValue();
@@ -352,15 +357,15 @@ public class XMLReader {
 	/**
 	 *Sets properties from the xml on the object via reflection or getAttributes().put(..) or PresentationObject.setProperty(...)
 	 */
-	static void setProperty(XMLElement property, UIComponent object) {
+	void setProperty(XMLElement property, UIComponent object) {
 		String key = null;
 		List values = new ArrayList();
 
 		
 		//1. First check for <property name="" value="">:
 		
-		String propertyName = property.getAttributeValue(XMLConstants.NAME_STRING);
-		String propertyValue = property.getAttributeValue(XMLConstants.VALUE_STRING);
+		String propertyName = property.getAttributeValue(IBXMLConstants.NAME_STRING);
+		String propertyValue = property.getAttributeValue(IBXMLConstants.VALUE_STRING);
 		
 		if(propertyValue!=null && propertyValue !=null){
 			values.add(propertyValue);
@@ -376,17 +381,17 @@ public class XMLReader {
 		while (it.hasNext()) {
 			XMLElement e = (XMLElement) it.next();
 
-			if (e.getName().equalsIgnoreCase(XMLConstants.NAME_STRING)) {
+			if (e.getName().equalsIgnoreCase(IBXMLConstants.NAME_STRING)) {
 				key = e.getTextTrim();
 			}
-			else if (e.getName().equalsIgnoreCase(XMLConstants.VALUE_STRING)) {
+			else if (e.getName().equalsIgnoreCase(IBXMLConstants.VALUE_STRING)) {
 				values.add(e.getTextTrim());
 			}
 		}
 
 		if (key != null) {
 			//key is MethodIdentifier
-			if (key.startsWith(XMLConstants.METHOD_STRING)) {
+			if (key.startsWith(IBXMLConstants.METHOD_STRING)) {
 				try {
 					setReflectionProperty(object, key, values);
 				}
@@ -417,18 +422,18 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void setReflectionProperty(UIComponent instance, String methodIdentifier, List stringValues) {
+	void setReflectionProperty(UIComponent instance, String methodIdentifier, List stringValues) {
 		ComponentPropertyHandler.getInstance().setReflectionProperty(instance, methodIdentifier, stringValues);
 	}
 	
-	static void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
+	void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
 		ComponentPropertyHandler.getInstance().setComponentProperty(instance, componentProperty, stringValues);
 	}
 
 	/**
 	 *
 	 */
-	public static UIComponent parseElement(XMLElement el, UIComponent parent, CachedBuilderPage ibxml) {
+	public UIComponent parseElement(XMLElement el, UIComponent parent, CachedBuilderPage ibxml) {
 	
 		UIComponent firstUICInstance = null;
 		
@@ -450,17 +455,17 @@ public class XMLReader {
 		//get the attributes for the module tag
 		while (it.hasNext()) {
 			XMLAttribute attr = (XMLAttribute) it.next();
-			if (attr.getName().equalsIgnoreCase(XMLConstants.CLASS_STRING)) {
+			if (attr.getName().equalsIgnoreCase(IBXMLConstants.CLASS_STRING)) {
 				className = attr.getValue();
 			}
-			else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
+			else if (attr.getName().equalsIgnoreCase(IBXMLConstants.ID_STRING)) {
 				//icObjectInstanceId = attr.getValue();
 				componentId=attr.getValue();
 			}
-			else if (attr.getName().equalsIgnoreCase(XMLConstants.IC_OBJECT_ID_STRING)) {
+			else if (attr.getName().equalsIgnoreCase(IBXMLConstants.IC_OBJECT_ID_STRING)) {
 				icObjectId = attr.getValue();
 			}
-			else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
+			else if (attr.getName().equalsIgnoreCase(IBXMLConstants.REGION_LOCKED)) {
 				if (attr.getValue().equals("false")) {
 					isLocked = false;
 				}
@@ -537,13 +542,13 @@ public class XMLReader {
 
 					while (itr.hasNext()) {
 						XMLElement child = (XMLElement) itr.next();
-						if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
+						if (child.getName().equalsIgnoreCase(IBXMLConstants.PROPERTY_STRING)) {
 							setProperty(child, table);
 						}
-						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
+						else if (child.getName().equalsIgnoreCase(IBXMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(IBXMLConstants.MODULE_STRING)) {
 							parseElement(child, table, ibxml);
 						}
-						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
+						else if (child.getName().equalsIgnoreCase(IBXMLConstants.REGION_STRING)) {
 							parseRegion(child, table, ibxml);
 						}
 						else {
@@ -579,13 +584,13 @@ public class XMLReader {
 
 					while (itr.hasNext()) {
 						XMLElement child = (XMLElement) itr.next();
-						if (child.getName().equalsIgnoreCase(XMLConstants.PROPERTY_STRING)) {
+						if (child.getName().equalsIgnoreCase(IBXMLConstants.PROPERTY_STRING)) {
 							setProperty(child, firstUICInstance);
 						}
-						else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
+						else if (child.getName().equalsIgnoreCase(IBXMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(IBXMLConstants.MODULE_STRING)) {
 							parseElement(child, firstUICInstance, ibxml);
 						}
-						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
+						else if (child.getName().equalsIgnoreCase(IBXMLConstants.REGION_STRING)) {
 							parseRegion(child, (PresentationObjectContainer) firstUICInstance, ibxml);
 						}
 						else {
@@ -616,7 +621,7 @@ public class XMLReader {
 		return firstUICInstance;
 	}
 
-	public static int getICObjectInstanceIdFromComponentId(String componentId, String className,String pageKey){
+	public int getICObjectInstanceIdFromComponentId(String componentId, String className,String pageKey){
 		try {
 			return Integer.parseInt(componentId);
 		}
@@ -633,7 +638,7 @@ public class XMLReader {
 	 * @param pageKey The page id or URI of the page the object is in
 	 * @return
 	 */
-	public static ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className, String pageKey) {
+	public ICObjectInstance getICObjectInstanceFromComponentId(String componentId, String className, String pageKey) {
 		ICObjectInstanceHome icoHome = getICObjectInstanceHome();
 		// first try it as a number (old school) then as a uuid/uniquestring
 		try {
@@ -691,7 +696,7 @@ public class XMLReader {
 	 * 
 	 * @return
 	 */
-	public static ICObjectInstanceHome getICObjectInstanceHome() {
+	public ICObjectInstanceHome getICObjectInstanceHome() {
 		try {
 			return (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
 		}
@@ -706,7 +711,7 @@ public class XMLReader {
 	 * </p>
 	 * @return
 	 */
-	public static ICObjectHome getICObjectHome() {
+	public ICObjectHome getICObjectHome() {
 		try {
 			return (ICObjectHome) IDOLookup.getHome(ICObject.class);
 		}
@@ -723,7 +728,7 @@ public class XMLReader {
 	 * @param icObjectInstance
 	 * @return
 	 */
-	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String componentId, String sIcObjectId, ICObjectInstance icObjectInstance) {
+	private void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String componentId, String sIcObjectId, ICObjectInstance icObjectInstance) {
 		
 		if(firstUICInstance instanceof PresentationObject){
 			PresentationObject presentationObject = (PresentationObject) firstUICInstance;
@@ -767,15 +772,15 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void changeDPTCrawlableLinkedPageProperty(XMLElement change, PresentationObjectContainer parent) {
+	void changeDPTCrawlableLinkedPageProperty(XMLElement change, PresentationObjectContainer parent) {
 		List regionAttrList = change.getAttributes();
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
 			System.err.println("Table region has no attributes");
 			return;
 		}
 
-		XMLAttribute id = change.getAttribute(XMLConstants.LINK_ID_STRING);
-		XMLAttribute newPageLink = change.getAttribute(XMLConstants.LINK_TO);
+		XMLAttribute id = change.getAttribute(IBXMLConstants.LINK_ID_STRING);
+		XMLAttribute newPageLink = change.getAttribute(IBXMLConstants.LINK_TO);
 
 		int intId = -1;
 		int intNewPage = -1;
@@ -804,11 +809,11 @@ public class XMLReader {
 	/**
 	 *
 	 */
-	static void changeInstanceId(XMLElement change, Page page) {
+	void changeInstanceId(XMLElement change, Page page) {
 		int from = -1, to = -1;
 		try {
-			from = change.getAttribute(XMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
-			to = change.getAttribute(XMLConstants.IC_INSTANCE_ID_TO).getIntValue();
+			from = change.getAttribute(IBXMLConstants.IC_INSTANCE_ID_FROM).getIntValue();
+			to = change.getAttribute(IBXMLConstants.IC_INSTANCE_ID_TO).getIntValue();
 		}
 		catch (XMLException e) {
 			e.printStackTrace();
@@ -832,11 +837,11 @@ public class XMLReader {
 	}
 	
 
-	public static void setTemplateObjectsForPage(CachedBuilderPage ibxml){
+	public void setTemplateObjectsForPage(CachedBuilderPage ibxml){
 	  cacheObjectInstance(ibxml, null, null);
 	}
 
-	public static void cacheObjectInstance(CachedBuilderPage ibxml, String instanceKey, PresentationObject objectInstance){
+	public void cacheObjectInstance(CachedBuilderPage ibxml, String instanceKey, PresentationObject objectInstance){
 	  if(instanceKey != null){
 		ObjectInstanceCacher.putObjectIntanceInCache(instanceKey,objectInstance);
 	  }
@@ -852,7 +857,7 @@ public class XMLReader {
 	  }
 	}
 	
-	protected static BuilderLogic getBuilderLogic(){
+	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}
 	

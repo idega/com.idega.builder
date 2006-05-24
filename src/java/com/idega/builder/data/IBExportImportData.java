@@ -12,7 +12,7 @@ import java.util.Map;
 import javax.ejb.FinderException;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.XMLConstants;
+import com.idega.builder.business.IBXMLConstants;
 import com.idega.builder.io.ObjectReaderBuilder;
 import com.idega.builder.io.ObjectWriterBuilder;
 import com.idega.core.builder.data.ICPage;
@@ -74,7 +74,7 @@ public class IBExportImportData implements Storable {
 		Iterator iterator = this.fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement element = (XMLElement) iterator.next();
-			String sourceClass = element.getTextTrim(XMLConstants.FILE_SOURCE);
+			String sourceClass = element.getTextTrim(IBXMLConstants.FILE_SOURCE);
 			if (this.sourceClassForPage.equals(sourceClass)) {
 				Storable page = (Storable) this.files.get(index);
 				list.add(page);
@@ -123,30 +123,30 @@ public class IBExportImportData implements Storable {
 		
     public XMLElement modifyElementSetNameSetOriginalName(int index, String name, String originalName, String mimeType, String fileIsMarkedAsDeleted) {
 		XMLElement fileElement = (XMLElement) this.fileElements.get(index);
-		fileElement.addContent(XMLConstants.FILE_USED_ID,name);
-		fileElement.addContent(XMLConstants.FILE_ORIGINAL_NAME, originalName);
-		fileElement.addContent(XMLConstants.FILE_MIME_TYPE, mimeType);
-		fileElement.addContent(XMLConstants.FILE_IS_MARKED_AS_DELETED, fileIsMarkedAsDeleted);
+		fileElement.addContent(IBXMLConstants.FILE_USED_ID,name);
+		fileElement.addContent(IBXMLConstants.FILE_ORIGINAL_NAME, originalName);
+		fileElement.addContent(IBXMLConstants.FILE_MIME_TYPE, mimeType);
+		fileElement.addContent(IBXMLConstants.FILE_IS_MARKED_AS_DELETED, fileIsMarkedAsDeleted);
 		return fileElement;
 	}
 	
 	public XMLElement modifyElementSetNameSetOriginalNameLikeElementAt(int index, XMLElement fileElement) {
-		String name = fileElement.getTextTrim(XMLConstants.FILE_USED_ID);
-		String originalName = fileElement.getTextTrim(XMLConstants.FILE_ORIGINAL_NAME);
-		String mimeType = fileElement.getTextTrim(XMLConstants.FILE_MIME_TYPE);
-		String fileIsMarkedAsDeleted = fileElement.getTextTrim(XMLConstants.FILE_IS_MARKED_AS_DELETED);
+		String name = fileElement.getTextTrim(IBXMLConstants.FILE_USED_ID);
+		String originalName = fileElement.getTextTrim(IBXMLConstants.FILE_ORIGINAL_NAME);
+		String mimeType = fileElement.getTextTrim(IBXMLConstants.FILE_MIME_TYPE);
+		String fileIsMarkedAsDeleted = fileElement.getTextTrim(IBXMLConstants.FILE_IS_MARKED_AS_DELETED);
 		return modifyElementSetNameSetOriginalName(index, name, originalName, mimeType, fileIsMarkedAsDeleted);
 	}
 		
 	public void addPageTree(IWContext iwc) throws IDOLookupException, FinderException {
 		List pageTreeNodes = IBPageHelper.getInstance().getFirstLevelPageTreeNodesDomainFirst(iwc);
-		this.pagesElement = new XMLElement(XMLConstants.PAGE_TREE_PAGES);
+		this.pagesElement = new XMLElement(IBXMLConstants.PAGE_TREE_PAGES);
 		addPages(pageTreeNodes.iterator(), this.pagesElement);
 	}
 	
 	public void addTemplateTree(IWContext iwc) throws IDOLookupException, FinderException {
 		List pageTreeNodes = IBPageHelper.getInstance().getFirstLevelPageTreeNodesTemplateDomainFirst(iwc);
-		this.templatesElement = new XMLElement(XMLConstants.PAGE_TREE_TEMPLATES);
+		this.templatesElement = new XMLElement(IBXMLConstants.PAGE_TREE_TEMPLATES);
 		addPages(pageTreeNodes.iterator(), this.templatesElement);
 	}
 
@@ -159,9 +159,9 @@ public class IBExportImportData implements Storable {
 			PageTreeNode node = (PageTreeNode) pageTreeNodeIterator.next();
 			String name = node.getNodeName();
 			String id = Integer.toString(node.getNodeID());
-			XMLElement pageElement = new XMLElement(XMLConstants.PAGE_TREE_PAGE);
-			pageElement.addContent(XMLConstants.PAGE_TREE_NAME, name);
-			pageElement.addContent(XMLConstants.PAGE_TREE_ID, id);
+			XMLElement pageElement = new XMLElement(IBXMLConstants.PAGE_TREE_PAGE);
+			pageElement.addContent(IBXMLConstants.PAGE_TREE_NAME, name);
+			pageElement.addContent(IBXMLConstants.PAGE_TREE_ID, id);
 			Iterator iterator = node.getChildrenIterator();
 			addPages(iterator, pageElement);
 			element.addContent(pageElement);
@@ -170,23 +170,23 @@ public class IBExportImportData implements Storable {
 	
 	public void addFileEntry(IBReferenceEntry entry, Storable storable, String value) {
 		this.files.add(storable);
-		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
-		fileElement.addContent(XMLConstants.FILE_MODULE, entry.getModuleClass());
-		fileElement.addContent(XMLConstants.FILE_NAME, entry.getValueName());
-		fileElement.addContent(XMLConstants.FILE_PARAMETER_ID, entry.getParameterId());
-		fileElement.addContent(XMLConstants.FILE_SOURCE, entry.getSourceClass());
-		fileElement.addContent(XMLConstants.FILE_VALUE, value);
+		XMLElement fileElement = new XMLElement(IBXMLConstants.FILE_FILE);
+		fileElement.addContent(IBXMLConstants.FILE_MODULE, entry.getModuleClass());
+		fileElement.addContent(IBXMLConstants.FILE_NAME, entry.getValueName());
+		fileElement.addContent(IBXMLConstants.FILE_PARAMETER_ID, entry.getParameterId());
+		fileElement.addContent(IBXMLConstants.FILE_SOURCE, entry.getSourceClass());
+		fileElement.addContent(IBXMLConstants.FILE_VALUE, value);
 		this.fileElements.add(fileElement);
 	}
 	
 	public void addFileEntry(ICPage page) {
 		this.files.add(page);
-		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
-		fileElement.addContent(XMLConstants.FILE_MODULE, this.sourceClassForPage);
-		fileElement.addContent(XMLConstants.FILE_NAME, PAGE_PRIMARY_KEY);
-		fileElement.addContent(XMLConstants.FILE_PARAMETER_ID, PAGE_PARAMETER_ID);
-		fileElement.addContent(XMLConstants.FILE_SOURCE, this.sourceClassForPage);
-		fileElement.addContent(XMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
+		XMLElement fileElement = new XMLElement(IBXMLConstants.FILE_FILE);
+		fileElement.addContent(IBXMLConstants.FILE_MODULE, this.sourceClassForPage);
+		fileElement.addContent(IBXMLConstants.FILE_NAME, PAGE_PRIMARY_KEY);
+		fileElement.addContent(IBXMLConstants.FILE_PARAMETER_ID, PAGE_PARAMETER_ID);
+		fileElement.addContent(IBXMLConstants.FILE_SOURCE, this.sourceClassForPage);
+		fileElement.addContent(IBXMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
 		this.fileElements.add(fileElement);
 	}
 	
@@ -199,7 +199,7 @@ public class IBExportImportData implements Storable {
 		Iterator iterator = this.necessaryModules.iterator();
 		while (iterator.hasNext()) {
 			XMLElement element = (XMLElement) iterator.next();
-			String className = element.getTextTrim(XMLConstants.MODULE_CLASS);
+			String className = element.getTextTrim(IBXMLConstants.MODULE_CLASS);
 			if (className.equals(moduleClassName)) {
 				// do not add the same module twice
 				return; 
@@ -209,10 +209,10 @@ public class IBExportImportData implements Storable {
 			ICObject module = getICObject(moduleClassName);
 			String bundle = module.getBundleIdentifier();
 			String type = module.getObjectType();
-			XMLElement moduleElement = new XMLElement(XMLConstants.MODULE_MODULE);
-			moduleElement.addContent(XMLConstants.MODULE_CLASS, moduleClassName);
-			moduleElement.addContent(XMLConstants.MODULE_TYPE, type);
-			moduleElement.addContent(XMLConstants.MODULE_BUNDLE, bundle);
+			XMLElement moduleElement = new XMLElement(IBXMLConstants.MODULE_MODULE);
+			moduleElement.addContent(IBXMLConstants.MODULE_CLASS, moduleClassName);
+			moduleElement.addContent(IBXMLConstants.MODULE_TYPE, type);
+			moduleElement.addContent(IBXMLConstants.MODULE_BUNDLE, bundle);
 			this.necessaryModules.add(moduleElement);
 		}
 		catch (IOException ex) {
@@ -247,14 +247,14 @@ public class IBExportImportData implements Storable {
 	public XMLData createMetadataSummary() {
 		XMLData metadata = XMLData.getInstanceWithoutExistingFileSetNameSetRootName(EXPORT_METADATA_FILE_NAME, EXPORT_METADATA_NAME);
 		XMLElement metadataElement = metadata.getDocument().getRootElement();
-		XMLElement filesElement = new XMLElement(XMLConstants.FILE_FILES);
+		XMLElement filesElement = new XMLElement(IBXMLConstants.FILE_FILES);
 		metadataElement.addContent(filesElement);
 		Iterator iterator = this.fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement fileElement = (XMLElement) iterator.next();
 			filesElement.addContent(fileElement);
 		}
-		XMLElement modulesElement = new XMLElement(XMLConstants.MODULE_MODULES);
+		XMLElement modulesElement = new XMLElement(IBXMLConstants.MODULE_MODULES);
 		metadataElement.addContent(modulesElement);
 		Iterator moduleIterator = this.necessaryModules.iterator();
 		while (moduleIterator.hasNext()) {
@@ -277,13 +277,13 @@ public class IBExportImportData implements Storable {
 	
 	private void initializeFromSummary() throws IOException {
 		XMLElement rootElement = this.metadataSummary.getDocument().getRootElement();
-		XMLElement filesElement = rootElement.getChild(XMLConstants.FILE_FILES);
+		XMLElement filesElement = rootElement.getChild(IBXMLConstants.FILE_FILES);
 		this.fileElements =  (filesElement == null) ? null : filesElement.getChildren();
-		XMLElement modulesElement = rootElement.getChild(XMLConstants.MODULE_MODULES);
+		XMLElement modulesElement = rootElement.getChild(IBXMLConstants.MODULE_MODULES);
 		this.necessaryModules = (modulesElement == null) ? null : modulesElement.getChildren();
 		this.missingModules = validateAndGetMissingModuleNames();
-		this.templatesElement = rootElement.getChild(XMLConstants.PAGE_TREE_TEMPLATES);
-		this.pagesElement = rootElement.getChild(XMLConstants.PAGE_TREE_PAGES);
+		this.templatesElement = rootElement.getChild(IBXMLConstants.PAGE_TREE_TEMPLATES);
+		this.pagesElement = rootElement.getChild(IBXMLConstants.PAGE_TREE_PAGES);
 		buildPageAndTemplateHierarchy();
 	}
 			
@@ -294,8 +294,8 @@ public class IBExportImportData implements Storable {
 			XMLElement fileElement = (XMLElement) iterator.next();
 			// only get file elements that represent a page
 			boolean isPageElement =	
-					this.sourceClassForPage.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)) &&
-					PAGE_PRIMARY_KEY.equals(fileElement.getTextTrim(XMLConstants.FILE_NAME));
+					this.sourceClassForPage.equals(fileElement.getTextTrim(IBXMLConstants.FILE_MODULE)) &&
+					PAGE_PRIMARY_KEY.equals(fileElement.getTextTrim(IBXMLConstants.FILE_NAME));
 			if ((getPageElements && isPageElement) || (! getPageElements && ! isPageElement)) {
 				elements.add(fileElement);
 			}
@@ -320,7 +320,7 @@ public class IBExportImportData implements Storable {
 	}
 
 	private void buildPageHierarchy(String parentId, XMLElement pageTreeElement) {
-		String currentId = pageTreeElement.getTextTrim(XMLConstants.PAGE_TREE_ID);
+		String currentId = pageTreeElement.getTextTrim(IBXMLConstants.PAGE_TREE_ID);
 		if (currentId != null) {
 			this.pageIds.add(currentId);
 			this.childParent.put(currentId, parentId);
@@ -370,9 +370,9 @@ public class IBExportImportData implements Storable {
 		Iterator iterator = this.necessaryModules.iterator();
 		while (iterator.hasNext()) {
 			XMLElement moduleElement = (XMLElement) iterator.next();
-			String className = moduleElement.getTextTrim(XMLConstants.MODULE_CLASS);
+			String className = moduleElement.getTextTrim(IBXMLConstants.MODULE_CLASS);
 			if (! checkICObject(className)) {
-				String bundleName = moduleElement.getTextTrim(XMLConstants.MODULE_BUNDLE);
+				String bundleName = moduleElement.getTextTrim(IBXMLConstants.MODULE_BUNDLE);
 				StringBuffer buffer = new StringBuffer(className);
 				buffer.append(" ( ").append(bundleName).append(" ) ");
 				if (tempMissingModules == null) {
@@ -390,8 +390,8 @@ public class IBExportImportData implements Storable {
 	public int compare(Object o1, Object o2) {
 		XMLElement element1 = (XMLElement) o1;
 		XMLElement element2 = (XMLElement) o2; 
-		String id1 = element1.getTextTrim(XMLConstants.VALUE_STRING);
-		String id2 = element2.getTextTrim(XMLConstants.VALUE_STRING);
+		String id1 = element1.getTextTrim(IBXMLConstants.VALUE_STRING);
+		String id2 = element2.getTextTrim(IBXMLConstants.VALUE_STRING);
 		int index1 = IBExportImportData.this.pageIds.indexOf(id1);
 		int index2 = IBExportImportData.this.pageIds.indexOf(id2);
 		return (index1 - index2) > 0 ? 1 : -1; 

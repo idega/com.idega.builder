@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.XMLReader;
+import com.idega.builder.business.IBXMLReader;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.component.business.ICObjectBusiness;
@@ -77,13 +77,13 @@ public class IBPermissionWindow extends IBAdminWindow {
 			Class objectClass = null;
 			switch (intPermissionCategory) {
 				case AccessController.CATEGORY_OBJECT_INSTANCE:
-					int icObjectInstanceId = XMLReader.getICObjectInstanceIdFromComponentId(componentId, null, null);
+					int icObjectInstanceId = getBuilderLogic().getIBXMLReader().getICObjectInstanceIdFromComponentId(componentId, null, null);
 					identifier = String.valueOf(icObjectInstanceId);
 					objectClass = ICObjectBusiness.getInstance().getICObjectClassForInstance(icObjectInstanceId);
 					keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
 					break;
 				case AccessController.CATEGORY_OBJECT:
-					icObjectInstanceId = XMLReader.getICObjectInstanceIdFromComponentId(componentId, null, null);
+					icObjectInstanceId = getBuilderLogic().getIBXMLReader().getICObjectInstanceIdFromComponentId(componentId, null, null);
 					identifier = String.valueOf(icObjectInstanceId);
 					objectClass = ICObjectBusiness.getInstance().getICObjectClass(icObjectInstanceId);
 					keys = iwc.getAccessController().getICObjectPermissionKeys(objectClass);
@@ -305,7 +305,7 @@ public class IBPermissionWindow extends IBAdminWindow {
 			Map map = (Map) obj;
 			Map oldMap = (Map) oldObj;
 			String componentId = (String) map.remove(_PARAMETERSTRING_IDENTIFIER);
-			String instanceID = String.valueOf(XMLReader.getICObjectInstanceIdFromComponentId(componentId, null, null));
+			String instanceID = String.valueOf(getBuilderLogic().getIBXMLReader().getICObjectInstanceIdFromComponentId(componentId, null, null));
 			String category = (String) map.remove(_PARAMETERSTRING_PERMISSION_CATEGORY);
 			if ((componentId != null && componentId.equals(iwc.getParameter(_PARAMETERSTRING_IDENTIFIER)) && componentId.equals(oldMap.get(_PARAMETERSTRING_IDENTIFIER)))
 					&& (category != null && category.equals(iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)) && category.equals(oldMap.get(_PARAMETERSTRING_PERMISSION_CATEGORY)))) {

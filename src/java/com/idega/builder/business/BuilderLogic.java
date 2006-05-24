@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.203 2006/05/15 16:12:06 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.204 2006/05/24 13:08:07 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -974,12 +974,12 @@ public class BuilderLogic implements Singleton {
 	public String[] getPropertyValues(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		return IBPropertyHandler.getInstance().getPropertyValues(iwma, xml, instanceId, propertyName, selectedValues, returnSelectedValueIfNothingFound);
-		//return XMLWriter.getPropertyValues(xml,ObjectInstanceId,propertyName);
+		//return getXMLWriter().getPropertyValues(xml,ObjectInstanceId,propertyName);
 	}
 
 	public boolean removeProperty(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] values) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.removeProperty(iwma, xml, instanceId, propertyName, values)) {
+		if (getIBXMLWriter().removeProperty(iwma, xml, instanceId, propertyName, values)) {
 			xml.store();
 			return true;
 		}
@@ -991,7 +991,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public String getProperty(String pageKey, String instanceId, String propertyName) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		return XMLWriter.getProperty(xml, instanceId, propertyName);
+		return getIBXMLWriter().getProperty(xml, instanceId, propertyName);
 	}
 
 	/**
@@ -1009,7 +1009,7 @@ public class BuilderLogic implements Singleton {
 		try {
 			IBXMLPage xml = getIBXMLPage(pageKey);
 			boolean allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwma);
-			if (XMLWriter.setProperty(iwma, xml, instanceId, propertyName, propertyValues, allowMultivalued)) {
+			if (getIBXMLWriter().setProperty(iwma, xml, instanceId, propertyName, propertyValues, allowMultivalued)) {
 				xml.store();
 				return (true);
 			}
@@ -1027,7 +1027,7 @@ public class BuilderLogic implements Singleton {
 	public boolean isPropertySet(String pageKey, String instanceId, String propertyName, IWMainApplication iwma) {
 		try {
 			IBXMLPage xml = getIBXMLPage(pageKey);
-			return XMLWriter.isPropertySet(iwma, xml, instanceId, propertyName);
+			return getIBXMLWriter().isPropertySet(iwma, xml, instanceId, propertyName);
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -1039,7 +1039,7 @@ public class BuilderLogic implements Singleton {
 	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		try {
-			ICObjectInstance instance = XMLReader.getICObjectInstanceFromComponentId(instanceId,null,pageKey);
+			ICObjectInstance instance = getIBXMLReader().getICObjectInstanceFromComponentId(instanceId,null,pageKey);
 			Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(instance.getID());
 			if (obj != null) {
 				if (obj instanceof Builderaware) {
@@ -1051,7 +1051,7 @@ public class BuilderLogic implements Singleton {
 			ex.printStackTrace();
 		}
 		
-		if (XMLWriter.deleteModule(xml, parentObjectInstanceID, instanceId)) {
+		if (getIBXMLWriter().deleteModule(xml, parentObjectInstanceID, instanceId)) {
 			xml.store();
 			return (true);
 		}
@@ -1083,7 +1083,7 @@ public class BuilderLogic implements Singleton {
 			return (false);
 		}
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (XMLWriter.pasteElementLastIntoParentOrRegion(xml, pageKey, regionId, regionLabel,toPaste)) {
+		if (getIBXMLWriter().pasteElementLastIntoParentOrRegion(xml, pageKey, regionId, regionLabel,toPaste)) {
 			xml.store();
 			return (true);
 		}
@@ -1107,7 +1107,7 @@ public class BuilderLogic implements Singleton {
 			return (false);
 		}
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (XMLWriter.pasteElementAbove(xml, pageKey, parentID, objectID, toPaste)) {
+		if (getIBXMLWriter().pasteElementAbove(xml, pageKey, parentID, objectID, toPaste)) {
 			xml.store();
 			return (true);
 		}
@@ -1121,7 +1121,7 @@ public class BuilderLogic implements Singleton {
 			return (false);
 		}
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (XMLWriter.pasteElementBelow(xml, pageKey, parentID, objectID, toPaste)) {
+		if (getIBXMLWriter().pasteElementBelow(xml, pageKey, parentID, objectID, toPaste)) {
 			xml.store();
 			return (true);
 		}
@@ -1145,15 +1145,15 @@ public class BuilderLogic implements Singleton {
 		}
 		IBXMLPage page = getIBXMLPage(pageKey);
 		//find
-		XMLElement moduleXML =  XMLWriter.findModule(page,instanceId);
-		XMLElement parentXML =  XMLWriter.findModule(page,formerParentId);
+		XMLElement moduleXML =  getIBXMLWriter().findModule(page,instanceId);
+		XMLElement parentXML =  getIBXMLWriter().findModule(page,formerParentId);
 		
 		XMLElement moduleXMLCopy = (XMLElement)moduleXML.clone();
 		
 		if(moduleXML!=null && parentXML!=null){
 			//remove	
 			try {
-				returner = XMLWriter.removeElement(parentXML,moduleXML,false);
+				returner = getIBXMLWriter().removeElement(parentXML,moduleXML,false);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -1161,7 +1161,7 @@ public class BuilderLogic implements Singleton {
 			}
 			
 			if(returner){
-				returner = XMLWriter.insertElementLastIntoParentOrRegion(page, pageKey, regionId, regionLabel,moduleXMLCopy);
+				returner = getIBXMLWriter().insertElementLastIntoParentOrRegion(page, pageKey, regionId, regionLabel,moduleXMLCopy);
 			}		
 			
 			if(!returner){
@@ -1201,15 +1201,15 @@ public class BuilderLogic implements Singleton {
 		//insert it after the object we dropped on
 		IBXMLPage page = getIBXMLPage(pageKey);
 		//find
-		XMLElement moduleXML =  XMLWriter.findModule(page,instanceId);
-		XMLElement parentXML =  XMLWriter.findModule(page,formerParentId);
+		XMLElement moduleXML =  getIBXMLWriter().findModule(page,instanceId);
+		XMLElement parentXML =  getIBXMLWriter().findModule(page,formerParentId);
 		
 		XMLElement moduleXMLCopy = (XMLElement)moduleXML.clone();
 		
 		if(moduleXML!=null && parentXML!=null){
 			//remove	
 			try {
-				returner = XMLWriter.removeElement(parentXML,moduleXML,false);
+				returner = getIBXMLWriter().removeElement(parentXML,moduleXML,false);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -1221,7 +1221,7 @@ public class BuilderLogic implements Singleton {
 				//insert
 			}
 
-			returner = XMLWriter.insertElementBelow(page,newParentId,moduleXMLCopy,instanceIdToPasteBelow);
+			returner = getIBXMLWriter().insertElementBelow(page,newParentId,moduleXMLCopy,instanceIdToPasteBelow);
 			if(!returner){
 				return false;
 			}
@@ -1236,7 +1236,7 @@ public class BuilderLogic implements Singleton {
 
 	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.lockRegion(xml, parentObjectInstanceID)) {
+		if (getIBXMLWriter().lockRegion(xml, parentObjectInstanceID)) {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
 				if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
@@ -1256,7 +1256,7 @@ public class BuilderLogic implements Singleton {
 
 	public boolean unlockRegion(String pageKey, String parentObjectInstanceID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.unlockRegion(xml, parentObjectInstanceID)) {
+		if (getIBXMLWriter().unlockRegion(xml, parentObjectInstanceID)) {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
 				if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
@@ -1283,7 +1283,7 @@ public class BuilderLogic implements Singleton {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		//TODO add handling for generic UIComponent adding
 		
-		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label)) {
+		if (getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label)) {
 			xml.store();
 			return (true);
 		}
@@ -1295,7 +1295,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label)) {
+		if (getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label)) {
 			xml.store();
 			return true;
 		}
@@ -1351,7 +1351,7 @@ public class BuilderLogic implements Singleton {
 
 	public boolean setTemplateId(String pageKey, String id) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.setAttribute(xml, "-1", XMLConstants.TEMPLATE_STRING, id)) {
+		if (getIBXMLWriter().setAttribute(xml, "-1", IBXMLConstants.TEMPLATE_STRING, id)) {
 			xml.store();
 			return true;
 		}
@@ -1380,7 +1380,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean labelRegion(String pageKey, String parentObjectInstanceID, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (XMLWriter.labelRegion(xml, parentObjectInstanceID, label)) {
+		if (getIBXMLWriter().labelRegion(xml, parentObjectInstanceID, label)) {
 			xml.store();
 			return true;
 		}
@@ -1532,12 +1532,12 @@ public class BuilderLogic implements Singleton {
 	 */
 	public void changeDPTCrawlableLinkedPageId(int moduleId, String currentPageID, String newLinkedPageId) {
 		IBXMLPage page = getIBXMLPage(currentPageID);
-		XMLElement element = new XMLElement(XMLConstants.CHANGE_PAGE_LINK);
-		XMLAttribute id = new XMLAttribute(XMLConstants.LINK_ID_STRING, Integer.toString(moduleId));
-		XMLAttribute newPageLink = new XMLAttribute(XMLConstants.LINK_TO, newLinkedPageId);
+		XMLElement element = new XMLElement(IBXMLConstants.CHANGE_PAGE_LINK);
+		XMLAttribute id = new XMLAttribute(IBXMLConstants.LINK_ID_STRING, Integer.toString(moduleId));
+		XMLAttribute newPageLink = new XMLAttribute(IBXMLConstants.LINK_TO, newLinkedPageId);
 		element.setAttribute(id);
 		element.setAttribute(newPageLink);
-		XMLWriter.addNewElement(page, "-1", element);
+		getIBXMLWriter().addNewElement(page, "-1", element);
 		page.store();
 		getPageCacher().flagPageInvalid(currentPageID);
 	}
@@ -1652,6 +1652,28 @@ public class BuilderLogic implements Singleton {
 	}
 	public void setIBPageHelper(IBPageHelper ibPageHelper){
 		this.ibPageHelper=ibPageHelper;
+	}
+	
+	private IBXMLWriter xmlWriter;
+	public IBXMLWriter getIBXMLWriter(){
+		if(this.xmlWriter==null){
+			setIBXMLWriter(new IBXMLWriter());
+		}
+		return this.xmlWriter;
+	}
+	public void setIBXMLWriter(IBXMLWriter writer){
+		this.xmlWriter=writer;
+	}
+	
+	private IBXMLReader xmlReader;
+	public IBXMLReader getIBXMLReader(){
+		if(this.xmlReader==null){
+			setIBXMLReader(new IBXMLReader());
+		}
+		return this.xmlReader;
+	}
+	public void setIBXMLReader(IBXMLReader reader){
+		this.xmlReader=reader;
 	}
 	
 	/**
