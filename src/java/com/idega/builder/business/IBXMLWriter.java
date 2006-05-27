@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.1 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: IBXMLWriter.java,v 1.2 2006/05/27 09:41:14 laddi Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -450,7 +450,7 @@ public class IBXMLWriter {
 				return false;
 			}
 			else {
-				if (s.equals(EMPTY_STRING)) {
+				if (s.equals(this.EMPTY_STRING)) {
 					return false;
 				}
 			}
@@ -767,12 +767,12 @@ public class IBXMLWriter {
 					// module.
 					//This only seems to happen in table regions with e.g.
 					// parentObjectInstanceID=1.5.3
-					log.info("Found likely corrupt duplicate region with id:" + parentObjectInstanceID);
+					this.log.info("Found likely corrupt duplicate region with id:" + parentObjectInstanceID);
 					//Check if the module is empty for safetys sake
 					if (isElementEmpty(parent)) {
 						//First Delete the corrupt region
 						deleteModule(parent.getParent(), parent);
-						log.info("Deleted corrupt region with id:" + parentObjectInstanceID);
+						this.log.info("Deleted corrupt region with id:" + parentObjectInstanceID);
 						//Find the parent (region) again:
 						parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
 						//Find the module again:

@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBXMLReader;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.component.business.ICObjectBusiness;
