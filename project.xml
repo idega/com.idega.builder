@@ -5,9 +5,8 @@
   <pomVersion>3</pomVersion>
   <name>idegaWeb Builder</name>
   <artifactId>com.idega.builder</artifactId>
-  <currentVersion>1.4.3</currentVersion>
-  <!--currentVersion>1.4.4-SNAPSHOT</currentVersion-->
-
+  <!--currentVersion>1.4.3</currentVersion-->
+  <currentVersion>1.4.4-SNAPSHOT</currentVersion>
   <organization/>
   <inceptionYear>2000</inceptionYear>
   <shortDescription>idegaWeb Builder is a Webapplication RAD and CMS tool</shortDescription>
@@ -100,12 +99,8 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <!--HELPER-->
-
-      <version>3.0.6</version>
-      <!--HELPER-->
-      <!--HELPERversion>SNAPSHOT</versionHELPER-->
-
+      <!--version>3.0.6</version-->
+      <version>SNAPSHOT</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
@@ -114,7 +109,70 @@
       <!--properties>
         <j:if test="${idegaweb.project.source.dependent}=='true'}"><eclipse.dependency>true</eclipse.dependency></j:if>
       </properties-->
-
     </dependency>
+    <dependency>
+      <groupId>bundles</groupId>
+      <artifactId>com.idega.slide</artifactId>
+      <!--version>1.0</version-->
+      <version>SNAPSHOT</version>
+      <type>jar</type>
+      <url>http://www.idega.com/</url>
+      <properties>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>bundles</groupId>
+      <artifactId>com.idega.content</artifactId>
+      <!--version>1.0</version-->
+      <version>SNAPSHOT</version>
+      <type>jar</type>
+      <url>http://www.idega.com/</url>
+      <properties>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>bundles</groupId>
+      <artifactId>org.apache.slide</artifactId>
+      <!--version>1.0</version-->
+      <version>SNAPSHOT</version>
+      <type>jar</type>
+      <url>http://www.idega.com/</url>
+      <properties>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
+    </dependency>
+    <dependency>
+      <groupId>slide</groupId>
+      <artifactId>slide-kernel</artifactId>
+      <version>2.2pre1.iwbuild4</version>
+      <type>jar</type>
+      <url>http://www.slide.com/</url>
+    </dependency>
+	<!--duplicated slide dependencies -->
+    <dependency>
+      <groupId>slide</groupId>
+      <artifactId>jakarta-slide-webdavlib</artifactId>
+      <version>2.2pre1.iwbuild4</version>
+      <type>jar</type>
+      <url>http://www.slide.com/</url>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>2.0.2</version>
+      <type>jar</type>
+      <url>http://jakarta.apache.org/commons/httpclient/</url>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+      <type>jar</type>
+      <url>http://commons.apache.org/</url>
+    </dependency>
+
+    
   </dependencies>
 </project>

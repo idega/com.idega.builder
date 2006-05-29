@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.24 2006/05/09 14:44:03 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.25 2006/05/29 18:28:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -507,6 +507,10 @@ public class PageTreeNode implements ICTreeNode {
 	 */
 	public boolean isCategory() {
 		return this._isCategory;
+	}
+	
+	public String getId(){
+		return Integer.toString(getNodeID());
 	}
 
 }

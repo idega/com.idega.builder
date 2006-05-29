@@ -1,11 +1,13 @@
 package com.idega.builder;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
 import javax.ejb.FinderException;
 import com.idega.builder.app.IBApplication;
+import com.idega.builder.business.BuilderSlideListenerBean;
 import com.idega.builder.business.ComponentPropertyHandler;
 import com.idega.builder.business.IBMainServiceBean;
 import com.idega.builder.business.IBPropertyHandler;
@@ -16,6 +18,7 @@ import com.idega.builder.presentation.InvisibleInBuilder;
 import com.idega.builder.view.BuilderApplicationViewNode;
 import com.idega.builder.view.BuilderRootViewNode;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDynamicPageTrigger;
@@ -29,6 +32,7 @@ import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
@@ -37,6 +41,7 @@ import com.idega.presentation.GenericPlugin;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.repository.data.ImplementorRepository;
 import com.idega.repository.data.SingletonRepository;
+import com.idega.slide.business.IWSlideService;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -83,6 +88,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		
 		updateBuilderPageUris();
 		
+		registerSlideListener(starterBundle);
 	}
 
 	/**
@@ -168,5 +174,20 @@ public class IWBundleStarter implements IWBundleStartable {
 		SingletonRepository repository = SingletonRepository.getRepository();
 		repository.unloadInstance(ComponentPropertyHandler.class);
 		repository.unloadInstance(IBPropertyHandler.class);
+	}
+	
+	public void registerSlideListener(IWBundle bundle){
+		try {
+			IWApplicationContext iwac = bundle.getApplication().getIWApplicationContext();
+			IWSlideService service = (IWSlideService) IBOLookup.getServiceInstance(iwac,IWSlideService.class);
+
+	        //add it as a slide change listener for caching purposes
+	        service.addIWSlideChangeListeners(new BuilderSlideListenerBean());
+	        
+	    } catch (IBOLookupException e) {
+	        e.printStackTrace();
+	    } catch (RemoteException e) {
+	        e.printStackTrace();
+	    }
 	}
 }

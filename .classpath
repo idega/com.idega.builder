@@ -7,6 +7,20 @@
   </classpathentry>
   <classpathentry kind="src" path="/com.idega.core">
   </classpathentry>
+  <classpathentry kind="src" path="/com.idega.slide">
+  </classpathentry>
+  <classpathentry kind="src" path="/com.idega.content">
+  </classpathentry>
+  <classpathentry kind="src" path="/org.apache.slide">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/slide/jars/slide-kernel-2.2pre1.iwbuild4.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/slide/jars/jakarta-slide-webdavlib-2.2pre1.iwbuild4.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-httpclient/jars/commons-httpclient-2.0.2.jar">
+  </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.4.jar">
+  </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/jdom/jars/jdom-1.0.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/jai/jars/jai-1.0.jar">

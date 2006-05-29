@@ -6,6 +6,9 @@
   </comment>
   <projects>
     <project>com.idega.core</project>
+    <project>com.idega.slide</project>
+    <project>com.idega.content</project>
+    <project>org.apache.slide</project>
     <project>com.idega.block.web2.0</project>
   </projects>
   <buildSpec>

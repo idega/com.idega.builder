@@ -1,5 +1,5 @@
 /*
- * $Id: LibraryTreeNode.java,v 1.7 2004/09/07 00:32:34 sigtryggur Exp $
+ * $Id: LibraryTreeNode.java,v 1.8 2006/05/29 18:28:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -122,5 +122,9 @@ public class LibraryTreeNode implements ICTreeNode {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
     throw new java.lang.UnsupportedOperationException("Method getSiblingCount() not yet implemented.");
   }
+  
+	public String getId(){
+		 throw new java.lang.UnsupportedOperationException("Method getId() not yet implemented.");
+	}
   
 }

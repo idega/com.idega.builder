@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.57 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.58 2006/05/29 18:28:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -442,7 +442,7 @@ public class IBPageHelper implements Singleton  {
 				// of other formats than IBXML
 			}
 		}
-		//This resets the IWWelcomeFilter if a new page is created (and resets the redirect to /pages or /workspace)
+		//This r	esets the IWWelcomeFilter if a new page is created (and resets the redirect to /pages or /workspace)
 		IWWelcomeFilter.unload();
 		return (id);
 	}
@@ -538,7 +538,7 @@ public class IBPageHelper implements Singleton  {
 					ICObjectInstance instance = null;
 					try {
 						ICObjectInstance inst = obj.getICObjectInstance();
-						instance = icObjInstHome.createLegacy();
+						instance = icObjInstHome.create();
 						instance.setICObjectID(object_id);
 						if (inst != null) {
 							instance.setParentInstanceID(inst.getID());
@@ -848,16 +848,18 @@ public class IBPageHelper implements Singleton  {
 		try {
 			java.util.Collection coll = null;
 			if (type == this.PAGEVIEWER) {
-				coll = getStartPages(domain);
+				coll = DomainTree.getDomainTree(iwc).getPagesNode().getChildren();//getStartPages(domain);
 			}
 			else {
-				coll = getTemplateStartPages(domain);
+				coll = DomainTree.getDomainTree(iwc).getTemplatesNode().getChildren();//getTemplateStartPages(domain);
 			}
 			java.util.Iterator it = coll.iterator();
 			while (it.hasNext()) {
-				com.idega.builder.data.IBStartPage startPage = (com.idega.builder.data.IBStartPage) it.next();
-				if (startPage.getPageId() != id) {
-					viewer.addFirstLevelNode(new PageTreeNode(startPage.getPageId(), iwc));
+				//com.idega.builder.data.IBStartPage startPage = (com.idega.builder.data.IBStartPage) it.next();
+				PageTreeNode startPage = (PageTreeNode)it.next();
+				//if (startPage.getPageId() != id) {
+				if(!startPage.getId().equals(Integer.toString(id))){
+					viewer.addFirstLevelNode(new PageTreeNode(Integer.parseInt(startPage.getId()), iwc));
 				}
 			}
 		}

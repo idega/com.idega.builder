@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.205 2006/05/24 17:50:11 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.206 2006/05/29 18:28:24 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -735,7 +735,7 @@ public class BuilderLogic implements Singleton {
 		//String requestURI = iwc.getRequestURI();
 		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
 			int indexOfPage = requestURI.indexOf("/pages/");
-			//if (indexOfPage != -1) {
+			if (indexOfPage != -1) {
 				//boolean pageISNumber = true;
 				String iPageId = null;
 				//try {
@@ -791,7 +791,7 @@ public class BuilderLogic implements Singleton {
 				//	return pageID;
 				//}
 			//}
-		//}
+		}
 		//throw new RuntimeException("Page Key Can not be found from URI '"+requestURI+"'");
 		BuilderPageException pe = new BuilderPageException("Page Cannot be Found for URI: '"+requestURI+"'");
 		pe.setCode(BuilderPageException.CODE_NOT_FOUND);
@@ -1610,7 +1610,9 @@ public class BuilderLogic implements Singleton {
 	 */
 	public void clearAllCachedPages() {
 		System.out.println("Clearing all BuilderPageTree Cache");
-		PageTreeNode.clearTree(IWMainApplication.getDefaultIWApplicationContext());
+		IWApplicationContext iwac = IWMainApplication.getDefaultIWApplicationContext();
+		DomainTree.clearCache(iwac);
+		PageTreeNode.clearTree(iwac);
 		System.out.println("Clearing all BuilderPage Cache");
 		getPageCacher().flagAllPagesInvalid();
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.8 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: CachedBuilderPage.java,v 1.9 2006/05/29 18:28:24 tryggvil Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -9,20 +9,35 @@
  */
 package com.idega.builder.business;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import org.apache.commons.httpclient.HttpURL;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.util.HttpURLConnection;
+import org.apache.webdav.lib.WebdavFile;
+import org.apache.webdav.lib.WebdavResource;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
 import com.idega.exception.PageDoesNotExist;
+import com.idega.presentation.IWContext;
+import com.idega.slide.business.IWSlideService;
+import com.idega.slide.business.IWSlideSession;
+import com.idega.slide.util.WebdavExtendedResource;
 
 /**
  * An abstract class that represents a cached instance of a Builder page.
@@ -47,6 +62,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	private String sourceAsString;
 	private List pageKeysUsingThisTemplate;
 	private String pageUri;
+	private String templateKey;
 	
 	/**
 	public IBXMLPage(){
@@ -185,7 +201,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	protected void setICPage(ICPage ibpage){
 		try{
 			setPageFormat(ibpage.getFormat());
-			readPageStream(ibpage.getPageValue());
+			readPageStream(getPageInputStream(ibpage));
 			if (ibpage.isPage()) {
 				setType(TYPE_PAGE);
 			}
@@ -204,6 +220,8 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			else {
 				setType(TYPE_PAGE);
 			}
+			super.setName(ibpage.getName());
+			this.templateKey=ibpage.getTemplateKey();
 		}
 		catch (PageDoesNotExist pe) {
 			int template = ibpage.getTemplateId();
@@ -232,6 +250,71 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 	}
 	
+	/**
+	 * <p>
+	 * Method for getting a reference to the inputstream for reading the page.
+	 * </p>
+	 * @param pageType
+	 * @param templateString
+	 */
+	protected InputStream getPageInputStream(ICPage icPage){
+		String webdavUri = icPage.getWebDavUri();
+		if(webdavUri!=null){
+			try {
+				IWSlideSession session = (IWSlideSession) IBOLookup.getSessionInstance(IWContext.getInstance(),IWSlideSession.class);
+				InputStream stream = session.getInputStream(webdavUri);
+				return stream;
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		else{
+			//older method, read it from ICFile
+			return icPage.getPageValue();
+		}
+		//throw new RuntimeException("Page InputStream cannot be read");
+	}
+	
+	/**
+	 * <p>
+	 * Method for getting a reference to the outputStream for storing the page.
+	 * </p>
+	 * @param pageType
+	 * @param templateString
+	 */
+	protected OutputStream getPageOutputStream(ICPage icPage){
+		String webdavUri = icPage.getWebDavUri();
+		if(webdavUri!=null){
+			try {
+				IWSlideSession session = (IWSlideSession) IBOLookup.getSessionInstance(IWContext.getInstance(),IWSlideSession.class);
+				
+				String basePath = "/files/cms/pages";
+				if(webdavUri.startsWith(basePath)){
+					File baseDir = session.getFile(basePath);
+					baseDir.mkdirs();
+				}
+				File file = session.getFile(webdavUri);
+				if(!file.exists()){
+					file.createNewFile();
+				}
+				
+				OutputStream out = session.getOutputStream(webdavUri);
+				return out;
+			
+			}
+			catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else{
+			//older method, read it from ICFile
+			return icPage.getPageValueForWrite();
+		}
+		throw new RuntimeException("Page OutputStream cannot be read");
+	}
+	
 	public void setPageAsEmptyPage(String pageType,String templateString){
 		//does nothing by default
 	}
@@ -251,7 +334,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		try {
 			ICPage icPage = getICPage();
 			icPage.setFormat(this.getPageFormat());
-			OutputStream stream = icPage.getPageValueForWrite();
+			OutputStream stream = getPageOutputStream(icPage);
 			storeStream(stream);
 			icPage.store();
 		}
@@ -320,21 +403,29 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 	}
 	public String getName() {
-		try {
-			return getICPage().getName();
+		String sName = super.getName();
+		if(sName==null){
+			try {
+				sName= getICPage().getName();
+				super.setName(sName);
+			}
+			catch (Exception e) {
+				return "";
+			}
 		}
-		catch (Exception e) {
-			return "";
-		}
+		return sName;
 	}
 
 	public String getTemplateKey() {
-		try {
-			return Integer.toString(getICPage().getTemplateId());
+		if(this.templateKey==null){
+			try {
+				this.templateKey= Integer.toString(getICPage().getTemplateId());
+			}
+			catch (Exception e) {
+				return "-1";
+			}
 		}
-		catch (Exception e) {
-			return "-1";
-		}
+		return this.templateKey;
 	}
 
 	public void setTemplateKey(String templateKey) {
@@ -343,6 +434,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			ICPage page = getICPage();
 			page.setTemplateId(id);
 			page.store();
+			this.templateKey=templateKey;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -354,6 +446,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			ICPage page = getICPage();
 			page.setName(name);
 			page.store();
+			super.setName(name);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

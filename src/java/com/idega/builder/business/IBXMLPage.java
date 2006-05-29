@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.61 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: IBXMLPage.java,v 1.62 2006/05/29 18:28:24 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -14,10 +14,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import com.idega.builder.data.IBPageBMPBean;
+import com.idega.business.IBOLookup;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -32,10 +40,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2006/05/24 13:08:07 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/05/29 18:28:24 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.61 $
+ * @version $Revision: 1.62 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -119,9 +127,46 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 //			}
 //		}
  	*/
+		preloadIcObjectInstance();
 	}
 	
 	
+	/**
+	 * <p>
+	 * TODO tryggvil describe method preloadIcObject
+	 * </p>
+	 */
+	private void preloadIcObjectInstance() {
+		
+		ICObjectInstanceHome icoHome = getICObjectInstanceHome();
+		try {
+			Collection icos = icoHome.findByPageKey(getPageKey());
+			for (Iterator iter = icos.iterator(); iter.hasNext();) {
+				ICObjectInstance instance = (ICObjectInstance) iter.next();
+				//just caching the instance in beancache
+			}
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * <p>
+	 * TODO tryggvil describe method getICObjectInstanceHome
+	 * </p>
+	 * @return
+	 */
+	private ICObjectInstanceHome getICObjectInstanceHome() {
+		try {
+			return (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+		}
+		catch (IDOLookupException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/** 
 	 * This method is called from setICPage to read into this page 
 	 * from the page stream (from the database).
