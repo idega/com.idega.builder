@@ -1,5 +1,5 @@
 /*
- * $Id: DomainTree.java,v 1.1 2006/05/29 18:28:24 tryggvil Exp $
+ * $Id: DomainTree.java,v 1.2 2006/05/31 11:12:16 laddi Exp $
  * Created on 26.5.2006 in project com.idega.builder
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.idegaweb.IWApplicationContext;
  * <p>
  * TODO tryggvil Describe Type DomainTree
  * </p>
- *  Last modified: $Date: 2006/05/29 18:28:24 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/05/31 11:12:16 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DomainTree extends DefaultTreeNode {
 	
@@ -70,8 +70,8 @@ public class DomainTree extends DefaultTreeNode {
 	 * @param iwac
 	 */
 	private void initialize(IWApplicationContext iwac) {
-		initialize(iwac, PAGEVIEWER);
-		initialize(iwac, TEMPLATEVIEWER);
+		initialize(iwac, this.PAGEVIEWER);
+		initialize(iwac, this.TEMPLATEVIEWER);
 	}
 
 	/**
@@ -85,21 +85,21 @@ public class DomainTree extends DefaultTreeNode {
 			ICTreeNode parent = null;
 			if (type == this.PAGEVIEWER) {
 				parent = getPagesNode();
-				id = domain.getStartPageID();
+				id = this.domain.getStartPageID();
 			}
 			else {
 				parent = getTemplatesNode();
-				id = domain.getStartTemplateID();
+				id = this.domain.getStartTemplateID();
 			}
 			PageTreeNode startNode = new PageTreeNode(id, iwc);
 			parent.getChildren().add(startNode);
 			try {
 				java.util.Collection coll = null;
 				if (type == this.PAGEVIEWER) {
-					coll = getStartPages(domain);
+					coll = getStartPages(this.domain);
 				}
 				else {
-					coll = getTemplateStartPages(domain);
+					coll = getTemplateStartPages(this.domain);
 				}
 				java.util.Iterator it = coll.iterator();
 				while (it.hasNext()) {
