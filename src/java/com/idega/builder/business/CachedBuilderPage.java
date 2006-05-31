@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.9 2006/05/29 18:28:24 tryggvil Exp $
+ * $Id: CachedBuilderPage.java,v 1.10 2006/05/31 08:56:10 laddi Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -10,24 +10,16 @@
 package com.idega.builder.business;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import org.apache.commons.httpclient.HttpURL;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.util.HttpURLConnection;
-import org.apache.webdav.lib.WebdavFile;
-import org.apache.webdav.lib.WebdavResource;
+
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.view.DefaultViewNode;
@@ -35,9 +27,7 @@ import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.IWContext;
-import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
-import com.idega.slide.util.WebdavExtendedResource;
 
 /**
  * An abstract class that represents a cached instance of a Builder page.
