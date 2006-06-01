@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderRootViewNode.java,v 1.5 2006/05/09 14:44:03 tryggvil Exp $
+ * $Id: BuilderRootViewNode.java,v 1.6 2006/06/01 13:42:11 tryggvil Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -31,10 +31,10 @@ import com.idega.util.StringHandler;
  * default mapped under '/pages/'. The instance of this class is the one that handles precicely this url, i.e. the 
  * one on the root for pages.
  * </p>
- *  Last modified: $Date: 2006/05/09 14:44:03 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/06/01 13:42:11 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class BuilderRootViewNode extends DefaultViewNode {
 	/**
@@ -148,7 +148,13 @@ public class BuilderRootViewNode extends DefaultViewNode {
 	 * @return
 	 */
 	private ViewNode getViewNodeLoadedFromDB(String pageUri) {
-		String pageKey = getBuilderLogic().getPageKeyByURI(pageUri);
+		String pagesPrefix = "/pages";
+		String requestUri = pageUri;
+		if(!pageUri.startsWith(pagesPrefix)){
+			requestUri=pagesPrefix+pageUri;
+		}
+		//We have to add a /pages prefix because the method getPageKeyByURI() expects it
+		String pageKey = getBuilderLogic().getPageKeyByURI(requestUri);
 		return super.getChild(pageKey);
 	}
 
