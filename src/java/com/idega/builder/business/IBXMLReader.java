@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.1 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: IBXMLReader.java,v 1.2 2006/06/01 17:30:04 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -449,6 +449,7 @@ public class IBXMLReader {
 		String componentId = null;
 		String icObjectId = null;
 		ICObjectInstance icObjectInstance = null;
+		String label = null;
 		
 		Iterator it = at.iterator();
 		
@@ -472,6 +473,9 @@ public class IBXMLReader {
 				else {
 					isLocked = true;
 				}
+			}
+			else if (attr.getName().equalsIgnoreCase(IBXMLConstants.LABEL_STRING)) {
+				label = attr.getValue();
 			}
 		}
 
@@ -525,6 +529,9 @@ public class IBXMLReader {
 				}
 				else {
 					((PresentationObjectContainer) firstUICInstance).unlock();
+					if(label!=null){
+						((PresentationObjectContainer) firstUICInstance).setLabel(label);
+					}
 				}
 			}
 
