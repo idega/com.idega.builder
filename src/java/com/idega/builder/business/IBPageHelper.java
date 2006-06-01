@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.58 2006/05/29 18:28:24 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.59 2006/06/01 16:28:49 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -253,6 +253,10 @@ public class IBPageHelper implements Singleton  {
 	 * @return The id of the new IBPage
 	 */
 	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
+		boolean isTopLevel=false;
+		if(parentId==null){
+			isTopLevel=true;
+		}
 		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 		if (name == null) {
 			name = "Untitled";
@@ -337,7 +341,7 @@ public class IBPageHelper implements Singleton  {
 			if (creatorContext != null) {
 				ibPage.setOwner(creatorContext);
 			}
-			if (parentId != null) {
+			if (!isTopLevel) {
 				ICPage ibPageParent = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(parentId));
 				ibPageParent.addChild(ibPage);
 			}
@@ -368,6 +372,8 @@ public class IBPageHelper implements Singleton  {
 				}
 				page.setDomainId(domainId);
 				page.store();
+				
+				DomainTree.clearCache(creatorContext.getApplicationContext());
 			}
 		}
 		catch (Exception e) {
@@ -757,7 +763,7 @@ public class IBPageHelper implements Singleton  {
 			ibpage.delete(userId);
 			String templateId = ibpage.getTemplateKey();
 			if (templateId != null ) {
-				BuilderLogic.getInstance().getIBXMLPage(templateId).removePageAsUsingThisTemplate(pageId);
+				BuilderLogic.getInstance().getCachedBuilderPage(templateId).removePageAsUsingThisTemplate(pageId);
 			}
 			if (deleteChildren) {
 				deleteAllChildren(ibpage, tree, userId);
