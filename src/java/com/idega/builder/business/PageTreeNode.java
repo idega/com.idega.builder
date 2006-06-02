@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.26 2006/06/02 10:27:56 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.27 2006/06/02 11:53:33 tryggvil Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -537,7 +537,9 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 * @param node
 	 */
 	private void setParent(PageTreeNode node) {
-		this.parentId=new Integer(node.getId());
+		if(node!=null){
+			this.parentId=new Integer(node.getId());
+		}
 	}
 
 	/*
