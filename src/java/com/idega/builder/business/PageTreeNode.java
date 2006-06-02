@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.27 2006/06/02 11:53:33 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.28 2006/06/02 12:05:58 tryggvil Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -66,15 +66,31 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	protected PageTreeNode(int id, String name) {
 		this(id, name, -1, false);
 	}
-
+	
+	protected PageTreeNode(Integer pageId, String name) {
+		this(pageId.intValue(), name, -1, false);
+	}
+	
+	protected PageTreeNode(Integer pageId, String name, int order) {
+		this(pageId.intValue(), name, order, false);
+	}
+	
 	protected PageTreeNode(int id, String name, int order) {
 		this(id, name, order, false);
 	}
 
+	protected PageTreeNode(Integer id, String name, boolean isCategory) {
+		this(id.intValue(), name, -1, isCategory);
+	}
+	
 	protected PageTreeNode(int id, String name, boolean isCategory) {
 		this(id, name, -1, isCategory);
 	}
 
+	protected PageTreeNode(Integer pageId, String name, int order, boolean isCategory) {
+		this(pageId.intValue(),name,order,isCategory);
+	}
+	
 	protected PageTreeNode(int id, String name, int order, boolean isCategory) {
 		this._id = id;
 		this._name = name;
@@ -143,9 +159,9 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 			while (it.hasNext()) {
 				IBPageName nameEntry = (IBPageName)it.next();
 				int pageId = nameEntry.getPageId();
-				int localeId = nameEntry.getLocaleId();
+				//int localeId = nameEntry.getLocaleId();
 								
-				Locale loc = ICLocaleBusiness.getLocale(localeId);
+				//Locale loc = ICLocaleBusiness.getLocale(localeId);
 				
 				Integer locId = new Integer(pageId);
 				Map localizedNames = (Map)names.get(locId);
@@ -175,13 +191,13 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	}
 	
 	protected static void putLocalizeName(IBPageName nameEntry,Map localizedNames){
-		int pageId = nameEntry.getPageId();
+		//int pageId = nameEntry.getPageId();
 		int localeId = nameEntry.getLocaleId();
 						
 		Locale loc = ICLocaleBusiness.getLocale(localeId);
 		
-		Integer locId = new Integer(pageId);
-		/*Map localizedNames = (Map)names.get(locId);
+		/*Integer locId = new Integer(pageId);
+		Map localizedNames = (Map)names.get(locId);
 		if (localizedNames == null) {
 			localizedNames = new Hashtable();
 			names.put(locId,localizedNames);					
@@ -224,10 +240,10 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				PageTreeNode node = null;
 				int order = pages.getTreeOrder();
 				if (order == -1) {
-					node = new PageTreeNode(pages.getID(), pages.getName(), pages.isCategory());
+					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName(), pages.isCategory());
 				}
 				else {
-					node = new PageTreeNode(pages.getID(), pages.getName(), order, pages.isCategory());
+					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName(), order, pages.isCategory());
 				}
 				//node.setPage(pages);
 				node.setPageNames((Map) pageNames.get(pages.getPrimaryKey()));
@@ -242,10 +258,10 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				PageTreeNode node = null;
 				int order = pages.getTreeOrder();
 				if (order == -1) {
-					node = new PageTreeNode(pages.getID(), pages.getName());
+					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName());
 				}
 				else {
-					node = new PageTreeNode(pages.getID(), pages.getName(), order);
+					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName(), order);
 				}
 				//node.setPage(pages);
 				node.setPageNames((Map) pageNames.get(pages.getPrimaryKey()));
