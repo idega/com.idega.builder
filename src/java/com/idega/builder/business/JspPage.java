@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.10 2006/04/09 11:43:34 laddi Exp $
+ * $Id: JspPage.java,v 1.11 2006/06/02 10:27:56 tryggvil Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,13 +25,17 @@ import com.idega.util.StringHandler;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class JspPage extends CachedBuilderPage {
 	
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = -1115066670523521567L;
 	private static final String BUILDERPAGE_PREFIX = "builderpage_";
 	private static final int BUILDERPAGE_PREFIX_LENGTH = BUILDERPAGE_PREFIX.length();
 	private static final String JSP_PAGE_EXTENSION_WITH_DOT = ".jsp";

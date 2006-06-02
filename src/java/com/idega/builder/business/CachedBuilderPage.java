@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.10 2006/05/31 08:56:10 laddi Exp $
+ * $Id: CachedBuilderPage.java,v 1.11 2006/06/02 10:27:56 tryggvil Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +39,7 @@ import com.idega.slide.business.IWSlideSession;
  * 
  * @version 1.0
  */
-public abstract class CachedBuilderPage extends DefaultViewNode implements ViewNode {
+public abstract class CachedBuilderPage extends DefaultViewNode implements ViewNode,Serializable {
 	
 	public final static String TYPE_PAGE = IBXMLConstants.PAGE_TYPE_PAGE;
 	public final static String TYPE_TEMPLATE = IBXMLConstants.PAGE_TYPE_TEMPLATE;

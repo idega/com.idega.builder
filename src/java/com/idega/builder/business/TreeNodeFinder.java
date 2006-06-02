@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.15 2006/05/16 10:16:42 palli Exp $
+ * $Id: TreeNodeFinder.java,v 1.16 2006/06/02 10:27:56 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,9 +32,26 @@ import com.idega.data.IDOLookup;
  * @version 1.0
  */
 public class TreeNodeFinder {
+	
 	public static Collection getAllPageNames() {
 		try {
 			Collection col = ((IBPageNameHome)IDOLookup.getHome(IBPageName.class)).findAll();
+			
+			return col;
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static Collection getAllPageNames(int pageId) {
+		try {
+			Collection col = ((IBPageNameHome)IDOLookup.getHome(IBPageName.class)).findAllByPageId(pageId);
 			
 			return col;
 		}

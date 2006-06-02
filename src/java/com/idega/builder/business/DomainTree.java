@@ -1,5 +1,5 @@
 /*
- * $Id: DomainTree.java,v 1.2 2006/05/31 11:12:16 laddi Exp $
+ * $Id: DomainTree.java,v 1.3 2006/06/02 10:27:56 tryggvil Exp $
  * Created on 26.5.2006 in project com.idega.builder
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -24,12 +24,12 @@ import com.idega.idegaweb.IWApplicationContext;
 
 /**
  * <p>
- * TODO tryggvil Describe Type DomainTree
+ * Cache for each domain and its page and templates tree
  * </p>
- *  Last modified: $Date: 2006/05/31 11:12:16 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DomainTree extends DefaultTreeNode {
 	

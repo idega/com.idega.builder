@@ -1,5 +1,5 @@
 /*
- * $Id: PageCacher.java,v 1.20 2006/04/09 11:43:34 laddi Exp $
+ * $Id: PageCacher.java,v 1.21 2006/06/02 10:27:56 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,22 +13,25 @@ package com.idega.builder.business;
  *  The instance of this class holds an manages a cache of Builder pages that are instances
  * of CachedBuilderPage.<br>
  * 
- *  Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 import java.util.Map;
-import java.util.WeakHashMap;
 import javax.ejb.FinderException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWMainApplication;
 public class PageCacher
 {
+	private static final String CACHE_NAME = "BuilderPages";
+
 	//Instance variables:
-	private Map pageCache = new WeakHashMap();
+	//private Map pageCache = new WeakHashMap();
 	//private Map pagesValid = new HashMap();
 	PageCacher()
 	{}
@@ -215,8 +218,19 @@ public class PageCacher
 	}
 	public Map getPageCacheMap()
 	{
-		return this.pageCache;
+		//return this.pageCache;
+		return getCacheManager().getCache(getCacheName());
 	}
+	/**
+	 * <p>
+	 * TODO tryggvil describe method getCacheName
+	 * </p>
+	 * @return
+	 */
+	private String getCacheName() {
+		return CACHE_NAME;
+	}
+
 	private CachedBuilderPage getCachedBuilderPageFromMap(String key)
 	{
 		return (CachedBuilderPage) getPageCacheMap().get(key);
@@ -245,7 +259,10 @@ public class PageCacher
 	 */
 	public synchronized void flagAllPagesInvalid()
 	{
-		//pagesValid.clear();
-		this.pageCache.clear();
+		getPageCacheMap().clear();
+	}
+	
+	protected IWCacheManager2 getCacheManager(){
+		return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication());
 	}
 }

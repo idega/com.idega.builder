@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.63 2006/05/31 08:55:28 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.64 2006/06/02 10:27:56 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -39,14 +39,18 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2006/05/31 08:55:28 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.63 $
+ * @version $Revision: 1.64 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
 
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = -2693227585756124885L;
 	private XMLParser parser = null;
 	private XMLDocument xmlDocument = null;
 	private XMLElement rootElement = null;

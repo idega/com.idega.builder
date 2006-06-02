@@ -1,5 +1,5 @@
 /*
- * $Id: HtmlBasedPage.java,v 1.14 2006/04/09 11:43:34 laddi Exp $
+ * $Id: HtmlBasedPage.java,v 1.15 2006/06/02 10:27:56 tryggvil Exp $
  * Created on Created on 1.6.2004 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -27,13 +27,17 @@ import com.idega.presentation.Page;
  * This class is responsible for reading the HTML page stream but the parsing of the 
  * Html code and Region tags is handled by the class com.idega.presentation.HtmlPage.
  * 
- *  Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPage{
 
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = -4838223049441803865L;
 	private Page _populatedPage;
 	/**
 	 * @param verify

@@ -1,27 +1,10 @@
-/*
- * $Id: IBPageName.java 1.1 29.10.2004 laddi Exp $
- * Created on 29.10.2004
- *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- */
 package com.idega.builder.data;
 
 
-
-import com.idega.core.builder.data.*;
 import com.idega.core.localisation.data.ICLocale;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOEntity;
 
-
-/**
- * Last modified: 29.10.2004 11:10:14 by laddi
- * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
- */
 public interface IBPageName extends IDOEntity {
 
 	/**
@@ -83,5 +66,4 @@ public interface IBPageName extends IDOEntity {
 	 * @see com.idega.builder.data.IBPageNameBMPBean#setPage
 	 */
 	public void setPage(ICPage page);
-
 }

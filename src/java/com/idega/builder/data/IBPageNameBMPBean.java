@@ -9,14 +9,16 @@
  */
 package com.idega.builder.data;
 
-import com.idega.core.builder.data.*;
-import com.idega.core.localisation.data.ICLocale;
-import com.idega.data.GenericEntity;
-
 import java.sql.SQLException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.component.data.ICObjectBMPBean;
+import com.idega.core.localisation.data.ICLocale;
+import com.idega.data.GenericEntity;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
 
 /**
  * This class does something very clever.....
@@ -131,6 +133,15 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
     sql.append(localeId);
     
     return (Integer) super.idoFindOnePKBySQL(sql.toString());
+	}
+	
+	
+	public Collection ejbFindAllByPageId(int pageId) throws FinderException {
+	    
+		SelectQuery query = idoSelectPKQuery();
+		Table table = idoQueryTable();
+	    query.addCriteria(new MatchCriteria(table,PAGE_ID,MatchCriteria.EQUALS,pageId));
+	    return idoFindPKsByQuery(query);
 	}
 	
 	public Collection ejbFindAll() throws FinderException {

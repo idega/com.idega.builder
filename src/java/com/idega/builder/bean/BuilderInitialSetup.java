@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderInitialSetup.java,v 1.4 2006/05/09 14:44:03 tryggvil Exp $
+ * $Id: BuilderInitialSetup.java,v 1.5 2006/06/02 10:27:56 tryggvil Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,16 +15,17 @@ import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICDomainHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.servlet.filter.IWWelcomeFilter;
 
 
 /**
  * <p>
  * Managed bean to back-up the page jsp/initialSetup.jsp.
  * </p>
- *  Last modified: $Date: 2006/05/09 14:44:03 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class BuilderInitialSetup {
 
@@ -85,6 +86,8 @@ public class BuilderInitialSetup {
 				ccachedDomain.setStartPage(domain.getStartPage());
 				ccachedDomain.setStartPageID(domain.getStartPageID());
 			}
+			
+			IWWelcomeFilter.unload();
 			
 			return "next";
 		}

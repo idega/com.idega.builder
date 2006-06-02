@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.21 2006/02/22 20:55:22 laddi Exp $
+ * $Id: IBDeletePageWindow.java,v 1.22 2006/06/02 10:27:56 tryggvil Exp $
 
  *
 
@@ -17,6 +17,7 @@
  */
 package com.idega.builder.presentation;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.DomainTree;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.core.builder.data.ICDomain;
@@ -66,6 +67,8 @@ public class IBDeletePageWindow extends IWAdminWindow
 				IBPageHelper.getInstance().deletePage(pageId, false, PageTreeNode.getTree(iwc), iwc.getUserId(), domain);
 			}
 			BuilderLogic.getInstance().setCurrentIBPage(iwc,Integer.toString(domain.getStartPageID()));
+			//clear the cache for safeties sake (this is necessary when deleting top pages)
+			DomainTree.clearCache(iwc);
 			/**@todo is this in the right place? -eiki**/
 			//      setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");
 			setOnUnLoad("window.opener.parent.parent.location.reload()");
