@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.28 2006/06/02 12:05:58 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.29 2006/06/06 12:39:14 tryggvil Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
@@ -277,7 +276,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				PageTreeNode parent = (PageTreeNode) tree.get(parentId);
 				PageTreeNode child = (PageTreeNode) tree.get(childId);
 				if (parent != null) {
-					parent.addChild(child);
+					parent.addChild(child,tree);
 				}
 
 				if (child != null) {
@@ -294,7 +293,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				PageTreeNode parent = (PageTreeNode) tree.get(parentId);
 				PageTreeNode child = (PageTreeNode) tree.get(childId);
 				if (parent != null) {
-					parent.addChild(child);
+					parent.addChild(child,tree);
 				}
 
 				if (child != null) {
@@ -310,12 +309,16 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 *
 	 */
 	public Collection getChildren() {
+		return getChildren(getTree(getApplicationContext()));
+	}
+	
+	protected Collection getChildren(Map tree){
 		//return this._children;
 		List pages = new ArrayList();
 		Collection childIds = getChildIds();
 		for (Iterator iter = childIds.iterator(); iter.hasNext();) {
 			Integer childId = (Integer) iter.next();
-			PageTreeNode node = (PageTreeNode) getTree(getApplicationContext()).get(childId);
+			PageTreeNode node = (PageTreeNode) tree.get(childId);
 			pages.add(node);
 		}
 		return pages;
@@ -506,10 +509,14 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 		return (false);
 	}
 
+	public boolean addChild(PageTreeNode child) {
+		return addChild(child,null);
+	}
+	
 	/**
 	 *
 	 */
-	public boolean addChild(PageTreeNode child) {
+	public boolean addChild(PageTreeNode child,Map tree) {
 		//child._parent = this;
 		child.setParent(this);
 		Integer childId = new Integer(child.getId());
@@ -527,7 +534,16 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 					childPageIds.add(childId);
 				}
 				else {
-					ListIterator it = (new LinkedList(getChildren())).listIterator();
+					
+					List childNodeList;
+					if(tree==null){
+						 childNodeList = (List)getChildren();
+					}
+					else{
+						 childNodeList = (List)getChildren(tree);
+					}
+					
+					ListIterator it = childNodeList.listIterator();//(new LinkedList(getChildren())).listIterator();
 
 					while (it.hasNext()) {
 						PageTreeNode node = (PageTreeNode) it.next();
@@ -574,11 +590,15 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 		//Map tree = (Map) iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
 		Map tree = getCacheManager(iwc).getCache(getCacheName(),10000,true,true);
 		if (tree.isEmpty()) {
-			Map newTree = getTreeFromDatabase();
-			for (Iterator iter = newTree.keySet().iterator(); iter.hasNext();) {
-				Object key = (Object) iter.next();
-				Object value = newTree.get(key);
-				tree.put(key, value);
+			synchronized(iwc.getIWMainApplication()){
+				if(tree.isEmpty()){
+					Map newTree = getTreeFromDatabase();
+					for (Iterator iter = newTree.keySet().iterator(); iter.hasNext();) {
+						Object key = (Object) iter.next();
+						Object value = newTree.get(key);
+						tree.put(key, value);
+					}
+				}
 			}
 			//iwc.setApplicationAttribute(PageTreeNode.PAGE_TREE, tree);
 			//Map names = getNamesFromDatabase();
