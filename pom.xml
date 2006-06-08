@@ -1,17 +1,15 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
-  	<groupId>com.idega.core</groupId>
-  	<artifactId>com.idega.core</artifactId>
-  	<version>3.1.0-SNAPSHOT</version>
+  	<groupId>com.idega.block.platform</groupId>
+  	<artifactId>com.idega.block.base</artifactId>
+  	<version>3.1.0</version>
   </parent>
-  <groupId>com.idega.core</groupId>
-  <artifactId>com.idega.builder</artifactId>
   <packaging>jar</packaging>
-  <version>1.4.4-SNAPSHOT</version>
+  <groupId>com.idega.block.platform</groupId>
+  <artifactId>com.idega.builder</artifactId>
+  <version>2.0-SNAPSHOT</version>
   <name>idegaWeb Builder</name>
-  <shortDescription>idegaWeb Builder is a Webapplication RAD and CMS tool</shortDescription>
-  <branches/>
   <developers>
     <developer>
       <name>Tryggvi Larusson</name>
@@ -59,7 +57,7 @@
   
   <dependencies>
 	<dependency>
-      <groupId>com.idega.core</groupId>
+      <groupId>com.idega.block.platform</groupId>
       <artifactId>com.idega.core</artifactId>
       <version>3.1.0-SNAPSHOT</version>
       <type>jar</type>
