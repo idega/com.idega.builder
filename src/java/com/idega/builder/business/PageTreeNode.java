@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.29 2006/06/06 12:39:14 tryggvil Exp $
+ * $Id: PageTreeNode.java,v 1.30 2006/06/08 07:48:00 laddi Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -332,9 +332,9 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 */
 	protected List getChildIds() {
 		if(this.childPageIds==null){
-			childPageIds=new ArrayList();
+			this.childPageIds=new ArrayList();
 		}
-		return childPageIds;
+		return this.childPageIds;
 	}
 
 	/**
@@ -594,7 +594,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				if(tree.isEmpty()){
 					Map newTree = getTreeFromDatabase();
 					for (Iterator iter = newTree.keySet().iterator(); iter.hasNext();) {
-						Object key = (Object) iter.next();
+						Object key = iter.next();
 						Object value = newTree.get(key);
 						tree.put(key, value);
 					}
@@ -685,10 +685,10 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 * @return the pageNames
 	 */
 	public Map getPageNames() {
-		if(pageNames==null){
-			pageNames=loadNamesFromDatabase(getPageId());
+		if (this.pageNames==null) {
+			this.pageNames=loadNamesFromDatabase(getPageId());
 		}
-		return pageNames;
+		return this.pageNames;
 	}
 
 	
@@ -709,7 +709,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 * @return the parentId
 	 */
 	public Integer getParentId() {
-		return parentId;
+		return this.parentId;
 	}
 
 	

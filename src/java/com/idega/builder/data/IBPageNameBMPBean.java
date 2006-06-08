@@ -11,9 +11,10 @@ package com.idega.builder.data;
 
 import java.sql.SQLException;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.GenericEntity;
 import com.idega.data.query.MatchCriteria;
