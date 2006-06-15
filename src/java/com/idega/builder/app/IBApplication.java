@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.99 2006/05/09 14:44:03 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.100 2006/06/15 17:43:48 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,8 +33,6 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
-import com.idega.core.view.ViewManager;
-import com.idega.core.view.ViewNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWMainApplication;
@@ -918,7 +916,7 @@ public class IBApplication extends IWApplication {
 				isSuperUser = iwc.isSuperAdmin();
 				boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER,iwc);
 				
-
+				/*
 				//Display the simple template page
 				if (isSuperUser||isBuilderUser) {
 					String settingsUrl;
@@ -931,6 +929,7 @@ public class IBApplication extends IWApplication {
 					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
 					toolTable.add(sourceLink, 4, 1);
 				}
+				*/
 				
 				//Display the source tab only if the current user is the SuperUser
 				if (isSuperUser||isBuilderUser) {
