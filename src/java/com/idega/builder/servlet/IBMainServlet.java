@@ -1,5 +1,5 @@
 /*
- * $Id: IBMainServlet.java,v 1.29 2004/12/20 08:55:07 tryggvil Exp $
+ * $Id: IBMainServlet.java,v 1.30 2006/06/16 16:27:24 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.servlet;
 
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.CachedBuilderPage;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.idegaweb.IWApplicationContext;
@@ -82,7 +84,6 @@ public class IBMainServlet extends IWJSPPresentationServlet {
 	        }
 	        else {
 	            //synchronize but add the id to memory so we don't do it again
-	            initializedPageIDs.add(pageID);
 	            return true;
 	        }
 	        
@@ -98,15 +99,16 @@ public class IBMainServlet extends IWJSPPresentationServlet {
     /* (non-Javadoc)
      * @see com.idega.servlet.IWCoreServlet#getObjectToSynchronizeOn(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    protected Object getObjectToSynchronizeOn(HttpServletRequest request,HttpServletResponse response) {
+    protected synchronized Object getObjectToSynchronizeOn(HttpServletRequest request,HttpServletResponse response) {
         try {
 	        IWContext iwc = getIWContext();
 	        IWApplicationContext iwac = this.getApplication().getIWApplicationContext();
 	        BuilderService bs = BuilderServiceFactory.getBuilderService(iwac);
 	        
 	        Integer pageID = new Integer(bs.getCurrentPageId(iwc));
-	        
-	        return pageID;
+	        CachedBuilderPage page = BuilderLogic.getInstance().getCachedBuilderPage(pageID.toString());
+	        //return pageID;
+	        return page;
 	        
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,4 +117,26 @@ public class IBMainServlet extends IWJSPPresentationServlet {
      //all else failes use default impl
         return super.getObjectToSynchronizeOn(request,response);
     }
+    
+	/**
+	 * This method can be overrided in sublcasses. Unsets syncronization for the current access to service.
+	 * @param _req 
+	 * @param _res
+	 * @return true if successfully unSet.
+	 */
+	protected boolean unSetSyncronizedAccess(HttpServletRequest _req, HttpServletResponse _res){
+        IWContext iwc = getIWContext();
+        IWApplicationContext iwac = this.getApplication().getIWApplicationContext();
+        BuilderService bs;
+		try {
+			bs = BuilderServiceFactory.getBuilderService(iwac);
+	        Integer pageID = new Integer(bs.getCurrentPageId(iwc));
+			initializedPageIDs.add(pageID);
+			return true;
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
