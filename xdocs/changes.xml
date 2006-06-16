@@ -4,7 +4,33 @@
     <author email="tryggvi@idega.com">Tryggvi Larusson</author>
   </properties>
   <body>
-        <release version="1.4.3" date="2005-09-15">
+    <release version="3.1.0" date="2006-06-16">
+      <action dev="tryggvil" type="update">
+      	New version to be included in ePlatform 3.1 Release.
+      </action>
+      <action dev="tryggvil" type="update">
+      	JSF UIComponents are now supported inside Builder pages just like older style
+      	idegaWeb Block and Element components.
+      </action>
+      <action dev="tryggvil" type="update">
+      	Experimental support for storing Builder Pages as version controlled documents
+      	in the Slide WebDAV repository.
+      </action>
+      <action dev="tryggvil" type="fix">
+      	Performance optimizations and caching when dealing with database access on reload
+      	of Builder application and pages.
+      </action>
+      <action dev="tryggvil" type="update">
+      	Builder Page structure is now initialized when first going into the Builder.
+      </action>
+      <action dev="tryggvil" type="update">
+      	IBXML Document format slightly changed to use UUID's as id attributes to be more portable.
+      </action>
+      <action dev="tryggvil" type="update">
+      	Caching updated to use newer IWCacheManager2
+      </action>
+    </release>
+    <release version="1.4.3" date="2005-09-15">
       <action dev="thomas" type="update">
         Declaration of version based on core 3.0.6.
       </action>              
