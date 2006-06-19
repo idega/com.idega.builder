@@ -5,8 +5,7 @@
   <pomVersion>3</pomVersion>
   <name>idegaWeb Builder</name>
   <artifactId>com.idega.builder</artifactId>
-  <!--currentVersion>1.4.3</currentVersion-->
-  <currentVersion>3.1.0-SNAPSHOT</currentVersion>
+  <currentVersion>3.1.0</currentVersion>
   <organization/>
   <inceptionYear>2000</inceptionYear>
   <shortDescription>idegaWeb Builder is a Webapplication RAD and CMS tool</shortDescription>
@@ -99,8 +98,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <!--version>3.0.6</version-->
-      <version>SNAPSHOT</version>
+      <version>3.1.0</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
@@ -113,8 +111,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.slide</artifactId>
-      <!--version>1.0</version-->
-      <version>SNAPSHOT</version>
+      <version>3.1.0</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
@@ -124,8 +121,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.content</artifactId>
-      <!--version>1.0</version-->
-      <version>SNAPSHOT</version>
+      <version>3.1.0</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
@@ -135,8 +131,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>org.apache.slide</artifactId>
-      <!--version>1.0</version-->
-      <version>SNAPSHOT</version>
+      <version>2.2.b6</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
@@ -172,7 +167,5 @@
       <type>jar</type>
       <url>http://commons.apache.org/</url>
     </dependency>
-
-    
   </dependencies>
 </project>
