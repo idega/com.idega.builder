@@ -40,6 +40,11 @@
       <name>1.4.3</name>
       <tag>BUILDER_1_4_3</tag>
     </version>
+    <version>
+      <id>3.1.0</id>
+      <name>3.1.0</name>
+      <tag>BUILDER_3_1_0</tag>
+    </version>
   </versions>
   <branches/>
   <mailingLists>
@@ -107,6 +112,7 @@
       <!--properties>
         <j:if test="${idegaweb.project.source.dependent}=='true'}"><eclipse.dependency>true</eclipse.dependency></j:if>
       </properties-->
+
     </dependency>
     <dependency>
       <groupId>bundles</groupId>
@@ -145,7 +151,8 @@
       <type>jar</type>
       <url>http://www.slide.com/</url>
     </dependency>
-	<!--duplicated slide dependencies -->
+    <!--duplicated slide dependencies -->
+
     <dependency>
       <groupId>slide</groupId>
       <artifactId>jakarta-slide-webdavlib</artifactId>
