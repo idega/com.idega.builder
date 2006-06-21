@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <projectDescription>
-  <name>com.idega.builder</name>
-  <comment>
+	<name>com.idega.builder</name>
+	<comment>
   </comment>
-  <projects>
-    <project>com.idega.core</project>
-    <project>com.idega.slide</project>
-    <project>com.idega.content</project>
-    <project>org.apache.slide</project>
-    <project>com.idega.block.web2.0</project>
-  </projects>
-  <buildSpec>
-    <buildCommand>
-      <name>org.eclipse.jdt.core.javabuilder</name>
-      <arguments>
-      </arguments>
-    </buildCommand>
-  </buildSpec>
-  <natures>
-    <nature>org.eclipse.jdt.core.javanature</nature>
-  </natures>
+	<projects>
+		<project>com.idega.core</project>
+		<project>com.idega.slide</project>
+		<project>com.idega.content</project>
+		<project>org.apache.slide</project>
+		<project>com.idega.block.web2.0</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.maven.ide.eclipse.maven2Builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.maven.ide.eclipse.maven2Nature</nature>
+	</natures>
 </projectDescription>
