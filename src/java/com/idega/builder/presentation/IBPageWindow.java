@@ -85,7 +85,7 @@ public class IBPageWindow extends IWAdminWindow {
 				}
 				else {
       	  if (type.equals(IBPageHelper.TEMPLATE)) {
-	          ICDomain domain = ICDomainBMPBean.getDomain(1);
+	          ICDomain domain = BuilderLogic.getInstance().getCurrentDomain();
     	      ICPage top = domain.getStartTemplate();
     	      if (top != null) {
 							chooser.setSelectedPage(top);
