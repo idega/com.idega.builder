@@ -467,7 +467,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			// look up the new id
 			// if the new id can't  be found do not modify the region element 
 			// (sometimes the region refers to a valid element only by the label but not by the id)
-			if (this.oldNewInstanceId.containsKey(id)) {
+			if (this.oldNewInstanceId != null && this.oldNewInstanceId.containsKey(id)) {
 				String newId = (String) this.oldNewInstanceId.get(id);
 				// set new id
 				String newRegionId = (regionIsDotType) ? StringHandler.concat(newId, regionId.substring(index)) : newId;
