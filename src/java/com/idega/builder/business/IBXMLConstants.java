@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLConstants.java,v 1.1 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: IBXMLConstants.java,v 1.1.2.1 2006/07/20 22:19:29 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -87,6 +87,8 @@ public abstract class IBXMLConstants {
   public static final String PAGE_TREE_PAGE = "page";
   public static final String PAGE_TREE_NAME = "name";
   public static final String PAGE_TREE_ID = "id";
+  public static final String PAGE_FORMAT = "format";
+  public static final String PAGE_URI = "uri";
   
   // for necessary modules within metadata in zip file
   public static final String MODULE_MODULES = "modules";

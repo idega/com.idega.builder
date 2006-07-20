@@ -9,10 +9,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.ejb.FinderException;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.CachedBuilderPage;
 import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.IBXMLConstants;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.io.ObjectReaderBuilder;
 import com.idega.builder.io.ObjectWriterBuilder;
 import com.idega.core.builder.data.ICPage;
@@ -159,9 +163,12 @@ public class IBExportImportData implements Storable {
 			PageTreeNode node = (PageTreeNode) pageTreeNodeIterator.next();
 			String name = node.getNodeName();
 			String id = Integer.toString(node.getNodeID());
+			CachedBuilderPage page = BuilderLogic.getInstance().getCachedBuilderPage(id);
 			XMLElement pageElement = new XMLElement(IBXMLConstants.PAGE_TREE_PAGE);
 			pageElement.addContent(IBXMLConstants.PAGE_TREE_NAME, name);
 			pageElement.addContent(IBXMLConstants.PAGE_TREE_ID, id);
+			pageElement.addContent(IBXMLConstants.PAGE_FORMAT, page.getPageFormat());
+			pageElement.addContent(IBXMLConstants.PAGE_URI, page.getPageUri());
 			Iterator iterator = node.getChildrenIterator();
 			addPages(iterator, pageElement);
 			element.addContent(pageElement);

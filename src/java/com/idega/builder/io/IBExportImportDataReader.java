@@ -14,12 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.CachedBuilderPage;
 import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.IBXMLConstants;
+import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.data.IBExportImportData;
 import com.idega.builder.data.IBReferences;
 import com.idega.core.builder.data.ICPage;
@@ -157,6 +160,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 
 	private void createPages(List pageFileElements, File sourceFile, IBExportImportData exportImportData) throws IOException {
 		this.pageIdHolder = new HashMap(); 
+		this.oldNewInstanceId = new HashMap();
 		IBPageHelper pageHelper = IBPageHelper.getInstance();
 		Map pageTree = PageTreeNode.getTree(this.iwc);
 		Iterator pageIterator = pageFileElements.iterator();
@@ -262,6 +266,19 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		String pageHelperPageType = convertXMLTypeElement(type);
 		int currentPageId = pageHelper.createPageOrTemplateToplevelOrWithParent(originalName, parentId, pageHelperPageType, importTemplateValue, pageTree, this.iwc); 
 		// get the just created page
+		CachedBuilderPage page = BuilderLogic.getInstance().getCachedBuilderPage(Integer.toString(currentPageId));
+		String format = (String) formatMap.get(exportValue);
+		String uri = (String) uriMap.get(exportValue);
+		if (format != null) {
+			page.setPageFormat(format);
+		}
+		if (uri != null) {
+			page.setPageUri(uri);
+		}
+		page.store();
+//		page.setPageFormat(IBPageBMPBean.FORMAT_HTML);
+//		page.store();
+
 		StorableHolder holder = getHolderForPage(currentPageId);
 		this.entryNameHolder.put(zipEntryName, holder);
 		this.pageIdHolder.put(exportValue, holder);
@@ -383,9 +400,6 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		catch (IDOLookupException lookUpEx) {
 			throw new IOException("[IBExportImportDataReader] Couldn't look up home of ICObjectInstance");
 		}
-		if (this.oldNewInstanceId == null) {
-			this.oldNewInstanceId = new HashMap();
-		}
 		// set new id of ICObjectInstance 
 		element.setAttribute(IBXMLConstants.ID_STRING, instanceId);
 		this.oldNewInstanceId.put(importInstanceId, instanceId);			
@@ -467,7 +481,7 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			// look up the new id
 			// if the new id can't  be found do not modify the region element 
 			// (sometimes the region refers to a valid element only by the label but not by the id)
-			if (this.oldNewInstanceId != null && this.oldNewInstanceId.containsKey(id)) {
+			if (this.oldNewInstanceId.containsKey(id)) {
 				String newId = (String) this.oldNewInstanceId.get(id);
 				// set new id
 				String newRegionId = (regionIsDotType) ? StringHandler.concat(newId, regionId.substring(index)) : newId;
@@ -489,10 +503,41 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			closeEntry(zipInputStream);
 			closeStream(zipInputStream);
 		}
+		
+		XMLElement rootElement = metadata.getDocument().getRootElement();
+		XMLElement templatesElement = rootElement.getChild(IBXMLConstants.PAGE_TREE_TEMPLATES);
+		XMLElement pagesElement = rootElement.getChild(IBXMLConstants.PAGE_TREE_PAGES);
+		
+		Iterator iter = templatesElement.getChildren(IBXMLConstants.PAGE_TREE_PAGE).iterator();
+		while (iter.hasNext()) {
+			XMLElement el = (XMLElement) iter.next();
+			XMLElement el2 = el.getChild(IBXMLConstants.PAGE_FORMAT);
+			String id = el.getChild(IBXMLConstants.PAGE_TREE_ID).getValue();
+			if (el2 != null) {
+				String format = el.getChild(IBXMLConstants.PAGE_FORMAT).getValue();
+				String uri = el.getChild(IBXMLConstants.PAGE_URI).getValue();
+				formatMap.put(id, format);
+				uriMap.put(id, uri);
+			}
+		}
+		
+		iter = pagesElement.getChildren(IBXMLConstants.PAGE_TREE_PAGE).iterator();
+		while (iter.hasNext()) {
+			XMLElement el = (XMLElement) iter.next();
+			XMLElement el2 = el.getChild(IBXMLConstants.PAGE_FORMAT);
+			String id = el.getChild(IBXMLConstants.PAGE_TREE_ID).getValue();
+			if (el2 != null) {
+				String format = el.getChild(IBXMLConstants.PAGE_FORMAT).getValue();
+				String uri = el.getChild(IBXMLConstants.PAGE_URI).getValue();
+				formatMap.put(id, format);
+				uriMap.put(id, uri);
+			}
+		}
 		((IBExportImportData) this.storable).setMetadataSummary(metadata);
 	}
 		
-	
+	private HashMap formatMap = new HashMap();
+	private HashMap uriMap = new HashMap();
 
 	
 	private ZipInputStreamIgnoreClose getZipInputStream(String zipEntryName, File zipFile) throws IOException  {
