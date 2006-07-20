@@ -4,16 +4,23 @@
 package com.idega.builder.business;
 
 import java.rmi.RemoteException;
+
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
+
 import com.idega.business.IBOServiceBean;
+import com.idega.core.builder.business.BuilderPageWriterService;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.data.ICTreeNode;
+import com.idega.core.file.data.ICFile;
+import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.util.xml.XMLData;
+import com.idega.xml.XMLElement;
 
 /**
  * IBMainServiceBean : Implementation of BuilderService and simplified interface to BuilderLogic
@@ -21,7 +28,7 @@ import com.idega.presentation.Page;
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class IBMainServiceBean extends IBOServiceBean implements IBMainService,BuilderService
+public class IBMainServiceBean extends IBOServiceBean implements IBMainService,BuilderService, BuilderPageWriterService
 {
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getPage(java.lang.String)
@@ -181,4 +188,24 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 		
 	}
 	
+	public Object write(ICPage page, ObjectWriter writer, IWContext iwc) throws RemoteException {
+		ICFile file = page.getFile();
+		// special case: file is empty 
+		// do not create files of deleted pages
+		if (file.isEmpty() && ! page.getDeleted()) {
+			// file value is empty get a xml description of the page
+			IBXMLPage xmlPage = getBuilderLogic().getPageCacher().getIBXML(this.getPrimaryKey().toString());
+			XMLElement rootElement = xmlPage.getRootElement();
+			// remove connection to document
+			rootElement.detach();
+			// convert to xml data, because for that class a writer already exists
+			XMLData pageData = XMLData.getInstanceWithoutExistingFile();
+			pageData.getDocument().setRootElement(rootElement);
+			pageData.setName(page.getName());
+			return writer.write(pageData, iwc);
+		}
+		// normal way to handle pages 
+		return writer.write(page, iwc);
+	}
+
 }
