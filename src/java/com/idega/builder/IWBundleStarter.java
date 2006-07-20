@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
+
 import javax.ejb.FinderException;
+
 import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.BuilderSlideListenerBean;
 import com.idega.builder.business.ComponentPropertyHandler;
@@ -20,6 +22,7 @@ import com.idega.builder.view.BuilderRootViewNode;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.StandardRoles;
+import com.idega.core.builder.business.BuilderPageWriterService;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDynamicPageTrigger;
 import com.idega.core.builder.data.ICPage;
@@ -73,6 +76,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		//IBOLookup.registerImplementationForBean(ICDomain.class, IBDomainBMPBean.class);
 		IBOLookup.registerImplementationForBean(ICPage.class, IBPageBMPBean.class);
 		IBOLookup.registerImplementationForBean(BuilderService.class, IBMainServiceBean.class);
+		IBOLookup.registerImplementationForBean(BuilderPageWriterService.class, IBMainServiceBean.class);
 		
 		//Registering the views:
 		//This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
