@@ -4,6 +4,16 @@
     <author email="tryggvi@idega.com">Tryggvi Larusson</author>
   </properties>
   <body>
+
+	<release version="3.1.2" date="2006-07-20">
+		<action dev="gimmi" type="fix">
+			Fixed a bug with the importing of pages
+		</action>
+		<action dev="gimmi" type="add">
+			Added page format and uri to the export/import process
+		</action>
+	</release>
+	
 	<release version="3.1.1" date="2006-07-20">
 		<action dev="gimmi" type="fix">
 			Reimplemented exporting pages
