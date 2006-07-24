@@ -267,8 +267,8 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 		int currentPageId = pageHelper.createPageOrTemplateToplevelOrWithParent(originalName, parentId, pageHelperPageType, importTemplateValue, pageTree, this.iwc); 
 		// get the just created page
 		CachedBuilderPage page = BuilderLogic.getInstance().getCachedBuilderPage(Integer.toString(currentPageId));
-		String format = (String) formatMap.get(exportValue);
-		String uri = (String) uriMap.get(exportValue);
+		String format = (String) this.formatMap.get(exportValue);
+		String uri = (String) this.uriMap.get(exportValue);
 		if (format != null) {
 			page.setPageFormat(format);
 		}
@@ -516,8 +516,8 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			if (el2 != null) {
 				String format = el.getChild(IBXMLConstants.PAGE_FORMAT).getValue();
 				String uri = el.getChild(IBXMLConstants.PAGE_URI).getValue();
-				formatMap.put(id, format);
-				uriMap.put(id, uri);
+				this.formatMap.put(id, format);
+				this.uriMap.put(id, uri);
 			}
 		}
 		
@@ -529,8 +529,8 @@ public class IBExportImportDataReader extends ReaderFromFile implements ObjectRe
 			if (el2 != null) {
 				String format = el.getChild(IBXMLConstants.PAGE_FORMAT).getValue();
 				String uri = el.getChild(IBXMLConstants.PAGE_URI).getValue();
-				formatMap.put(id, format);
-				uriMap.put(id, uri);
+				this.formatMap.put(id, format);
+				this.uriMap.put(id, uri);
 			}
 		}
 		((IBExportImportData) this.storable).setMetadataSummary(metadata);
