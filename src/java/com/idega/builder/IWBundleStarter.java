@@ -102,7 +102,7 @@ public class IWBundleStarter implements IWBundleStartable {
 	 */
 	private void addViewNodes(IWBundle starterBundle) {
 		//Registering the views:
-		//This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
+		//FIXME: This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
 		if(starterBundle!=null){
 			IWMainApplication iwma = starterBundle.getApplication();
 			//IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
@@ -181,17 +181,20 @@ public class IWBundleStarter implements IWBundleStartable {
 	}
 	
 	public void registerSlideListener(IWBundle bundle){
-		try {
-			IWApplicationContext iwac = bundle.getApplication().getIWApplicationContext();
-			IWSlideService service = (IWSlideService) IBOLookup.getServiceInstance(iwac,IWSlideService.class);
-
-	        //add it as a slide change listener for caching purposes
-	        service.addIWSlideChangeListeners(new BuilderSlideListenerBean());
-	        
-	    } catch (IBOLookupException e) {
-	        e.printStackTrace();
-	    } catch (RemoteException e) {
-	        e.printStackTrace();
-	    }
+		// FIXME: This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
+		if (bundle != null) {
+			try {
+				IWApplicationContext iwac = bundle.getApplication().getIWApplicationContext();
+				IWSlideService service = (IWSlideService) IBOLookup.getServiceInstance(iwac, IWSlideService.class);
+				//add it as a slide change listener for caching purposes
+				service.addIWSlideChangeListeners(new BuilderSlideListenerBean());
+			}
+			catch (IBOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
