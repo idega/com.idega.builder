@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.207 2006/06/01 17:28:43 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.208 2006/09/19 11:02:18 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2081,5 +2081,13 @@ public class BuilderLogic implements Singleton {
 //		
 //		return null;
 //	}
+	
+	/**
+	 * Saving page structure after moving (drag & drop) tree nodes
+	 * @param IDs Tree nodes' IDs
+	 */
+	public boolean moveTreeNodes(String IDs) {
+		return true;
+	}
 	
 }

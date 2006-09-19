@@ -207,5 +207,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 		// normal way to handle pages 
 		return writer.write(page, iwc);
 	}
+	
+	public boolean moveTreeNodes(String IDs) {
+		return getBuilderLogic().moveTreeNodes(IDs);
+	}
 
 }
