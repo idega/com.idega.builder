@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.59 2006/06/01 16:28:49 tryggvil Exp $
+ * $Id: IBPageHelper.java,v 1.60 2006/10/12 16:36:29 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -647,18 +648,24 @@ public class IBPageHelper implements Singleton  {
 			return false;
 		}
 	}
+
+	
+	/**
+	 * Moves the page without authentication check
+	 * @param pageId
+	 * @param newParentPageId
+	 * @param userId
+	 * @return
+	 */
+	public boolean movePage(int pageId, int newParentPageId) {
+		return movePage(pageId,newParentPageId,-1);
+	}
+	
 	/**
 	 * Moves the page by id pageId to under the page with id newParentPageId
 	 * @return true if the move was successful, false otherwise
 	 */
 	public boolean movePage(int pageId, int newParentPageId, int userId) {
-		return movePage(pageId, newParentPageId, null, userId);
-	}
-	/**
-	 * Moves the page by id pageId to under the page with id newParentPageId
-	 * @return true if the move was successful, false otherwise
-	 */
-	public boolean movePage(int pageId, int newParentPageId, Map pageTreeCacheMap, int userId) {
 		try {
 			/**
 			 * @todo Implement authentication check
@@ -674,6 +681,8 @@ public class IBPageHelper implements Singleton  {
 			ICPage newParent = getIBPageHome().findByPrimaryKey(new Integer(newParentPageId));
 			parent.removeChild(ibpage);
 			newParent.addChild(ibpage);
+			Map pageTreeCacheMap = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
+			
 			if (pageTreeCacheMap != null) {
 				PageTreeNode parentNode = (PageTreeNode) pageTreeCacheMap.get(new Integer(parent.getPageKey()));
 				PageTreeNode childNode = (PageTreeNode) pageTreeCacheMap.get((new Integer(ibpage.getPageKey())));
@@ -681,6 +690,7 @@ public class IBPageHelper implements Singleton  {
 				parentNode.removeChild(childNode);
 				newParentNode.addChild(childNode);
 			}
+System.out.println("tree has been saved succesfully");			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
