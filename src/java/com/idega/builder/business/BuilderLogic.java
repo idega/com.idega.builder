@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.208 2006/09/19 11:02:18 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.209 2006/10/12 16:33:02 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
+import com.idega.builder.handler.PageNameHandler;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
@@ -2086,8 +2087,39 @@ public class BuilderLogic implements Singleton {
 	 * Saving page structure after moving (drag & drop) tree nodes
 	 * @param IDs Tree nodes' IDs
 	 */
-	public boolean moveTreeNodes(String IDs) {
+	public boolean movePage(int newParentId, int nodeId) {
+//		System.out.println("**************************");
+//		System.out.println("nodeId = " + nodeId + " newParentId = "+newParentId);
+//		System.out.println("**************************");
+		IBPageHelper.getInstance().movePage(nodeId, newParentId);
 		return true;
 	}
+	
+	public boolean changePageName(int id, String newName) {
+		System.out.println("ID = " + id + " newName = "+newName);
+
+//		PageNameHandler.onChangePageName(ID, newName);
+		IBPageUpdater.updatePageName(id, newName);
+//		IBPageUpdater.updatePageName(ID, newName);
+		
+		Map tree = PageTreeNode.getTree(IWContext.getInstance());
+		PageTreeNode node = (PageTreeNode) tree.get(id);
+		node.setNodeName(newName);
+		
+		return true;
+	}
+		
+//	public boolean wasMoved(String child, String parent){
+//		String oldParent = child.substring(0, child.length()-1);
+//		if (oldParent.equals(parent))
+//			return false;
+//		else {
+//			saveChanges(child, parent);
+//			return true;
+//		}
+//	}
+//	public void saveChanges(String child, String parent){
+//		
+//	}
 	
 }
