@@ -74,7 +74,7 @@ public class IBMovePageWindow extends IBPageWindow
 			//if ((deleteAll != null) && (deleteAll.equals("true")))
 			//	deleted = IBPageHelper.getInstance().deletePage(pageId, true, PageTreeNode.getTree(iwc), iwc.getUserId());
 			//else
-			IBPageHelper.getInstance().movePage(iPageId, iNewParentPageId, PageTreeNode.getTree(iwc), userId);
+			IBPageHelper.getInstance().movePage(iPageId, iNewParentPageId, userId);
 			BuilderLogic.getInstance().setCurrentIBPage(iwc,Integer.toString(BuilderLogic.getInstance().getCurrentDomain(iwc).getStartPageID()));
 			/**@todo is this in the right place? -eiki**/
 			//      setOnLoad("window.opener.parent.parent.frames['"+com.idega.builder.app.IBApplication.IB_LEFT_MENU_FRAME+"'].location.reload()");

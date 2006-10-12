@@ -2,6 +2,10 @@ function BuilderService() { }
 
 BuilderService._path = '/dwr';
 
-BuilderService.moveTreeNodes = function(p0,callback) {
-    DWREngine._execute(BuilderService._path, 'BuilderService', 'moveTreeNodes', p0, callback);
+BuilderService.movePage = function(p0, p1, callback) {
+    DWREngine._execute(BuilderService._path, 'BuilderService', 'movePage', p0, p1, callback);
+}
+
+BuilderService.changeNodeName = function(p0, p1, callback) {
+    DWREngine._execute(BuilderService._path, 'BuilderService', 'changePageName', p0, p1, callback);
 }
