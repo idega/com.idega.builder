@@ -1,5 +1,5 @@
 /*
- * $Id: PageNameHandler.java,v 1.6 2004/06/28 14:07:04 thomas Exp $
+ * $Id: PageNameHandler.java,v 1.7 2006/10/12 16:38:23 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.IBPageUpdater;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.TextInput;
