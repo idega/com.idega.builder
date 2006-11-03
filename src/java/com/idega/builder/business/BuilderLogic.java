@@ -1,10 +1,11 @@
 /*
- * $Id: BuilderLogic.java,v 1.209 2006/10/12 16:33:02 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.210 2006/11/03 14:34:52 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -2109,6 +2110,12 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 		
+	public Collection getTopLevelPages(IWContext iwc){
+		return DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
+	}
+	public Collection getTopLevelTemplates(IWContext iwc){
+		return DomainTree.getDomainTree(iwc).getTemplatesNode().getChildren();		
+	}
 //	public boolean wasMoved(String child, String parent){
 //		String oldParent = child.substring(0, child.length()-1);
 //		if (oldParent.equals(parent))

@@ -4,6 +4,7 @@
 package com.idega.builder.business;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -216,4 +217,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 		return getBuilderLogic().changePageName(ID, newName);
 	}
 
+	public Collection getTopLevelPages(IWContext iwc){
+		return getBuilderLogic().getTopLevelPages(iwc);
+	}
+	public Collection getTopLevelTemplates(IWContext iwc){
+		return getBuilderLogic().getTopLevelTemplates(iwc);		
+	}
 }
