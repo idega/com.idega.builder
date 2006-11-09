@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.210 2006/11/03 14:34:52 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.211 2006/11/09 07:55:42 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2128,5 +2128,29 @@ public class BuilderLogic implements Singleton {
 //	public void saveChanges(String child, String parent){
 //		
 //	}
+	
+	public String getTopLevelTemplateId(Collection templates) {
+		String id = "-1";
+		if (templates == null) {
+			return id;
+		}
+		Iterator it = templates.iterator();
+		PageTreeNode node = null;
+		Object o = null;
+		while (it.hasNext()) {
+			o = it.next();
+			if (o instanceof PageTreeNode) {
+				node = (PageTreeNode) o;
+				if (node.getParentId() == null) {
+					return node.getId();
+				}
+			}
+		}
+		return id;
+	}
+	
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup) {
+		return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId);
+	}
 	
 }

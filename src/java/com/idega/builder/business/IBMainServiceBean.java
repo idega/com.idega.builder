@@ -5,18 +5,22 @@ package com.idega.builder.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 
+import com.idega.builder.data.IBPageBMPBean;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderPageWriterService;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -222,5 +226,29 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	}
 	public Collection getTopLevelTemplates(IWContext iwc){
 		return getBuilderLogic().getTopLevelTemplates(iwc);		
+	}
+	
+	public String getTemplateKey() {
+		return ICPageBMPBean.TEMPLATE;
+	}
+	
+	public String getHTMLTemplateKey() {
+		return IBPageBMPBean.FORMAT_HTML;
+	}
+	
+	public Map getTree(IWContext iwc) {
+		return PageTreeNode.getTree(iwc);
+	}
+	
+	public String getTopLevelTemplateId(Collection templates) {
+		return getBuilderLogic().getTopLevelTemplateId(templates);
+	}
+	
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup) {
+		return getBuilderLogic().getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup);
+	}
+	
+	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map tree, IWContext creatorContext) {
+		return getBuilderLogic().getIBPageHelper().createPageOrTemplateToplevelOrWithParent(name, parentId, type, templateId, tree, creatorContext);
 	}
 }

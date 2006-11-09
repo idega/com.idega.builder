@@ -1,8 +1,10 @@
 package com.idega.builder.business;
 
 
-public interface IBMainServiceHome extends com.idega.business.IBOHome
-{
- public IBMainService create() throws javax.ejb.CreateException, java.rmi.RemoteException;
+import javax.ejb.CreateException;
+import com.idega.business.IBOHome;
+import java.rmi.RemoteException;
 
+public interface IBMainServiceHome extends IBOHome {
+	public IBMainService create() throws CreateException, RemoteException;
 }
