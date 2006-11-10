@@ -6,6 +6,7 @@ import com.idega.presentation.IWContext;
 import java.util.Map;
 import com.idega.core.builder.business.BuilderPageWriterService;
 import com.idega.core.builder.business.BuilderService;
+import com.idega.idegaweb.IWMainApplication;
 import java.rmi.RemoteException;
 import javax.faces.component.UIComponent;
 import com.idega.io.serialization.ObjectWriter;
@@ -156,4 +157,9 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#createPageOrTemplateToplevelOrWithParent
 	 */
 	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map tree, IWContext creatorContext);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#setProperty
+	 */
+	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma);
 }

@@ -20,6 +20,7 @@ import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
@@ -250,5 +251,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	
 	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map tree, IWContext creatorContext) {
 		return getBuilderLogic().getIBPageHelper().createPageOrTemplateToplevelOrWithParent(name, parentId, type, templateId, tree, creatorContext);
+	}
+	
+	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
+		return getBuilderLogic().setProperty(pageKey, instanceId, propertyName, propertyValues, iwma);
 	}
 }
