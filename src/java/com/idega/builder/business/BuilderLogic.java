@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.212 2006/11/24 14:57:32 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.213 2006/11/24 15:04:49 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -147,6 +147,11 @@ public class BuilderLogic implements Singleton {
 
 	public CachedBuilderPage getCachedBuilderPage(String key) {
 		return getPageCacher().getCachedBuilderPage(key);
+	}
+//	.getICPage()
+	
+	public ICPage getICPage(String key) {
+		return getPageCacher().getCachedBuilderPage(key).getICPage();
 	}
 
 	public IBXMLPage getIBXMLPage(String pageKey) {
@@ -2097,8 +2102,6 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public boolean changePageName(int id, String newName) {
-		System.out.println("ID = " + id + " newName = "+newName);
-
 //		PageNameHandler.onChangePageName(ID, newName);
 		IBPageUpdater.updatePageName(id, newName);
 //		IBPageUpdater.updatePageName(ID, newName);
