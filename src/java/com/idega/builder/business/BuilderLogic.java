@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.211 2006/11/09 07:55:42 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.212 2006/11/24 14:57:32 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2153,4 +2153,11 @@ public class BuilderLogic implements Singleton {
 		return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId);
 	}
 	
+	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain) {
+		return getIBPageHelper().deletePage(pageId, deleteChildren, tree, userId, domain);
+	}
+	
+	public boolean checkDeletePage(String pageId, ICDomain domain) {
+		return getIBPageHelper().checkDeletePage(pageId, domain);
+	}
 }

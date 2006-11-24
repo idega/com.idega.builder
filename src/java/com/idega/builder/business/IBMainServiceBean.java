@@ -256,4 +256,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
 		return getBuilderLogic().setProperty(pageKey, instanceId, propertyName, propertyValues, iwma);
 	}
+	
+	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain) {
+		return getBuilderLogic().getIBPageHelper().deletePage(pageId, deleteChildren, tree, userId, domain);
+	}
+	
+	public boolean checkDeletePage(String pageId, ICDomain domain) {
+		return getBuilderLogic().getIBPageHelper().checkDeletePage(pageId, domain);
+	}
 }

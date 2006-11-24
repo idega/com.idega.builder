@@ -162,4 +162,14 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#setProperty
 	 */
 	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#deletePage
+	 */
+	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#checkDeletePage
+	 */
+	public boolean checkDeletePage(String pageId, ICDomain domain);
 }
