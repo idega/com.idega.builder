@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.213 2006/11/24 15:04:49 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.214 2006/11/28 18:29:01 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -13,9 +13,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
-import com.idega.builder.handler.PageNameHandler;
+
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
@@ -1901,7 +1902,7 @@ public class BuilderLogic implements Singleton {
 		String instanceId = getInstanceId(component);
 		UIComponent newComponent = null;
 		try {
-			newComponent = (UIComponent) component.getClass().newInstance();
+			newComponent = component.getClass().newInstance();
 			newComponent.setId(instanceId);
 			PropertyCache.getInstance().setAllCachedPropertiesOnInstance(instanceId, newComponent);
 			List childrenList = component.getChildren();

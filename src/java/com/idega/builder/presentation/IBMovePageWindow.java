@@ -18,7 +18,6 @@
 package com.idega.builder.presentation;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.business.PageTreeNode;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;

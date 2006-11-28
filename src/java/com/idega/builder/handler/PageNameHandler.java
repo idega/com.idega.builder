@@ -1,5 +1,5 @@
 /*
- * $Id: PageNameHandler.java,v 1.7 2006/10/12 16:38:23 justinas Exp $
+ * $Id: PageNameHandler.java,v 1.8 2006/11/28 18:29:01 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,16 +9,16 @@
  */
 package com.idega.builder.handler;
 
-import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.IBPageUpdater;
-import com.idega.core.builder.presentation.ICPropertyHandler;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.TextInput;
 import java.util.List;
 import java.util.Map;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPageUpdater;
+import com.idega.builder.business.PageTreeNode;
+import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
