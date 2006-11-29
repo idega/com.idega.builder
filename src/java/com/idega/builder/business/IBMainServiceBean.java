@@ -34,7 +34,7 @@ import com.idega.xml.XMLElement;
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class IBMainServiceBean extends IBOServiceBean implements IBMainService,BuilderService, BuilderPageWriterService
+public class IBMainServiceBean extends IBOServiceBean implements IBMainService, BuilderService, BuilderPageWriterService
 {
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getPage(java.lang.String)
@@ -267,5 +267,13 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 	
 	public boolean checkDeletePage(String pageId, ICDomain domain) {
 		return getBuilderLogic().getIBPageHelper().checkDeletePage(pageId, domain);
-	}	
+	}
+	
+	public void clearAllCachedPages() {
+		getBuilderLogic().clearAllCachedPages();
+	}
+	
+	public void setTemplateId(String pageKey, String newTemplateId) {
+		getBuilderLogic().setTemplateId(pageKey, newTemplateId);
+	}
 }

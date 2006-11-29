@@ -172,4 +172,14 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#checkDeletePage
 	 */
 	public boolean checkDeletePage(String pageId, ICDomain domain);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#clearAllCachedPages
+	 */
+	public void clearAllCachedPages();
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#setTemplateId
+	 */
+	public void setTemplateId(String pageKey, String newTemplateId);
 }

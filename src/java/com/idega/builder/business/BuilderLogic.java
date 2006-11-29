@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.214 2006/11/28 18:29:01 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.215 2006/11/29 17:36:12 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1359,15 +1359,6 @@ public class BuilderLogic implements Singleton {
 		}
 	}
 
-	public boolean setTemplateId(String pageKey, String id) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (getIBXMLWriter().setAttribute(xml, "-1", IBXMLConstants.TEMPLATE_STRING, id)) {
-			xml.store();
-			return true;
-		}
-		return (false);
-	}
-
 	/**
 	 *  	 *
 	 */
@@ -1488,19 +1479,28 @@ public class BuilderLogic implements Singleton {
 	public void changeTemplateId(String newTemplateId, IWContext iwc) {
 		IBXMLPage xml = getCurrentIBXMLPage(iwc);
 		if (xml != null) {
-			if (xml.getType().equals(CachedBuilderPage.TYPE_PAGE)) {
-				//int newId = Integer.parseInt(templateId);
-				String oldId = xml.getTemplateKey();
-				if (!newTemplateId.equals(oldId)) {
-					xml.setTemplateKey(newTemplateId);
-					String currentPageId = getCurrentIBPage(iwc);
-					setTemplateId(currentPageId, newTemplateId);
-					//if (newId > 0)
-						getCachedBuilderPage(newTemplateId).addPageUsingThisTemplate(currentPageId);
-					//if (oldId > 0)
-						getCachedBuilderPage(oldId).removePageAsUsingThisTemplate(currentPageId);
-				}
+			xml.changeTemplateId(newTemplateId);
+		}
+	}
+	
+	/**
+	 * Changes the template id for the IBXMLPage.
+	 * 
+	 * @parama pageKey
+	 * 			IBPage id
+	 * 
+	 * @param newTemplateId
+	 *          The new template id for the current page.
+	 */
+	public void setTemplateId(String pageKey, String newTemplateId) {
+		try {
+			IBXMLPage xml = getIBXMLPage(pageKey);
+			if (xml == null) {
+				return;
 			}
+			xml.setTemplateId(newTemplateId);
+		} catch (ClassCastException e) {
+			
 		}
 	}
 
@@ -2057,8 +2057,11 @@ public class BuilderLogic implements Singleton {
 	    domain.setStartTemplate(page2);
 	    domain.store();
 
-	    setTemplateId(page.getPrimaryKey().toString(),page2.getPrimaryKey().toString());
-	    getIBXMLPage(page2.getPrimaryKey().toString()).addPageUsingThisTemplate(page.getPrimaryKey().toString());
+	    IBXMLPage xml = getIBXMLPage(page2.getPrimaryKey().toString());
+	    if (xml != null) {
+	    	xml.setTemplateId(page2.getPrimaryKey().toString());
+	    	xml.addPageUsingThisTemplate(page.getPrimaryKey().toString());
+	    }
 	    
 	    clearAllCachedPages();
 	}
