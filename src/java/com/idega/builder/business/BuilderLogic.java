@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.215 2006/11/29 17:36:12 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.216 2006/12/04 08:52:00 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2098,9 +2098,6 @@ public class BuilderLogic implements Singleton {
 	 * @param IDs Tree nodes' IDs
 	 */
 	public boolean movePage(int newParentId, int nodeId) {
-//		System.out.println("**************************");
-//		System.out.println("nodeId = " + nodeId + " newParentId = "+newParentId);
-//		System.out.println("**************************");
 		IBPageHelper.getInstance().movePage(nodeId, newParentId);
 		return true;
 	}

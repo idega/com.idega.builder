@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.60 2006/10/12 16:36:29 justinas Exp $
+ * $Id: IBPageHelper.java,v 1.61 2006/12/04 08:52:00 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -385,11 +385,9 @@ public class IBPageHelper implements Singleton  {
 		if(IBPageBMPBean.FORMAT_IBXML.equals(ibPage.getFormat())) {
 			//Special handling of the format IBXML
 			if(tid != -1 ){
-	//			System.out.println("Creating page = " + ibPage.getName());
 				IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
 				Page current = currentXMLPage.getPopulatedPage();
 				List children = current.getChildrenRecursive();
-	//			System.out.println("children size = " + children.size());
 				if (children != null) {
 					Iterator it = children.iterator();
 					boolean copyInstancePermissions = false;
@@ -407,7 +405,6 @@ public class IBPageHelper implements Singleton  {
 							PresentationObject obj = (PresentationObject) next;
 							boolean ok = changeInstanceId(obj, currentXMLPage, copyInstancePermissions,creatorContext);
 							if (!ok) {
-		//						System.out.println("Unable to change instance id's for page = " + ibPage.getName());
 								return (-1);
 							}
 						}
@@ -516,15 +513,12 @@ public class IBPageHelper implements Singleton  {
 				}
 			}
 			else {
-				//				System.out.println("addElementToPage - children null");
 				return false;
 			}
 		}
 		else {
-			//			System.out.println("addElementToPage - templateObjInstID null");
 			return false;
 		}
-		//		System.out.println("addElementToPage ends");
 		return true;
 	}
 	public boolean addElementToPage(ICPage ibPage, int templateObjInstID, IWUserContext iwuc) {
@@ -689,8 +683,7 @@ public class IBPageHelper implements Singleton  {
 				PageTreeNode newParentNode = (PageTreeNode) pageTreeCacheMap.get((new Integer(newParent.getPageKey())));
 				parentNode.removeChild(childNode);
 				newParentNode.addChild(childNode);
-			}
-System.out.println("tree has been saved succesfully");			
+			}			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
