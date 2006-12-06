@@ -134,6 +134,11 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	public String getTemplateKey();
 
 	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#getPageKey
+	 */
+	public String getPageKey();
+
+	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#getHTMLTemplateKey
 	 */
 	public String getHTMLTemplateKey();
@@ -164,6 +169,11 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma);
 
 	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#getICPage
+	 */
+	public ICPage getICPage(String key);
+
+	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#deletePage
 	 */
 	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain);
@@ -182,4 +192,9 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#setTemplateId
 	 */
 	public void setTemplateId(String pageKey, String newTemplateId);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#getIBXMLFormat
+	 */
+	public String getIBXMLFormat();
 }

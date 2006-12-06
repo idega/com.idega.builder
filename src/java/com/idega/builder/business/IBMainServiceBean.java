@@ -36,6 +36,9 @@ import com.idega.xml.XMLElement;
  */
 public class IBMainServiceBean extends IBOServiceBean implements IBMainService, BuilderService, BuilderPageWriterService
 {
+
+	private static final long serialVersionUID = -6324845255940576630L;
+
 	/* (non-Javadoc)
 	 * @see com.idega.core.builder.business.BuilderService#getPage(java.lang.String)
 	 */
@@ -233,6 +236,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return ICPageBMPBean.TEMPLATE;
 	}
 	
+	public String getPageKey() {
+		return ICPageBMPBean.PAGE;
+	}
+	
 	public String getHTMLTemplateKey() {
 		return IBPageBMPBean.FORMAT_HTML;
 	}
@@ -275,5 +282,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public void setTemplateId(String pageKey, String newTemplateId) {
 		getBuilderLogic().setTemplateId(pageKey, newTemplateId);
+	}
+	
+	public String getIBXMLFormat() {
+		return getBuilderLogic().PAGE_FORMAT_IBXML;
 	}
 }
