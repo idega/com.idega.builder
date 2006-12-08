@@ -197,4 +197,19 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#getIBXMLFormat
 	 */
 	public String getIBXMLFormat();
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#getPropertyValues
+	 */
+	public String[] getPropertyValues(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] selectedValues, boolean returnSelectedValueIfNothingFound);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#removeProperty
+	 */
+	public boolean removeProperty(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] values);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#changePageUriByTitle
+	 */
+	public boolean changePageUriByTitle(String parentId, ICPage page, String pageTitle, int domainId);
 }

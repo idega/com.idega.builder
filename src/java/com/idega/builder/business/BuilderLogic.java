@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.216 2006/12/04 08:52:00 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.217 2006/12/08 14:28:43 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2163,5 +2163,32 @@ public class BuilderLogic implements Singleton {
 	
 	public boolean checkDeletePage(String pageId, ICDomain domain) {
 		return getIBPageHelper().checkDeletePage(pageId, domain);
+	}
+	
+	public boolean changePageUriByTitle(String parentId, ICPage page, String pageTitle, int domainId) {
+		if (parentId == null || page == null || pageTitle == null) {
+			return false;
+		}
+		ICPage parentPage = null;
+		String pageUri = null;
+		if(parentId != null){
+			try {
+				parentPage = getIBPageHelper().getIBPageHome().findByPrimaryKey(parentId);
+			} catch (FinderException e) {
+				e.printStackTrace();
+				return false;
+			}
+			PageUrl pUrl = new PageUrl(parentPage, pageTitle, domainId);
+			pageUri = pUrl.getGeneratedUrlFromName();
+		}
+		else{
+			PageUrl pUrl = new PageUrl(pageTitle);
+			pageUri = pUrl.getGeneratedUrlFromName();
+		}
+		if (pageUri != null) {
+			page.setDefaultPageURI(pageUri);
+			page.store();
+		}
+		return true;
 	}
 }
