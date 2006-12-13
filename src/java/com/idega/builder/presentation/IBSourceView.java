@@ -3,6 +3,9 @@ package com.idega.builder.presentation;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.myfaces.component.html.ext.HtmlInputTextarea;
+
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.HtmlTemplateGrabber;
 import com.idega.core.builder.data.ICPage;
@@ -15,7 +18,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
 
@@ -95,7 +97,7 @@ public class IBSourceView extends Window {
 		////////////////
 	
 		Form form = new Form();
-		sourceView.add(form);
+		//sourceView.add(form);
 		
 		
 		try {
@@ -117,12 +119,20 @@ public class IBSourceView extends Window {
 //				table.add(area, 1, 1);
 //			}
 //			else {
-				TextArea area = new TextArea(SOURCE_PARAMETER, source);
-				area.setWrap(false);
-				
-				if(isFubarBrowserForNow){
-					area.setStyleAttribute("height", "83%");
-				}
+			HtmlInputTextarea area = new HtmlInputTextarea();
+			area.setId(SOURCE_PARAMETER);
+			area.setWrap("OFF");
+			if(isFubarBrowserForNow){
+				area.setStyle("height: 83%");
+			}
+			area.setValue(source);
+			
+//				TextArea area = new TextArea("test_source", source);
+//				area.setWrap(false);
+//				
+//				if(isFubarBrowserForNow){
+//					area.setStyleAttribute("height", "83%");
+//				}
 				form.add(area);
 			//}
 		}
@@ -157,6 +167,7 @@ public class IBSourceView extends Window {
 		Text grabText = new Text(templateGrabString);
 		grabText.setStyleClass("helpText");
 		sourceViewButtonsLeft.add(grabText);
+		sourceView.add(form);
 		
 	}
 
