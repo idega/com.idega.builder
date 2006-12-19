@@ -212,4 +212,9 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#changePageUriByTitle
 	 */
 	public boolean changePageUriByTitle(String parentId, ICPage page, String pageTitle, int domainId);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#movePageToTopLevel
+	 */
+	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext);
 }

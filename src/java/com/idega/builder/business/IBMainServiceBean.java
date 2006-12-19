@@ -299,4 +299,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean changePageUriByTitle(String parentId, ICPage page, String pageTitle, int domainId) {
 		return getBuilderLogic().changePageUriByTitle(parentId, page, pageTitle, domainId);
 	}
+	
+	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext) {
+		return getBuilderLogic().movePageToTopLevel(pageID, creatorContext);
+	}
 }

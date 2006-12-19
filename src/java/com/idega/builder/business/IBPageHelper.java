@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.61 2006/12/04 08:52:00 justinas Exp $
+ * $Id: IBPageHelper.java,v 1.62 2006/12/19 15:22:17 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -347,34 +347,35 @@ public class IBPageHelper implements Singleton  {
 				ibPageParent.addChild(ibPage);
 			}
 			else {
-				IBStartPageHome home = (IBStartPageHome) IDOLookup.getHome(IBStartPage.class);
-				IBStartPage page = home.create();
-				page.setPageId(ibPage.getID());
-				if (type.equals(PAGE)) {
-					page.setPageTypePage();
+				IBStartPage page = createTopLevelPage();
+				if (page != null) {
+					page.setPageId(ibPage.getID());
+					if (type.equals(PAGE)) {
+						page.setPageTypePage();
+					}
+					else if (type.equals(TEMPLATE)) {
+						page.setPageTypeTemplate();
+					}
+					else if (type.equals(DRAFT)) {
+						page.setPageTypePage();
+					}
+					else if (type.equals(DPT_PAGE)) {
+						page.setPageTypePage();
+					}
+					else if (type.equals(DPT_TEMPLATE)) {
+						page.setPageTypeTemplate();
+					}
+					else if (type.equals(ICPageBMPBean.FOLDER)) {
+						page.setPageTypePage();
+					}
+					else {
+						page.setPageTypePage();
+					}
+					page.setDomainId(domainId);
+					page.store();
+					
+					DomainTree.clearCache(creatorContext.getApplicationContext());
 				}
-				else if (type.equals(TEMPLATE)) {
-					page.setPageTypeTemplate();
-				}
-				else if (type.equals(DRAFT)) {
-					page.setPageTypePage();
-				}
-				else if (type.equals(DPT_PAGE)) {
-					page.setPageTypePage();
-				}
-				else if (type.equals(DPT_TEMPLATE)) {
-					page.setPageTypeTemplate();
-				}
-				else if (type.equals(ICPageBMPBean.FOLDER)) {
-					page.setPageTypePage();
-				}
-				else {
-					page.setPageTypePage();
-				}
-				page.setDomainId(domainId);
-				page.store();
-				
-				DomainTree.clearCache(creatorContext.getApplicationContext());
 			}
 		}
 		catch (Exception e) {
@@ -671,19 +672,28 @@ public class IBPageHelper implements Singleton  {
 			if (!ibpage.isPage()) {
 				throw new Exception("Method only implemented for regular pages not templates");
 			}
-			ICPage parent = (ICPage) ibpage.getParentNode();
-			ICPage newParent = getIBPageHome().findByPrimaryKey(new Integer(newParentPageId));
-			parent.removeChild(ibpage);
-			newParent.addChild(ibpage);
-			Map pageTreeCacheMap = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
 			
-			if (pageTreeCacheMap != null) {
-				PageTreeNode parentNode = (PageTreeNode) pageTreeCacheMap.get(new Integer(parent.getPageKey()));
-				PageTreeNode childNode = (PageTreeNode) pageTreeCacheMap.get((new Integer(ibpage.getPageKey())));
-				PageTreeNode newParentNode = (PageTreeNode) pageTreeCacheMap.get((new Integer(newParent.getPageKey())));
+			PageTreeNode childNode = null;
+			Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
+			if (tree != null) {
+				childNode = (PageTreeNode) tree.get((new Integer(ibpage.getPageKey())));
+			}
+			
+			ICPage parent = (ICPage) ibpage.getParentNode();
+			if (parent != null) {
+				parent.removeChild(ibpage);
+				PageTreeNode parentNode = (PageTreeNode) tree.get(new Integer(parent.getPageKey()));
 				parentNode.removeChild(childNode);
+			} else {
+				tree.remove(childNode);
+			}
+			
+			ICPage newParent = getIBPageHome().findByPrimaryKey(new Integer(newParentPageId));
+			if (newParent != null) {
+				newParent.addChild(ibpage);
+				PageTreeNode newParentNode = (PageTreeNode) tree.get((new Integer(newParent.getPageKey())));
 				newParentNode.addChild(childNode);
-			}			
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -829,7 +839,7 @@ public class IBPageHelper implements Singleton  {
 				child.delete(userId);
 				String templateId = child.getTemplateKey();
 				if (templateId != null) {
-					BuilderLogic.getInstance().getIBXMLPage(templateId).removePageAsUsingThisTemplate(child.getPageKey());
+					BuilderLogic.getInstance().getCachedBuilderPage(templateId).removePageAsUsingThisTemplate(child.getPageKey());
 				}
 				page.removeChild(child);
 				if (tree != null) {
@@ -934,5 +944,67 @@ public class IBPageHelper implements Singleton  {
 		catch (Exception e) {
 			throw new IDORuntimeException(e);
 		}
+	}
+	
+	private IBStartPage createTopLevelPage() {
+		IBStartPageHome home = null;
+		try {
+			home = (IBStartPageHome) IDOLookup.getHome(IBStartPage.class);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+			return null;
+		}
+		IBStartPage page = null;
+		try {
+			page = home.create();
+		} catch (CreateException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return page;
+	}
+	
+	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext) {
+		ICPage currentPage = null;
+		try {
+			currentPage = getIBPageHome().findByPrimaryKey(pageID);
+		} catch (FinderException e) {
+			e.printStackTrace();
+			return false;
+		}
+		if (currentPage == null) {
+			return false;
+		}
+		/*IBStartPage topLevel = createTopLevelPage();
+		if (topLevel == null) {
+			return false;
+		}
+		topLevel.setDomainId(currentPage.getDomainId());
+		topLevel.store();*/
+		
+		Object parentAbstract = currentPage.getParentNode();
+		if (parentAbstract != null) {
+			ICPage parentPage = (ICPage) parentAbstract;
+			try {
+				parentPage.removeChild(currentPage);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		DomainTree.clearCache(creatorContext.getApplicationContext());
+		
+		Map pageTreeCacheMap = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
+		PageTreeNode node = (PageTreeNode) pageTreeCacheMap.get(new Integer(pageID));
+		Integer parentID = node.getParentId();
+		if (parentID != null) {
+			PageTreeNode parent = (PageTreeNode) pageTreeCacheMap.get(new Integer(parentID));
+			parent.removeChild(node);
+			pageTreeCacheMap.remove(node);
+		}
+		node = new PageTreeNode(pageID, currentPage.getName());
+		pageTreeCacheMap.put(new Integer(node.getNodeID()), node);
+		
+		return true;
 	}
 }

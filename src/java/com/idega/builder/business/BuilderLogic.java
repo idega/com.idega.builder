@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.217 2006/12/08 14:28:43 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.218 2006/12/19 15:22:17 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2190,5 +2190,9 @@ public class BuilderLogic implements Singleton {
 			page.store();
 		}
 		return true;
+	}
+	
+	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext) {
+		return getIBPageHelper().movePageToTopLevel(pageID, creatorContext);
 	}
 }
