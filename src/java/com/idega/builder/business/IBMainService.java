@@ -221,5 +221,10 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#createTopLevelPageFromExistingPage
 	 */
-	public void createTopLevelPageFromExistingPage(int pageID, int domainID, IWUserContext creatorContext);
+	public void createTopLevelPageFromExistingPage(int pageID, ICDomain domain, IWUserContext creatorContext);
+	
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#isPageTopLevelPage
+	 */
+	public boolean isPageTopLevelPage(int pageID, ICDomain domain);
 }

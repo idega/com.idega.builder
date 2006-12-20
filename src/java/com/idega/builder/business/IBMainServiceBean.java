@@ -304,7 +304,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().movePageToTopLevel(pageID, iwc);
 	}
 	
-	public void createTopLevelPageFromExistingPage(int pageID, int domainID, IWUserContext creatorContext) {
-		getBuilderLogic().getIBPageHelper().createTopLevelPageFromExistingPage(pageID, domainID, creatorContext);
+	public void createTopLevelPageFromExistingPage(int pageID, ICDomain domain, IWUserContext creatorContext) {
+		getBuilderLogic().getIBPageHelper().createTopLevelPageFromExistingPage(pageID, domain, creatorContext);
+	}
+	
+	public boolean isPageTopLevelPage(int pageID, ICDomain domain) {
+		return getBuilderLogic().getIBPageHelper().isPageTopLevelPage(pageID, domain);
 	}
 }

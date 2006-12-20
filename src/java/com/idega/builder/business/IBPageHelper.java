@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.63 2006/12/20 09:31:02 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.64 2006/12/20 12:47:24 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -990,14 +990,54 @@ public class IBPageHelper implements Singleton  {
 		return page;
 	}
 	
-	public void createTopLevelPageFromExistingPage(int pageID, int domainID, IWUserContext creatorContext) {
+	public boolean isPageTopLevelPage(int pageID, ICDomain domain) {
+		if (domain == null) {
+			return false;
+		}
+		
+		IBStartPage start = null;
+		boolean found = false;
+		Collection startPages = null;
+		try {
+			startPages = getStartPages(domain);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		if (startPages == null) {
+			return false;
+		}
+		Object o = null;
+		Iterator it = startPages.iterator();
+		while (it.hasNext() && !found) {
+			o = it.next();
+			if (o instanceof IBStartPage) {
+				start = (IBStartPage) o;
+				if (start.getPageId() == pageID) {
+					found = true;
+				}
+			}
+		}
+		return found;
+	}
+	
+	public void createTopLevelPageFromExistingPage(int pageID, ICDomain domain, IWUserContext creatorContext) {
+		if (domain == null || creatorContext == null){
+			return;
+		}
+		
+		if (isPageTopLevelPage(pageID, domain)) {
+			return;
+		}
+		
 		IBStartPage page = createTopLevelPage();
 		page.setPageTypePage();
 		if (page == null) {
 			return;
 		}
 		page.setPageId(pageID);
-		page.setDomainId(domainID);
+		page.setDomainId(domain.getID());
 		page.store();
 			
 		DomainTree.clearCache(creatorContext.getApplicationContext());
@@ -1033,7 +1073,7 @@ public class IBPageHelper implements Singleton  {
 			}
 		}
 		
-		createTopLevelPageFromExistingPage(pageID, domain.getID(), iwc);
+		createTopLevelPageFromExistingPage(pageID, domain, iwc);
 		
 		Map pageTreeCacheMap = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
 		PageTreeNode node = (PageTreeNode) pageTreeCacheMap.get(new Integer(pageID));
