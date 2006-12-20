@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.218 2006/12/19 15:22:17 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.219 2006/12/20 09:31:02 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2097,8 +2097,8 @@ public class BuilderLogic implements Singleton {
 	 * Saving page structure after moving (drag & drop) tree nodes
 	 * @param IDs Tree nodes' IDs
 	 */
-	public boolean movePage(int newParentId, int nodeId) {
-		IBPageHelper.getInstance().movePage(nodeId, newParentId);
+	public boolean movePage(int newParentId, int nodeId, ICDomain domain) {
+		IBPageHelper.getInstance().movePage(nodeId, newParentId, domain);
 		return true;
 	}
 	
@@ -2166,7 +2166,7 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public boolean changePageUriByTitle(String parentId, ICPage page, String pageTitle, int domainId) {
-		if (parentId == null || page == null || pageTitle == null) {
+		if (page == null || pageTitle == null) {
 			return false;
 		}
 		ICPage parentPage = null;
@@ -2192,7 +2192,7 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 	
-	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext) {
-		return getIBPageHelper().movePageToTopLevel(pageID, creatorContext);
+	public boolean movePageToTopLevel(int pageID, IWContext iwc) {
+		return getIBPageHelper().movePageToTopLevel(pageID, iwc);
 	}
 }

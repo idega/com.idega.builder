@@ -111,7 +111,7 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#movePage
 	 */
-	public boolean movePage(int newParentId, int nodeId);
+	public boolean movePage(int newParentId, int nodeId, ICDomain domain);
 
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#changePageName
@@ -216,5 +216,10 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#movePageToTopLevel
 	 */
-	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext);
+	public boolean movePageToTopLevel(int pageID, IWContext iwc);
+
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#createTopLevelPageFromExistingPage
+	 */
+	public void createTopLevelPageFromExistingPage(int pageID, int domainID, IWUserContext creatorContext);
 }

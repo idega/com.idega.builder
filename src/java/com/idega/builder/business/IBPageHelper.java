@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.62 2006/12/19 15:22:17 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.63 2006/12/20 09:31:02 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORuntimeException;
+import com.idega.data.TreeableEntity;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
@@ -652,15 +653,15 @@ public class IBPageHelper implements Singleton  {
 	 * @param userId
 	 * @return
 	 */
-	public boolean movePage(int pageId, int newParentPageId) {
-		return movePage(pageId,newParentPageId,-1);
+	public boolean movePage(int pageId, int newParentPageId, ICDomain domain) {
+		return movePage(pageId, newParentPageId, -1, domain);
 	}
 	
 	/**
 	 * Moves the page by id pageId to under the page with id newParentPageId
 	 * @return true if the move was successful, false otherwise
 	 */
-	public boolean movePage(int pageId, int newParentPageId, int userId) {
+	public boolean movePage(int pageId, int newParentPageId, int userId, ICDomain domain) {
 		try {
 			/**
 			 * @todo Implement authentication check
@@ -671,6 +672,31 @@ public class IBPageHelper implements Singleton  {
 			ICPage ibpage = getIBPageHome().findByPrimaryKey(new Integer(pageId));
 			if (!ibpage.isPage()) {
 				throw new Exception("Method only implemented for regular pages not templates");
+			}
+			
+			if (domain != null) {
+				// Checking if current page is top level page
+				IBStartPage start = null;
+				boolean found = false;
+				Collection c = getStartPages(domain);
+				if (c != null) {
+					Object o = null;
+					Iterator it = c.iterator();
+					while (it.hasNext() && !found) {
+						o = it.next();
+						if (o instanceof IBStartPage) {
+							start = (IBStartPage) o;
+							if (start.getPageId() == pageId) {
+								found = true;
+							}
+						}
+					}
+				}
+				// If current page is a top level page, we need to delete it
+				if (found && start != null) {
+					start.remove();
+					getBuilderLogic().clearAllCachedPages();
+				}
 			}
 			
 			PageTreeNode childNode = null;
@@ -964,7 +990,28 @@ public class IBPageHelper implements Singleton  {
 		return page;
 	}
 	
-	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext) {
+	public void createTopLevelPageFromExistingPage(int pageID, int domainID, IWUserContext creatorContext) {
+		IBStartPage page = createTopLevelPage();
+		page.setPageTypePage();
+		if (page == null) {
+			return;
+		}
+		page.setPageId(pageID);
+		page.setDomainId(domainID);
+		page.store();
+			
+		DomainTree.clearCache(creatorContext.getApplicationContext());
+	}
+	
+	public boolean movePageToTopLevel(int pageID, IWContext iwc) {
+		if (pageID <= 0 || iwc == null) {
+			return false;
+		}
+		ICDomain domain = iwc.getDomain();
+		if (domain == null) {
+			return false;
+		}
+		
 		ICPage currentPage = null;
 		try {
 			currentPage = getIBPageHome().findByPrimaryKey(pageID);
@@ -975,16 +1022,10 @@ public class IBPageHelper implements Singleton  {
 		if (currentPage == null) {
 			return false;
 		}
-		/*IBStartPage topLevel = createTopLevelPage();
-		if (topLevel == null) {
-			return false;
-		}
-		topLevel.setDomainId(currentPage.getDomainId());
-		topLevel.store();*/
 		
-		Object parentAbstract = currentPage.getParentNode();
-		if (parentAbstract != null) {
-			ICPage parentPage = (ICPage) parentAbstract;
+		TreeableEntity parentEntity = currentPage.getParentEntity();
+		if (parentEntity instanceof ICPage) {
+			ICPage parentPage = (ICPage) parentEntity;
 			try {
 				parentPage.removeChild(currentPage);
 			} catch (SQLException e) {
@@ -992,7 +1033,7 @@ public class IBPageHelper implements Singleton  {
 			}
 		}
 		
-		DomainTree.clearCache(creatorContext.getApplicationContext());
+		createTopLevelPageFromExistingPage(pageID, domain.getID(), iwc);
 		
 		Map pageTreeCacheMap = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
 		PageTreeNode node = (PageTreeNode) pageTreeCacheMap.get(new Integer(pageID));
@@ -1004,6 +1045,8 @@ public class IBPageHelper implements Singleton  {
 		}
 		node = new PageTreeNode(pageID, currentPage.getName());
 		pageTreeCacheMap.put(new Integer(node.getNodeID()), node);
+		
+		getBuilderLogic().clearAllCachedPages();
 		
 		return true;
 	}

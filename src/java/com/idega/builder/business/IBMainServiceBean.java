@@ -217,8 +217,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return writer.write(page, iwc);
 	}
 	
-	public boolean movePage(int newParentId, int nodeId) {
-		return getBuilderLogic().movePage(newParentId, nodeId);
+	public boolean movePage(int newParentId, int nodeId, ICDomain domain) {
+		return getBuilderLogic().movePage(newParentId, nodeId, domain);
 	}
 	
 	public boolean changePageName(int ID, String newName) {
@@ -300,7 +300,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().changePageUriByTitle(parentId, page, pageTitle, domainId);
 	}
 	
-	public boolean movePageToTopLevel(int pageID, IWUserContext creatorContext) {
-		return getBuilderLogic().movePageToTopLevel(pageID, creatorContext);
+	public boolean movePageToTopLevel(int pageID, IWContext iwc) {
+		return getBuilderLogic().movePageToTopLevel(pageID, iwc);
+	}
+	
+	public void createTopLevelPageFromExistingPage(int pageID, int domainID, IWUserContext creatorContext) {
+		getBuilderLogic().getIBPageHelper().createTopLevelPageFromExistingPage(pageID, domainID, creatorContext);
 	}
 }
