@@ -311,4 +311,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean isPageTopLevelPage(int pageID, ICDomain domain) {
 		return getBuilderLogic().getIBPageHelper().isPageTopLevelPage(pageID, domain);
 	}
+	
+	public boolean unlockRegion(String pageKey, String parentObjectInstanceID, String label) {
+		return getBuilderLogic().unlockRegion(pageKey, parentObjectInstanceID, label);
+	}
+	
+	public void setCurrentPageId(IWContext iwc, String pageKey) {
+		getBuilderLogic().setCurrentIBPage(iwc, pageKey);
+	}
 }
