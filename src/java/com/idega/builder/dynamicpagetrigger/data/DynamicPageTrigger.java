@@ -72,8 +72,8 @@ public class DynamicPageTrigger implements ICDynamicPageTrigger {
 		try {
 			trigger = (DynamicPageTrigger)super.clone();
 			trigger.currentUserHasRelationToContainingDPTPage = null;
-			trigger.dptOwnerGroup = dptOwnerGroup;
-			trigger.rootPage = rootPage;
+			trigger.dptOwnerGroup = this.dptOwnerGroup;
+			trigger.rootPage = this.rootPage;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
@@ -83,14 +83,14 @@ public class DynamicPageTrigger implements ICDynamicPageTrigger {
 	
 	public void setRootPage(String id) {
 		if(id != null){
-			rootPage = Integer.parseInt(id);
+			this.rootPage = Integer.parseInt(id);
 		}else {
-			rootPage = -1;
+			this.rootPage = -1;
 		}
 	}
 	
 	public int getRootPage() {
-		return rootPage;
+		return this.rootPage;
 	}
 
 	 /**

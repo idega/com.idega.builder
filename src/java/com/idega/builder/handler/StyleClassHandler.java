@@ -52,8 +52,9 @@ public class StyleClassHandler implements ICPropertyHandler {
 	  Iterator iter = list.iterator();
     while (iter.hasNext()) {
     	String style = (String) iter.next();
-    	if (style.indexOf(":") == -1)
-	    	chooser.addMenuElement(style);
+    	if (style.indexOf(":") == -1) {
+			chooser.addMenuElement(style);
+		}
     }
     chooser.setSelectedElement(value);
     return(chooser);

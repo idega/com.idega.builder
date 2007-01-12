@@ -44,8 +44,9 @@ public class StyleSheetValueHandler implements ICPropertyHandler {
     
     IBStyleChooser chooser = new IBStyleChooser(name,"font-size: 8pt; border: 1 solid #000000");
     chooser.setSelected(value);
-    if ( styleValue != null )
-	    chooser.setSelected(styleValue);
+    if ( styleValue != null ) {
+		chooser.setSelected(styleValue);
+	}
     
     return(chooser);
   }
@@ -60,8 +61,9 @@ public class StyleSheetValueHandler implements ICPropertyHandler {
   	Enumeration enumer = iwc.getParameterNames();
   	while ( enumer.hasMoreElements() ) {
   		String style = IWStyleManager.getInstance().getStyle(iwc.getParameter((String)enumer.nextElement()));
-  		if ( style != null )
-  			return style;	
+  		if ( style != null ) {
+			return style;
+		}	
   	}	
   	return null;
   }

@@ -1,5 +1,5 @@
 /*
- * $Id: XMLReader.java,v 1.66 2005/12/06 19:04:39 tryggvil Exp $
+ * $Id: XMLReader.java,v 1.63.2.1 2007/01/12 19:31:48 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -104,10 +104,12 @@ public class XMLReader {
 				pageKey = at.getValue();
 			}
 			else if (at.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
-				if (at.getValue().equals("true"))
+				if (at.getValue().equals("true")) {
 					isLocked = true;
-				else
+				}
+				else {
 					isLocked = false;
+				}
 			} 
 			else if (at.getName().equalsIgnoreCase(XMLConstants.DPT_ROOTPAGE_STRING)) {
 				dptRootPage = at.getValue();
@@ -122,10 +124,12 @@ public class XMLReader {
 			setTemplateObjectsForPage(ibxml);
 		}
 
-		if (isLocked)
+		if (isLocked) {
 			parentContainer.lock();
-		else
+		}
+		else {
 			parentContainer.unlock();
+		}
 
 		//Set the type of the page
 		if (isTemplate) {
@@ -174,10 +178,12 @@ public class XMLReader {
 					setProperty(child, parentContainer);
 				}
 				else if (child.getName().equalsIgnoreCase(XMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(XMLConstants.MODULE_STRING)) {
-					if (!parentContainer.getIsExtendingTemplate())
+					if (!parentContainer.getIsExtendingTemplate()) {
 						parseElement(child, parentContainer, ibxml);
-					else if (!parentContainer.isLocked())
+					}
+					else if (!parentContainer.isLocked()) {
 						parseElement(child, parentContainer, ibxml);
+					}
 				}
 				else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
 					parseRegion(child, parentContainer, ibxml);
@@ -214,10 +220,12 @@ public class XMLReader {
 
 		XMLAttribute locked = reg.getAttribute(XMLConstants.REGION_LOCKED);
 		if (locked != null) {
-			if (locked.getValue().equalsIgnoreCase("true"))
+			if (locked.getValue().equalsIgnoreCase("true")) {
 				isLocked = true;
-			else
+			}
+			else {
 				isLocked = false;
+			}
 		}
 
 		XMLAttribute label = reg.getAttribute(XMLConstants.LABEL_STRING);
@@ -287,8 +295,9 @@ public class XMLReader {
 							parseChildren = false;
 						}
 					}
-					else
+					else {
 						parseChildren = false;
+					}
 				}
 				else {
 					if ( ((PresentationObject)newRegionParent).getBelongsToParent() &&  ((PresentationObjectContainer)newRegionParent).isLocked()){
@@ -301,10 +310,12 @@ public class XMLReader {
 			}
 		}
 		else if (regionParent instanceof com.idega.presentation.Table) {
-			if (isLocked)
-				 ((Table) regionParent).lock(x, y);
-			else
-				 ((Table) regionParent).unlock(x, y);
+			if (isLocked) {
+				((Table) regionParent).lock(x, y);
+			}
+			else {
+				((Table) regionParent).unlock(x, y);
+			}
 
 			if (label != null) {
 				((Table) regionParent).setLabel(label.getValue(), x, y);
@@ -322,8 +333,9 @@ public class XMLReader {
 				List children = reg.getChildren();
 				Iterator childrenIt = children.iterator();
 
-				while (childrenIt.hasNext())
+				while (childrenIt.hasNext()) {
 					parseElement((XMLElement) childrenIt.next(), (PresentationObjectContainer) newRegionParent, ibxml);
+				}
 			}
 		}
 	}
@@ -335,20 +347,6 @@ public class XMLReader {
 		String key = null;
 		List values = new ArrayList();
 
-		
-		//1. First check for <property name="" value="">:
-		
-		String propertyName = property.getAttributeValue(XMLConstants.NAME_STRING);
-		String propertyValue = property.getAttributeValue(XMLConstants.VALUE_STRING);
-		
-		if(propertyValue!=null && propertyValue !=null){
-			values.add(propertyValue);
-			setComponentProperty(object, propertyName, values);
-			return;
-		}
-		
-		//2. If this isn't set after this check for children of the <property> element, this is the older way:
-		
 		List li = property.getChildren();
 		Iterator it = li.iterator();
 
@@ -399,10 +397,6 @@ public class XMLReader {
 	static void setReflectionProperty(UIComponent instance, String methodIdentifier, List stringValues) {
 		ComponentPropertyHandler.getInstance().setReflectionProperty(instance, methodIdentifier, stringValues);
 	}
-	
-	static void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
-		ComponentPropertyHandler.getInstance().setComponentProperty(instance, componentProperty, stringValues);
-	}
 
 	/**
 	 *
@@ -419,8 +413,7 @@ public class XMLReader {
 			return null;
 		}
 		String className = null;
-		//String icObjectInstanceId = null;
-		String componentId = null;
+		String icObjectInstanceId = null;
 		String icObjectId = null;
 		ICObjectInstance icObjectInstance = null;
 		
@@ -433,17 +426,18 @@ public class XMLReader {
 				className = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.ID_STRING)) {
-				//icObjectInstanceId = attr.getValue();
-				componentId=attr.getValue();
+				icObjectInstanceId = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.IC_OBJECT_ID_STRING)) {
 				icObjectId = attr.getValue();
 			}
 			else if (attr.getName().equalsIgnoreCase(XMLConstants.REGION_LOCKED)) {
-				if (attr.getValue().equals("false"))
+				if (attr.getValue().equals("false")) {
 					isLocked = false;
-				else
+				}
+				else {
 					isLocked = true;
+				}
 			}
 		}
 
@@ -460,16 +454,12 @@ public class XMLReader {
 					throw new Exception("Invalid Class tag for module");
 				}
 			}
-			//else if(icObjectInstanceId!=null){
-			else if(componentId!=null){
-				int icObjectInstanceId = getICObjectInstanceIdFromComponentId(componentId);
-				icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceId);
-				//firstUICInstance = icObjectInstance.getNewInstance();
-				Class objectClass = icObjectInstance.getObject().getObjectClass();
-				firstUICInstance = (UIComponent)objectClass.newInstance();
+			else if(icObjectInstanceId!=null){
+				icObjectInstance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(icObjectInstanceId));
+				firstUICInstance = icObjectInstance.getNewInstance();
 			}
 			
-			setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);	
+			setInstanceId(ibxml, firstUICInstance, icObjectInstanceId, icObjectId, icObjectInstance);	
 			
 			
 			//TODO JSF Compat IS this necesery?
@@ -481,10 +471,12 @@ public class XMLReader {
 			
 			//TODO are there any similar UIComponent containers we need to check for?
 			if (firstUICInstance instanceof PresentationObjectContainer) {
-				if (isLocked)
-					 ((PresentationObjectContainer) firstUICInstance).lock();
-				else
-					 ((PresentationObjectContainer) firstUICInstance).unlock();
+				if (isLocked) {
+					((PresentationObjectContainer) firstUICInstance).lock();
+				}
+				else {
+					((PresentationObjectContainer) firstUICInstance).unlock();
+				}
 			}
 
 			if (firstUICInstance instanceof com.idega.presentation.Table) {
@@ -510,8 +502,9 @@ public class XMLReader {
 						else if (child.getName().equalsIgnoreCase(XMLConstants.REGION_STRING)) {
 							parseRegion(child, table, ibxml);
 						}
-						else
+						else {
 							System.err.println("Unknown tag in xml description file : " + child.getName());
+						}
 					}
 				}
 			}
@@ -527,8 +520,9 @@ public class XMLReader {
 				}
 				catch (Exception e) {
 					e.printStackTrace(System.err);
-					if (parent != null)
+					if (parent != null) {
 						System.err.println("ParentID: " + parent.getId());
+					}
 					if (firstUICInstance != null){
 						System.err.println("InstanceID: " + BuilderLogic.getInstance().getInstanceId(firstUICInstance));
 					}
@@ -578,11 +572,6 @@ public class XMLReader {
 		return firstUICInstance;
 	}
 
-	protected static int getICObjectInstanceIdFromComponentId(String componentId){
-		//TODO: Fix this:
-		return Integer.parseInt(componentId);
-	}
-	
 	/**
 	 * @param ibxml
 	 * @param firstUICInstance
@@ -591,8 +580,7 @@ public class XMLReader {
 	 * @param icObjectInstance
 	 * @return
 	 */
-	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String componentId, String icObjectId, ICObjectInstance icObjectInstance) {
-		
+	private static void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String icObjectInstanceId, String icObjectId, ICObjectInstance icObjectInstance) {
 		if(firstUICInstance instanceof PresentationObject){
 			PresentationObject presentationObject = (PresentationObject) firstUICInstance;
 			presentationObject.setICObjectInstance(icObjectInstance);
@@ -606,14 +594,14 @@ public class XMLReader {
 			
 			//TODO JSF COMPAT FIND OUT WHAT THIS IS for??
 			// added by gummi@idega.is // - cache ObjectInstance
-			if (!"0".equals(componentId)) {
-				setObjectInstance(ibxml, componentId, presentationObject);
+			if (!"0".equals(icObjectInstanceId)) {
+				setObjectInstance(ibxml, icObjectInstanceId, presentationObject);
 			}
 			
 		}
 		else{
 			//set the instance id for a UIComponent
-			firstUICInstance.setId(componentId);
+			firstUICInstance.setId(icObjectInstanceId);
 		}
 	}
 

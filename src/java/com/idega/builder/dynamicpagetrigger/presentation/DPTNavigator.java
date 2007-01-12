@@ -49,17 +49,17 @@ public abstract class DPTNavigator extends Block {
   protected String rowHeight = "20";
 
   public DPTNavigator() {
-    table = new Table();
-    rowTemplateTable = new Table();
-    this.add(table);
+    this.table = new Table();
+    this.rowTemplateTable = new Table();
+    this.add(this.table);
   }
 
   public void setColumns(int cols){
-    rowTemplateTable.resize(cols,rowTemplateTable.getRows());
+    this.rowTemplateTable.resize(cols,this.rowTemplateTable.getRows());
   }
 
   public void add(PresentationObject prObject, int xpos, int ypos){
-    table.add(prObject,xpos,ypos);
+    this.table.add(prObject,xpos,ypos);
   }
 
 //  public abstract List getEntityList(IWContext iwc) throws Exception;
@@ -68,12 +68,12 @@ public abstract class DPTNavigator extends Block {
 
   public void _main(IWContext iwc) throws Exception {
     if(this.getICObjectInstanceID() > 0){
-      business = (DPTTriggerBusiness)IBOLookup.getServiceInstance(iwc,DPTTriggerBusiness.class);
+      this.business = (DPTTriggerBusiness)IBOLookup.getServiceInstance(iwc,DPTTriggerBusiness.class);
 
-      table.empty();
+      this.table.empty();
 //      initColumns(iwc);
 
-      List pLinkRecords = business.getPageLinkRecords(this.getICObjectInstance());
+      List pLinkRecords = this.business.getPageLinkRecords(this.getICObjectInstance());
 
       if(pLinkRecords != null){
         List linkList = new Vector();
@@ -100,32 +100,32 @@ public abstract class DPTNavigator extends Block {
 
         if(linkList.size() > 0){
 
-          table.resize(1,Math.max(linkList.size()+extraRows,minimumNumberOfRows));
-          rowTemplateTable.resize(columns,rowTemplateTable.getRows());
-          this.selectedElement = (linkList.size()>=selectedElement)?selectedElement:-1;
+          this.table.resize(1,Math.max(linkList.size()+this.extraRows,this.minimumNumberOfRows));
+          this.rowTemplateTable.resize(this.columns,this.rowTemplateTable.getRows());
+          this.selectedElement = (linkList.size()>=this.selectedElement)?this.selectedElement:-1;
           ListIterator lIter = linkList.listIterator();
-          int toAddToIndex = (extraRows<iterStartIndex)?iterStartIndex-1:extraRows;
+          int toAddToIndex = (this.extraRows<this.iterStartIndex)?this.iterStartIndex-1:this.extraRows;
           while (lIter.hasNext()) {
             int index = (lIter.nextIndex()+1)+toAddToIndex;
             lIter.next();
-            Table tbl = (Table)rowTemplateTable.clone();
-            rowTemplateTable.add(tbl,linkColumn,1);
-            table.add(rowTemplateTable,1,index);
+            Table tbl = (Table)this.rowTemplateTable.clone();
+            this.rowTemplateTable.add(tbl,this.linkColumn,1);
+            this.table.add(this.rowTemplateTable,1,index);
           }
 
 
-          table.setColor(this.backgroundColor);
-          table.setCellpadding(this.cellpadding);
-          table.setCellspacing(this.cellspacing);
-          table.setWidth(this.width);
+          this.table.setColor(this.backgroundColor);
+          this.table.setCellpadding(this.cellpadding);
+          this.table.setCellspacing(this.cellspacing);
+          this.table.setWidth(this.width);
 
-          table.setHorizontalZebraColored(this.sebracolor1,this.sebracolor2);
-          if(selectedElement > 0){
-            table.setRowColor(this.selectedElement+toAddToIndex,this.selectedColor);
+          this.table.setHorizontalZebraColored(this.sebracolor1,this.sebracolor2);
+          if(this.selectedElement > 0){
+            this.table.setRowColor(this.selectedElement+toAddToIndex,this.selectedColor);
           }
 
-          for (int i = 1; i <= table.getRows(); i++) {
-            table.setHeight(i,rowHeight);
+          for (int i = 1; i <= this.table.getRows(); i++) {
+            this.table.setHeight(i,this.rowHeight);
           }
 
 

@@ -52,7 +52,7 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
 	}
 
 	public String createContainer() throws IOException {
-		String name = ((IBExportImportData) storable).getName();
+		String name = ((IBExportImportData) this.storable).getName();
 		long folderIdentifier = System.currentTimeMillis();
  		String path = getRealPathToFile(name, ZIP_EXTENSION, folderIdentifier);
      File auxiliaryFile = null;
@@ -79,7 +79,7 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
 	public OutputStream writeData(OutputStream destination) throws IOException {
 		// use this stream because some writers call close and we don't want to close the zip output stream
 		ZipOutputStreamIgnoreClose zipOutputStream = new ZipOutputStreamIgnoreClose(destination);
-		IBExportImportData metadata = (IBExportImportData) storable;
+		IBExportImportData metadata = (IBExportImportData) this.storable;
 		List data = metadata.getData();
 		Map alreadyStoredElements = new HashMap(data.size());
 		// counter for the entries in metadata
@@ -95,7 +95,7 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
  				metadata.modifyElementSetNameSetOriginalNameLikeElementAt(entryNumber++, fileElement);
  			}
  			else {
-	 			WriterToFile currentWriter = (WriterToFile) element.write(this, iwc);
+	 			WriterToFile currentWriter = (WriterToFile) element.write(this, this.iwc);
 	 			String originalName = currentWriter.getName();
 	 			String mimeType = currentWriter.getMimeType();
 	 			boolean markedAsDeleted = currentWriter.isMarkedAsDeleted();
@@ -116,7 +116,7 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
  		}
  		// add metadata itself to the zip file
  		XMLData metadataSummary = metadata.createMetadataSummary();
- 		WriterToFile currentWriter = (WriterToFile) metadataSummary.write(this, iwc);
+ 		WriterToFile currentWriter = (WriterToFile) metadataSummary.write(this, this.iwc);
 		String originalName = currentWriter.getName();
 		ZipEntry zipEntry = new ZipEntry(originalName);
 		zipOutputStream.putNextEntry(zipEntry);
@@ -131,7 +131,7 @@ public class IBExportImportDataWriter extends WriterToFile implements ObjectWrit
 	}
 	
   public String getName() {
-  	return ((IBExportImportData) storable).getName();
+  	return ((IBExportImportData) this.storable).getName();
   }
   
   public String getMimeType() {

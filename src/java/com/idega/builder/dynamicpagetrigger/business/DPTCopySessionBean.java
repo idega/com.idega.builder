@@ -44,22 +44,22 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	
 	
 	public void startCopySession() throws Exception {
-		if(runningSession) {
+		if(this.runningSession) {
 			throw new Exception("Not allowed to run more than one copySession at ones.");
 		} else {
-			runningSession = true;
-			matrix = new HashMatrix();
-			subPageQueue = new LinkedList();
-			copyInstancePermissions = false;
-			copyPagePermissions=false;
+			this.runningSession = true;
+			this.matrix = new HashMatrix();
+			this.subPageQueue = new LinkedList();
+			this.copyInstancePermissions = false;
+			this.copyPagePermissions=false;
 		}
 	}
 	
 	public void endCopySession() {
-		if(runningSession) {
-			runningSession = false;
-			matrix = null;
-			subPageQueue=null;
+		if(this.runningSession) {
+			this.runningSession = false;
+			this.matrix = null;
+			this.subPageQueue=null;
 		} else {
 			System.out.println("No copySession to end.  Either it has not started or already ended.");
 		}
@@ -75,14 +75,14 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	
 	public Object getNewValue(Class dataClassKey, Object oldValue) {
 		if(sessionIsRunnig()) {
-			return matrix.get(dataClassKey,oldValue);
+			return this.matrix.get(dataClassKey,oldValue);
 		}
 		return null;
 	}
 	
 	public void setNewValue(Class dataClassKey, Object oldValue, Object newValue) {
 		if(sessionIsRunnig()) {
-			matrix.put(dataClassKey,oldValue,newValue);
+			this.matrix.put(dataClassKey,oldValue,newValue);
 		}
 	}
 	
@@ -91,11 +91,11 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	 * @return is copySession running
 	 */
 	private boolean sessionIsRunnig() {
-		if(!runningSession) {
+		if(!this.runningSession) {
 			System.out.println("[WARNING]: trying to use "+this.getClass().getName()+" but no copySession has started.");
 		}
 		
-		return runningSession;
+		return this.runningSession;
 	}
 	
 	
@@ -104,7 +104,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	 * @return Returns the copyInstancePermissions.
 	 */
 	public boolean doCopyInstancePermissions() {
-		return copyInstancePermissions;
+		return this.copyInstancePermissions;
 	}
 	/**
 	 * @param copyInstancePermissions The copyInstancePermissions to set.
@@ -116,7 +116,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	 * @return Returns the copyPagePermissions.
 	 */
 	public boolean doCopyPagePermissions() {
-		return copyPagePermissions;
+		return this.copyPagePermissions;
 	}
 	/**
 	 * @param copyPagePermissions The copyPagePermissions to set.
@@ -128,19 +128,19 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	 * @return Returns the runningSession.
 	 */
 	public boolean isRunningSession() {
-		return runningSession;
+		return this.runningSession;
 	}
 	
 	public void collectDPTCrawlable(Object pageID, DPTCrawlable c) {
-		subPageQueue.addLast(new KeyAndValue(pageID,c));
+		this.subPageQueue.addLast(new KeyAndValue(pageID,c));
 	}
 	
 	public KeyAndValue nextCollectedDPTCrawlable() {
-		return (KeyAndValue)subPageQueue.removeFirst();
+		return (KeyAndValue)this.subPageQueue.removeFirst();
 	}
 	
 	public boolean hasNextCollectedDPTCrawlable() {
-		return !subPageQueue.isEmpty();
+		return !this.subPageQueue.isEmpty();
 	}
 	
 	
@@ -148,7 +148,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	 * @return Returns the rootPagePrimaryKey.
 	 */
 	public Object getRootPagePrimaryKey() {
-		return rootPagePrimaryKey;
+		return this.rootPagePrimaryKey;
 	}
 	/**
 	 * @param rootPagePrimaryKey The rootPagePrimaryKey to set.
@@ -158,6 +158,6 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	}
 	
 	public boolean hasRootPage() {
-		return rootPagePrimaryKey != null;
+		return this.rootPagePrimaryKey != null;
 	}
 }

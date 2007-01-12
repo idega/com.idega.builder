@@ -1,5 +1,5 @@
 /*
- * $Id: IBPasteModuleWindow.java,v 1.6 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBPasteModuleWindow.java,v 1.6.2.1 2007/01/12 19:32:23 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,8 +46,9 @@ public class IBPasteModuleWindow extends IBAdminWindow {
     String ic_object_id = iwc.getParameter(IC_OBJECT_ID_PARAMETER);
     String label = iwc.getParameter(IB_LABEL_PARAMETER);
 
-    if (control == null)
-      close();
+    if (control == null) {
+		close();
+	}
 
     setParentToReload();
 

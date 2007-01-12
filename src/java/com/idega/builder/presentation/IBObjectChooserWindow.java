@@ -39,6 +39,8 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 	public static String PRM_FILTER = "ico_filter";
 	private static final int _width = 280;
 	private static final int _height = 400;
+	private static final String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
+	
 	public IBObjectChooserWindow() {
 			setTitle("Object chooser");
 			setWidth(_width);
@@ -78,10 +80,12 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 						//icoLink.setOnClick(getOnSelectionCode(  item.getPrimaryKey().toString(),item.getName()));
 						//icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
 						//icoLink.setOnClick(getOnSelectionCode(item.getPrimaryKey().toString()));
-						if(useClassValue)
+						if(useClassValue) {
 							icoLink.setOnClick(getOnSelectionCode("'"+item.getName()+"'","'"+item.getClassName()+"'"));
-						else
-						icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
+						}
+						else {
+							icoLink.setOnClick(getOnSelectionCode( "'"+item.getName()+"'", item.getPrimaryKey().toString() ));
+						}
 						
 						icoLink.setURL(Link.JAVASCRIPT);
 						table.add(icoLink,col,row++);
@@ -112,6 +116,10 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 		
 		form.add(table);
 		add(form);
+		
+	}
+	
+	private void addComponentToTable(ICObject object,Table table, int column,int row){
 		
 	}
 	

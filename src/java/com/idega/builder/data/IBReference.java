@@ -38,21 +38,21 @@ public class IBReference {
 	}
 	
 	public List getEntries() {
-		return (nameParameterEntries == null) ? null : nameParameterEntries.getCopiedListOfValues();
+		return (this.nameParameterEntries == null) ? null : this.nameParameterEntries.getCopiedListOfValues();
 	}
 	
 	public IBReferenceEntry getReferenceByName(String name, String parameterId) {
-		return (IBReferenceEntry) ((nameParameterEntries == null) ? null : nameParameterEntries.get(name, parameterId));
+		return (IBReferenceEntry) ((this.nameParameterEntries == null) ? null : this.nameParameterEntries.get(name, parameterId));
 	}
 	
 	public String getModuleClass() {
-		return moduleClass;
+		return this.moduleClass;
 	}
 
 	
 	private void initialize(XMLElement moduleElement) {
-		nameParameterEntries = null;
-		moduleClass = moduleElement.getAttributeValue(XMLConstants.EXPORT_MODULE_CLASS);
+		this.nameParameterEntries = null;
+		this.moduleClass = moduleElement.getAttributeValue(XMLConstants.EXPORT_MODULE_CLASS);
 		List properties = moduleElement.getChildren(XMLConstants.EXPORT_PROPERTY);
 		Iterator propertiesIterator = properties.iterator(); 
 		while (propertiesIterator.hasNext()) {
@@ -62,7 +62,7 @@ public class IBReference {
 			Iterator parameterIterator = parameters.iterator();
 			while (parameterIterator.hasNext()) {
 				XMLElement parameterElement = (XMLElement) parameterIterator.next();
-				IBReferenceEntry entry = new IBReferenceEntry(moduleClass, methodIdentiferCache, iwc);
+				IBReferenceEntry entry = new IBReferenceEntry(this.moduleClass, this.methodIdentiferCache, this.iwc);
 				entry.initialize(propertyName, parameterElement);
 				add(entry);
 			}
@@ -70,10 +70,10 @@ public class IBReference {
 	}
 	
 	public void add(IBReferenceEntry entry) {
-		if (nameParameterEntries == null) {
-			nameParameterEntries = new HashMatrix();
+		if (this.nameParameterEntries == null) {
+			this.nameParameterEntries = new HashMatrix();
 		}
-		nameParameterEntries.put(entry.getValueName(), entry.getParameterId(),entry);
+		this.nameParameterEntries.put(entry.getValueName(), entry.getParameterId(),entry);
 	}
 	
 		

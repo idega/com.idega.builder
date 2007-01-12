@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.53 2006/03/29 13:01:09 laddi Exp $
+ * $Id: IBPropertyHandler.java,v 1.49.2.1 2007/01/12 19:31:48 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ public class IBPropertyHandler implements Singleton{
 	private Map propertyHandlers;
 	private IBClassesFactory builderClassesFactory;
 
-	protected IBPropertyHandler() {
+	private IBPropertyHandler() {
 		// empty
 	}
 
@@ -212,8 +212,9 @@ public class IBPropertyHandler implements Singleton{
 				}
 			}
 		}
-		if (availableValues.size() > 0)
+		if (availableValues.size() > 0) {
 			return (String[]) availableValues.get(0);
+		}
 		if (returnSelectedValueIfNothingFound) {
 			return selectedValues;
 		}
@@ -308,8 +309,9 @@ public class IBPropertyHandler implements Singleton{
           menuElements = new ArrayList();
         }
       Iterator iterator = menuElements.iterator();
-      while (iterator.hasNext())
-        ((DropdownMenu) handlerPresentation).addMenuElement((String) iterator.next());
+      while (iterator.hasNext()) {
+		((DropdownMenu) handlerPresentation).addMenuElement((String) iterator.next());
+	}
       }
     }
     
@@ -435,7 +437,7 @@ public class IBPropertyHandler implements Singleton{
 				//extends block.media.presentation.FileChooser
 				int id = Integer.parseInt(stringValue);
 				IWMainApplication iwma = iwc.getIWMainApplication();
-				Cache cache = iwma.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
+				Cache cache = IWMainApplication.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
 				fileChooser.setValue(cache.getEntity());
 			}
 			catch (Exception e) {
@@ -624,10 +626,10 @@ public class IBPropertyHandler implements Singleton{
 	
 	 */
 	private Map getPropertyHandlersMap() {
-		if (propertyHandlers == null) {
-			propertyHandlers = new HashMap();
+		if (this.propertyHandlers == null) {
+			this.propertyHandlers = new HashMap();
 		}
-		return (propertyHandlers);
+		return (this.propertyHandlers);
 	}
 
 	public ICPropertyHandler getPropertyHandler(String handlerClassName) {
@@ -673,8 +675,7 @@ public class IBPropertyHandler implements Singleton{
 			paramMap.put(METHOD_PARAMETER_PROPERTY_PRIMARY_KEY, new Boolean(primaryKeys[i]));
 		}
 		method.setProperties(options);
-		component.store();
-		iwb.storeState(false);
+		iwb.storeState();
 		return true;
 	}
 
@@ -683,10 +684,10 @@ public class IBPropertyHandler implements Singleton{
 	}
 	
 	private IBClassesFactory getBuilderClassesFactory() {
-		if (builderClassesFactory == null) {
-			builderClassesFactory = new IBClassesFactory();
+		if (this.builderClassesFactory == null) {
+			this.builderClassesFactory = new IBClassesFactory();
 		}
-		return builderClassesFactory;
+		return this.builderClassesFactory;
 	}
 	
 }

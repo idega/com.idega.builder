@@ -1,5 +1,5 @@
 /*
- * $Id: IBCopyModuleWindow.java,v 1.10 2006/02/22 20:55:22 laddi Exp $
+ * $Id: IBCopyModuleWindow.java,v 1.9.2.1 2007/01/12 19:32:22 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.presentation.IWContext;
  */
 public class IBCopyModuleWindow extends IBAdminWindow {
   private static final String IC_OBJECT_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
+  private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
   private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
   private static final String IB_CONTROL_PARAMETER = BuilderLogic.IB_CONTROL_PARAMETER;
   private static final String ACTION_COPY = BuilderLogic.ACTION_COPY;
@@ -45,11 +46,13 @@ public class IBCopyModuleWindow extends IBAdminWindow {
     String ib_page_id = iwc.getParameter(IB_PAGE_PARAMETER);
 
 
-    if (control == null)
-      close();
+    if (control == null) {
+		close();
+	}
 
-    if (iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null)
-      setParentToReload();
+    if (iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null) {
+		setParentToReload();
+	}
 
     if (control.equals(ACTION_COPY)) {
       copyObject(iwc,ib_page_id,ic_object_id);

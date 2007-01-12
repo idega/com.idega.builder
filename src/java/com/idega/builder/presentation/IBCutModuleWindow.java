@@ -1,5 +1,5 @@
 /*
- * $Id: IBCutModuleWindow.java,v 1.5 2005/08/31 02:13:21 eiki Exp $
+ * $Id: IBCutModuleWindow.java,v 1.5.2.1 2007/01/12 19:32:24 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,11 +44,13 @@ public class IBCutModuleWindow extends IBAdminWindow {
     String ib_parent_id = iwc.getParameter(IB_PARENT_PARAMETER);
 
 
-    if (control == null)
-      close();
+    if (control == null) {
+		close();
+	}
 
-    if (iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null)
-      setParentToReload();
+    if (iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null) {
+		setParentToReload();
+	}
 
     if (control.equals(ACTION_COPY)) {
       copyObject(iwc,ib_page_id,instanceId);

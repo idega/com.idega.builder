@@ -23,15 +23,15 @@ public class DPTCrawlableLink extends Link implements DPTCrawlable {
 	
 	
 	public void setDPTTemplateId(int id) {
-		dptTemplateId = id;
+		this.dptTemplateId = id;
 	}
 
 	public int getLinkedDPTTemplateID() {
-		return dptTemplateId;
+		return this.dptTemplateId;
 	}
 
 	public void setDPTTemplateId(ICPage page) {
-		dptTemplateId = page.getID();
+		this.dptTemplateId = page.getID();
 	}
 	
 	

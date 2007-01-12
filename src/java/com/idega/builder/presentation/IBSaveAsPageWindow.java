@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSaveAsPageWindow.java,v 1.9 2006/02/22 20:55:22 laddi Exp $
+ * $Id: IBSaveAsPageWindow.java,v 1.8.2.1 2007/01/12 19:32:24 idegaweb Exp $
 
  *
 
@@ -59,6 +59,10 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
   private static final String PAGE_TYPE             = "ib_page_type";
 
+  private static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
+
+
+
   public void main(IWContext iwc) throws Exception {
 
     IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
@@ -109,19 +113,17 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
     if (type != null) {
 
-      if (type.equals("2"))
-
-        tab.add(getTemplateChooser(PAGE_CHOOSER_NAME),2,3);
-
-      else
-
-        tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+      if (type.equals("2")) {
+		tab.add(getTemplateChooser(PAGE_CHOOSER_NAME),2,3);
+	}
+	else {
+		tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+	}
 
     }
-
-    else
-
-      tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+	else {
+		tab.add(getPageChooser(PAGE_CHOOSER_NAME),2,3);
+	}
 
 
 
@@ -157,9 +159,9 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
         ICPage ibPage = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 
-        if (name == null)
-
-          name = "Untitled";
+        if (name == null) {
+			name = "Untitled";
+		}
 
         ibPage.setName(name);
 
@@ -169,17 +171,15 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
 
 
-        if (type.equals("1"))
-
-          ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
-
-        else if (type.equals("2"))
-
-          ibPage.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
-
-        else
-
-          ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+        if (type.equals("1")) {
+			ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+		}
+		else if (type.equals("2")) {
+			ibPage.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
+		}
+		else {
+			ibPage.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
+		}
 
 
 
@@ -223,15 +223,15 @@ public class IBSaveAsPageWindow extends IWAdminWindow {
 
       type = iwc.getParameter(PAGE_TYPE);
 
-      if (name != null)
+      if (name != null) {
+		inputName.setValue(name);
+	}
 
-        inputName.setValue(name);
 
 
-
-      if (type != null)
-
-        mnu.setSelectedElement(type);
+      if (type != null) {
+		mnu.setSelectedElement(type);
+	}
 
 
 

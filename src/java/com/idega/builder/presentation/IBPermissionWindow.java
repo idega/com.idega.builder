@@ -9,6 +9,7 @@ import java.util.Vector;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserGroupBusiness;
@@ -30,11 +31,14 @@ import com.idega.presentation.ui.SubmitButton;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 
 public class IBPermissionWindow extends IBAdminWindow{
+
+  private static final String ic_object_id_parameter = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
+  private static final String ib_page_parameter = BuilderConstants.IB_PAGE_PARAMETER;
 
   public static final String _PARAMETERSTRING_IDENTIFIER = AccessController._PARAMETERSTRING_IDENTIFIER;
   public static final String _PARAMETERSTRING_PERMISSION_CATEGORY = AccessController._PARAMETERSTRING_PERMISSION_CATEGORY;
@@ -69,7 +73,7 @@ public class IBPermissionWindow extends IBAdminWindow{
       frameTable.setCellspacing(4);
 
       // PermissionString
-      Text permissionKeyText = new Text(iwrb.getLocalizedString("permission_key","Permission Key")+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+      Text permissionKeyText = new Text(this.iwrb.getLocalizedString("permission_key","Permission Key")+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
 	    permissionKeyText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
       DropdownMenu permissionTypes = new DropdownMenu(permissionKeyParameterString);
@@ -154,10 +158,10 @@ public class IBPermissionWindow extends IBAdminWindow{
       List directGroups = null;
       if(hash != null && hash.get(permissionType)!=null){
 	directGroups = UserGroupBusiness.getGroups((String[])hash.get(permissionType));
-	collectOld = false;
+	this.collectOld = false;
       } else {
 	directGroups = iwc.getAccessController().getAllowedGroups(intPermissionCategory, identifier,permissionType);
-	collectOld = true;
+	this.collectOld = true;
 
       }
 
@@ -166,7 +170,7 @@ public class IBPermissionWindow extends IBAdminWindow{
       Iterator iter = null;
       if(directGroups != null){
 	iter = directGroups.iterator();
-	if(collectOld){
+	if(this.collectOld){
 	  List oldValueIDs = new Vector();
 	  while (iter.hasNext()) {
 	    Object item = iter.next();
@@ -200,8 +204,8 @@ public class IBPermissionWindow extends IBAdminWindow{
 
 
       // Submit
-      SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("ok","OK"),"submit");
-      SubmitButton cancel = new SubmitButton(iwrb.getLocalizedImageButton("cancel","Cancel"),"cancel");
+      SubmitButton submit = new SubmitButton(this.iwrb.getLocalizedImageButton("ok","OK"),"submit");
+      SubmitButton cancel = new SubmitButton(this.iwrb.getLocalizedImageButton("cancel","Cancel"),"cancel");
 
       frameTable.add(permissionKeyText,1,1);
       frameTable.add(permissionTypes,1,1);
@@ -224,8 +228,8 @@ public class IBPermissionWindow extends IBAdminWindow{
       myForm.setToShowLoadingOnSubmit(false);
       myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
       myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
-      iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
-      super.addTitle(iwrb.getLocalizedString("ib_permission_window","Permissions"),IWConstants.BUILDER_FONT_STYLE_TITLE);
+      this.iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+      super.addTitle(this.iwrb.getLocalizedString("ib_permission_window","Permissions"),IWConstants.BUILDER_FONT_STYLE_TITLE);
 
       //System.out.println("_PARAMETERSTRING_PERMISSION_CATEGORY: "+iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)+" and _PARAMETERSTRING_IDENTIFIER: "+iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
 

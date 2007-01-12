@@ -1,5 +1,5 @@
 /*
- * $Id: IBReferenceEntry.java,v 1.1 2005/10/03 18:31:59 thomas Exp $
+ * $Id: IBReferenceEntry.java,v 1.1.2.1 2007/01/12 19:32:31 idegaweb Exp $
  * Created on Sep 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -73,11 +73,11 @@ public class IBReferenceEntry {
 	}
 	
 	public String getModuleClass() {
-		return moduleClass;
+		return this.moduleClass;
 	}
 	
 	public String getParameterId() {
-		return parameterId;
+		return this.parameterId;
 	}
 	
 	public void addSource(XMLElement moduleElement, IBExportImportData metadata) throws IOException {
@@ -86,16 +86,16 @@ public class IBReferenceEntry {
 		while (iterator.hasNext()) {
 			XMLElement propertyElement = (XMLElement) iterator.next();
 			String tempValueName = propertyElement.getTextTrim(XMLConstants.NAME_STRING);
-			tempValueName = methodIdenfierCache.getUpdatedMethodIdentifier(tempValueName);
-			if (tempValueName.equals(valueName)) {
+			tempValueName = this.methodIdenfierCache.getUpdatedMethodIdentifier(tempValueName);
+			if (tempValueName.equals(this.valueName)) {
 				// right propertyElement has been found, now get the right value (properties can have more than one value)
 				List valueElements = propertyElement.getChildren(XMLConstants.VALUE_STRING);
 				// index starts at zero 
-				int index = Integer.parseInt(parameterId);
+				int index = Integer.parseInt(this.parameterId);
 				XMLElement valueElement = (XMLElement) valueElements.get(--index);
 				String value = valueElement.getTextTrim();
 				Storable storable = null;
-				if (isEjb) {
+				if (this.isEjb) {
 					storable = getSourceFromPropertyElementUsingEjb(value);
 				}
 				else {
@@ -109,42 +109,42 @@ public class IBReferenceEntry {
 	
 	private Storable getSourceFromPropertyElementUsingEjb(String value) throws IOException {
 		try {
-			Class providerClass = RefactorClassRegistry.forName(providerClassName);
+			Class providerClass = RefactorClassRegistry.forName(this.providerClassName);
 			IDOHome home = IDOLookup.getHome(providerClass);
 			return (Storable) home.findByPrimaryKeyIDO(new Integer(value));
 		}
 		catch (ClassNotFoundException ex) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't exist");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") doesn't exist");
 		}
 		catch (IDOLookupException ex) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be found (Look up problem)");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") could not be found (Look up problem)");
 		}
 		catch (NumberFormatException ex) {
-			throw new IOException("[IBReference] Identifier is not a number:" + value + "Provider is: " + providerClassName); 
+			throw new IOException("[IBReference] Identifier is not a number:" + value + "Provider is: " + this.providerClassName); 
 		}
 		catch (FinderException ex) {
-			throw new IOException("[IBReference] Instance with identifier" + value + "could not be found. Provider is: " + providerClassName);
+			throw new IOException("[IBReference] Instance with identifier" + value + "could not be found. Provider is: " + this.providerClassName);
 		}
 	}
 	
 	private Storable getSourceFromPropertyElementUsingProvider(String value) throws IOException {
 		try {
-			Class providerClass = RefactorClassRegistry.forName(providerClassName);
+			Class providerClass = RefactorClassRegistry.forName(this.providerClassName);
 			// get an instance
 			StorableProvider provider = (StorableProvider) providerClass.newInstance();
-			return provider.getSource(value, sourceClassName, iwc);
+			return provider.getSource(value, this.sourceClassName, this.iwc);
 		}
 		catch (ClassCastException e) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't implement StorableProvider");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") doesn't implement StorableProvider");
 		}
 		catch (ClassNotFoundException ex) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't exist");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") doesn't exist");
 		}
 		catch (InstantiationException e) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") could not be instanciated");
 		} 
 		catch (IllegalAccessException e) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated (illegal access)");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") could not be instanciated (illegal access)");
 		} 
 	}
 	
@@ -165,12 +165,12 @@ public class IBReferenceEntry {
 //	}
 		
 	public StorableHolder createSource(String value) throws IOException {
-		return (isEjb) ? createSourceUsingEjb() : createSourceUsingProvider(value);
+		return (this.isEjb) ? createSourceUsingEjb() : createSourceUsingProvider(value);
 	}
 	
 	private StorableHolder createSourceUsingEjb() throws IOException {
 		try {
-			Class providerClass = RefactorClassRegistry.forName(providerClassName);
+			Class providerClass = RefactorClassRegistry.forName(this.providerClassName);
 			IDOHome home = IDOLookup.getHome(providerClass);
 			IDOEntity entity = home.createIDO();
 			entity.store();
@@ -192,22 +192,22 @@ public class IBReferenceEntry {
 		
 	private StorableHolder createSourceUsingProvider(String value) throws IOException {
 		try {
-			Class providerClass = RefactorClassRegistry.forName(providerClassName);
+			Class providerClass = RefactorClassRegistry.forName(this.providerClassName);
 			// get an instance
 			StorableProvider provider = (StorableProvider) providerClass.newInstance();
-			return provider.createSource(value, sourceClassName ,iwc);
+			return provider.createSource(value, this.sourceClassName ,this.iwc);
 		}
 		catch (ClassCastException e) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't implement StorableProvider");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") doesn't implement StorableProvider");
 		}
 		catch (ClassNotFoundException ex) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") doesn't exist");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") doesn't exist");
 		}
 		catch (InstantiationException e) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") could not be instanciated");
 		} 
 		catch (IllegalAccessException e) {
-			throw new IOException("[IBReference] Provider class ("+providerClassName+") could not be instanciated (illegal access)");
+			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") could not be instanciated (illegal access)");
 		} 
 	}
 
@@ -218,14 +218,14 @@ public class IBReferenceEntry {
 	 * @return Returns the isEjb.
 	 */
 	public boolean isEjb() {
-		return isEjb;
+		return this.isEjb;
 	}
 	/**
 
 	 * @return Returns the providerClass.
 	 */
 	public String getProviderClass() {
-		return providerClassName;
+		return this.providerClassName;
 	}
 //	/**
 //	 * @return Returns the providerMethod.
@@ -237,13 +237,13 @@ public class IBReferenceEntry {
 	 * @return Returns the sourceClass.
 	 */
 	public String getSourceClass() {
-		return sourceClassName;
+		return this.sourceClassName;
 	}
 	/**
 	 * @return Returns the valueName.
 	 */
 	public String getValueName() {
-		return valueName;
+		return this.valueName;
 	}
 
 }

@@ -33,10 +33,10 @@ public class DropDownMenuSpecifiedChoiceHandler implements ICPropertyHandler {
 	 * @see com.idega.core.builder.presentation.ICPropertyHandler#getHandlerObject(String, String, IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
-    menu = new DropdownMenu(name);
-    menu.addMenuElement("","Select:");
-    menu.setSelectedElement(stringValue);
-    return(menu);
+    this.menu = new DropdownMenu(name);
+    this.menu.addMenuElement("","Select:");
+    this.menu.setSelectedElement(stringValue);
+    return(this.menu);
   }
     
 

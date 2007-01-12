@@ -28,11 +28,11 @@ public class ModuleComparator implements Comparator {
 	private Collator theCollator;
 
 	public ModuleComparator(IWContext iwc) {
-		locale = iwc.getCurrentLocale();
-		iwma = iwc.getIWMainApplication();
-		bundles = new HashMap();
-		failedBundles = new ArrayList();
-		theCollator = Collator.getInstance(locale);
+		this.locale = iwc.getCurrentLocale();
+		this.iwma = iwc.getIWMainApplication();
+		this.bundles = new HashMap();
+		this.failedBundles = new ArrayList();
+		this.theCollator = Collator.getInstance(this.locale);
 	}
 
 	public int compare(Object o1, Object o2) {
@@ -43,31 +43,31 @@ public class ModuleComparator implements Comparator {
 		
 		String one = obj1.getName();
 		try {
-			if (!failedBundles.contains(bundleIdentifier1)) {
-				IWBundle bundle1 = (IWBundle) bundles.get(bundleIdentifier1);
+			if (!this.failedBundles.contains(bundleIdentifier1)) {
+				IWBundle bundle1 = (IWBundle) this.bundles.get(bundleIdentifier1);
 				if (bundle1 == null) {
-					bundle1 = iwma.getBundle(bundleIdentifier1);
+					bundle1 = this.iwma.getBundle(bundleIdentifier1);
 				}
-				one = bundle1.getComponentName(obj1.getClassName(), locale);
+				one = bundle1.getComponentName(obj1.getClassName(), this.locale);
 			}
 		}
 		catch (IWBundleDoesNotExist iwbne) {
-			failedBundles.add(bundleIdentifier1);
+			this.failedBundles.add(bundleIdentifier1);
 			System.err.println("com.idega.builder.business.ModuleComparator: " + iwbne.getLocalizedMessage()
 					+ ". Please remove all references in the IC_OBJECT table");
 		}
 		String two = obj2.getName();
 		try {
-			if (!failedBundles.contains(bundleIdentifier2)) {
-				IWBundle bundle2 = (IWBundle) bundles.get(bundleIdentifier2);
+			if (!this.failedBundles.contains(bundleIdentifier2)) {
+				IWBundle bundle2 = (IWBundle) this.bundles.get(bundleIdentifier2);
 				if (bundle2 == null) {
-					bundle2 = iwma.getBundle(bundleIdentifier2);
+					bundle2 = this.iwma.getBundle(bundleIdentifier2);
 				}
-				two = bundle2.getComponentName(obj2.getClassName(), locale);
+				two = bundle2.getComponentName(obj2.getClassName(), this.locale);
 			}
 		}
 		catch (IWBundleDoesNotExist iwbne) {
-			failedBundles.add(bundleIdentifier2);
+			this.failedBundles.add(bundleIdentifier2);
 			System.err.println("com.idega.builder.business.ModuleComparator: " + iwbne.getLocalizedMessage()
 					+ ". Please remove all references in the IC_OBJECT table");
 		}
@@ -77,15 +77,17 @@ public class ModuleComparator implements Comparator {
 		if (two == null) {
 			two = obj2.getName();
 		}
-		int result = theCollator.compare(one, two);
+		int result = this.theCollator.compare(one, two);
 		return result;
 	}
 
 	public boolean equals(Object obj) {
-		if (compare(this, obj) == 0)
+		if (compare(this, obj) == 0) {
 			return (true);
-		else
+		}
+		else {
 			return (false);
+		}
 	}
 
 	
@@ -93,7 +95,7 @@ public class ModuleComparator implements Comparator {
 	 * @return Returns the bundles.
 	 */
 	public Map getBundles() {
-		return bundles;
+		return this.bundles;
 	}
 
 	
@@ -109,7 +111,7 @@ public class ModuleComparator implements Comparator {
 	 * @return Returns the failedBundles.
 	 */
 	public List getFailedBundles() {
-		return failedBundles;
+		return this.failedBundles;
 	}
 
 	

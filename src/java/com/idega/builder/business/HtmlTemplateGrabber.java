@@ -1,5 +1,5 @@
 /*
- * $Id: HtmlTemplateGrabber.java,v 1.1 2005/02/25 13:40:15 tryggvil Exp $ Created on
+ * $Id: HtmlTemplateGrabber.java,v 1.1.2.1 2007/01/12 19:31:48 idegaweb Exp $ Created on
  * 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.util.HtmlReferenceRewriter;
  * Class that "grabs" a temlpate from a URL, parses it (re-writes all relative hrefs) and updates a BuilderPage
  * to include the parsed html code.
  * </p>
- * Last modified: $Date: 2005/02/25 13:40:15 $ by $Author: tryggvil $
+ * Last modified: $Date: 2007/01/12 19:31:48 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class HtmlTemplateGrabber {
 
@@ -53,7 +53,7 @@ public class HtmlTemplateGrabber {
 	protected void process() throws IOException, NumberFormatException, FinderException {
 		// String sUrl = "http://nobel.idega.is/rvk/template.html";
 		// String sUrl = "http://www.rvk.is/default.asp?cat_id=1197";
-		URL url = new URL(sUrl);
+		URL url = new URL(this.sUrl);
 		// InputStream iStream = url.openStream();
 		URLConnection conn = url.openConnection();
 		String encoding = conn.getContentEncoding();
@@ -62,7 +62,7 @@ public class HtmlTemplateGrabber {
 			encoding = "ISO-8859-1";
 		}
 		InputStreamReader iReader = new InputStreamReader(iStream, encoding);
-		System.out.println("Reading from url:+" + sUrl + " with content-encoding:" + iReader.getEncoding());
+		System.out.println("Reading from url:+" + this.sUrl + " with content-encoding:" + iReader.getEncoding());
 		HtmlReferenceRewriter instance = new HtmlReferenceRewriter();
 		// String urlPrefix = "http://www.rvk.is/";
 		String urlPrefix = url.getProtocol() + "://" + url.getHost() + "/";
@@ -72,7 +72,7 @@ public class HtmlTemplateGrabber {
 		// IWMainApplication.getIWMainApplication(application).getIWApplicationContext();
 		// BuilderLogic.getInstance().getIBXMLPage(pageKey).
 		ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(new Integer(
-				pageKey));
+				this.pageKey));
 		ibpage.setFormat(BuilderLogic.getInstance().PAGE_FORMAT_HTML);
 		OutputStream outStream = ibpage.getPageValueForWrite();
 		Reader input = new BufferedReader(iReader);

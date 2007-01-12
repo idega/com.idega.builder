@@ -125,24 +125,24 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
 	}
 
 	private IBReferences getReferences(IWContext iwc) throws IOException {
-		if (references == null) {
-			references = new IBReferences(iwc);
+		if (this.references == null) {
+			this.references = new IBReferences(iwc);
 		}
-		return references;
+		return this.references;
 	}	
 	
 	private ICPageHome getPageHome() throws IDOLookupException {
-		if (pageHome == null)  {
-			pageHome = (ICPageHome) IDOLookup.getHome(ICPage.class);
+		if (this.pageHome == null)  {
+			this.pageHome = (ICPageHome) IDOLookup.getHome(ICPage.class);
 		}
-		return pageHome;
+		return this.pageHome;
 	}
 	
 	private FileBusiness getFileBusiness() throws IBOLookupException {
-		if (fileBusiness == null) {
-			fileBusiness =  (FileBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), FileBusiness.class);
+		if (this.fileBusiness == null) {
+			this.fileBusiness =  (FileBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), FileBusiness.class);
 		}
-		return fileBusiness;
+		return this.fileBusiness;
 	}
 
 	

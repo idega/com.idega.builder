@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.16 2006/02/20 11:02:40 laddi Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.15.2.1 2007/01/12 19:32:22 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
    */
   public IBTemplateChooserWindow() {
     /**
-     * @todo Setja inn IWResourceBundle hérna í staðinn fyrir þessa texta.
+     * @todo Setja inn IWResourceBundle hï¿½rna ï¿½ staï¿½inn fyrir ï¿½essa texta.
      */
     setTitle("Template chooser");
     setWidth(_width);

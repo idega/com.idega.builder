@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleTag.java,v 1.2 2005/02/01 21:45:51 tryggvil Exp $
+ * $Id: ModuleTag.java,v 1.2.2.1 2007/01/12 19:32:40 idegaweb Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,10 +14,10 @@ import javax.faces.webapp.UIComponentTag;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/01 21:45:51 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/01/12 19:32:40 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.2.2.1 $
  */
 public class ModuleTag extends UIComponentTag {
 
@@ -31,7 +31,7 @@ public class ModuleTag extends UIComponentTag {
 	 * @return Returns the id.
 	 */
 	public String getId() {
-		return id;
+		return this.id;
 	}
 	/**
 	 * @param id The id to set.
@@ -80,14 +80,14 @@ public class ModuleTag extends UIComponentTag {
 	*/
 	
 	public String getIc_object_id() {
-		return ic_object_id;
+		return this.ic_object_id;
 	}
 	public void setIc_object_id(String ic_object_id) {
 		this.ic_object_id = ic_object_id;
 	}
 	
 	public String getComponentClass() {
-		return componentClass;
+		return this.componentClass;
 	}
 	public void setComponentClass(String componentClass) {
 		this.componentClass = componentClass;

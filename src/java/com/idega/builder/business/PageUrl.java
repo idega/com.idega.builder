@@ -1,5 +1,5 @@
 /*
- * $Id: PageUrl.java,v 1.1 2005/03/01 23:25:03 tryggvil Exp $
+ * $Id: PageUrl.java,v 1.1.2.1 2007/01/12 19:31:48 idegaweb Exp $
  * Created on 24.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.util.StringHandler;
  *  <p>
  *  Class for setting and manipulating generated URLs for builder pages
  *  <p>
- *  Last modified: $Date: 2005/03/01 23:25:03 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/01/12 19:31:48 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class PageUrl {
 	
@@ -67,7 +67,7 @@ public class PageUrl {
 	public String getGeneratedUrlFromName(){
 		List list = getUrlPartList();
 		Iterator iter = list.iterator();
-		String url=SLASH;
+		String url=this.SLASH;
 		
 		while(iter.hasNext()){
 			PageNamePart part = (PageNamePart)iter.next();
@@ -76,10 +76,10 @@ public class PageUrl {
 			}
 			else{
 				if(part.url==null){
-					url=SLASH+part.urlPartFromName+url;
+					url=this.SLASH+part.urlPartFromName+url;
 				}
 				else{
-					url=SLASH+part.url+url;
+					url=this.SLASH+part.url+url;
 					break;
 				}
 			}
@@ -96,14 +96,14 @@ public class PageUrl {
 		List l = new ArrayList();
 		
 		ICPage ppage = null;
-		if(page!=null){
-			ppage=page;
+		if(this.page!=null){
+			ppage=this.page;
 		}
-		else if(parentPage!=null){
-			ppage=parentPage;
+		else if(this.parentPage!=null){
+			ppage=this.parentPage;
 		}
-		if(pageName!=null){
-			PageNamePart part =  new PageNamePart(pageName);
+		if(this.pageName!=null){
+			PageNamePart part =  new PageNamePart(this.pageName);
 			l.add(part);
 		}
 
@@ -131,16 +131,16 @@ public class PageUrl {
 		PageNamePart(ICPage page){
 			String pageName = page.getName();
 			if(getBuilderLogic().getCurrentDomain().getStartPage().equals(page)){
-				isStartPage=true;
+				this.isStartPage=true;
 			}
-			url = page.getDefaultPageURI();
+			this.url = page.getDefaultPageURI();
 			if(pageName!=null){
-				urlPartFromName = getUrlPartFromName(pageName);
+				this.urlPartFromName = getUrlPartFromName(pageName);
 			}
 		}
 		PageNamePart(String pageName){
-			isStartPage=false;
-			urlPartFromName=getUrlPartFromName(pageName);
+			this.isStartPage=false;
+			this.urlPartFromName=getUrlPartFromName(pageName);
 		}
 	}
 	
@@ -159,11 +159,11 @@ public class PageUrl {
 		String url=inputUrl;
 		while(doesUrlExist(url)){
 			//ad a number to the end
-			if(inputUrl.endsWith(SLASH)){
-				url=inputUrl.substring(0,inputUrl.length()-1)+index+SLASH;
+			if(inputUrl.endsWith(this.SLASH)){
+				url=inputUrl.substring(0,inputUrl.length()-1)+index+this.SLASH;
 			}
 			else{
-				url=inputUrl+index+SLASH;
+				url=inputUrl+index+this.SLASH;
 			}
 			index++;
 		}
@@ -173,7 +173,7 @@ public class PageUrl {
 	
 	protected boolean doesUrlExist(String url){
 		try {
-			ICPage page = getICPageHome().findByUri(url,domainId);
+			ICPage page = getICPageHome().findByUri(url,this.domainId);
 			if(page!=null){
 				return true;
 			}

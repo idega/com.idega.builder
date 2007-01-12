@@ -1,5 +1,5 @@
 /*
- * $Id: JSPDocument.java,v 1.1 2005/05/11 18:18:43 gummi Exp $
+ * $Id: JSPDocument.java,v 1.1.2.1 2007/01/12 19:32:17 idegaweb Exp $
  * Created on 8.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -18,10 +18,10 @@ import com.idega.xml.XMLNamespace;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/11 18:18:43 $ by $Author: gummi $
+ *  Last modified: $Date: 2007/01/12 19:32:17 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class JSPDocument extends XMLDocument {
 
@@ -41,21 +41,21 @@ public class JSPDocument extends XMLDocument {
 	}
 	
 	public XMLElement getCurrentElement(){
-		if(currentElement == null){
-			currentElement = getRootElement();
+		if(this.currentElement == null){
+			this.currentElement = getRootElement();
 		}
-		return currentElement;
+		return this.currentElement;
 	}
 	
 	private void setCurrentElement(XMLElement element){
-		currentElement = element;
+		this.currentElement = element;
 	}
 	
 	protected Stack getElementStack(){
-		if(elementStack==null){
-			elementStack = new Stack();
+		if(this.elementStack==null){
+			this.elementStack = new Stack();
 		}
-		return elementStack;
+		return this.elementStack;
 	}
 	
 	

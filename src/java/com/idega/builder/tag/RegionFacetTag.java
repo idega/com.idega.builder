@@ -1,5 +1,5 @@
 /*
- * $Id: RegionFacetTag.java,v 1.1 2005/05/30 15:28:54 tryggvil Exp $
+ * $Id: RegionFacetTag.java,v 1.1.2.1 2007/01/12 19:32:40 idegaweb Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004-2005 Idega Software hf. All Rights Reserved.
@@ -17,10 +17,10 @@ import com.idega.presentation.BuilderPageFacetMap;
  * <p>
  * Tag class for a Builder region implemented as a JSF facet and extends therefore the standard FacetTag.
  * </p>
- * Last modified: $Date: 2005/05/30 15:28:54 $ by $Author: tryggvil $
+ * Last modified: $Date: 2007/01/12 19:32:40 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.1.2.1 $
  */
 public class RegionFacetTag extends FacetTag {
 
@@ -40,7 +40,7 @@ public class RegionFacetTag extends FacetTag {
 	 * @return Returns the id.
 	 */
 	public String getId() {
-		return id;
+		return this.id;
 	}
 	/**
 	 * @param id The id to set.
@@ -52,7 +52,7 @@ public class RegionFacetTag extends FacetTag {
 	 * @return Returns the label.
 	 */
 	public String getLabel() {
-		return label;
+		return this.label;
 	}
 	/**
 	 * @param label The label to set.

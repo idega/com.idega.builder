@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.17 2006/02/20 11:02:40 laddi Exp $
+ * $Id: IBPageChooserWindow.java,v 1.16.2.1 2007/01/12 19:32:23 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -55,14 +55,14 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 	public void displaySelection(IWContext iwc) {
 		if (iwc.isParameterSet("from_editor")) {
 			addScript();
-			fromEditor = true;
+			this.fromEditor = true;
 		}
 		
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		addTitle(iwrb.getLocalizedString("select_page", "Select page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
 
-		if ( fromEditor ) {
+		if ( this.fromEditor ) {
 			Table table = new Table(2,3);
 			table.setCellpadding(1);
 			table.setCellspacing(0);
@@ -107,7 +107,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 			viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME, iwc);
 			viewer.setToMaintainParameter(VALUE_PARAMETER_NAME, iwc);
 			viewer.setDefaultOpenLevel(999);
-			if (fromEditor) {
+			if (this.fromEditor) {
 				viewer.setToMaintainParameter("from_editor", iwc);
 			}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleTemplateCreationManagedBean.java,v 1.2 2005/05/14 14:32:37 laddi Exp $
+ * $Id: SimpleTemplateCreationManagedBean.java,v 1.2.2.1 2007/01/12 19:32:38 idegaweb Exp $
  * Created on 4.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- *  Last modified: $Date: 2005/05/14 14:32:37 $ by $Author: laddi $
+ *  Last modified: $Date: 2007/01/12 19:32:38 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.2.2.1 $
  */
 public class SimpleTemplateCreationManagedBean implements ActionListener {
 
@@ -204,9 +204,9 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 
 	public ICPage getParentTemplateICPage(){
 		String parentIdentifier = getParentTemplateIdentifier();
-		if(parentICPage == null){
+		if(this.parentICPage == null){
 			try {
-				parentICPage = ((ICPageHome) IDOLookup.getHome(ICPage.class)).findByPrimaryKey(parentIdentifier);
+				this.parentICPage = ((ICPageHome) IDOLookup.getHome(ICPage.class)).findByPrimaryKey(parentIdentifier);
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace();
@@ -215,14 +215,14 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 				e.printStackTrace();
 			}
 		}
-		return parentICPage;
+		return this.parentICPage;
 	}
 	
 	public ICPage getSimpleTemplateICPage(){
 		String stIdentifier = getSimpleTemplateIdentifier();
-		if((currentICPage == null && stIdentifier != null) || (currentICPage != null && !String.valueOf(currentICPage.getPrimaryKey()).equals(stIdentifier))){
+		if((this.currentICPage == null && stIdentifier != null) || (this.currentICPage != null && !String.valueOf(this.currentICPage.getPrimaryKey()).equals(stIdentifier))){
 			try {
-				currentICPage = ((ICPageHome) IDOLookup.getHome(ICPage.class)).findByPrimaryKey(stIdentifier);
+				this.currentICPage = ((ICPageHome) IDOLookup.getHome(ICPage.class)).findByPrimaryKey(stIdentifier);
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace();
@@ -231,7 +231,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 				e.printStackTrace();
 			}
 		}
-		return currentICPage;
+		return this.currentICPage;
 	}
 	
 	public PageTreeNode getParentTemplatePageTreeNode(){
@@ -347,11 +347,11 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	 * @return Returns the parentTemplateIdentifier.
 	 */
 	public String getParentTemplateIdentifier() {
-		if(parentTemplateIdentifier==null){
+		if(this.parentTemplateIdentifier==null){
 			IWContext iwc = IWContext.getInstance();
-			parentTemplateIdentifier = getBuilderLogic().getCurrentIBPage(iwc);
+			this.parentTemplateIdentifier = getBuilderLogic().getCurrentIBPage(iwc);
 		}
-		return parentTemplateIdentifier;
+		return this.parentTemplateIdentifier;
 	}
 	/**
 	 * @param parentTemplateIdentifier The parentTemplateIdentifier to set.
@@ -363,7 +363,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	 * @return Returns the selectedComponent.
 	 */
 	public String getSelectedComponent() {
-		return selectedComponent;
+		return this.selectedComponent;
 	}
 	/**
 	 * @param selectedComponent The selectedComponent to set.
@@ -375,7 +375,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	 * @return Returns the selectedRegion.
 	 */
 	public String getSelectedRegion() {
-		return selectedRegion;
+		return this.selectedRegion;
 	}
 	/**
 	 * @param selectedRegion The selectedRegion to set.
@@ -387,7 +387,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	 * @return Returns the simpleTemplateIdentifier.
 	 */
 	public String getSimpleTemplateIdentifier() {
-		return simpleTemplateIdentifier;
+		return this.simpleTemplateIdentifier;
 	}
 	/**
 	 * @param simpleTemplateIdentifier The simpleTemplateIdentifier to set.
@@ -399,7 +399,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	 * @return Returns the simpleTemplateName.
 	 */
 	public String getSimpleTemplateName() {
-		return simpleTemplateName;
+		return this.simpleTemplateName;
 	}
 	/**
 	 * @param simpleTemplateName The simpleTemplateName to set.

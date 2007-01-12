@@ -65,18 +65,18 @@ public class IBExportImportData implements Storable {
 	}
 	
 	public List getData() {
-		return files;
+		return this.files;
 	}
 	
 	public List getPageData() {
 		int index = 0; 
 		List list = new ArrayList();
-		Iterator iterator = fileElements.iterator();
+		Iterator iterator = this.fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement element = (XMLElement) iterator.next();
 			String sourceClass = element.getTextTrim(XMLConstants.FILE_SOURCE);
-			if (sourceClassForPage.equals(sourceClass)) {
-				Storable page = (Storable) files.get(index);
+			if (this.sourceClassForPage.equals(sourceClass)) {
+				Storable page = (Storable) this.files.get(index);
 				list.add(page);
 			}
 			index++;
@@ -85,14 +85,14 @@ public class IBExportImportData implements Storable {
 	}
 			
 	public boolean isTemplate(String id) {
-		if (pageIds == null) {
+		if (this.pageIds == null) {
 			return false;
 		}
-		return (pageIds.indexOf(id) < pageStartIndex);
+		return (this.pageIds.indexOf(id) < this.pageStartIndex);
 	}
 	
 	public String getParentIdForPageId(String id) {
-		return (String) ((childParent == null) ? null : childParent.get(id));
+		return (String) ((this.childParent == null) ? null : this.childParent.get(id));
 	}
 	
 	public List getNonPageFileElements() {
@@ -100,11 +100,11 @@ public class IBExportImportData implements Storable {
 	}
 	
 	public List getMissingModules() {
-		return missingModules;
+		return this.missingModules;
 	}
 	
 	public boolean isValid() {
-		return missingModules == null;
+		return this.missingModules == null;
 	}
 	
 	/** returns templates first */
@@ -122,7 +122,7 @@ public class IBExportImportData implements Storable {
 		
 		
     public XMLElement modifyElementSetNameSetOriginalName(int index, String name, String originalName, String mimeType, String fileIsMarkedAsDeleted) {
-		XMLElement fileElement = (XMLElement) fileElements.get(index);
+		XMLElement fileElement = (XMLElement) this.fileElements.get(index);
 		fileElement.addContent(XMLConstants.FILE_USED_ID,name);
 		fileElement.addContent(XMLConstants.FILE_ORIGINAL_NAME, originalName);
 		fileElement.addContent(XMLConstants.FILE_MIME_TYPE, mimeType);
@@ -140,14 +140,14 @@ public class IBExportImportData implements Storable {
 		
 	public void addPageTree(IWContext iwc) throws IDOLookupException, FinderException {
 		List pageTreeNodes = IBPageHelper.getInstance().getFirstLevelPageTreeNodesDomainFirst(iwc);
-		pagesElement = new XMLElement(XMLConstants.PAGE_TREE_PAGES);
-		addPages(pageTreeNodes.iterator(), pagesElement);
+		this.pagesElement = new XMLElement(XMLConstants.PAGE_TREE_PAGES);
+		addPages(pageTreeNodes.iterator(), this.pagesElement);
 	}
 	
 	public void addTemplateTree(IWContext iwc) throws IDOLookupException, FinderException {
 		List pageTreeNodes = IBPageHelper.getInstance().getFirstLevelPageTreeNodesTemplateDomainFirst(iwc);
-		templatesElement = new XMLElement(XMLConstants.PAGE_TREE_TEMPLATES);
-		addPages(pageTreeNodes.iterator(), templatesElement);
+		this.templatesElement = new XMLElement(XMLConstants.PAGE_TREE_TEMPLATES);
+		addPages(pageTreeNodes.iterator(), this.templatesElement);
 	}
 
 
@@ -169,25 +169,25 @@ public class IBExportImportData implements Storable {
 	}
 	
 	public void addFileEntry(IBReferenceEntry entry, Storable storable, String value) {
-		files.add(storable);
+		this.files.add(storable);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
 		fileElement.addContent(XMLConstants.FILE_MODULE, entry.getModuleClass());
 		fileElement.addContent(XMLConstants.FILE_NAME, entry.getValueName());
 		fileElement.addContent(XMLConstants.FILE_PARAMETER_ID, entry.getParameterId());
 		fileElement.addContent(XMLConstants.FILE_SOURCE, entry.getSourceClass());
 		fileElement.addContent(XMLConstants.FILE_VALUE, value);
-		fileElements.add(fileElement);
+		this.fileElements.add(fileElement);
 	}
 	
 	public void addFileEntry(ICPage page) {
-		files.add(page);
+		this.files.add(page);
 		XMLElement fileElement = new XMLElement(XMLConstants.FILE_FILE);
-		fileElement.addContent(XMLConstants.FILE_MODULE, sourceClassForPage);
+		fileElement.addContent(XMLConstants.FILE_MODULE, this.sourceClassForPage);
 		fileElement.addContent(XMLConstants.FILE_NAME, PAGE_PRIMARY_KEY);
 		fileElement.addContent(XMLConstants.FILE_PARAMETER_ID, PAGE_PARAMETER_ID);
-		fileElement.addContent(XMLConstants.FILE_SOURCE, sourceClassForPage);
+		fileElement.addContent(XMLConstants.FILE_SOURCE, this.sourceClassForPage);
 		fileElement.addContent(XMLConstants.FILE_VALUE, page.getPrimaryKey().toString());
-		fileElements.add(fileElement);
+		this.fileElements.add(fileElement);
 	}
 	
 	public void addNecessaryModule(String moduleClassName) throws IOException {
@@ -196,7 +196,7 @@ public class IBExportImportData implements Storable {
 			return;
 		}
 		// the list isn't really large
-		Iterator iterator = necessaryModules.iterator();
+		Iterator iterator = this.necessaryModules.iterator();
 		while (iterator.hasNext()) {
 			XMLElement element = (XMLElement) iterator.next();
 			String className = element.getTextTrim(XMLConstants.MODULE_CLASS);
@@ -213,7 +213,7 @@ public class IBExportImportData implements Storable {
 			moduleElement.addContent(XMLConstants.MODULE_CLASS, moduleClassName);
 			moduleElement.addContent(XMLConstants.MODULE_TYPE, type);
 			moduleElement.addContent(XMLConstants.MODULE_BUNDLE, bundle);
-			necessaryModules.add(moduleElement);
+			this.necessaryModules.add(moduleElement);
 		}
 		catch (IOException ex) {
 			// ignore it, some modules do not have an entry in ic object table
@@ -249,23 +249,23 @@ public class IBExportImportData implements Storable {
 		XMLElement metadataElement = metadata.getDocument().getRootElement();
 		XMLElement filesElement = new XMLElement(XMLConstants.FILE_FILES);
 		metadataElement.addContent(filesElement);
-		Iterator iterator = fileElements.iterator();
+		Iterator iterator = this.fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement fileElement = (XMLElement) iterator.next();
 			filesElement.addContent(fileElement);
 		}
 		XMLElement modulesElement = new XMLElement(XMLConstants.MODULE_MODULES);
 		metadataElement.addContent(modulesElement);
-		Iterator moduleIterator = necessaryModules.iterator();
+		Iterator moduleIterator = this.necessaryModules.iterator();
 		while (moduleIterator.hasNext()) {
 			XMLElement moduleElement = (XMLElement) moduleIterator.next();
 			modulesElement.addContent(moduleElement);
 		}
-		if (pagesElement != null) {
-			metadataElement.addContent(pagesElement);
+		if (this.pagesElement != null) {
+			metadataElement.addContent(this.pagesElement);
 		}
-		if (templatesElement != null) {
-			metadataElement.addContent(templatesElement);
+		if (this.templatesElement != null) {
+			metadataElement.addContent(this.templatesElement);
 		}
 		return metadata;
 	}
@@ -276,25 +276,25 @@ public class IBExportImportData implements Storable {
 	}
 	
 	private void initializeFromSummary() throws IOException {
-		XMLElement rootElement = metadataSummary.getDocument().getRootElement();
+		XMLElement rootElement = this.metadataSummary.getDocument().getRootElement();
 		XMLElement filesElement = rootElement.getChild(XMLConstants.FILE_FILES);
-		fileElements =  (filesElement == null) ? null : filesElement.getChildren();
+		this.fileElements =  (filesElement == null) ? null : filesElement.getChildren();
 		XMLElement modulesElement = rootElement.getChild(XMLConstants.MODULE_MODULES);
-		necessaryModules = (modulesElement == null) ? null : modulesElement.getChildren();
-		missingModules = validateAndGetMissingModuleNames();
-		templatesElement = rootElement.getChild(XMLConstants.PAGE_TREE_TEMPLATES);
-		pagesElement = rootElement.getChild(XMLConstants.PAGE_TREE_PAGES);
+		this.necessaryModules = (modulesElement == null) ? null : modulesElement.getChildren();
+		this.missingModules = validateAndGetMissingModuleNames();
+		this.templatesElement = rootElement.getChild(XMLConstants.PAGE_TREE_TEMPLATES);
+		this.pagesElement = rootElement.getChild(XMLConstants.PAGE_TREE_PAGES);
 		buildPageAndTemplateHierarchy();
 	}
 			
 	private List getPageElementsOrNonPageElements(boolean getPageElements) {
 		List elements = new ArrayList();
-		Iterator iterator = fileElements.iterator();
+		Iterator iterator = this.fileElements.iterator();
 		while (iterator.hasNext()) {
 			XMLElement fileElement = (XMLElement) iterator.next();
 			// only get file elements that represent a page
 			boolean isPageElement =	
-					sourceClassForPage.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)) &&
+					this.sourceClassForPage.equals(fileElement.getTextTrim(XMLConstants.FILE_MODULE)) &&
 					PAGE_PRIMARY_KEY.equals(fileElement.getTextTrim(XMLConstants.FILE_NAME));
 			if ((getPageElements && isPageElement) || (! getPageElements && ! isPageElement)) {
 				elements.add(fileElement);
@@ -304,26 +304,26 @@ public class IBExportImportData implements Storable {
 	}
 	
 	private void buildPageAndTemplateHierarchy() {
-		if (templatesElement == null && pagesElement == null) {
+		if (this.templatesElement == null && this.pagesElement == null) {
 			return;
 		}
-		pageIds = new ArrayList();
-		childParent = new HashMap();
+		this.pageIds = new ArrayList();
+		this.childParent = new HashMap();
 		// templates first 
-		if (templatesElement != null) {
-			buildPageHierarchy(null, templatesElement);
+		if (this.templatesElement != null) {
+			buildPageHierarchy(null, this.templatesElement);
 		}
-		pageStartIndex = pageIds.size(); 
-		if (pagesElement != null) {
-			buildPageHierarchy(null, pagesElement);
+		this.pageStartIndex = this.pageIds.size(); 
+		if (this.pagesElement != null) {
+			buildPageHierarchy(null, this.pagesElement);
 		}
 	}
 
 	private void buildPageHierarchy(String parentId, XMLElement pageTreeElement) {
 		String currentId = pageTreeElement.getTextTrim(XMLConstants.PAGE_TREE_ID);
 		if (currentId != null) {
-			pageIds.add(currentId);
-			childParent.put(currentId, parentId);
+			this.pageIds.add(currentId);
+			this.childParent.put(currentId, parentId);
 		}
 		List children = pageTreeElement.getChildren();
 		Iterator iterator = children.iterator();
@@ -363,11 +363,11 @@ public class IBExportImportData implements Storable {
 	}
 	
 	private List validateAndGetMissingModuleNames() throws IOException {
-		if (necessaryModules == null) {
+		if (this.necessaryModules == null) {
 			return null;
 		}
 		List tempMissingModules = null;
-		Iterator iterator = necessaryModules.iterator();
+		Iterator iterator = this.necessaryModules.iterator();
 		while (iterator.hasNext()) {
 			XMLElement moduleElement = (XMLElement) iterator.next();
 			String className = moduleElement.getTextTrim(XMLConstants.MODULE_CLASS);
@@ -392,8 +392,8 @@ public class IBExportImportData implements Storable {
 		XMLElement element2 = (XMLElement) o2; 
 		String id1 = element1.getTextTrim(XMLConstants.VALUE_STRING);
 		String id2 = element2.getTextTrim(XMLConstants.VALUE_STRING);
-		int index1 = pageIds.indexOf(id1);
-		int index2 = pageIds.indexOf(id2);
+		int index1 = IBExportImportData.this.pageIds.indexOf(id1);
+		int index2 = IBExportImportData.this.pageIds.indexOf(id2);
 		return (index1 - index2) > 0 ? 1 : -1; 
 	}
 

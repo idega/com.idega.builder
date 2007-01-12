@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLAbstractContainer.java,v 1.2 2002/04/06 19:07:38 tryggvil Exp $
+ * $Id: IBXMLAbstractContainer.java,v 1.2.6.1 2007/01/12 19:31:48 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,21 +30,23 @@ public abstract class IBXMLAbstractContainer implements IBXMLAble {
   }
 
   protected IBXMLAbstractContainer(boolean verify) {
-    _parser = new XMLParser(verify);
+    this._parser = new XMLParser(verify);
   }
 
   public void setType(String type) {
-    _type = type;
+    this._type = type;
   }
 
   /**
    * @deprecated Use the getAttributes function in XMLElement instead
    */
   public List getAttributes(XMLElement element) {
-    if (element != null)
-      return(element.getAttributes());
-    else
-      return(null);
+    if (element != null) {
+		return(element.getAttributes());
+	}
+	else {
+		return(null);
+	}
   }
 
   public abstract String toString();

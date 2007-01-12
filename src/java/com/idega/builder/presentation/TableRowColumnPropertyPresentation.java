@@ -23,24 +23,24 @@ public class TableRowColumnPropertyPresentation extends PresentationObjectContai
     IWContext _iwc;
 
     public TableRowColumnPropertyPresentation(String name,String value,IWContext iwc){
-      theMenu = new DropdownMenu(name);
-      add(theMenu);
-      IBPropertyHandler.getInstance().setDropdownToChangeValue(theMenu);
+      this.theMenu = new DropdownMenu(name);
+      add(this.theMenu);
+      IBPropertyHandler.getInstance().setDropdownToChangeValue(this.theMenu);
       //theMenu.setToSubmit();
-      previousSelected = value;
-      _iwc=iwc;
+      this.previousSelected = value;
+      this._iwc=iwc;
     }
 
     public void setRowOrColumnCount(int count,IWContext iwc){
-      numberOfColumns=count;
+      this.numberOfColumns=count;
       this.theMenu.removeElements();
       this.theMenu.addMenuElement("","Select:");
       for (int i = 1; i <= count; i++) {
         String sCount = Integer.toString(i);
-        theMenu.addMenuElement(sCount);
+        this.theMenu.addMenuElement(sCount);
       }
-      if(previousSelected!=null){
-        theMenu.setSelectedElement(previousSelected);
+      if(this.previousSelected!=null){
+        this.theMenu.setSelectedElement(this.previousSelected);
       }
     }
 

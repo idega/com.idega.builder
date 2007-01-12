@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.196 2006/02/20 17:59:05 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.190.2.1 2007/01/12 19:31:48 idegaweb Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -118,9 +118,9 @@ public class BuilderLogic implements Singleton {
 	public String PAGE_FORMAT_HTML="HTML";
 	public String PAGE_FORMAT_JSP_1_2="JSP_1_2";
 	
-	private String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2};
+	private String[] pageFormats = {this.PAGE_FORMAT_IBXML,this.PAGE_FORMAT_HTML,this.PAGE_FORMAT_JSP_1_2};
 	
-	protected BuilderLogic() {
+	private BuilderLogic() {
 		// empty
 	}
 
@@ -564,8 +564,9 @@ public class BuilderLogic implements Singleton {
 						PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
 						marker.add(addIcon);
 						
-						if (!clipboardEmpty)
+						if (!clipboardEmpty) {
 							marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
+						}
 						if (currentPage.getIsTemplate()) {
 							marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
 							if (tab.isLocked(x, y)){
@@ -588,8 +589,9 @@ public class BuilderLogic implements Singleton {
 					PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
 					marker.add(addIcon);
 										
-					if (!clipboardEmpty)
+					if (!clipboardEmpty) {
 						marker.add(getPasteIcon(newParentKey, tab.getLabel(x,y) ,iwc));
+					}
 					if (currentPage.getIsTemplate()) {
 						marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
 						if (tab.isLocked(x, y)){
@@ -700,7 +702,7 @@ public class BuilderLogic implements Singleton {
 		Iterator iter = getPageCacher().getPageCacheMap().values().iterator();
 		while(iter.hasNext()){
 			CachedBuilderPage page = (CachedBuilderPage)iter.next();
-			String cachedPageUri = page.getURIWithContextPath();
+			String cachedPageUri = page.getURI();
 			if(cachedPageUri!=null){
 				if(cachedPageUri.equals(pageUri)){
 					return page.getPageKey();
@@ -741,7 +743,7 @@ public class BuilderLogic implements Singleton {
 						//the string is not a number:
 						
 						//try to find the page in the cache first:
-						String pageKey = getPageKeyByURICached(requestURI);
+						String pageKey = getPageKeyByURICached(uriWithoutPages);
 						if(pageKey!=null){
 							return pageKey;
 						}
@@ -830,8 +832,9 @@ public class BuilderLogic implements Singleton {
 			theReturn = (String) iwc.getSessionAttribute(SESSION_PAGE_KEY);
 		}
 		// otherwise use startpage
-		else
+		else {
 			theReturn = String.valueOf(getInstance().getStartPageIdByServerName(iwc,iwc.getServerName()));
+		}
 		if (theReturn == null) {
 			return Integer.toString(getCurrentDomain(iwc).getStartPageID());
 		}
@@ -1055,8 +1058,9 @@ public class BuilderLogic implements Singleton {
 	public boolean pasteModuleIntoRegion(IWUserContext iwc, String pageKey, String regionId, String regionLabel) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
-		if (element == null)
+		if (element == null) {
 			return (false);
+		}
 		XMLElement toPaste = (XMLElement) element.clone();
 		if (XMLWriter.pasteElementLastIntoParentOrRegion(xml, pageKey, regionId, regionLabel,toPaste)) {
 			xml.store();
@@ -1078,8 +1082,9 @@ public class BuilderLogic implements Singleton {
 		System.out.println("parentID = " + parentID);
 		System.out.println("objectID = " + objectID);
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
-		if (element == null)
+		if (element == null) {
 			return (false);
+		}
 		XMLElement toPaste = (XMLElement) element.clone();
 		if (XMLWriter.pasteElementAbove(xml, pageKey, parentID, objectID, toPaste)) {
 			xml.store();
@@ -1091,8 +1096,9 @@ public class BuilderLogic implements Singleton {
 	public boolean pasteModuleBelow(IWUserContext iwc, String pageKey, String parentID, String objectID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
-		if (element == null)
+		if (element == null) {
 			return (false);
+		}
 		XMLElement toPaste = (XMLElement) element.clone();
 		if (XMLWriter.pasteElementBelow(xml, pageKey, parentID, objectID, toPaste)) {
 			xml.store();
@@ -1189,8 +1195,10 @@ public class BuilderLogic implements Singleton {
 				throw new Exception(e.getMessage());
 			}
 			
-			if(!returner) return false;
-			//insert
+			if(!returner) {
+				return false;
+				//insert
+			}
 
 			returner = XMLWriter.insertElementBelow(page,newParentId,moduleXMLCopy,instanceIdToPasteBelow);
 			if(!returner){
@@ -1214,8 +1222,9 @@ public class BuilderLogic implements Singleton {
 					List extend = xml.getUsingTemplate();
 					if (extend != null) {
 						Iterator i = extend.iterator();
-						while (i.hasNext())
+						while (i.hasNext()) {
 							lockRegion((String) i.next(), parentObjectInstanceID);
+						}
 					}
 				}
 			}
@@ -1299,11 +1308,13 @@ public class BuilderLogic implements Singleton {
 			//IWPropertyList complist = iwb.getComponentList();
 			IWPropertyList component = iwb.getComponentPropertyList(c.getName());
 			IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHODS_KEY);
-			if (methodlist == null)
+			if (methodlist == null) {
 				return (false);
+			}
 			IWPropertyList method = methodlist.getPropertyList(propertyName);
-			if (method == null)
+			if (method == null) {
 				return (false);
+			}
 			IWProperty prop = method.getIWProperty(IBPropertyHandler.METHOD_PROPERTY_ALLOW_MULTIVALUED);
 			if (prop != null) {
 				boolean value = prop.getBooleanValue();
@@ -1549,24 +1560,17 @@ public class BuilderLogic implements Singleton {
 	public String getCurrentPageHtml(IWContext iwc) {
 		String ibpage = getCurrentIBPage(iwc);
 		ICDomain domain = getCurrentDomain(iwc);
-		String sUrl = domain.getURL();
-		//cut the last '/' away to avoid double '/'
-		if(sUrl!=null){
-			if(sUrl.endsWith("/")){
-				sUrl = sUrl.substring(0,sUrl.length()-1);
-			}
-		}
-		StringBuffer url = new StringBuffer(sUrl);
+		StringBuffer url = new StringBuffer(domain.getURL());
 		//    url.append(IWMainApplication.BUILDER_SERVLET_URL);
 		//    url.append(iwc.getApplication().getBuilderServletURI());
 		//    url.append("?");
 		//    url.append(IB_PAGE_PARAMETER);
 		//    url.append("=");
-
 		url.append(this.getIBPageURL(iwc, Integer.parseInt(ibpage)));
-		
-		if (url.toString().indexOf("http") == -1)
+
+		if (url.toString().indexOf("http") == -1) {
 			url.insert(0, "http://");
+		}
 
 		String html = FileUtil.getStringFromURL(url.toString());
 		return (html);
@@ -1596,10 +1600,10 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public PageCacher getPageCacher(){
-		if(pageCacher==null){
+		if(this.pageCacher==null){
 			setPageCacher(new PageCacher());
 		}		
-		return pageCacher;
+		return this.pageCacher;
 	}
 	
 	public void setPageCacher(PageCacher pageCacherInstance){
@@ -1612,10 +1616,10 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public synchronized IBPageHelper getIBPageHelper(){
-		if(ibPageHelper==null){
+		if(this.ibPageHelper==null){
 			setIBPageHelper(new IBPageHelper());
 		}
-		return ibPageHelper;
+		return this.ibPageHelper;
 	}
 	public void setIBPageHelper(IBPageHelper ibPageHelper){
 		this.ibPageHelper=ibPageHelper;
@@ -1627,7 +1631,7 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public String[] getPageFormatsSupported(){
-		return pageFormats;
+		return this.pageFormats;
 	}
 	
 	/**
@@ -1649,7 +1653,7 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public String getDefaultPageFormat(){
-		return PAGE_FORMAT_IBXML;
+		return this.PAGE_FORMAT_IBXML;
 	}
 
 	/**
@@ -1836,21 +1840,10 @@ public class BuilderLogic implements Singleton {
 			newComponent = (UIComponent) component.getClass().newInstance();
 			newComponent.setId(instanceId);
 			PropertyCache.getInstance().setAllCachedPropertiesOnInstance(instanceId, newComponent);
-			List childrenList = component.getChildren();
-			Iterator childrenListIterator = childrenList.iterator();
-			while (childrenListIterator.hasNext()) {
-				UIComponent childComponent = (UIComponent) childrenListIterator.next();
-				UIComponent newChildComponent = getCopyOfUIComponentFromIBXML(childComponent);
-				if (newChildComponent != null) {
-					newComponent.getChildren().add(newChildComponent);
-				}
-			}
 		}
-		catch (InstantiationException ex) {
-			return null;
-		}
-		catch (IllegalAccessException ex) {
-			return null;
+		catch (Exception e) {
+			e.printStackTrace();
+			return component;
 		}
 		return newComponent;
 	}
@@ -1940,71 +1933,4 @@ public class BuilderLogic implements Singleton {
 	public IWBundle getBuilderBundle(){
 		return IWMainApplication.getDefaultIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 	}
-	
-	
-	public boolean isFirstBuilderRun(){
-		ICDomain domain =  getCurrentDomain();
-		if(domain.getStartPageID()==-1){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
-
-	/**
-	 * <p>
-	 * TODO tryggvil describe method initializeBuilderStructure
-	 * </p>
-	 * @param domain
-	 * @param frontPageName
-	 * @throws Exception 
-	 */
-	public void initializeBuilderStructure(ICDomain domain, String frontPageName) throws Exception {
-	    
-		ICPageHome pageHome = getICPageHome();
-
-	    ICPage page = pageHome.create();
-	    String rootPageName = frontPageName;
-	    page.setName(rootPageName);
-	    page.setDefaultPageURI("/");
-	    page.setType(com.idega.builder.data.IBPageBMPBean.PAGE);
-	    page.store();
-	    unlockRegion(page.getPrimaryKey().toString(),"-1",null);
-
-	    ICPage page2 = pageHome.create();
-	    page2.setName(frontPageName+" - Template");
-	    page2.setType(com.idega.builder.data.IBPageBMPBean.TEMPLATE);
-	    page2.store();
-
-	    unlockRegion(page2.getPageKey(),"-1",null);
-
-	    page.setTemplateKey(page2.getPageKey());
-	    page.store();
-
-	    domain.setIBPage(page);
-	    domain.setStartTemplate(page2);
-	    domain.store();
-
-	    setTemplateId(page.getPrimaryKey().toString(),page2.getPrimaryKey().toString());
-	    getIBXMLPage(page2.getPrimaryKey().toString()).addPageUsingThisTemplate(page.getPrimaryKey().toString());
-	    
-	    clearAllCachedPages();
-	}
-
-	/**
-	 * <p>
-	 * TODO tryggvil describe method getICPageHome
-	 * </p>
-	 * @return
-	 */
-	private ICPageHome getICPageHome() {
-		try {
-			return (ICPageHome)IDOLookup.getHome(ICPage.class);
-		}
-		catch (IDOLookupException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 }

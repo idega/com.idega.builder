@@ -1,5 +1,5 @@
 /*
- * $Id: TreeNodeFinder.java,v 1.10 2004/10/13 12:52:01 thomas Exp $
+ * $Id: TreeNodeFinder.java,v 1.10.2.1 2007/01/12 19:31:46 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -124,9 +124,9 @@ public class TreeNodeFinder {
 
 			StringBuffer sql = new StringBuffer();
 			/**
-			 * @todo til að útiloka dpt_síður í famtíðinni þarf að sækja relationship 
-			 * útfrá child en ekki parent annar getur komið plús í tréð þar sem hann 
-			 * á ekki heima þ.e. að childpage.getColumnType() = pages.PAGE
+			 * @todo til aï¿½ ï¿½tiloka dpt_sï¿½ï¿½ur ï¿½ famtï¿½ï¿½inni ï¿½arf aï¿½ sï¿½kja relationship 
+			 * ï¿½tfrï¿½ child en ekki parent annar getur komiï¿½ plï¿½s ï¿½ trï¿½ï¿½ ï¿½ar sem hann 
+			 * ï¿½ ekki heima ï¿½.e. aï¿½ childpage.getColumnType() = pages.PAGE
 			 */
 			sql.append("select * from ");
 			sql.append(pages.getEntityName() ).append( "_tree t, ");
@@ -153,8 +153,9 @@ public class TreeNodeFinder {
 					int childId = result.getInt("child_" + pages.getIDColumnName());
 
 					if (parentId != -1 && childId != -1) {
-						if (ret == null)
+						if (ret == null) {
 							ret = new Vector();
+						}
 
 						ret.add(new Integer(parentId));
 						ret.add(new Integer(childId));
@@ -229,8 +230,9 @@ public class TreeNodeFinder {
 					int childId = result.getInt("child_" + pages.getIDColumnName());
 
 					if (parentId != -1 && childId != -1) {
-						if (ret == null)
+						if (ret == null) {
 							ret = new Vector();
+						}
 
 						ret.add(new Integer(parentId));
 						ret.add(new Integer(childId));

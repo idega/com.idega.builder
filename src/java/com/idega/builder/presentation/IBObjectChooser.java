@@ -57,10 +57,12 @@ public class IBObjectChooser extends AbstractChooser {
 	}
 	  
 	public void setSelectedObject(ICObject object){
-		if(useClassValue)
+		if(this.useClassValue) {
 			super.setChooserValue(object.getName(),object.getClassName());
-		else
+		}
+		else {
 			super.setChooserValue(object.getName(),object.getID());
+		}
 	 }
 	 
 
@@ -70,7 +72,8 @@ public class IBObjectChooser extends AbstractChooser {
 	 
 	 public void setToUseClassValue(boolean use){
 	 	this.useClassValue = use;
-	 	if(use)
-	 		super.addParameterToChooserLink(USE_CLASS_VALUE,"true");
+	 	if(use) {
+			super.addParameterToChooserLink(USE_CLASS_VALUE,"true");
+		}
 	 }
 }

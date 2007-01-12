@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.8 2004/06/28 14:07:21 thomas Exp $
+ * $Id: IBPageHandler.java,v 1.8.2.1 2007/01/12 19:32:33 idegaweb Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,8 +37,9 @@ public class IBPageHandler implements ICPropertyHandler {
 				Map tree = PageTreeNode.getTree(iwc);
 				if (tree != null) {
 					PageTreeNode node = (PageTreeNode) tree.get(Integer.valueOf(value));
-					if (node != null)
+					if (node != null) {
 						chooser.setSelectedPage(node.getNodeID(), node.getNodeName());
+					}
 				}
 			}
 		}

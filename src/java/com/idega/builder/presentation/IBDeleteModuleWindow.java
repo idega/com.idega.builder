@@ -56,8 +56,9 @@ public class IBDeleteModuleWindow extends IBAdminWindow {
 			add(getConfirmBox(iwc));
 		}
 		else {
-			if (iwc.getParameter("not_again") != null)
+			if (iwc.getParameter("not_again") != null) {
 				setCookie(iwc);
+			}
 			deleteObject(ib_page_id, ib_parent_id, instanceId);
 			this.close();
 		}

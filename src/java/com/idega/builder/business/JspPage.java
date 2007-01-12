@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.9 2005/12/14 00:45:22 tryggvil Exp $
+ * $Id: JspPage.java,v 1.5.2.1 2007/01/12 19:31:48 idegaweb Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,7 +16,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.util.StringHandler;
 
 
 /**
@@ -25,52 +24,20 @@ import com.idega.util.StringHandler;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2005/12/14 00:45:22 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/01/12 19:31:48 $ by $Author: idegaweb $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.5.2.1 $
  */
 public class JspPage extends CachedBuilderPage {
 	
-	private static final String BUILDERPAGE_PREFIX = "builderpage_";
-	private static final int BUILDERPAGE_PREFIX_LENGTH = BUILDERPAGE_PREFIX.length();
-	private static final String JSP_PAGE_EXTENSION_WITH_DOT = ".jsp";
-	private static final int JSP_PAGE_EXTENSION_WITH_DOT_LENGTH = JSP_PAGE_EXTENSION_WITH_DOT.length();
-	
-	/**
-	 * Returns page key if the view id represents a JSPPage else null. 
-	 * 
-	 * @param viewId
-	 * @return
-	 */
-	public static String getPageKey(String viewId) {
-		// we are looking for something like "/jsps/builderpage_12.jsp"
-		// quick check at the beginning
-		if (! viewId.endsWith(JSP_PAGE_EXTENSION_WITH_DOT)) {
-			// no jsp page at all
-			return null;
-		}
-		int startIndex = viewId.lastIndexOf(BUILDERPAGE_PREFIX);
-		if (startIndex < 0) {
-			// jsp page but not a builder page
-			return null;
-		}
-		startIndex += BUILDERPAGE_PREFIX_LENGTH;
-		int endIndex = viewId.length() - JSP_PAGE_EXTENSION_WITH_DOT_LENGTH;
-		String key = viewId.substring(startIndex, endIndex);
-		if (StringHandler.isNaturalNumber(key)) {
-			return key;
-		}
-		return null;
-	}
-	
-	public String getURIWithContextPath() {
+	public String getURI() {
 		/*String parentUri = getParent().getURI();
 		String pageUri = getPageUri();
 		
 		String newUri = parentUri+pageUri;
 		return newUri;*/
-		return super.getURIWithContextPath();
+		return super.getURI();
 		
 	}
 	private static Logger log = Logger.getLogger(JspPage.class.getName());
@@ -92,9 +59,7 @@ public class JspPage extends CachedBuilderPage {
 		}
 		
 		private String getJSPFileName(){
-			StringBuffer buffer = new StringBuffer(BUILDERPAGE_PREFIX);
-			buffer.append(getPageKey()).append(JSP_PAGE_EXTENSION_WITH_DOT);
-			return buffer.toString();
+			return "builderpage_"+getPageKey()+".jsp";
 		}
 		
 		private String getJspFilesFolderName(){
@@ -136,7 +101,7 @@ public class JspPage extends CachedBuilderPage {
 				pageStream.close();
 				jspStream.close();*/
 				
-				log.finer("Streaming builder page with uri: "+getURIWithContextPath()+" to disk in file: "+jspFile.toURL().toString());
+				log.finer("Streaming builder page with uri: "+getURI()+" to disk in file: "+jspFile.toURL().toString());
 				
 				InputStreamReader reader = new InputStreamReader(pageStream,"UTF-8");//,encoding);
 				int bufferlength=1000;
@@ -167,7 +132,7 @@ public class JspPage extends CachedBuilderPage {
 		 * @return Returns the isLoadedToDisk.
 		 */
 		public boolean isLoadedToDisk() {
-			return isLoadedToDisk;
+			return this.isLoadedToDisk;
 		}
 		/**
 		 * @param isLoadedToDisk The isLoadedToDisk to set.
@@ -177,10 +142,10 @@ public class JspPage extends CachedBuilderPage {
 		}
 		
 		public String getResourceURI(){
-			if(resourceURI==null){
-				resourceURI="/"+getJspFilesFolderName()+"/"+getJSPFileName();
+			if(this.resourceURI==null){
+				this.resourceURI="/"+getJspFilesFolderName()+"/"+getJSPFileName();
 			}
-			return resourceURI;
+			return this.resourceURI;
 		}
 		
 		public void initializeEmptyPage(){
@@ -192,7 +157,7 @@ public class JspPage extends CachedBuilderPage {
 					templateReference="template=\""+templateKey+"\"";
 				}
 			}
-			String source = "<?xml version=\"1.0\"?>\n<jsp:root xmlns:jsp=\"http://java.sun.com/JSP/Page\"\nxmlns:h=\"http://java.sun.com/jsf/html\"\nxmlns:jsf=\"http://java.sun.com/jsf/core\"\nxmlns:builder=\"http://xmlns.idega.com/com.idega.builder\"\n version=\"1.2\">\n<jsp:directive.page contentType=\"text/html\" pageEncoding=\"UTF-8\"/>\n<jsf:view>\n<builder:page id=\"builderpage_"+getPageKey()+"\" "+templateReference+">\n</builder:page>\n</jsf:view>\n</jsp:root>";
+			String source = "<?xml version=\"1.0\"?>\n<jsp:root xmlns:jsp=\"http://java.sun.com/JSP/Page\"\nxmlns:h=\"http://java.sun.com/jsf/html\"\nxmlns:jsf=\"http://java.sun.com/jsf/core\"\nxmlns:builder=\"http://xmlns.idega.com/com.idega.builder\"\n version=\"1.2\">\n<jsp:directive.page contentType=\"text/html;charset=UTF-8\" pageEncoding=\"UTF-8\"/>\n<jsf:view>\n<builder:page id=\"builderpage_"+getPageKey()+"\" "+templateReference+">\n</builder:page>\n</jsf:view>\n</jsp:root>";
 			try {
 				setSourceFromString(source);
 			}
