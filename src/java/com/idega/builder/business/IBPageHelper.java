@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.64 2006/12/20 12:47:24 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.65 2007/01/16 10:08:37 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -779,8 +779,7 @@ public class IBPageHelper implements Singleton  {
 				ICPage domainStartPageOrStartTemplate = (isPage) ? domain.getStartPage() : domain.getStartTemplate();
 				int domainStartPageOrStartTemplateId = ((Integer) domainStartPageOrStartTemplate.getPrimaryKey()).intValue();
 				if (domainStartPageOrStartTemplateId == pageIdInt) {
-					System.err.println("[IBPageHelper] Page that is the start page of the domain can't be deleted.");
-					return false;
+					System.err.println("[IBPageHelper] Page that is the start page of the domain can't be deleted.");	
 				}
 				// everything is fine. Now delete the top level page
 				correspondingStartPage.remove();
