@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.51.2.1 2007/01/12 19:31:46 idegaweb Exp $
+ * $Id: IBPageHelper.java,v 1.51.2.2 2007/01/17 13:23:55 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,8 +19,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
@@ -28,7 +30,6 @@ import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
 import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
