@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.2 2006/06/01 17:30:04 tryggvil Exp $
+ * $Id: IBXMLReader.java,v 1.3 2007/01/19 11:38:19 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -87,6 +87,9 @@ public class IBXMLReader {
 		Page parentContainer = null;
 		String pageKey = null;
 		XMLElement root = ibxml.getRootElement();
+		if (root == null) {
+			return parentContainer;
+		}
 		XMLElement pageXML = root.getChild(IBXMLConstants.PAGE_STRING);
 		List pageAttr = pageXML.getAttributes();
 		Iterator attr = pageAttr.iterator();

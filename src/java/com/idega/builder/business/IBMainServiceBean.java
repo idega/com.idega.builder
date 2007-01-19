@@ -205,6 +205,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 			// file value is empty get a xml description of the page
 			IBXMLPage xmlPage = getBuilderLogic().getPageCacher().getIBXML(this.getPrimaryKey().toString());
 			XMLElement rootElement = xmlPage.getRootElement();
+			if (rootElement == null) {
+				return null;
+			}
 			// remove connection to document
 			rootElement.detach();
 			// convert to xml data, because for that class a writer already exists

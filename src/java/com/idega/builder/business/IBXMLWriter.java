@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.2 2006/05/27 09:41:14 laddi Exp $
+ * $Id: IBXMLWriter.java,v 1.3 2007/01/19 11:38:19 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -131,7 +131,10 @@ public class IBXMLWriter {
 	private XMLElement findXMLElementInside(IBXMLAble xml, String attributeKey, String attributeValue,
 			String name2, XMLElement parentElement) {
 		//TODO remove unused String name2
-		List list = parentElement.getChildren();
+		List list = null;
+		if (parentElement != null) {
+			list = parentElement.getChildren();
+		}
 		
 		//Hardcoded -1 for the top Page element
 		if ("-1".equals(attributeValue)) {

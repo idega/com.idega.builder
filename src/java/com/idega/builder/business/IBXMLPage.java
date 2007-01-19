@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.65 2006/11/29 17:36:12 valdas Exp $
+ * $Id: IBXMLPage.java,v 1.66 2007/01/19 11:38:19 valdas Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -20,6 +20,9 @@ import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
@@ -39,10 +42,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2006/11/29 17:36:12 $ by $Author: valdas $
+ *  Last modified: $Date: 2007/01/19 11:38:19 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -51,6 +54,8 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * Comment for <code>serialVersionUID</code>
 	 */
 	private static final long serialVersionUID = -2693227585756124885L;
+	private static final Log logger = LogFactory.getLog(IBXMLPage.class);
+	
 	private XMLParser parser = null;
 	private XMLDocument xmlDocument = null;
 	private XMLElement rootElement = null;
@@ -211,6 +216,11 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @param stream
 	 */
 	protected synchronized void storeStream(OutputStream stream) {
+		XMLDocument doc = getXMLDocument();
+		if (doc == null) {
+			logger.error("XMLDocument is not initialized");
+			return;
+		}
 		try {
 			//Double check for the case when changing type from IBXML to HTML
 			if(this.getPageFormat().equals(IBPageBMPBean.FORMAT_IBXML)){
@@ -219,7 +229,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 					output.setLineSeparator(System.getProperty("line.separator"));
 					output.setTextNormalize(true);
 					output.setEncoding("UTF-8");
-					output.output(getXMLDocument(), stream);
+					output.output(doc, stream);
 					stream.close();
 			}
 			else{
@@ -269,7 +279,8 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 
 	private XMLDocument getXMLDocument(){
 		if(this.xmlDocument==null){
-			throw new RuntimeException(this.getClass()+": xmlDocument is not initialized");
+			//throw new RuntimeException(this.getClass()+": xmlDocument is not initialized");
+			logger.error(this.getClass() + ": xmlDocument is not initialized");
 		}
 		return this.xmlDocument;
 	}
@@ -365,7 +376,10 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 */
 	public XMLElement getRootElement() {
 		if(this.rootElement==null){
-			this.rootElement=getXMLDocument().getRootElement();
+			XMLDocument doc = getXMLDocument();
+			if (doc != null) {
+				this.rootElement = doc.getRootElement();
+			}
 		}
 		return this.rootElement;
 	}
