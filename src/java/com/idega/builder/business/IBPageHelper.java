@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.66 2007/01/17 13:06:48 justinas Exp $
+ * $Id: IBPageHelper.java,v 1.67 2007/01/22 05:52:20 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -695,6 +695,17 @@ public class IBPageHelper implements Singleton  {
 				// If current page is a top level page, we need to delete it
 				if (found && start != null) {
 					start.remove();
+					//If current page is start page, we need to set other top level page as start page					
+					if(domain.getStartPageID() == pageId){						
+						Collection startPages = getStartPages(domain);
+							for (Iterator iter = startPages.iterator(); iter.hasNext();) {
+								IBStartPage element = (IBStartPage) iter.next();
+								if (element.getPageId() != pageId){
+									domain.setIBPage(getIBPageHome().findByPrimaryKey(element.getPageId()));
+									domain.store();
+								}
+							}
+					}
 					getBuilderLogic().clearAllCachedPages();
 				}
 			}
