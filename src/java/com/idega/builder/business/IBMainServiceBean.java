@@ -5,6 +5,7 @@ package com.idega.builder.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.FinderException;
@@ -321,5 +322,25 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public void setCurrentPageId(IWContext iwc, String pageKey) {
 		getBuilderLogic().setCurrentIBPage(iwc, pageKey);
+	}
+	
+	public boolean addPropertyToModule(String pageKey, String moduleId, String propName, String propValue) {
+		return getBuilderLogic().addPropertyToModule(pageKey, moduleId, propName, propValue);
+	}
+	
+	public List<String> getModuleId(String pageKey, String moduleClass) {
+		return getBuilderLogic().getModuleId(pageKey, moduleClass);
+	}
+	
+	public boolean isPropertySet(String pageKey, String instanceId, String propertyName, IWMainApplication iwma) {
+		return getBuilderLogic().isPropertySet(pageKey, instanceId, propertyName, iwma);
+	}
+	
+	public boolean isPropertyValueSet(String pageKey, String moduleId, String propertyName, String propertyValue) {
+		return getBuilderLogic().isPropertyValueSet(pageKey, moduleId, propertyName, propertyValue);
+	}
+	
+	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove) {
+		return getBuilderLogic().removeValueFromModuleProperty(pageKey, moduleId, propertyName, valueToRemove);
 	}
 }

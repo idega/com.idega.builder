@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.66 2007/01/19 11:38:19 valdas Exp $
+ * $Id: IBXMLPage.java,v 1.67 2007/01/26 05:51:00 valdas Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2007/01/19 11:38:19 $ by $Author: valdas $
+ *  Last modified: $Date: 2007/01/26 05:51:00 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -277,7 +277,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		}
 	}
 
-	private XMLDocument getXMLDocument(){
+	protected XMLDocument getXMLDocument(){
 		if(this.xmlDocument==null){
 			//throw new RuntimeException(this.getClass()+": xmlDocument is not initialized");
 			logger.error(this.getClass() + ": xmlDocument is not initialized");

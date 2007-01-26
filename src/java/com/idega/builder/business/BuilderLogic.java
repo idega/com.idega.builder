@@ -1,10 +1,11 @@
 /*
- * $Id: BuilderLogic.java,v 1.219 2006/12/20 09:31:02 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.220 2007/01/26 05:53:07 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,6 +17,11 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
 
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
@@ -71,6 +77,7 @@ import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
+import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 
 
@@ -338,7 +345,7 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public Page getPermissionTransformed(int groupId, Page page, IWContext iwc) {
-		List groupIds = new Vector();
+		List<String> groupIds = new Vector<String>();
 		groupIds.add(Integer.toString(groupId));
 		try {
 			List groups = AccessControl.getPermissionGroups(((com.idega.core.data.GenericGroupHome) com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId));
@@ -1029,6 +1036,29 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace(System.err);
 			return (false);
 		}
+	}
+	
+	/**
+	 * Adds method with parameters to IBXMLPage
+	 * @param pageKey
+	 * @param moduleId
+	 */
+	public boolean addPropertyToModule(String pageKey, String moduleId, String propName, String propValue) {
+		if (pageKey == null || moduleId == null || propName == null || propValue == null) {
+			return false;
+		}
+		FacesContext f = FacesContext.getCurrentInstance();
+		IWContext iwc = IWContext.getIWContext(f);
+		if (iwc == null) {
+			return false;
+		}
+		StringBuffer values = new StringBuffer();
+		String currentValue = getProperty(pageKey, moduleId, propName);
+		if (currentValue != null) {
+			values.append(currentValue).append(IBXMLConstants.COMMA_STRING);
+		}
+		values.append(propValue);
+		return setProperty(pageKey, moduleId, propName, values.toString(), iwc.getIWMainApplication());
 	}
 
 	/**
@@ -2194,5 +2224,156 @@ public class BuilderLogic implements Singleton {
 	
 	public boolean movePageToTopLevel(int pageID, IWContext iwc) {
 		return getIBPageHelper().movePageToTopLevel(pageID, iwc);
+	}
+	
+	/**
+	 * Finds the modules' ids
+	 * @param pageKey
+	 * @param moduleClass
+	 * @return
+	 */
+	public List<String> getModuleId(String pageKey, String moduleClass) {
+		if (pageKey == null || moduleClass == null) {
+			return null;
+		}
+		IBXMLPage page = getIBXMLPage(pageKey);
+		if (page == null) {
+			return null;
+		}
+		XMLDocument doc = page.getXMLDocument();
+		if (doc == null) {
+			return null;
+		}
+		Document d = (Document) doc.getDocument();
+		Iterator elements = d.getDescendants();
+		if (elements == null) {
+			return null;
+		}
+		Element element = null;
+		Attribute elementClass = null;
+		Attribute elementId = null;
+		Object o = null;
+		List<String> ids = new ArrayList<String>();
+		for (Iterator it = elements; it.hasNext();) {
+			o = it.next();
+			if (o instanceof Element) {
+				element = (Element) o;
+			}
+			elementClass = element.getAttribute(IBXMLConstants.CLASS_STRING);
+			if (elementClass != null) {
+				if (moduleClass.equals(elementClass.getValue())) {
+					elementId = element.getAttribute(IBXMLConstants.ID_STRING);
+					if (elementId != null) {
+						if (!ids.contains(elementId.getValue())) {
+							ids.add(elementId.getValue());
+						}
+					}
+				}
+			}
+		}
+		return ids;
+	}
+	
+	/**
+	 * Checks if exact value is set to properties parameter
+	 * @param pageKey
+	 * @param moduleId
+	 * @param propertyName
+	 * @param propertyValue
+	 * @return
+	 */
+	public boolean isPropertyValueSet(String pageKey, String moduleId, String propertyName, String propertyValue) {
+		if (pageKey == null || moduleId == null || propertyName == null || propertyValue == null) {
+			return false;
+		}
+		
+		IBXMLPage xml = getIBXMLPage(pageKey);
+		if (xml == null) {
+			return false;
+		}
+		XMLElement parent = getIBXMLWriter().findModule(xml, moduleId);
+		if (parent == null) {
+			return false;
+		}
+		XMLElement property = getIBXMLWriter().findProperty(parent, propertyName);
+		if (property == null) {
+			return false;
+		}
+		XMLAttribute value = property.getAttribute(IBXMLConstants.VALUE_STRING);
+		if (value == null) {
+			return false;
+		}
+		if (value.getValue() == null) {
+			return false;
+		}
+		if (value.getValue().indexOf(propertyValue) == -1) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Finds exact value and removes from property value (attribute) string
+	 * @param pageKey
+	 * @param moduleId
+	 * @param propertyName
+	 * @param valueToRemove
+	 * @return
+	 */
+	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove) {
+		if (pageKey == null || moduleId == null || propertyName == null || valueToRemove == null) {
+			return false;
+		}
+		IBXMLPage xml = getIBXMLPage(pageKey);
+		if (xml == null) {
+			return false;
+		}
+		XMLElement parent = getIBXMLWriter().findModule(xml, moduleId);
+		if (parent == null) {
+			return false;
+		}
+		XMLElement property = getIBXMLWriter().findProperty(parent, propertyName);
+		if (property == null) {
+			return false;
+		}
+		XMLAttribute value = property.getAttribute(IBXMLConstants.VALUE_STRING);
+		if (value == null) {
+			return false;
+		}
+		if (value.getValue() == null) {
+			return false;
+		}
+		if (value.getValue().indexOf(valueToRemove) == -1) {
+			return false;
+		}
+		String[] validValues = value.getValue().split(valueToRemove);
+		if (validValues == null) {
+			property.detach();
+			xml.store();
+			return true;
+		}
+		if (validValues.length == 0) {
+			property.detach();	
+		}
+		
+		StringBuffer newValue = new StringBuffer();
+		String[] temp = null;
+		for (int i = 0; i < validValues.length; i++) {
+			if (!validValues[i].equals(IBXMLConstants.EMPTY_STRING) && !validValues[i].equals(IBXMLConstants.COMMA_STRING)) {
+				temp = validValues[i].split(IBXMLConstants.COMMA_STRING);
+				for (int j = 0; j < temp.length; j++) {
+					if (!temp[j].equals(IBXMLConstants.EMPTY_STRING)) {
+						newValue.append(temp[j].trim());
+						if (j + 1 < temp.length) {
+							newValue.append(IBXMLConstants.COMMA_STRING);
+						}
+					}
+				}
+			}
+		}
+		value.setValue(newValue.toString());
+		
+		xml.store();
+		return true;
 	}
 }

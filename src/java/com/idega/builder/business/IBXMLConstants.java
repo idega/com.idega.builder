@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLConstants.java,v 1.1 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: IBXMLConstants.java,v 1.2 2007/01/26 05:51:00 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -94,4 +94,7 @@ public abstract class IBXMLConstants {
   public static final String MODULE_CLASS = "class";
   public static final String MODULE_BUNDLE = "bundle";
   public static final String MODULE_TYPE = "type";
+  
+  public static final String EMPTY_STRING = "";
+  public static final String COMMA_STRING = ",";
 }

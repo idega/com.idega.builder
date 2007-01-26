@@ -3,6 +3,8 @@ package com.idega.builder.business;
 
 import com.idega.core.builder.data.ICDomain;
 import com.idega.presentation.IWContext;
+
+import java.util.List;
 import java.util.Map;
 import com.idega.core.builder.business.BuilderPageWriterService;
 import com.idega.core.builder.business.BuilderService;
@@ -237,4 +239,17 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#setCurrentPageId
 	 */
 	public void setCurrentPageId(IWContext iwc, String pageKey);
+	
+	/**
+	 * @see com.idega.builder.business.IBMainServiceBean#addPropertyToModule
+	 */
+	public boolean addPropertyToModule(String pageKey, String moduleId, String propName, String propValue);
+	
+	public List<String> getModuleId(String pageKey, String moduleClass);
+	
+	public boolean isPropertySet(String pageKey, String instanceId, String propertyName, IWMainApplication iwma);
+	
+	public boolean isPropertyValueSet(String pageKey, String moduleId, String propertyName, String propertyValue);
+	
+	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove);
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.3 2007/01/19 11:38:19 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.4 2007/01/26 05:54:33 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -35,7 +35,6 @@ import com.idega.xml.XMLException;
 public class IBXMLWriter {
 
 	private Logger log = Logger.getLogger(IBXMLWriter.class.getName());
-	private final String EMPTY_STRING = "";
 	
 	/**
 	 * <p>
@@ -319,7 +318,7 @@ public class IBXMLWriter {
 	/**
 	 *  
 	 */
-	private XMLElement findProperty(XMLElement parentElement, String propertyName) {
+	protected XMLElement findProperty(XMLElement parentElement, String propertyName) {
 		XMLElement elem = parentElement;
 		if (elem != null) {
 			List properties = elem.getChildren();
@@ -408,7 +407,15 @@ public class IBXMLWriter {
 		XMLElement property = findProperty(module, propertyName);
 		if (property != null) {
 			XMLElement value = property.getChild(IBXMLConstants.VALUE_STRING);
-			return value.getText();
+			if (value != null) {
+				return value.getText();
+			}
+			else {
+				XMLAttribute attrValue = property.getAttribute(IBXMLConstants.VALUE_STRING);
+				if (attrValue != null) {
+					return attrValue.getValue();
+				}
+			}
 		}
 		return null;
 	}
@@ -453,7 +460,7 @@ public class IBXMLWriter {
 				return false;
 			}
 			else {
-				if (s.equals(this.EMPTY_STRING)) {
+				if (s.equals(IBXMLConstants.EMPTY_STRING)) {
 					return false;
 				}
 			}
@@ -516,6 +523,7 @@ public class IBXMLWriter {
 				//only support one value for now:
 				String value = propertyValues[0];
 				property.setAttribute(IBXMLConstants.VALUE_STRING, value);
+				changed = true;
 			}
 		}
 		return changed;
