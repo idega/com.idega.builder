@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.220 2007/01/26 05:53:07 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.221 2007/01/29 01:22:52 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2346,32 +2346,40 @@ public class BuilderLogic implements Singleton {
 		if (value.getValue().indexOf(valueToRemove) == -1) {
 			return false;
 		}
-		String[] validValues = value.getValue().split(valueToRemove);
-		if (validValues == null) {
+		String[] propertyValues = value.getValue().split(IBXMLConstants.COMMA_STRING);
+		if (propertyValues == null) {
 			property.detach();
 			xml.store();
 			return true;
 		}
-		if (validValues.length == 0) {
-			property.detach();	
+		if (propertyValues.length == 0) {
+			property.detach();
 		}
 		
 		StringBuffer newValue = new StringBuffer();
-		String[] temp = null;
-		for (int i = 0; i < validValues.length; i++) {
-			if (!validValues[i].equals(IBXMLConstants.EMPTY_STRING) && !validValues[i].equals(IBXMLConstants.COMMA_STRING)) {
-				temp = validValues[i].split(IBXMLConstants.COMMA_STRING);
-				for (int j = 0; j < temp.length; j++) {
-					if (!temp[j].equals(IBXMLConstants.EMPTY_STRING)) {
-						newValue.append(temp[j].trim());
-						if (j + 1 < temp.length) {
-							newValue.append(IBXMLConstants.COMMA_STRING);
-						}
-					}
+		boolean foundValueToRemove = false;
+		boolean canAppendValue = true;
+		for (int i = 0; i < propertyValues.length; i++) {
+			canAppendValue = true;
+			if (!foundValueToRemove) {
+				if (propertyValues[i].equals(valueToRemove)) {
+					foundValueToRemove = true;
+					canAppendValue = false;
 				}
 			}
+			if (canAppendValue) {
+				if (i > 0 && propertyValues.length > 2) {
+					newValue.append(IBXMLConstants.COMMA_STRING);
+				}
+				newValue.append(propertyValues[i]);
+			}
 		}
-		value.setValue(newValue.toString());
+		if (newValue.toString().equals(IBXMLConstants.EMPTY_STRING)) {
+			property.detach();
+		}
+		else {
+			value.setValue(newValue.toString());
+		}
 		
 		xml.store();
 		return true;
