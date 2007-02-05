@@ -5,8 +5,8 @@
 	xmlns:ws="http://xmlns.idega.com/com.idega.workspace" version="1.2">
     <jsp:directive.page contentType="text/html"/>
 	<f:view>
-		<ws:page id="workspacebuilderapp1" showFunctionMenu="false">
-			<h:form id="workspacebuilderappform1">
+		<ws:page id="workspacepage1" showFunctionMenu="false">
+			<h:form id="workspaceform1">
 			</h:form>
 		</ws:page>
 	</f:view>
