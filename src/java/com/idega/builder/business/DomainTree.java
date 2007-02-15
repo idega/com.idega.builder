@@ -1,5 +1,5 @@
 /*
- * $Id: DomainTree.java,v 1.3 2006/06/02 10:27:56 tryggvil Exp $
+ * $Id: DomainTree.java,v 1.4 2007/02/15 11:52:46 justinas Exp $
  * Created on 26.5.2006 in project com.idega.builder
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.idegaweb.IWApplicationContext;
  * <p>
  * Cache for each domain and its page and templates tree
  * </p>
- *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/02/15 11:52:46 $ by $Author: justinas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DomainTree extends DefaultTreeNode {
 	
@@ -92,6 +92,9 @@ public class DomainTree extends DefaultTreeNode {
 				id = this.domain.getStartTemplateID();
 			}
 			PageTreeNode startNode = new PageTreeNode(id, iwc);
+//
+//			startNode.setOrder(order)
+//
 			parent.getChildren().add(startNode);
 			try {
 				java.util.Collection coll = null;
@@ -102,10 +105,15 @@ public class DomainTree extends DefaultTreeNode {
 					coll = getTemplateStartPages(this.domain);
 				}
 				java.util.Iterator it = coll.iterator();
+				int order = 0;
 				while (it.hasNext()) {
+					order++;
 					com.idega.builder.data.IBStartPage startPage = (com.idega.builder.data.IBStartPage) it.next();
 					if (startPage.getPageId() != id) {
-						parent.getChildren().add(new PageTreeNode(startPage.getPageId(), iwc));
+						PageTreeNode node = new PageTreeNode(startPage.getPageId(), iwc);
+//						node.setOrder(order);
+						parent.getChildren().add(node);
+//						parent.getChildren().
 					}
 				}
 			}

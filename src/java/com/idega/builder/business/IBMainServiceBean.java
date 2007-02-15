@@ -260,6 +260,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup);
 	}
 	
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
+		return getBuilderLogic().getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, treeOrder);		
+	}
+	
 	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map tree, IWContext creatorContext) {
 		return getBuilderLogic().getIBPageHelper().createPageOrTemplateToplevelOrWithParent(name, parentId, type, templateId, tree, creatorContext);
 	}
@@ -343,4 +347,20 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove) {
 		return getBuilderLogic().removeValueFromModuleProperty(pageKey, moduleId, propertyName, valueToRemove);
 	}
+	
+	public void setTreeOrder(int id, int order){
+		getBuilderLogic().setTreeOrder(id, order);
+	}
+
+	public int getTreeOrder(int id){
+		return getBuilderLogic().getTreeOrder(id);
+	}
+	
+	public void increaseTreeOrder(int id){
+		getBuilderLogic().increaseTreeOrder(id);
+	}
+
+	public void decreaseTreeOrder(int id){
+		getBuilderLogic().decreaseTreeOrder(id);
+	}	
 }

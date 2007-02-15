@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.67 2007/01/22 05:52:20 justinas Exp $
+ * $Id: IBPageHelper.java,v 1.68 2007/02/15 11:54:58 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -255,6 +255,9 @@ public class IBPageHelper implements Singleton  {
 	 * @return The id of the new IBPage
 	 */
 	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
+		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
+	}
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
 		boolean isTopLevel=false;
 		if(parentId==null){
 			isTopLevel=true;
@@ -327,6 +330,16 @@ public class IBPageHelper implements Singleton  {
 		else {
 			ibPage.setType(ICPageBMPBean.PAGE);
 		}
+		
+		if(treeOrder != null) {
+			try {
+				ibPage.setTreeOrder(Integer.parseInt(treeOrder));
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}			
+		}
+		
 		int tid = -1;
 		try {
 			tid = Integer.parseInt(templateId);
@@ -425,7 +438,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		int id = ibPage.getID();
 		if (tree != null) {
-			PageTreeNode node = new PageTreeNode(id, name);
+			PageTreeNode node = new PageTreeNode(id, name, Integer.valueOf(treeOrder).intValue());
 			if (parentId != null) {
 				PageTreeNode parent = (PageTreeNode) tree.get(Integer.valueOf(parentId));
 				if (parent != null) {
@@ -1114,4 +1127,40 @@ public class IBPageHelper implements Singleton  {
 		
 		return true;
 	}
+	
+	public void setTreeOrder(int id, int order){
+		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		PageTreeNode childNode = null;
+		
+		if (tree != null) {
+			childNode = (PageTreeNode) tree.get(id);
+			childNode.setOrder(order);
+		}
+	}
+	public int getTreeOrder(int id){
+		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		PageTreeNode childNode = null;		
+		if (tree != null) {
+			childNode = (PageTreeNode) tree.get(id);
+			return childNode.getOrder();
+		}		
+		return -1;
+	}
+	public void increaseTreeOrder(int id){
+		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		PageTreeNode childNode = null;		
+		if (tree != null) {
+			childNode = (PageTreeNode) tree.get(id);
+			childNode.setOrder(childNode.getOrder()+1);
+		}		
+	}
+	public void decreaseTreeOrder(int id){
+		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		PageTreeNode childNode = null;		
+		if (tree != null) {
+			childNode = (PageTreeNode) tree.get(id);
+			childNode.setOrder(childNode.getOrder()-1);
+		}				
+	}
+	
 }

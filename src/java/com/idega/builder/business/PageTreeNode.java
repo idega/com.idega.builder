@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.30 2006/06/08 07:48:00 laddi Exp $
+ * $Id: PageTreeNode.java,v 1.31 2007/02/15 11:56:51 justinas Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -131,6 +131,8 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 		this._name = clonedNode._name;
 		this.parentId = clonedNode.parentId;
 		this.childPageIds = clonedNode.childPageIds;
+		this._order = clonedNode._order;
+		
 		//this._extra = node._extra;
 		this.setPageNames(clonedNode.getPageNames());
 	}
@@ -719,4 +721,13 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
 	}
+	
+	public void setOrder(int order){
+		this._order = order;
+	}
+	
+	public int getOrder (){
+		return this._order;
+	}
+	
 }
