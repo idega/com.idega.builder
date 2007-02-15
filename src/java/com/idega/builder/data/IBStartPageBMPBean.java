@@ -1,5 +1,5 @@
 /*
- * $Id: IBStartPageBMPBean.java,v 1.1 2004/03/25 15:37:39 thomas Exp $
+ * $Id: IBStartPageBMPBean.java,v 1.2 2007/02/15 11:57:44 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -196,15 +196,38 @@ public class IBStartPageBMPBean extends GenericEntity implements IBStartPage {
   private Collection ejbFindAllStartTemplatesByDomainAndType(int domain_id, String type) throws FinderException {
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(getTableName());
+//   
+    if(type == PAGE){
+    	sql.append(", ib_page");
+    }
+//    
     sql.append(" where ");
+    sql.append(getTableName());
+    sql.append(".");    
     sql.append(getColumnDomainId());
     sql.append(" = ");
     sql.append(domain_id);
     sql.append(" and ");
+    sql.append(getTableName());
+    sql.append(".");    
     sql.append(getColumnPageType());
     sql.append(" = '");
     sql.append(type);
-    sql.append("'");
+    sql.append("'");     
+//    
+    if(type == PAGE){
+	    sql.append(" and ");
+	    sql.append("ib_start_pages.ib_page_id");
+	    sql.append(" = ");
+	    sql.append("ib_page.ib_page_id");
+    }
+//        
+    if(type == PAGE){
+		sql.append(" order by ")
+//		.append(ICPageBMPBean.getColumnTreeOrder())
+		.append("ib_page.tree_order")
+		.append(" asc");
+    }
 
     return super.idoFindIDsBySQL(sql.toString());
   }
