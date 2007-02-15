@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.221 2007/01/29 01:22:52 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.222 2007/02/15 11:51:55 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2144,12 +2144,56 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 		
-	public Collection getTopLevelPages(IWContext iwc){
-		return DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
-	}
+//	public Collection getTopLevelPages(IWContext iwc){
+//		return DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
+//	}
+
 	public Collection getTopLevelTemplates(IWContext iwc){
 		return DomainTree.getDomainTree(iwc).getTemplatesNode().getChildren();		
 	}
+//	public Collection getSortedTopLevelPages(IWContext iwc){
+	public Collection getTopLevelPages(IWContext iwc){
+		Collection coll = DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
+		List <PageTreeNode> list = new ArrayList <PageTreeNode> (coll);
+//		for(int i = 0; i < coll.size(); i++){
+//			list.add(null);
+//		}
+		if (coll.size() == 1)
+			return coll;
+		
+		
+		for (Iterator iter = coll.iterator(); iter.hasNext();) {
+			PageTreeNode element = (PageTreeNode)iter.next();
+//System.out.println(element.getOrder()-1+" "+element.getId());
+			try {
+				list.set(element.getOrder() - 1, element);
+			} catch (UnsupportedOperationException e) {
+				// TODO: handle exception
+//				System.out.println("problems with setting");
+			}			
+			catch (ClassCastException e) {
+				// TODO: handle exception
+//				System.out.println("ClassCastException");
+			}
+			catch (NullPointerException e) {
+				// TODO: handle exception
+//				System.out.println("NullPointerException");
+			}
+			catch (IllegalArgumentException e) {
+				// TODO: handle exception
+//				System.out.println("IllegalArgumentException");
+			}
+			catch (IndexOutOfBoundsException e) {
+				// TODO: handle exception
+//				System.out.println("IndexOutOfBoundsException");
+//				return coll;
+			}
+//			System.out.println("setting ok");
+		}		
+		return list;
+	}
+	
+	
 //	public boolean wasMoved(String child, String parent){
 //		String oldParent = child.substring(0, child.length()-1);
 //		if (oldParent.equals(parent))
@@ -2183,8 +2227,14 @@ public class BuilderLogic implements Singleton {
 		return id;
 	}
 	
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup) {
-		return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId);
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
+		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
+	}
+	
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder) {
+		//return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, treeOrder);
+		return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, treeOrder);
+//		String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String orderTree
 	}
 	
 	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain) {
@@ -2384,4 +2434,21 @@ public class BuilderLogic implements Singleton {
 		xml.store();
 		return true;
 	}
+
+	public void setTreeOrder(int id, int order){
+		IBPageHelper.getInstance().setTreeOrder(id, order);
+	}
+
+	public int getTreeOrder(int id){
+		return IBPageHelper.getInstance().getTreeOrder(id);
+	}
+	
+	public void increaseTreeOrder(int id){
+		IBPageHelper.getInstance().increaseTreeOrder(id);
+	}
+
+	public void decreaseTreeOrder(int id){
+		IBPageHelper.getInstance().decreaseTreeOrder(id);
+	}
+
 }
