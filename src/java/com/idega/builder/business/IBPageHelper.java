@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.68 2007/02/15 11:54:58 justinas Exp $
+ * $Id: IBPageHelper.java,v 1.69 2007/02/19 19:46:36 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -262,6 +262,19 @@ public class IBPageHelper implements Singleton  {
 		if(parentId==null){
 			isTopLevel=true;
 		}
+
+		int treeOrderInt = 0;
+		try {
+			if (type.equals(PAGE)) {
+				treeOrderInt = Integer.valueOf(treeOrder).intValue();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.out.println("INCORRECT TREE ORDER");
+			e.printStackTrace();
+		}		
+		
+		
 		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 		if (name == null) {
 			name = "Untitled";
@@ -333,7 +346,8 @@ public class IBPageHelper implements Singleton  {
 		
 		if(treeOrder != null) {
 			try {
-				ibPage.setTreeOrder(Integer.parseInt(treeOrder));
+//				ibPage.setTreeOrder(Integer.parseInt(treeOrder));
+				ibPage.setTreeOrder(treeOrderInt);
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
@@ -438,7 +452,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		int id = ibPage.getID();
 		if (tree != null) {
-			PageTreeNode node = new PageTreeNode(id, name, Integer.valueOf(treeOrder).intValue());
+			PageTreeNode node = new PageTreeNode(id, name, treeOrderInt);
 			if (parentId != null) {
 				PageTreeNode parent = (PageTreeNode) tree.get(Integer.valueOf(parentId));
 				if (parent != null) {
