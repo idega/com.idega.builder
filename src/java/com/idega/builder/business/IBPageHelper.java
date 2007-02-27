@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.69 2007/02/19 19:46:36 justinas Exp $
+ * $Id: IBPageHelper.java,v 1.70 2007/02/27 08:47:19 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
@@ -35,6 +36,7 @@ import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
+import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -258,6 +260,7 @@ public class IBPageHelper implements Singleton  {
 		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
 	}
 	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
+
 		boolean isTopLevel=false;
 		if(parentId==null){
 			isTopLevel=true;
@@ -270,10 +273,10 @@ public class IBPageHelper implements Singleton  {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("INCORRECT TREE ORDER");
-			e.printStackTrace();
-		}		
-		
+			System.out.println("TREE ORDER NOT SET. SETTING NODE AS LAST IN LEVEL");
+//			e.printStackTrace();
+			treeOrderInt = setAsLastInLevel(isTopLevel, parentId);
+		}				
 		
 		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 		if (name == null) {
@@ -344,7 +347,7 @@ public class IBPageHelper implements Singleton  {
 			ibPage.setType(ICPageBMPBean.PAGE);
 		}
 		
-		if(treeOrder != null) {
+//		if(treeOrder != null) {
 			try {
 //				ibPage.setTreeOrder(Integer.parseInt(treeOrder));
 				ibPage.setTreeOrder(treeOrderInt);
@@ -352,7 +355,7 @@ public class IBPageHelper implements Singleton  {
 				// TODO: handle exception
 				e.printStackTrace();
 			}			
-		}
+//		}
 		
 		int tid = -1;
 		try {
@@ -367,6 +370,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		try {
 			ibPage.insert();
+
 			if (creatorContext != null) {
 				ibPage.setOwner(creatorContext);
 			}
@@ -1087,8 +1091,13 @@ public class IBPageHelper implements Singleton  {
 		if (page == null) {
 			return;
 		}
+		
 		page.setPageId(pageID);
 		page.setDomainId(domain.getID());
+//		page.setAsLastInLevel();
+//		page.store();
+		
+//		page.setAsLastInLevel();
 		page.store();
 			
 		DomainTree.clearCache(creatorContext.getApplicationContext());
@@ -1175,6 +1184,17 @@ public class IBPageHelper implements Singleton  {
 			childNode = (PageTreeNode) tree.get(id);
 			childNode.setOrder(childNode.getOrder()-1);
 		}				
+	}
+	public int setAsLastInLevel(boolean isTopLevel, String parentId){
+		BuilderLogic blogic = BuilderLogic.getInstance();
+		if (isTopLevel){
+			IWContext iwc = IWContext.getInstance();
+			List <ICTreeNode> topLevelPages = new ArrayList <ICTreeNode> (blogic.getTopLevelPages(iwc));
+			return topLevelPages.size()+1;
+		}
+		else{
+			return blogic.getICPage(parentId).getChildCount()+1;			
+		}
 	}
 	
 }

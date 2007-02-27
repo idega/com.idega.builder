@@ -1,5 +1,5 @@
 /*
- * $Id: IBStartPageBMPBean.java,v 1.2 2007/02/15 11:57:44 justinas Exp $
+ * $Id: IBStartPageBMPBean.java,v 1.3 2007/02/27 08:47:42 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,8 @@
  */
 package com.idega.builder.data;
 
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPageHelper;
 import com.idega.core.builder.data.*;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
@@ -231,4 +233,9 @@ public class IBStartPageBMPBean extends GenericEntity implements IBStartPage {
 
     return super.idoFindIDsBySQL(sql.toString());
   }
+  public void setAsLastInLevel(){
+	  BuilderLogic blogic = BuilderLogic.getInstance();
+	  blogic.setTreeOrder(getPageId(), IBPageHelper.getInstance().setAsLastInLevel(true, null));
+  }
+  
 }

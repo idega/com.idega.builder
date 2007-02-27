@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.222 2007/02/15 11:51:55 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.223 2007/02/27 08:47:19 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2449,6 +2449,10 @@ public class BuilderLogic implements Singleton {
 
 	public void decreaseTreeOrder(int id){
 		IBPageHelper.getInstance().decreaseTreeOrder(id);
+	}
+	
+	public int setAsLastInLevel(boolean isTopLevel, String parentId){
+		return IBPageHelper.getInstance().setAsLastInLevel(isTopLevel, parentId);
 	}
 
 }
