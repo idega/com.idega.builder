@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.70 2007/02/27 08:47:19 justinas Exp $
+ * $Id: IBPageHelper.java,v 1.71 2007/02/27 10:46:07 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package com.idega.builder.business;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -28,7 +29,6 @@ import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
@@ -53,6 +53,7 @@ import com.idega.repository.data.Singleton;
 import com.idega.servlet.filter.IWWelcomeFilter;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
+
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
@@ -1064,8 +1065,7 @@ public class IBPageHelper implements Singleton  {
 			return false;
 		}
 		Object o = null;
-		Iterator it = startPages.iterator();
-		while (it.hasNext() && !found) {
+		for (Iterator it = startPages.iterator(); (it.hasNext() && !found); ) {
 			o = it.next();
 			if (o instanceof IBStartPage) {
 				start = (IBStartPage) o;
@@ -1087,17 +1087,13 @@ public class IBPageHelper implements Singleton  {
 		}
 		
 		IBStartPage page = createTopLevelPage();
-		page.setPageTypePage();
 		if (page == null) {
 			return;
 		}
-		
+		page.setPageTypePage();
+		page.setPageTypePage();
 		page.setPageId(pageID);
 		page.setDomainId(domain.getID());
-//		page.setAsLastInLevel();
-//		page.store();
-		
-//		page.setAsLastInLevel();
 		page.store();
 			
 		DomainTree.clearCache(creatorContext.getApplicationContext());
