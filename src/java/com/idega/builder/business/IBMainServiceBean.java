@@ -367,4 +367,16 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public int setAsLastInLevel(boolean isTopLevel, String parentId){
 		return getBuilderLogic().setAsLastInLevel(isTopLevel, parentId);
 	}
+	
+	public String getProperty(String pageKey, String instanceId, String propertyName){
+		return getBuilderLogic().getProperty(pageKey, instanceId, propertyName);
+	}
+	
+	public String getPageKeyByURI(String requestURI){
+		return getBuilderLogic().getPageKeyByURI(requestURI);
+	}
+	
+	public String getExistingPageKeyByURI(String requestURI){
+		return getBuilderLogic().getExistingPageKeyByURI(requestURI);
+	}
 }

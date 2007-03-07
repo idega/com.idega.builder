@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.223 2007/02/27 08:47:19 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.224 2007/03/07 08:48:13 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2453,6 +2453,60 @@ public class BuilderLogic implements Singleton {
 	
 	public int setAsLastInLevel(boolean isTopLevel, String parentId){
 		return IBPageHelper.getInstance().setAsLastInLevel(isTopLevel, parentId);
+	}
+	
+	public String getExistingPageKeyByURI(String requestURI){
+			int indexOfPage = requestURI.indexOf("/pages/");
+			if (indexOfPage != -1) {
+				String iPageId = null;
+					String uriWithoutPages = requestURI;
+					//this string will be tried to convert to a number
+					String uriForNumberParse = requestURI;
+					if(indexOfPage!=-1){
+						uriWithoutPages = requestURI.substring(indexOfPage + 6);
+						uriForNumberParse = requestURI.substring(indexOfPage + 7);
+					}
+					
+					int lastSlash = uriForNumberParse.lastIndexOf(StringHandler.SLASH);
+					if (lastSlash == -1) {
+						iPageId = uriForNumberParse;
+					}
+					else {
+						iPageId = uriForNumberParse.substring(0, lastSlash);
+					}
+					try{
+						Integer.parseInt(iPageId);
+						return iPageId;
+					}
+					catch(NumberFormatException nfe){
+						//the string is not a number:
+						
+						//try to find the page in the cache first:
+						String pageKey = getPageKeyByURICached(requestURI);
+						if(pageKey!=null){
+//							return pageKey;
+						}
+						
+						//if it isn't found in the cache try the database:
+						try {
+							ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
+							//TODO: change - here domainId is hardcoded to -1
+							int domainId=-1;
+							ICPage page = pageHome.findExistingByUri(uriWithoutPages,domainId);
+							return page.getPageKey();
+						}
+						catch (IDOLookupException e) {
+							// empty 
+						}
+						catch(FinderException fe){
+							// empty
+						}	
+					}
+		}
+		BuilderPageException pe = new BuilderPageException("Page Cannot be Found for URI: '"+requestURI+"'");
+		pe.setCode(BuilderPageException.CODE_NOT_FOUND);
+		pe.setPageUri(requestURI);
+		throw pe;
 	}
 
 }
