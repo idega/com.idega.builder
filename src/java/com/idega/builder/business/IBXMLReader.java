@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.4 2007/03/08 12:51:31 valdas Exp $
+ * $Id: IBXMLReader.java,v 1.5 2007/03/08 16:35:00 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -89,7 +89,6 @@ public class IBXMLReader {
 		XMLElement root = ibxml.getRootElement();
 		if (root == null) {
 			System.err.println("IBXML Root element is null");
-			// TODO: fix
 			return null;
 		}
 		XMLElement pageXML = root.getChild(IBXMLConstants.PAGE_STRING);

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.224 2007/03/07 08:48:13 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.225 2007/03/08 16:34:59 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -734,86 +734,24 @@ public class BuilderLogic implements Singleton {
 	 */
 	public String getPageKeyByURICached(String pageUri){
 		Iterator iter = getPageCacher().getPageCacheMap().values().iterator();
-		while(iter.hasNext()){
-			CachedBuilderPage page = (CachedBuilderPage)iter.next();
-			if(page!=null){
-				String cachedPageUri = page.getURIWithContextPath();
-				if(cachedPageUri!=null){
-					if(cachedPageUri.equals(pageUri)){
-						return page.getPageKey();
-					}
-				}
+		for (Iterator it = iter; it.hasNext(); ) {
+			CachedBuilderPage page = (CachedBuilderPage) it.next();
+			if (page == null) {
+				return null;
+			}
+			String cachedPageUri = page.getURIWithContextPath();
+			if (cachedPageUri == null) {
+				return null;
+			}
+			if (cachedPageUri.equals(pageUri)) {
+				return page.getPageKey();
 			}
 		}
 		return null;
 	}
 	
 	public String getPageKeyByURI(String requestURI){
-		//String requestURI = iwc.getRequestURI();
-		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
-			int indexOfPage = requestURI.indexOf("/pages/");
-			if (indexOfPage != -1) {
-				//boolean pageISNumber = true;
-				String iPageId = null;
-				//try {
-					String uriWithoutPages = requestURI;
-					//this string will be tried to convert to a number
-					String uriForNumberParse = requestURI;
-					if(indexOfPage!=-1){
-						uriWithoutPages = requestURI.substring(indexOfPage + 6);
-						uriForNumberParse = requestURI.substring(indexOfPage + 7);
-					}
-					
-					int lastSlash = uriForNumberParse.lastIndexOf(StringHandler.SLASH);
-					if (lastSlash == -1) {
-						iPageId = uriForNumberParse;
-					}
-					else {
-						iPageId = uriForNumberParse.substring(0, lastSlash);
-					}
-					try{
-						Integer.parseInt(iPageId);
-						return iPageId;
-					}
-					catch(NumberFormatException nfe){
-						//the string is not a number:
-						
-						//try to find the page in the cache first:
-						String pageKey = getPageKeyByURICached(requestURI);
-						if(pageKey!=null){
-							return pageKey;
-						}
-						
-						//if it isn't found in the cache try the database:
-						try {
-							ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
-							//TODO: change - here domainId is hardcoded to -1
-							int domainId=-1;
-							ICPage page = pageHome.findByUri(uriWithoutPages,domainId);
-							return page.getPageKey();
-						}
-						catch (IDOLookupException e) {
-							// empty 
-						}
-						catch(FinderException fe){
-							// empty
-						}	
-					}
-				//return pageID;
-				//}
-				//catch (NumberFormatException e) {
-				//	pageISNumber = false;
-				//}
-				//if (pageISNumber) {
-				//	return pageID;
-				//}
-			//}
-		}
-		//throw new RuntimeException("Page Key Can not be found from URI '"+requestURI+"'");
-		BuilderPageException pe = new BuilderPageException("Page Cannot be Found for URI: '"+requestURI+"'");
-		pe.setCode(BuilderPageException.CODE_NOT_FOUND);
-		pe.setPageUri(requestURI);
-		throw pe;
+		return getExistingPageKeyByURI(requestURI);
 	}
 	
 	
@@ -2455,58 +2393,66 @@ public class BuilderLogic implements Singleton {
 		return IBPageHelper.getInstance().setAsLastInLevel(isTopLevel, parentId);
 	}
 	
-	public String getExistingPageKeyByURI(String requestURI){
-			int indexOfPage = requestURI.indexOf("/pages/");
-			if (indexOfPage != -1) {
-				String iPageId = null;
-					String uriWithoutPages = requestURI;
-					//this string will be tried to convert to a number
-					String uriForNumberParse = requestURI;
-					if(indexOfPage!=-1){
-						uriWithoutPages = requestURI.substring(indexOfPage + 6);
-						uriForNumberParse = requestURI.substring(indexOfPage + 7);
-					}
-					
-					int lastSlash = uriForNumberParse.lastIndexOf(StringHandler.SLASH);
-					if (lastSlash == -1) {
-						iPageId = uriForNumberParse;
-					}
-					else {
-						iPageId = uriForNumberParse.substring(0, lastSlash);
-					}
-					try{
-						Integer.parseInt(iPageId);
-						return iPageId;
-					}
-					catch(NumberFormatException nfe){
-						//the string is not a number:
-						
-						//try to find the page in the cache first:
-						String pageKey = getPageKeyByURICached(requestURI);
-						if(pageKey!=null){
-//							return pageKey;
-						}
-						
-						//if it isn't found in the cache try the database:
-						try {
-							ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
-							//TODO: change - here domainId is hardcoded to -1
-							int domainId=-1;
-							ICPage page = pageHome.findExistingByUri(uriWithoutPages,domainId);
-							return page.getPageKey();
-						}
-						catch (IDOLookupException e) {
-							// empty 
-						}
-						catch(FinderException fe){
-							// empty
-						}	
-					}
+	public String getExistingPageKeyByURI(String requestURI) {
+		int indexOfPage = requestURI.indexOf("/pages/");
+		if (indexOfPage == -1) {
+			BuilderPageException pe = new BuilderPageException("Page Cannot be Found for URI: '"+requestURI+"'");
+			pe.setCode(BuilderPageException.CODE_NOT_FOUND);
+			pe.setPageUri(requestURI);
+			throw pe;
 		}
-		BuilderPageException pe = new BuilderPageException("Page Cannot be Found for URI: '"+requestURI+"'");
-		pe.setCode(BuilderPageException.CODE_NOT_FOUND);
-		pe.setPageUri(requestURI);
-		throw pe;
+		String iPageId = null;
+		String uriWithoutPages = requestURI;
+		//this string will be tried to convert to a number
+		String uriForNumberParse = requestURI;
+		if(indexOfPage!=-1) {
+			uriWithoutPages = requestURI.substring(indexOfPage + 6);
+			uriForNumberParse = requestURI.substring(indexOfPage + 7);
+		}
+		int lastSlash = uriForNumberParse.lastIndexOf(StringHandler.SLASH);
+		if (lastSlash == -1) {
+			iPageId = uriForNumberParse;
+		}
+		else {
+			iPageId = uriForNumberParse.substring(0, lastSlash);
+		}
+		try{
+			Integer.parseInt(iPageId);
+			return iPageId;
+		}
+		catch (NumberFormatException nfe) {
+			//the string is not a number:
+			//try to find the page in the cache first:
+			String pageKey = getPageKeyByURICached(requestURI);			
+			if (pageKey != null) { // Should be null if not found, but if found - checking if page is valid
+				if (getPageCacher().isPageValid(pageKey)) {
+					return pageKey;
+				}
+			}
+			//if it isn't found in the cache try the database:
+			ICPage page = getICPageByURIFromDatabase(uriWithoutPages);
+			if (page == null) {
+				return null;
+			}
+			else {
+				return page.getPageKey();
+			}
+		}
+	}
+	
+	private ICPage getICPageByURIFromDatabase(String uri) {
+		if (uri == null) {
+			return null;
+		}
+		try {
+			ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
+			return pageHome.findExistingByUri(uri, getCurrentDomain().getID());
+		}
+		catch (IDOLookupException e) {
+		}
+		catch(FinderException fe) {
+		}
+		return null;
 	}
 
 }

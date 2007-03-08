@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.12 2007/02/23 17:25:50 valdas Exp $
+ * $Id: CachedBuilderPage.java,v 1.13 2007/03/08 16:34:58 valdas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -266,6 +266,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 				return stream;
 			}
 			catch (Exception e) {
+				System.err.println("Error getting file: " + webdavUri);
 				throw new RuntimeException(e);
 			}
 		}

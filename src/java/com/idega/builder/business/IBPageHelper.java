@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.71 2007/02/27 10:46:07 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.72 2007/03/08 16:34:58 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -856,6 +856,7 @@ public class IBPageHelper implements Singleton  {
 				}
 			}
 			ibpage.delete(userId);
+			getBuilderLogic().getPageCacher().flagPageInvalid(pageId); // Removing from cache
 			String templateId = ibpage.getTemplateKey();
 			if (templateId != null ) {
 				BuilderLogic.getInstance().getCachedBuilderPage(templateId).removePageAsUsingThisTemplate(pageId);
