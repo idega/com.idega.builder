@@ -1,5 +1,5 @@
 /*
- * $Id: IBReferenceEntry.java,v 1.1.2.1 2007/01/12 19:32:31 idegaweb Exp $
+ * $Id: IBReferenceEntry.java,v 1.1.2.2 2007/03/14 16:34:13 idegaweb Exp $
  * Created on Sep 27, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -120,7 +120,7 @@ public class IBReferenceEntry {
 			throw new IOException("[IBReference] Provider class ("+this.providerClassName+") could not be found (Look up problem)");
 		}
 		catch (NumberFormatException ex) {
-			throw new IOException("[IBReference] Identifier is not a number:" + value + "Provider is: " + this.providerClassName); 
+			throw new IOException("[IBReference] Identifier is not a number: " + value + "<br>Provider is: " + this.providerClassName+ "<br>Module is: " + this.moduleClass+ "<br>Property is: " + this.valueName); 
 		}
 		catch (FinderException ex) {
 			throw new IOException("[IBReference] Instance with identifier" + value + "could not be found. Provider is: " + this.providerClassName);
