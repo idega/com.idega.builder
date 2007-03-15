@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.225 2007/03/08 16:34:59 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.226 2007/03/15 11:28:35 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2091,44 +2091,93 @@ public class BuilderLogic implements Singleton {
 	}
 //	public Collection getSortedTopLevelPages(IWContext iwc){
 	public Collection getTopLevelPages(IWContext iwc){
-		Collection coll = DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
-		List <PageTreeNode> list = new ArrayList <PageTreeNode> (coll);
+		Collection<PageTreeNode> coll = DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
+		
+		List <PageTreeNode>unsortedNodes = new ArrayList <PageTreeNode> (coll);
+		List <PageTreeNode>sortedNodes = new ArrayList<PageTreeNode>();
+		List <PageTreeNode>nodesLeft = new ArrayList<PageTreeNode>();
+		
+		for(int i = 0; i < coll.size(); i++){
+			sortedNodes.add(null);
+		}
+		
+		for (int i = 0; i < unsortedNodes.size(); i++) {
+			PageTreeNode node = unsortedNodes.get(i);
+			if (node.getOrder() > 0){
+				if (sortedNodes.get(node.getOrder() - 1) == null){
+					sortedNodes.set(node.getOrder() - 1, node);
+				}
+				else{
+					nodesLeft.add(node);
+					unsortedNodes.set(i, null);		
+				}				
+			}
+			else{
+				nodesLeft.add(node);
+				unsortedNodes.set(i, null);		
+			}
+		}
+		int nodesLeftIndex = 0;
+		if (!nodesLeft.isEmpty()){
+			for (int i = 0; i < sortedNodes.size(); i++) {
+				if(sortedNodes.get(i) == null){
+					PageTreeNode node = nodesLeft.get(nodesLeftIndex);
+					node.setOrder(i+1);
+					sortedNodes.set(i, node);
+					nodesLeftIndex++;
+					if(Integer.parseInt(node.getId()) > -1){
+						ICPage page = getICPage(node.getId());
+						if (page != null) {
+							page.setTreeOrder(i+1);
+							page.store();
+						}				
+					}
+				}
+			}
+		}
+//		List <PageTreeNode> list = new ArrayList <PageTreeNode> (coll);
 //		for(int i = 0; i < coll.size(); i++){
 //			list.add(null);
 //		}
-		if (coll.size() == 1)
-			return coll;
-		
-		
-		for (Iterator iter = coll.iterator(); iter.hasNext();) {
-			PageTreeNode element = (PageTreeNode)iter.next();
-//System.out.println(element.getOrder()-1+" "+element.getId());
-			try {
-				list.set(element.getOrder() - 1, element);
-			} catch (UnsupportedOperationException e) {
-				// TODO: handle exception
-//				System.out.println("problems with setting");
-			}			
-			catch (ClassCastException e) {
-				// TODO: handle exception
-//				System.out.println("ClassCastException");
-			}
-			catch (NullPointerException e) {
-				// TODO: handle exception
-//				System.out.println("NullPointerException");
-			}
-			catch (IllegalArgumentException e) {
-				// TODO: handle exception
-//				System.out.println("IllegalArgumentException");
-			}
-			catch (IndexOutOfBoundsException e) {
-				// TODO: handle exception
-//				System.out.println("IndexOutOfBoundsException");
-//				return coll;
-			}
-//			System.out.println("setting ok");
-		}		
-		return list;
+////		if (coll.size() == 1){
+//////			if((coll.getOrder == '0') || (coll[0].getOrder == null))
+////			return coll;
+////		}
+//		
+//		for (Iterator iter = coll.iterator(); iter.hasNext();) {
+//			PageTreeNode element = (PageTreeNode)iter.next();
+//			try {
+//				
+//				if (list.get(element.getOrder() - 1) == null){				
+//					list.set(element.getOrder() - 1, element);
+//				}
+//					
+//					
+//			} catch (UnsupportedOperationException e) {
+//				// TODO: handle exception
+////				System.out.println("problems with setting");
+//			}			
+//			catch (ClassCastException e) {
+//				// TODO: handle exception
+////				System.out.println("ClassCastException");
+//			}
+//			catch (NullPointerException e) {
+//				// TODO: handle exception
+////				System.out.println("NullPointerException");
+//			}
+//			catch (IllegalArgumentException e) {
+//				// TODO: handle exception
+////				System.out.println("IllegalArgumentException");
+//			}
+//			catch (IndexOutOfBoundsException e) {
+//				// TODO: handle exception
+////				System.out.println("IndexOutOfBoundsException");
+////				return coll;
+//			}
+////			System.out.println("setting ok");
+//		}		
+//		return list;
+		return sortedNodes;
 	}
 	
 	

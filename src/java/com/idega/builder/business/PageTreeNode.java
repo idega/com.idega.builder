@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.31 2007/02/15 11:56:51 justinas Exp $
+ * $Id: PageTreeNode.java,v 1.32 2007/03/15 11:30:22 justinas Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package com.idega.builder.business;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 import com.idega.builder.data.IBPageName;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.data.ICTreeNode;
@@ -29,6 +32,7 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
+import com.sun.tools.doclets.internal.toolkit.builders.BuilderFactory;
 
 /**
  * <p>
@@ -106,6 +110,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 		setApplicationContext(iwc);
 		Map tree = PageTreeNode.getTree(iwc);
 		PageTreeNode node = (PageTreeNode) tree.get(new Integer(id));
+		node = fixTreeOrder(node);
 		if (node != null) {
 			copyNode(node);
 		}
@@ -728,6 +733,78 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	
 	public int getOrder (){
 		return this._order;
+	}
+	
+	public PageTreeNode fixTreeOrder(PageTreeNode node){
+		if (node == null)
+			return null;
+		if (node.getChildCount() == 0)
+			return node;
+		List<PageTreeNode> sortedNodes = new ArrayList<PageTreeNode>();
+		List<PageTreeNode> unsortedNodes = new ArrayList<PageTreeNode>(node.getChildren());
+		List<PageTreeNode> nodesLeft = new ArrayList<PageTreeNode>();
+
+		List sortedNodesIds = new ArrayList();
+		
+		for(int i = 0; i < unsortedNodes.size(); i++){
+			sortedNodes.add(null);
+		}
+
+		for (int i = 0; i < unsortedNodes.size(); i++) {
+			PageTreeNode childNode = unsortedNodes.get(i);
+			if (childNode.getOrder() > 0){
+				if (sortedNodes.get(childNode.getOrder() - 1) == null){				
+					sortedNodes.set(childNode.getOrder() - 1, childNode);
+				}
+				else{
+					nodesLeft.add(childNode);
+					unsortedNodes.set(i, null);		
+				}
+			}
+			else{
+				nodesLeft.add(childNode);
+				unsortedNodes.set(i, null);		
+			}
+		}
+		int nodesLeftIndex = 0;
+		for (int i = 0; i < sortedNodes.size(); i++) {
+			PageTreeNode childNode = null;
+			if(sortedNodes.get(i) == null){
+				childNode = nodesLeft.get(nodesLeftIndex);
+				childNode.setOrder(i+1);
+				sortedNodes.set(i, childNode);
+				nodesLeftIndex++;
+				
+				BuilderService bservice = null;
+				try {
+					bservice = BuilderServiceFactory.getBuilderService(this.applicationContext);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				ICPage page = bservice.getICPage(childNode.getId());
+				if (page != null) {
+					page.setTreeOrder(i+1);
+					page.store();
+				}							
+			}
+				try {
+					childNode = sortedNodes.get(i);
+					sortedNodesIds.add(Integer.valueOf(childNode.getId()));
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (sortedNodes.get(i).getChildCount() != 0)
+					sortedNodes.set(i, fixTreeOrder(sortedNodes.get(i))); //fix children
+			
+		}	
+		node.setChildPageIds(sortedNodesIds);
+		return node;
+	}
+	
+	public void setChildPageIds(List childPageIds){
+		this.childPageIds = childPageIds;
 	}
 	
 }
