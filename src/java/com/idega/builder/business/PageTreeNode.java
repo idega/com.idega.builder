@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.32 2007/03/15 11:30:22 justinas Exp $
+ * $Id: PageTreeNode.java,v 1.33 2007/03/16 14:01:53 justinas Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
-import com.sun.tools.doclets.internal.toolkit.builders.BuilderFactory;
+//import com.sun.tools.doclets.internal.toolkit.builders.BuilderFactory;
 
 /**
  * <p>
