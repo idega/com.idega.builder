@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.226 2007/03/15 11:28:35 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.227 2007/03/16 17:37:28 justinas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2103,7 +2103,8 @@ public class BuilderLogic implements Singleton {
 		
 		for (int i = 0; i < unsortedNodes.size(); i++) {
 			PageTreeNode node = unsortedNodes.get(i);
-			if (node.getOrder() > 0){
+//			if (node.getOrder() > 0){
+			if ((node.getOrder() > 0) && (node.getOrder() <= sortedNodes.size())){
 				if (sortedNodes.get(node.getOrder() - 1) == null){
 					sortedNodes.set(node.getOrder() - 1, node);
 				}

@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.33 2007/03/16 14:01:53 justinas Exp $
+ * $Id: PageTreeNode.java,v 1.34 2007/03/16 17:38:12 justinas Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -752,7 +752,8 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 
 		for (int i = 0; i < unsortedNodes.size(); i++) {
 			PageTreeNode childNode = unsortedNodes.get(i);
-			if (childNode.getOrder() > 0){
+			if ((childNode.getOrder() > 0) && (childNode.getOrder() <= sortedNodes.size())){
+//			if ((childNode.getOrder() > 0)){
 				if (sortedNodes.get(childNode.getOrder() - 1) == null){				
 					sortedNodes.set(childNode.getOrder() - 1, childNode);
 				}
