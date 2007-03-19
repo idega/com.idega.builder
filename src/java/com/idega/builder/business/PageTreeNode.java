@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.34 2007/03/16 17:38:12 justinas Exp $
+ * $Id: PageTreeNode.java,v 1.35 2007/03/19 08:49:07 justinas Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -29,6 +29,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
@@ -746,59 +747,65 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 
 		List sortedNodesIds = new ArrayList();
 		
-		for(int i = 0; i < unsortedNodes.size(); i++){
-			sortedNodes.add(null);
-		}
+		try {
+			for(int i = 0; i < unsortedNodes.size(); i++){
+				sortedNodes.add(null);
+			}
 
-		for (int i = 0; i < unsortedNodes.size(); i++) {
-			PageTreeNode childNode = unsortedNodes.get(i);
-			if ((childNode.getOrder() > 0) && (childNode.getOrder() <= sortedNodes.size())){
+			for (int i = 0; i < unsortedNodes.size(); i++) {
+				PageTreeNode childNode = unsortedNodes.get(i);
+				if ((childNode.getOrder() > 0) && (childNode.getOrder() <= sortedNodes.size())){
 //			if ((childNode.getOrder() > 0)){
-				if (sortedNodes.get(childNode.getOrder() - 1) == null){				
-					sortedNodes.set(childNode.getOrder() - 1, childNode);
+					if (sortedNodes.get(childNode.getOrder() - 1) == null){				
+						sortedNodes.set(childNode.getOrder() - 1, childNode);
+					}
+					else{
+						nodesLeft.add(childNode);
+						unsortedNodes.set(i, null);		
+					}
 				}
 				else{
 					nodesLeft.add(childNode);
 					unsortedNodes.set(i, null);		
 				}
 			}
-			else{
-				nodesLeft.add(childNode);
-				unsortedNodes.set(i, null);		
-			}
-		}
-		int nodesLeftIndex = 0;
-		for (int i = 0; i < sortedNodes.size(); i++) {
-			PageTreeNode childNode = null;
-			if(sortedNodes.get(i) == null){
-				childNode = nodesLeft.get(nodesLeftIndex);
-				childNode.setOrder(i+1);
-				sortedNodes.set(i, childNode);
-				nodesLeftIndex++;
+			int nodesLeftIndex = 0;
+			for (int i = 0; i < sortedNodes.size(); i++) {
+				PageTreeNode childNode = null;
+				if(sortedNodes.get(i) == null){
+					childNode = nodesLeft.get(nodesLeftIndex);
+					childNode.setOrder(i+1);
+					sortedNodes.set(i, childNode);
+					nodesLeftIndex++;
+					
+					BuilderService bservice = null;
+					try {
+						bservice = BuilderServiceFactory.getBuilderService(this.applicationContext);
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					ICPage page = bservice.getICPage(childNode.getId());
+					if (page != null) {
+						page.setTreeOrder(i+1);
+						page.store();
+					}							
+				}
+					try {
+						childNode = sortedNodes.get(i);
+						sortedNodesIds.add(Integer.valueOf(childNode.getId()));
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if (sortedNodes.get(i).getChildCount() != 0)
+						sortedNodes.set(i, fixTreeOrder(sortedNodes.get(i))); //fix children
 				
-				BuilderService bservice = null;
-				try {
-					bservice = BuilderServiceFactory.getBuilderService(this.applicationContext);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				ICPage page = bservice.getICPage(childNode.getId());
-				if (page != null) {
-					page.setTreeOrder(i+1);
-					page.store();
-				}							
 			}
-				try {
-					childNode = sortedNodes.get(i);
-					sortedNodesIds.add(Integer.valueOf(childNode.getId()));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (sortedNodes.get(i).getChildCount() != 0)
-					sortedNodes.set(i, fixTreeOrder(sortedNodes.get(i))); //fix children
-			
+		} catch (IDOStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return node;
 		}	
 		node.setChildPageIds(sortedNodesIds);
 		return node;
