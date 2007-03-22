@@ -137,7 +137,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>org.apache.slide</artifactId>
-      <version>2.2b6</version>
+      <version>2.2pre1.iwbuild5</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>
@@ -147,7 +147,7 @@
     <dependency>
       <groupId>slide</groupId>
       <artifactId>slide-kernel</artifactId>
-      <version>2.2pre1.iwbuild4</version>
+      <version>2.2pre1.iwbuild5</version>
       <type>jar</type>
       <url>http://www.slide.com/</url>
     </dependency>
@@ -156,14 +156,14 @@
     <dependency>
       <groupId>slide</groupId>
       <artifactId>jakarta-slide-webdavlib</artifactId>
-      <version>2.2pre1.iwbuild4</version>
+      <version>2.2pre1.iwbuild5</version>
       <type>jar</type>
       <url>http://www.slide.com/</url>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
-      <version>2.0.2</version>
+      <version>3.0.1</version>
       <type>jar</type>
       <url>http://jakarta.apache.org/commons/httpclient/</url>
     </dependency>
