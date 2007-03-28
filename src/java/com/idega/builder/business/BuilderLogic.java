@@ -1,10 +1,11 @@
 /*
- * $Id: BuilderLogic.java,v 1.228 2007/03/19 08:46:03 justinas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.229 2007/03/28 13:15:42 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,6 +24,8 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
+import com.idega.block.web2.business.Web2Business;
+import com.idega.block.web2.business.Web2BusinessBean;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
@@ -33,6 +36,8 @@ import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.business.BuilderPageException;
@@ -134,6 +139,8 @@ public class BuilderLogic implements Singleton {
 	
 	private String[] pageFormats = {this.PAGE_FORMAT_IBXML,this.PAGE_FORMAT_HTML,this.PAGE_FORMAT_JSP_1_2};
 	
+	private volatile Web2Business web2 = null;
+	
 	protected BuilderLogic() {
 		// empty
 	}
@@ -216,26 +223,23 @@ public class BuilderLogic implements Singleton {
 		IWBundle iwb = getBuilderBundle();
 		page.addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
 		
-//		Web2Business web2 = getWeb2Business();
-//		try {
-//			
-//			page.addScriptSource(web2.getBundleURIToPrototypeLib(Web2BusinessBean.SCRIPTACULOUS_VERSION_1_5_3));
-//			page.addScriptSource(web2.getBundleURIToScriptaculousLib(Web2BusinessBean.SCRIPTACULOUS_VERSION_1_5_3));
-//			page.addScriptSource(web2.getBundleURIToBehaviourLib());
-//			page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/iwbuilder.js"));
-//			
-//			
-//		}
-//		catch (RemoteException e) {
-//			e.printStackTrace();
-//		}
+		page.addJavascriptURL("/dwr/engine.js");
+		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
+		try {
+			page.addJavascriptURL(getWeb2Business(iwc).getPrototypeScriptFilePath(Web2BusinessBean.PROTOTYPE_LATEST_VERSION));
+			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToScriptaculousLib());
+			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToBehaviourLib());
+			page.addJavascriptURL(getWeb2Business(iwc).getLightboxScriptFilePath());
+			
+			page.addStyleSheetURL(getWeb2Business(iwc).getLightboxStyleFilePath());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
+		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		
-		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/prototype.js"));
-		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/effects.js"));
-		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/dragdrop.js"));
-		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/controls.js"));
-		page.addScriptSource(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
-
+		page.getAssociatedScript().addScriptLine("addEvent(window, 'load', registerBuilderActions);");
+		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
 		
@@ -260,7 +264,7 @@ public class BuilderLogic implements Singleton {
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
-				Layer marker = getLabelMarker("page");
+				/*Layer marker = getLabelMarker("page");
 				page.add(marker);
 				
 				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
@@ -271,7 +275,7 @@ public class BuilderLogic implements Singleton {
 				
 				Script drop = new Script();
 				drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),"-1","","moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
-				page.add(drop);
+				page.add(drop);*/
 				
 				
 			}
@@ -280,7 +284,7 @@ public class BuilderLogic implements Singleton {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					Layer marker = getLabelMarker(regionKey);
+					/*Layer marker = getLabelMarker(regionKey);
 					hPage.add(marker,regionKey);
 					marker.add(getAddIcon(regionKey, iwc, regionKey));
 					
@@ -290,7 +294,7 @@ public class BuilderLogic implements Singleton {
 					
 					Script drop = new Script();
 					drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),regionKey,regionKey,"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
-					page.add(drop);
+					page.add(drop);*/
 					
 				}
 			}
@@ -313,13 +317,13 @@ public class BuilderLogic implements Singleton {
 			}
 			
 			if(mayAddButtonsInPage){
-				Layer marker = getLabelMarker("page");
+				/*Layer marker = getLabelMarker("page");
 				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
 
 				if ((!clipboardEmpty)){
 					marker.add(getPasteIcon(Integer.toString(-1), null, iwc));
 				}
-				page.add(marker);
+				page.add(marker);*/
 			}
 			
 			if (page.getIsTemplate()){
@@ -334,7 +338,7 @@ public class BuilderLogic implements Singleton {
 		return (page);
 	}
 
-	public Layer getLabelMarker(String label) {
+	/*public Layer getLabelMarker(String label) {
 		Layer marker = new Layer(Layer.DIV);
 		marker.add(new CSSSpacer());
 		marker.setStyleClass("regionLabel");
@@ -343,7 +347,7 @@ public class BuilderLogic implements Singleton {
 		}
 
 		return marker;
-	}
+	}*/
 
 	public Page getPermissionTransformed(int groupId, Page page, IWContext iwc) {
 		List<String> groupIds = new Vector<String>();
@@ -479,7 +483,7 @@ public class BuilderLogic implements Singleton {
 					if (curr.getIsExtendingTemplate()) {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
-								Layer marker = getLabelMarker(container.getLabel());
+								/*Layer marker = getLabelMarker(container.getLabel());
 								container.add(marker);
 								marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 								
@@ -489,11 +493,11 @@ public class BuilderLogic implements Singleton {
 								
 								Script drop = new Script();
 								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-								container.add(drop);	
+								container.add(drop);*/
 							}
 						}
 						else {
-							Layer marker = getLabelMarker(container.getLabel());
+							/*Layer marker = getLabelMarker(container.getLabel());
 							container.add(marker);
 							marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 														
@@ -513,13 +517,13 @@ public class BuilderLogic implements Singleton {
 									drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 									container.add(drop);									
 								}
-							}
+							}*/
 							
 							
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(container.getLabel());
+						/*Layer marker = getLabelMarker(container.getLabel());
 						container.add(marker);
 						marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 						
@@ -539,7 +543,7 @@ public class BuilderLogic implements Singleton {
 								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 								container.add(drop);
 							}
-						}
+						}*/
 						
 					}
 				}
@@ -577,7 +581,7 @@ public class BuilderLogic implements Singleton {
 				if (currentPage.getIsExtendingTemplate()) {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
-							Layer marker = getLabelMarker(tab.getLabel(x, y));
+							/*Layer marker = getLabelMarker(tab.getLabel(x, y));
 							tab.add(marker, x, y);
 							
 							PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
@@ -589,11 +593,11 @@ public class BuilderLogic implements Singleton {
 							
 							Script drop = new Script();
 							drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-							tab.add(drop,x,y);
+							tab.add(drop,x,y);*/
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(tab.getLabel(x, y));
+						/*Layer marker = getLabelMarker(tab.getLabel(x, y));
 						tab.add(marker, x, y);
 						
 						PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
@@ -614,11 +618,11 @@ public class BuilderLogic implements Singleton {
 						//always add the drop area
 						Script drop = new Script();
 						drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-						tab.add(drop,x,y);
+						tab.add(drop,x,y);*/
 					}
 				}
 				else {
-					Layer marker = getLabelMarker(tab.getLabel(x, y));
+					/*Layer marker = getLabelMarker(tab.getLabel(x, y));
 					tab.add(marker, x, y);
 					
 					PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
@@ -638,7 +642,7 @@ public class BuilderLogic implements Singleton {
 						Script drop = new Script();
 						drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 						tab.add(drop,x,y);
-					}
+					}*/
 					
 				}
 			}
@@ -2464,6 +2468,9 @@ public class BuilderLogic implements Singleton {
 		if (uri == null) {
 			return null;
 		}
+		if (uri.indexOf("javascript.js") != -1) { // Not valid page uri
+			return null;
+		}
 		try {
 			ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
 			return pageHome.findExistingByUri(uri, getCurrentDomain().getID());
@@ -2473,6 +2480,22 @@ public class BuilderLogic implements Singleton {
 		catch(FinderException fe) {
 		}
 		return null;
+	}
+	
+	private Web2Business getWeb2Business(IWContext iwc) {
+		if (web2 == null) {
+			synchronized (BuilderLogic.class) {
+				try {
+					if (iwc == null) {
+						iwc = IWContext.getInstance();
+					}
+					web2 = (Web2Business) IBOLookup.getServiceInstance(iwc, Web2Business.class);
+				} catch (IBOLookupException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return web2;
 	}
 
 }

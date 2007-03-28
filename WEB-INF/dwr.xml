@@ -6,6 +6,10 @@
     <create creator="ibo" javascript="BuilderService" scope="application">
       <param name="class" value="com.idega.core.builder.business.BuilderService"/>
     </create>
+    
+    <create creator="ibo" javascript="BuilderEngine" scope="application">
+      <param name="class" value="com.idega.builder.bean.BuilderEngine"/>
+    </create>
   </allow>
   <signatures>
   </signatures>

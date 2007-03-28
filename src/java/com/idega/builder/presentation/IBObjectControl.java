@@ -89,8 +89,8 @@ public class IBObjectControl extends PresentationObjectContainer
 		this.contentLayer.setStyleClass("moduleContent");
 		this.contentLayer.setID("content_"+containerId);
 		
-		this.buttonsLayer = new Layer(Layer.DIV);
-		this.buttonsLayer.setStyleClass("moduleButtons");
+//		this.buttonsLayer = new Layer(Layer.DIV);
+//		this.buttonsLayer.setStyleClass("moduleButtons");
 		
 		this.dropAreaLayer = new Layer(Layer.DIV);
 		this.dropAreaLayer.setStyleClass("moduleDropArea");
@@ -158,25 +158,25 @@ public class IBObjectControl extends PresentationObjectContainer
 			this.containerLayer.add(parentIdHidden);
 			this.containerLayer.add(pageIdHidden);
 			
-			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
-			if (pasted == null) {
-				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
-			}
-			else {
-				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getPasteAboveIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
-			}
+//			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
+//			if (pasted == null) {
+//				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+//				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
+//			}
+//			else {
+//				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getPasteAboveIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+//				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
+//			}
 			
 			
-			this.dropAreaLayer.add(this.buttonsLayer);
+//			this.dropAreaLayer.add(this.buttonsLayer);
 			
 			tempDragDropContainer.add(this.nameLayer,1,1);
 			tempDragDropContainer.add(this.dropAreaLayer,2,1);
