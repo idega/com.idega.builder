@@ -33,12 +33,9 @@ public class IBObjectControl extends PresentationObjectContainer
 	private Layer handleAndMenuLayer;
 	private Layer contentLayer;
 	private Layer buttonsLayer;
-	private Layer scriptLayer;
 	private Layer nameLayer;
 	private Layer dropAreaLayer;
 	
-	private Table tempTable;
-
 	private PresentationObjectContainer _parent;
 	private String _parentKey;
 	private UIComponent _theObject;
@@ -92,8 +89,8 @@ public class IBObjectControl extends PresentationObjectContainer
 		this.contentLayer.setStyleClass("moduleContent");
 		this.contentLayer.setID("content_"+containerId);
 		
-		this.buttonsLayer = new Layer(Layer.DIV);
-		this.buttonsLayer.setStyleClass("moduleButtons");
+//		this.buttonsLayer = new Layer(Layer.DIV);
+//		this.buttonsLayer.setStyleClass("moduleButtons");
 		
 		this.dropAreaLayer = new Layer(Layer.DIV);
 		this.dropAreaLayer.setStyleClass("moduleDropArea");
@@ -111,14 +108,14 @@ public class IBObjectControl extends PresentationObjectContainer
 		tempDragDropContainer.setColumnWidth(2,"100%");
 		tempDragDropContainer.setCellpaddingAndCellspacing(0);
 			
-		Script drag = new Script();
+		/*Script drag = new Script();
 		drag.addFunction("", getBuilderLogic().getDraggableScript(containerId,this.nameLayer.getID()));
 		Script drop = new Script();
 		drop.addFunction("", getBuilderLogic().getModuleToModuleDroppableScript(containerId, this.dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
 		
 		//add scripts
 		super.add(drag);
-		super.add(drop);		
+		super.add(drop);*/		
 		
 		super.add(new Text("<!-- idegaweb-module ends -->"));
 		
@@ -131,13 +128,23 @@ public class IBObjectControl extends PresentationObjectContainer
 			}
 			else{
 				//TODO make this localizable and remove getBuilderName from PO
-				text = new Text(this._theObject.getClass().getName());
+				String className = this._theObject.getClass().getName();
+				int indexOfDot = className.lastIndexOf(".");
+				String objectName = null;
+				if(indexOfDot!=-1){
+					objectName = className.substring(indexOfDot+1,className.length());
+				}
+				else{
+					objectName = className;
+				}
+				
+				text = new Text(objectName);
 			}
 			this.nameLayer.add(text);
 			
 			//TODO change icobjectinstanceid to String 
 			String instanceId = BuilderLogic.getInstance().getInstanceId(this._theObject);
-				
+			
 			HiddenInput instanceIdHidden = new HiddenInput("instanceId_"+containerId,instanceId);
 			instanceIdHidden.setID("instanceId_"+containerId);
 			
@@ -151,25 +158,25 @@ public class IBObjectControl extends PresentationObjectContainer
 			this.containerLayer.add(parentIdHidden);
 			this.containerLayer.add(pageIdHidden);
 			
-			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
-			if (pasted == null) {
-				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
-			}
-			else {
-				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getPasteAboveIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
-				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
-			}
+//			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
+//			if (pasted == null) {
+//				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+//				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
+//			}
+//			else {
+//				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getPasteAboveIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
+//				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
+//				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
+//			}
 			
 			
-			this.dropAreaLayer.add(this.buttonsLayer);
+//			this.dropAreaLayer.add(this.buttonsLayer);
 			
 			tempDragDropContainer.add(this.nameLayer,1,1);
 			tempDragDropContainer.add(this.dropAreaLayer,2,1);

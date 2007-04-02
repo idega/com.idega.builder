@@ -1,9 +1,9 @@
 /* The edit view*/
 .moduleContainer {	
 	cursor: default;	
-	border: 1px #000000 solid;
+	border: 0px solid;
 	margin: 1px;
-clear: both;
+	clear: both;
 }
 
 .moduleContainer:hover {	
@@ -30,7 +30,6 @@ clear: both;
 	font-family: Arial !important;
 	height: 16px !important;
 	cursor: move;
-	background-color: #d7dbe7 !important;
 	white-space: nowrap !important;
 	padding-left: 2px !important;
 	padding-top:3px !important;
@@ -96,8 +95,6 @@ div.moduleButtons a {
 
 .DnDAreaTable{
 	margin:0px;
-	background-color: #D7DBE7;
-	border-bottom: 1px #000000 solid;	
 	cursor: default;
 	height: 18px;
 	clear: both;
@@ -106,10 +103,11 @@ div.moduleButtons a {
 	cell-padding: 0px;
 	cell-spacing: 0px;
 	white-space: nowrap;
+	visibility: hidden;
 }
 
 .regionLabel{
-	font-size: 11px !important;
+	/*font-size: 11px !important;
 	font-family: Arial !important;
 	background-color: yellow;
 	border: 1px #000000 solid;	
@@ -118,7 +116,7 @@ div.moduleButtons a {
 	padding-right: 1px;
 	clear:both;
 	text-transform: none !important;
-	font-weight: normal !important;
+	font-weight: normal !important;*/
 }
 
 div.regionLabel a {
@@ -136,7 +134,7 @@ div.regionLabel a {
 	float:left;
 	padding-left: 1px;
 	padding-right: 1px;
-	clear:both;
+	clear: both;
 }
 
 .regionLabel .regionButton {
@@ -266,4 +264,133 @@ html>body .sourceviewButtonsLeft {
 
 .builderinitialsetupblock{
 	margin-top:100px;
+}
+
+.regionComponentImageContainer {
+
+}
+
+.regionComponentImageContainer:hover {
+
+}
+
+.regionInfoImageContainer {
+	float: right;
+}
+
+.regionInfoImageContainer:hover {
+	cursor: pointer;
+}
+
+.modulesListContainerStyle {
+	font-weight: bold;
+}
+
+.modulesListStyle {
+	list-style: none;
+}
+
+.modulesListItemStyle {
+	cursor: pointer;
+	font-weight: normal;
+}
+
+.modulesListItemStyle:hover {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.regionContainer {	
+
+}
+
+.regionContainer:hover {
+	background-color: #99CCCC;
+}
+
+/*for modules*/
+ul#modules_lists,ul#modules_lists li {
+	margin:0;
+	padding:0;
+	list-style:none
+}
+ul#modules_lists li {
+	float:left;
+	width:150px;
+	margin:0 10px 10px 0
+}
+ul#modules_lists h3 {
+	font: normal 120%/1.3 Verdana,sans-serif;
+    text-transform:uppercase;
+    margin:0px;
+    padding: 5px 0 0;
+    text-align:center;
+    color: #000
+}
+ul#modules_lists p {
+	margin:0;
+	padding:1px 1px 5px
+}
+ul#modules_lists p:hover {
+	font-weight: bold;
+	cursor: pointer;
+}
+li#one h3 {
+	background: #C8C866
+}
+ul#modules_lists div {
+	background: #FFC
+}
+li#one div {
+	border:2px solid #C8C866
+}
+li#two h3 {
+	background: #FFBD00
+}
+li#two div {
+	border:2px solid #FFBD00
+ }
+li#three h3 {
+	background: #E3A1C4
+}
+li#three div {
+	border:2px solid #E3A1C4
+}
+
+div#editModuleHeader {
+	width: 500px;
+	padding: 1px;
+	margin:0 auto;
+    background:#E6E6E6;
+    color:#000
+}
+
+div#editModuleHeader h1 {
+	text-align: center;
+}
+
+div#editModuleMenu {
+}
+ul#editModuleMenuNavigation,ul#editModuleMenuNavigation li {
+	list-style-type:none;
+	margin:0;
+	padding:0
+}
+ul#editModuleMenuNavigation {
+}
+ul#editModuleMenuNavigation li {
+	float: left;
+	margin-left: 3px;
+	text-align: center;
+}
+ul#editModuleMenuNavigation a {
+	float:left;width: 7em;padding: 5px 0;background: #4C627D;text-decoration:none;color: #FFF
+}
+ul#editModuleMenuNavigation a:hover {
+	background: #FFA826;
+	color: #FFF
+}
+ul#editModuleMenuNavigation li.activelink a,ul#editModuleMenuNavigation li.activelink a:hover {
+	background: #FFF;
+	color: #003
 }
