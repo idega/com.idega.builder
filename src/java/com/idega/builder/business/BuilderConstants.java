@@ -17,5 +17,6 @@ public class BuilderConstants
 	public static final String IB_PAGE_PARAMETER = ICBuilderConstants.IB_PAGE_PARAMETER;  //"ib_page";
 	public static final String PRM_HISTORY_ID = ICBuilderConstants.PRM_HISTORY_ID;  // "ib_history";
 	public static final String SESSION_OBJECT_STATE = ICBuilderConstants.SESSION_OBJECT_STATE; // "obj_inst_state";
+	public static final String MODULE_NAME = "moduleName";
 
 }

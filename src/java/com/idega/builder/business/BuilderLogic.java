@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.231 2007/04/02 16:32:47 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.232 2007/04/04 10:47:21 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
@@ -26,7 +27,7 @@ import org.jdom.Element;
 
 import com.idega.block.web2.business.Web2Business;
 import com.idega.block.web2.business.Web2BusinessBean;
-import com.idega.builder.presentation.IBAddModuleWindow;
+import com.idega.builder.presentation.AddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
 import com.idega.builder.presentation.IBCutModuleWindow;
@@ -72,7 +73,6 @@ import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -273,7 +273,7 @@ public class BuilderLogic implements Singleton {
 				Layer marker = getLabelMarker("page");
 				page.add(marker);
 				
-				//marker.add(getAddIcon(Integer.toString(-1), iwc, null));
+				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
 							
 				if (!clipboardEmpty){
 					marker.add(getPasteIcon(Integer.toString(-1),null, iwc));
@@ -292,7 +292,7 @@ public class BuilderLogic implements Singleton {
 					String regionKey = (String) iter.next();
 					Layer marker = getLabelMarker(regionKey);
 					hPage.add(marker,regionKey);
-					//marker.add(getAddIcon(regionKey, iwc, regionKey));
+					marker.add(getAddIcon(regionKey, iwc, regionKey));
 					
 					if (!clipboardEmpty){
 						marker.add(getPasteIcon(regionKey,regionKey, iwc));
@@ -324,7 +324,7 @@ public class BuilderLogic implements Singleton {
 			
 			if(mayAddButtonsInPage){
 				Layer marker = getLabelMarker("page");
-				//marker.add(getAddIcon(Integer.toString(-1), iwc, null));
+				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
 
 				if ((!clipboardEmpty)){
 					marker.add(getPasteIcon(Integer.toString(-1), null, iwc));
@@ -346,12 +346,17 @@ public class BuilderLogic implements Singleton {
 
 	public Layer getLabelMarker(String label) {
 		Layer marker = new Layer(Layer.DIV);
-		//marker.add(new CSSSpacer());
+		marker.add(new CSSSpacer());
 		marker.setStyleClass("regionLabel");
-		if(label!=null){
-			//marker.add(label);
+		if (label == null) {
+			Random generator = new Random();
+			marker.setId(new StringBuffer("region_label").append(generator.nextInt(Integer.MAX_VALUE)).toString());
+		}
+		else {
+			marker.add(label);
 			HiddenInput regionLabel = new HiddenInput("region_label", label);
 			marker.add(regionLabel);
+			marker.setId(new StringBuffer("region_label").append(label).toString());
 		}
 
 		return marker;
@@ -493,7 +498,7 @@ public class BuilderLogic implements Singleton {
 							if (!container.isLocked()) {
 								Layer marker = getLabelMarker(container.getLabel());
 								container.add(marker);
-								//marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+								marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 								
 								if (!clipboardEmpty){
 									marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
@@ -507,7 +512,7 @@ public class BuilderLogic implements Singleton {
 						else {
 							Layer marker = getLabelMarker(container.getLabel());
 							container.add(marker);
-							//marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+							marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 														
 							if (!clipboardEmpty){
 								marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
@@ -533,7 +538,7 @@ public class BuilderLogic implements Singleton {
 					else {
 						Layer marker = getLabelMarker(container.getLabel());
 						container.add(marker);
-						//marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+						marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
 						
 												
 						if (!clipboardEmpty){
@@ -592,8 +597,8 @@ public class BuilderLogic implements Singleton {
 							Layer marker = getLabelMarker(tab.getLabel(x, y));
 							tab.add(marker, x, y);
 							
-							//PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
-							//marker.add(addIcon);
+							PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+							marker.add(addIcon);
 							
 							if (!clipboardEmpty){
 								marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
@@ -608,8 +613,8 @@ public class BuilderLogic implements Singleton {
 						Layer marker = getLabelMarker(tab.getLabel(x, y));
 						tab.add(marker, x, y);
 						
-						//PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
-						//marker.add(addIcon);
+						PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+						marker.add(addIcon);
 						
 						if (!clipboardEmpty) {
 							marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
@@ -633,8 +638,8 @@ public class BuilderLogic implements Singleton {
 					Layer marker = getLabelMarker(tab.getLabel(x, y));
 					tab.add(marker, x, y);
 					
-					//PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
-					//marker.add(addIcon);
+					PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+					marker.add(addIcon);
 										
 					if (!clipboardEmpty) {
 						marker.add(getPasteIcon(newParentKey, tab.getLabel(x,y) ,iwc));
@@ -1685,7 +1690,7 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public Map getPageFormatsSupportedAndDescription(){
-		Map map = new HashMap();
+		Map<String, String> map = new HashMap<String, String>();
 		map.put(this.PAGE_FORMAT_IBXML,"Builder (IBXML)");
 		map.put(this.PAGE_FORMAT_HTML,"HTML");
 		map.put(this.PAGE_FORMAT_JSP_1_2,"JSP 1.2");
@@ -1703,8 +1708,24 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label){
-		Image addImage = getBuilderBundle().getImage("add.gif", "Add new component");
+	public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label) {
+		Image addImage = getBuilderBundle().getImage("add.png", "Add new component");
+		addImage.setOnClick("setPropertiesForAddModule(this.parentNode);");
+
+		Link link = new Link(addImage);
+		link.setStyleClass("lbOn");
+		
+		Link temp = new Link();
+		temp.setWindowToOpen(AddModuleWindow.class);
+		link.setMarkupAttribute(Link.HREF_ATTRIBUTE, temp.getURL());
+
+		if (label != null) {
+			link.setToolTip(label);
+		}
+	
+		return link;
+		
+		/*Image addImage = getBuilderBundle().getImage("add.gif", "Add new component");
 
 		Link link = new Link(addImage);
 		link.setStyleClass("regionButton");	
@@ -1717,7 +1738,7 @@ public class BuilderLogic implements Singleton {
 			link.setToolTip(label);
 		}
 	
-		return link;
+		return link;*/
 	}
 	
 

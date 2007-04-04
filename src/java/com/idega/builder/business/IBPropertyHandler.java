@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.58 2006/05/24 13:08:07 tryggvil Exp $
+ * $Id: IBPropertyHandler.java,v 1.59 2007/04/04 10:47:21 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -763,6 +763,7 @@ public class IBPropertyHandler implements Singleton{
 			DefaultComponentProperty desc = new DefaultComponentProperty(component);
 			desc.setDisplayName(methodDescr);
 			desc.setName(methodIdentifier);
+			desc.setSimpleProperty(methodProp.getPropertySimple());
 			properties.add(desc);
 		}
 		

@@ -82,3 +82,7 @@ widget_modules=Widgets
 builder_modules=Builder
 adding=Adding...
 settings=Settings
+simple_properties=Simple Properties
+advanced_properties=Advanced Properties
+are_you_sure=Are You sure?
+deleting=Deleting...

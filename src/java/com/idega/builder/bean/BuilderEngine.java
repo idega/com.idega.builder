@@ -10,4 +10,6 @@ public interface BuilderEngine extends IBOService {
 	
 	public boolean addSelectedModule(String pageKey, String instanceId, int newObjectId, String containerId);
 	
+	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId);
+	
 }

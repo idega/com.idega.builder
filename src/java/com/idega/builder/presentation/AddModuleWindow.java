@@ -19,6 +19,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Script;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
@@ -33,6 +34,7 @@ public class AddModuleWindow extends IBAdminWindow {
 		
 		Collection allComoponents = getAllComponents();
 		
+		Layer componentsContainer = new Layer();
 		Lists items = new Lists();
 		items.setID("modules_lists");
 		
@@ -55,15 +57,18 @@ public class AddModuleWindow extends IBAdminWindow {
 			builder = getConcreteComponents(iwc, allComoponents, false, false, true);
 		}
 		addListToWindow(builder, iwrb.getLocalizedString("builder_modules", "Builder"), "builder_list", builderList);
-		items.add(builderList);
 		
-		this.add(items);
+		items.add(builderList);
+		componentsContainer.add(items);
+		this.add(componentsContainer);
+		
+		this.add(new Break());
 		
 		Layer closeContainer = new Layer();
 		closeContainer.setId("closeButtonContainer");
 		closeContainer.setStyleClass("closeButtonContainerStyle");
 		GenericButton close = new GenericButton("cancel", iwrb.getLocalizedString("cancel", "Cancel"));
-		close.setOnClick("modulesWindow.deactivate();");
+		close.setOnClick("closeAddModuleWindow();");
 		closeContainer.add(close);
 		this.add(closeContainer);
 		

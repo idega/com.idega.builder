@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.faces.context.FacesContext;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.presentation.AddModuleWindow;
 import com.idega.builder.presentation.EditModuleWindow;
@@ -55,6 +56,10 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
 		info.add(iwrb.getLocalizedString("create_simple_template.Region", "Region"));										// 8
 		info.add(getWindowLink(EditModuleWindow.class));																	// 9
+		info.add(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);															// 10
+		info.add(BuilderConstants.MODULE_NAME);																				// 11
+		info.add(iwrb.getLocalizedString("deleting", "Deleting..."));														// 12
+		info.add(iwrb.getLocalizedString("are_you_sure", "Are You sure?"));													// 13
 		
 		return info;
 	}
@@ -64,6 +69,13 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return false;
 		}
 		return builder.addNewModule(pageKey, instanceId, newObjectId, containerId);
+	}
+	
+	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId) {
+		if (pageKey == null || parentId == null || instanceId == null) {
+			return false;
+		}
+		return builder.deleteModule(pageKey, parentId, instanceId);
 	}
 
 }

@@ -7,9 +7,10 @@
 }
 
 .moduleContainer:hover {	
-	cursor: default;	
+	/*cursor: default;	
 	border: 1px #000000 dotted;
-	margin: 1px;
+	margin: 1px;*/
+	background-color: #FFFF99;
 }
 
 .moduleHandle {
@@ -107,6 +108,7 @@ div.moduleButtons a {
 }
 
 .regionLabel{
+	visibility: hidden;
 	/*font-size: 11px !important;
 	font-family: Arial !important;
 	background-color: yellow;
@@ -275,6 +277,7 @@ html>body .sourceviewButtonsLeft {
 }
 
 .regionInfoImageContainer {
+	visibility: hidden;
 	float: right;
 }
 
@@ -312,12 +315,12 @@ html>body .sourceviewButtonsLeft {
 ul#modules_lists,ul#modules_lists li {
 	margin:0;
 	padding:0;
-	list-style:none
+	list-style:none;
 }
 ul#modules_lists li {
 	float:left;
 	width:150px;
-	margin:0 10px 10px 0
+	margin:0 10px 10px 0;
 }
 ul#modules_lists h3 {
 	font: normal 120%/1.3 Verdana,sans-serif;
@@ -325,44 +328,43 @@ ul#modules_lists h3 {
     margin:0px;
     padding: 5px 0 0;
     text-align:center;
-    color: #000
+    color: #000;
 }
 ul#modules_lists p {
 	margin:0;
-	padding:1px 1px 5px
+	padding:1px 1px 5px;
 }
 ul#modules_lists p:hover {
 	font-weight: bold;
 	cursor: pointer;
 }
 li#one h3 {
-	background: #C8C866
+	background: #C8C866;
 }
 ul#modules_lists div {
-	background: #FFC
+	background: #FFC;
 }
 li#one div {
-	border:2px solid #C8C866
+	border:2px solid #C8C866;
 }
 li#two h3 {
-	background: #FFBD00
+	background: #FFBD00;
 }
 li#two div {
-	border:2px solid #FFBD00
+	border:2px solid #FFBD00;
  }
 li#three h3 {
-	background: #E3A1C4
+	background: #E3A1C4;
 }
 li#three div {
-	border:2px solid #E3A1C4
+	border:2px solid #E3A1C4;
 }
 
 div#editModuleHeader {
-	width: 500px;
 	padding: 1px;
 	margin:0 auto;
     background:#E6E6E6;
-    color:#000
+    color:#000;
 }
 
 div#editModuleHeader h1 {
@@ -374,23 +376,48 @@ div#editModuleMenu {
 ul#editModuleMenuNavigation,ul#editModuleMenuNavigation li {
 	list-style-type:none;
 	margin:0;
-	padding:0
+	padding:0;
 }
 ul#editModuleMenuNavigation {
 }
 ul#editModuleMenuNavigation li {
-	float: left;
-	margin-left: 3px;
+	float:left;
+	margin-right: 3px;
 	text-align: center;
 }
 ul#editModuleMenuNavigation a {
-	float:left;width: 7em;padding: 5px 0;background: #4C627D;text-decoration:none;color: #FFF
+	float:left;
+	width: 7em;
+	padding: 5px 0;
+	background: #4C627D;
+	text-decoration:none;
+	color: #FFF;
 }
 ul#editModuleMenuNavigation a:hover {
 	background: #FFA826;
-	color: #FFF
+	color: #FFF;
 }
 ul#editModuleMenuNavigation li.activelink a,ul#editModuleMenuNavigation li.activelink a:hover {
 	background: #FFF;
-	color: #003
+	color: #003;
+}
+
+div#advanced_properties_box {
+    text-align:left;
+    background-color: #FF9966;
+}
+
+div#simple_properties_box {
+	margin-top: 10px;
+    text-align:left;
+    background-color: #9CC0FF;
+}
+
+.componentPropertiesListHeader {
+	cursor: pointer;
+}
+
+.closeButtonContainerStyle {
+	padding-top: 5px;
+	float: right;
 }

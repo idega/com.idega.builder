@@ -1,9 +1,7 @@
-var activeAddComponentElement = null;
-
-var COMPONENT_INFO_CONTAINER = "builderRegionInfoImageContainer";
-var REGION_ADD_COMPONENT_CONTAINER = "builderRegionAddComponentContainer";
-var ACTIVE_ADD_COMPONENT_ELEMENT_ID = "addComponentToActiveRegionId";
-var ACTIVE_ADD_INFO_ELEMENT_ID = "addInfoPanelToActiveRegionId";
+//var COMPONENT_INFO_CONTAINER = "builderRegionInfoImageContainer";
+//var REGION_ADD_COMPONENT_CONTAINER = "builderRegionAddComponentContainer";
+//var ACTIVE_ADD_COMPONENT_ELEMENT_ID = "addComponentToActiveRegionId";
+//var ACTIVE_ADD_INFO_ELEMENT_ID = "addInfoPanelToActiveRegionId";
 
 var ADD_NEW_COMPONENT_WINDOW_LINK = "/workspase/window/";
 var EDIT_COMPONENT_WINDOW_LINK = "/workspase/window/";
@@ -16,13 +14,18 @@ var COMPONENT_INFORMATION_LABEL = "Set module properties";
 var NO_IDS_ERROR_MESSAGE = "Error occurred while inserting selected module!";
 var ADDING_MODULE_LABEL = "Adding...";
 var REGION_LABEL = "Region";
+var DELETING_LABEL = "Deleting...";
+var ARE_YOU_SURE_MESSAGE = "Are You sure?";
 
 var INSTANCE_ID = null;
 var PARENT_ID = null;
 var PAGE_KEY = null;
 
-var EXISTING_CONTAINERS_ID = new Array();
-var INITIALIZED_ELEMENTS = new Array();
+var IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
+var MODULE_NAME_PARAMETER = "moduleName";
+
+//var EXISTING_CONTAINERS_ID = new Array();
+var PROPERTIES_SHOWN = new Array();
 
 function getBuilderInitInfo() {
 	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
@@ -32,7 +35,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return;
 	}
-	if (list.length != 10) {
+	if (list.length != 14) {
 		return;
 	}
 	
@@ -46,6 +49,10 @@ function getBuilderInitInfoCallback(list) {
 	ADDING_MODULE_LABEL = list[7];
 	REGION_LABEL = list[8];
 	EDIT_COMPONENT_WINDOW_LINK = list[9];
+	IC_OBJECT_INSTANCE_ID_PARAMETER = list[10];
+	MODULE_NAME_PARAMETER = list[11];
+	DELETING_LABEL = list[12];
+	ARE_YOU_SURE_MESSAGE = list[13];
 }
 
 function registerBuilderActions() {
@@ -54,6 +61,10 @@ function registerBuilderActions() {
 			element.onmouseover = function() {
 				showAllComponentsLabels(element);
 				showComponentInfoImage(element);
+			},
+			element.onmouseout = function() {
+				hideOldLabels();
+				hideComponentInfoImage(element);
 			}
 		},
 		'div.regionLabel' : function(element) {
@@ -74,10 +85,10 @@ function registerBuilderActions() {
 				}
 			}
 			parentElement.onmouseover = function() {
-				showAddComponentImage(parentElement, regionLabel);
+				showAddComponentImage(parentElement, element, regionLabel);
 			},
 			parentElement.onmouseout = function() {
-				removeAddComponentImageWithTimeOut(regionLabel);
+				closeAddComponentContainer(element.id);
 			}
 		}
 	};
@@ -89,7 +100,7 @@ function showAllComponentsLabels(element) {
 	if (element == null) {
 		return;
 	}
-	removeOldLabels();
+	hideOldLabels();
 	
 	var children = getNeededBuilderElements(element, "DnDAreaTable");
 	if (children == null) {
@@ -107,57 +118,34 @@ function showAllComponentsLabels(element) {
 	}
 }
 
-function removeAddComponentImageWithTimeOut(regionLabel) {
-	var id = setTimeout("closeAddComponentContainer('"+REGION_ADD_COMPONENT_CONTAINER + regionLabel+"')", 5000);
-}
-
 function closeAddComponentContainer(id) {
 	var container = document.getElementById(id);
 	if (container == null) {
 		return;
 	}
-	new Effect.Fade(container);
-	/*var parentCotnainer = container.parentNode;
-	if (parentCotnainer == null) {
-		return;
-	}
-	parentCotnainer.removeChild(container);*/
+	//new Effect.Fade(container);	// Changes DOM
+	container.style.visibility = "hidden";
 }
 
-function removeAddComponentImage(element) {
-	if (element == null) {
-		return;
+function existsValueInList(list, value) {
+	if (list == null || value == null) {
+		return false;
 	}
-
-	// Removing old containers
-	var children = element.childNodes;
-	var foundChildren = null;
-	var needToResetList = false;
-	for (var i = 0; i < EXISTING_CONTAINERS_ID.length; i++) {
-		if (children == null) {
-			if (removeOldContainer(element, EXISTING_CONTAINERS_ID[i])) {
-				needToResetList = true;
-			}
-		}
-		else {
-			foundChildren = getNeededBuilderElementsFromListById(children, EXISTING_CONTAINERS_ID[i]);
-			if (foundChildren.length == 0) {
-				if (removeOldContainer(element, REGION_ADD_COMPONENT_CONTAINER + EXISTING_CONTAINERS_ID[i])) {
-					needToResetList = true;
-				}
-			}
+	for (var i = 0; i < list.length; i++) {
+		if (value == list[i]) {
+			return true;
 		}
 	}
-	if (needToResetList) {
-		EXISTING_CONTAINERS_ID = new Array();
-	}
+	return false;
 }
 
-function showAddComponentImage(element, regionLabel) {
+function showAddComponentImage(parentElement, element, regionLabel) {
 	if (element == null) {
 		return;
 	}
 	
+	element.style.visibility = "visible";	
+	/*
 	// Removing old containers
 	//removeAddComponentImage(element);
 	
@@ -205,20 +193,27 @@ function showAddComponentImage(element, regionLabel) {
 	// Initializing Lightbox
 	addLightboxMarkup();
 	modulesWindow = new lightbox(linkToComponents);
-	roundModulesListCorners();
+	roundModulesListCorners();*/
 }
 
 function setPropertiesForAddModule(element) {
-	if (element == null) {
-		PARENT_ID = null;
-		INSTANCE_ID = null;
+	PARENT_ID = null;
+	INSTANCE_ID = null;
+	if (element == null) {	
 		return;
 	}
 	
-	var children = element.childNodes;
+	var linkContainer = element.parentNode;
+	if (linkContainer == null) {
+		return null;
+	}
+	var region = linkContainer.parentNode;
+	if (region == null) {
+		return;
+	}
+	
+	var children = region.childNodes;
 	if (children == null) {
-		PARENT_ID = null;
-		INSTANCE_ID = null;
 		return;
 	}
 	
@@ -232,7 +227,7 @@ function setPropertiesForAddModule(element) {
 			}
 		}
 	}
-	
+
 	if (!found) {
 		PARENT_ID = null;
 		INSTANCE_ID = null;
@@ -265,59 +260,88 @@ function analyzeModuleContainerInputs(inputs) {
 	return false;
 }
 
-function showComponentInfoImage(element) {
-	// Removing old containers
-	removeOldContainer(element, COMPONENT_INFO_CONTAINER);
-	
+function getFirstElementFromList(elements) {
+	if (elements == null) {
+		return null;
+	}
+	if (elements.length == 0) {
+		return null;
+	}
+	return elements[0];
+}
+
+function hideComponentInfoImage(element) {
 	if (element == null) {
 		return;
 	}
 	
-	// Checking if container allready exists in this element
-	var children = getNeededBuilderElementsFromListById(element.childNodes, COMPONENT_INFO_CONTAINER);
-	if (children.length > 0) {
+	var list = element.getElementsByClassName("regionInfoImageContainer");
+	var container = getFirstElementFromList(list);
+	if (container == null) {
 		return;
 	}
 	
-	var moduleName = "Undefined";
-	var moduleNameContainerList = element.getElementsByClassName("moduleName");
-	if (moduleNameContainerList != null) {
-		if (moduleNameContainerList.length > 0) {
-			if (moduleNameContainerList[0].childNodes != null) {
-				if (moduleNameContainerList[0].childNodes.length > 0) {
-					moduleName = moduleNameContainerList[0].childNodes[0].nodeValue;
+	container.style.visibility = "hidden";
+}
+
+function showComponentInfoImage(element) {
+	if (element == null) {
+		return;
+	}
+	
+	var list = element.getElementsByClassName("regionInfoImageContainer");
+	var container = getFirstElementFromList(list);
+	if (container == null) {
+		return;
+	}
+	
+	var link = getFirstElementFromList(container.getElementsByTagName("a"));
+	if (link == null) {
+		return;
+	}
+	if (container.style.visibility == "") {	// If it is the first time
+		
+		var moduleName = "Undefined";
+		var moduleNameContainerList = element.getElementsByClassName("moduleName");
+		if (moduleNameContainerList != null) {
+			if (moduleNameContainerList.length > 0) {
+				if (moduleNameContainerList[0].childNodes != null) {
+					if (moduleNameContainerList[0].childNodes.length > 0) {
+						moduleName = moduleNameContainerList[0].childNodes[0].nodeValue;
+					}
 				}
 			}
 		}
+		
+		var instanceId = null;
+		var inputs = element.getElementsByTagName("input");
+		if (inputs != null) {
+			var input = null;
+			var foundInstance = false;
+			for (var i = 0; (i < inputs.length && !foundInstance); i++) {
+				input = inputs[i];
+				if (input.id != null) {
+					if (input.id.indexOf("instanceId") != -1) {
+						instanceId = input.value;
+						foundInstance = true;
+					}
+				}
+			}
+		}
+
+		link.removeAttribute("href");
+		link.className = "lbOn";
+		var uri = EDIT_COMPONENT_WINDOW_LINK + "?" + MODULE_NAME_PARAMETER + "=" + moduleName + "&" + IC_OBJECT_INSTANCE_ID_PARAMETER +
+		 "=" + instanceId;
+		link.setAttribute("href", uri);
+		
+		addLightboxMarkup();
+		editWindow = new lightbox(link);
+		roundModulesListCorners();
 	}
 	
-	// Main container
-	var container = document.createElement("div");
-	container.setAttribute("id", COMPONENT_INFO_CONTAINER);
-	container.style.display = "inline";
-	container.className = "regionInfoImageContainer";
-	
-	// Link
-	var linkToInfo = document.createElement("a");
-	linkToInfo.setAttribute("title", COMPONENT_INFORMATION_LABEL);
-	linkToInfo.className = "lbOn";
-	linkToInfo.setAttribute("href", EDIT_COMPONENT_WINDOW_LINK + "?moduleName=" + moduleName);
-	
-	// Image
-	var infoImage = document.createElement("img");
-	infoImage.setAttribute("src", COMPONENT_INFORMATION_IMAGE);
-	infoImage.setAttribute("title", COMPONENT_INFORMATION_LABEL);
-	
-	linkToInfo.appendChild(infoImage);
-	container.appendChild(linkToInfo);
-	element.appendChild(container);
-	
-	// Initializing Lightbox
-	addLightboxMarkup();
-	editWindow = new lightbox(linkToInfo);
-	roundModulesListCorners();
-	
-	new Effect.Pulsate(container);
+	container.style.visibility = "visible";
+	new Effect.Pulsate(link);
 }
 
 function getNeededBuilderElements(element, className) {
@@ -379,7 +403,7 @@ function removeOldContainer(element, id) {
 	}
 }
 
-function removeOldLabels() {
+function hideOldLabels() {
 	var children = document.getElementsByClassName("DnDAreaTable");
 	if (children == null) {
 		return;
@@ -401,7 +425,7 @@ function addSelectedModule(newObjectId) {
 }
 
 function addSelectedModuleCallback(result) {
-	modulesWindow.deactivate();
+	valid.deactivate();
 	window.location.href = window.location.href;
 	closeLoadingMessage();
 }
@@ -418,4 +442,61 @@ function roundLightboxWindow() {
 function initializeEditModuleWindow() {
 	Nifty("div#editModuleHeader","big");
 	Nifty("ul#editModuleMenuNavigation a","small transparent top");
+	Nifty("div#simple_properties_box","transparent");
+	Nifty("div#advanced_properties_box","transparent");
+}
+
+function manageComponentPropertiesList(id) {
+	if (existsValueInList(PROPERTIES_SHOWN, id)) {
+		PROPERTIES_SHOWN.pop(id);
+		closeComponentPropertiesList(id);
+	}
+	else {
+		PROPERTIES_SHOWN.push(id);
+		new Effect.SlideDown(id);
+	}
+}
+
+function closeComponentPropertiesList(id) {
+	if (id == null) {
+		return;
+	}
+	new Effect.SlideUp(id);
+}
+
+function exitFromPropertiesWindow() {
+	PROPERTIES_SHOWN = new Array();
+	editWindow.deactivate();
+}
+
+function closeAddModuleWindow() {
+	valid.deactivate();
+}
+
+function deleteModule(id, pageKey, parentId, instanceId) {
+	var confirmed = confirm(ARE_YOU_SURE_MESSAGE);
+	if (!confirmed) {
+		return;
+	}
+	showLoadingMessage(DELETING_LABEL);
+	BuilderEngine.deleteSelectedModule(pageKey, parentId, instanceId, {
+  		callback: function(result) {
+    		deleteModuleCallback(result, id);
+  		}
+	});
+}
+
+function deleteModuleCallback(result, id) {
+	closeLoadingMessage();
+	if (result) {
+		var deleted = document.getElementById(id);
+		if (deleted == null) {
+			return;
+		}
+		var parentDeleted = deleted.parentNode;
+		if (parentDeleted == null) {
+			return;
+		}
+		parentDeleted.removeChild(deleted);
+	}
 }
