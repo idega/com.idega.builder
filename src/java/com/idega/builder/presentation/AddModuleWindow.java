@@ -103,7 +103,7 @@ public class AddModuleWindow extends IBAdminWindow {
 			if (p.attributes == null) {
 				p.attributes = new HashMap();
 			}
-			p.attributes.put(actionDefinition, new StringBuffer("addSelectedModule(").append(object.getID()).append(");").toString());
+			p.attributes.put(actionDefinition, new StringBuffer("addSelectedModule(").append(object.getID()).append(", '").append(object.getClassName()).append("');").toString());
 			content.add(p);
 		}
 //		content.add(items);

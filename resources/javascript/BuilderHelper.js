@@ -415,19 +415,44 @@ function hideOldLabels() {
 	}
 }
 
-function addSelectedModule(newObjectId) {
+function addSelectedModule(newObjectId, className) {
 	if (INSTANCE_ID == null || PARENT_ID == null || PAGE_KEY == null) {
 		alert(NO_IDS_ERROR_MESSAGE);
 		return;
 	}
 	showLoadingMessage(ADDING_MODULE_LABEL);
-	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, addSelectedModuleCallback);
+	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, {
+		callback: function(component) {
+			addSelectedModuleCallback(component, PARENT_ID);
+		}
+	});
 }
 
-function addSelectedModuleCallback(result) {
+function addSelectedModuleCallback(component, id) {
+	closeLoadingMessage();
+	if (component == null) {
+		reloadPageAfterAddingModule();
+		return;
+	}
+	var container = document.getElementById(id);
+	if (container == null) {
+		reloadPageAfterAddingModule();
+		return;
+	}
+	var children = component.childNodes;
+	if (children == null) {
+		reloadPageAfterAddingModule();
+		return;
+	}
+	for (var i = 0; i < children.length; i++) {
+		container.appendChild(children[i]);
+	}
+	valid.deactivate();
+}
+
+function reloadPageAfterAddingModule() {
 	valid.deactivate();
 	window.location.href = window.location.href;
-	closeLoadingMessage();
 }
 
 function roundModulesListCorners() {
