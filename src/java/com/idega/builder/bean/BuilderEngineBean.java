@@ -17,14 +17,20 @@ import org.jdom.input.SAXBuilder;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBXMLReader;
 import com.idega.builder.presentation.AddModuleWindow;
 import com.idega.builder.presentation.EditModuleWindow;
+import com.idega.builder.presentation.IBObjectControl;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.repository.data.RefactorClassRegistry;
+import com.idega.slide.business.IWSlideSession;
 
 public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 	
@@ -76,12 +82,8 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return info;
 	}
 	
-	public Document addSelectedModule(String pageKey, String instanceId, int newObjectId, String containerId, String className) {
-		if (pageKey == null || instanceId == null || newObjectId < 0 || containerId == null || className == null) {
-			return null;
-		}
-		boolean insertedToXML = builder.addNewModule(pageKey, instanceId, newObjectId, containerId);
-		if (!insertedToXML) {
+	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index) {
+		if (pageKey == null || instanceId == null || objectId < 0 || containerId == null || className == null) {
 			return null;
 		}
 		
@@ -89,6 +91,16 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (iwc == null) {
 			return null;
 		}
+		IWSlideSession session = getSession(iwc);
+		
+		String uuid = null;
+		synchronized (BuilderEngineBean.class) {
+			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, session);
+		}
+		if (uuid == null) {
+			return null;
+		}
+		uuid = new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
 
 		Class objectClass = null;
 		try {
@@ -97,32 +109,39 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			log.error(e);
 			return null;
 		}
-
-		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
-		iwc.setResponseWriter(writer);
-		
 		PresentationObject obj = null;
 		try {
 			obj = (PresentationObject) objectClass.newInstance();
-			
-			//obj.encodeBegin(iwc);
-			
-			obj.callMain(iwc);
-			obj.initVariables(iwc);
-			obj.print(iwc);
+			obj.setId(uuid);
+		} catch (Exception e){
+			log.error(e);
+			return null;
+		}
+
+		Page currentPage = builder.getPage(pageKey, iwc);
+		if (currentPage == null) {
+			return null;
+		}
+		IBObjectControl objectComponent =  new IBObjectControl(obj, currentPage, containerId, iwc, index);
+		if (objectComponent == null) {
+			return null;
+		}
+
+		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+		iwc.setResponseWriter(writer);		
+		try {
+			objectComponent.renderComponent(iwc);
 		} catch (Exception e){
 			log.error(e);
 			return null;
 		}
 		
-		// For the very first version...
 		String result = writer.toString();
 		InputStream stream = new ByteArrayInputStream(result.getBytes());
-		
-		SAXBuilder builder = new SAXBuilder(false);
+		SAXBuilder sax = new SAXBuilder(false);
 		Document newComponent = null;
 		try {
-			newComponent = builder.build(stream);
+			newComponent = sax.build(stream);
 		} catch (JDOMException e) {
 			log.error(e);
 		} catch (IOException e) {
@@ -131,6 +150,9 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			closeStream(stream);
 		}
 		
+		if (newComponent != null) {
+			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache (also need to improve)
+		}
 		return newComponent;
 	}
 	
@@ -149,7 +171,31 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (pageKey == null || parentId == null || instanceId == null) {
 			return false;
 		}
-		return builder.deleteModule(pageKey, parentId, instanceId);
+		boolean result = false;
+		synchronized (BuilderEngineBean.class) {
+			result = builder.deleteModule(pageKey, parentId, instanceId, getSession(getIWContext()));
+		}
+		if (result) {
+			builder.clearAllCachedPages();
+		}
+		return result;
+	}
+	
+	private IWSlideSession getSession(IWContext iwc) {
+		if (iwc == null) {
+			iwc = getIWContext();
+			if (iwc == null) {
+				return null;
+			}
+		}
+		IWSlideSession session = null;
+		try {
+			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
+		} catch (IBOLookupException e) {
+			log.error(e);
+			return null;
+		}
+		return session;
 	}
 
 }

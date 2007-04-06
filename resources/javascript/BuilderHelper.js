@@ -420,8 +420,18 @@ function addSelectedModule(newObjectId, className) {
 		alert(NO_IDS_ERROR_MESSAGE);
 		return;
 	}
+	
+	var index = 0;
+	var container = document.getElementById(PARENT_ID);
+	if (container != null) {
+		var modules = getNeededBuilderElementsFromList(container.childNodes, "moduleContainer");
+		if (modules != null) {
+			index = modules.length;
+		}
+	}
+	
 	showLoadingMessage(ADDING_MODULE_LABEL);
-	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, {
+	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, {
 		callback: function(component) {
 			addSelectedModuleCallback(component, PARENT_ID);
 		}
@@ -444,10 +454,77 @@ function addSelectedModuleCallback(component, id) {
 		reloadPageAfterAddingModule();
 		return;
 	}
-	for (var i = 0; i < children.length; i++) {
-		container.appendChild(children[i]);
+	if (children.length == 0) {
+		reloadPageAfterAddingModule();
+		return;
 	}
+
+	// Making copy
+	var allNodes = new Array();
+	var size = children.length;
+	var node = null;
+	for (var i = 0; i < size; i++) {
+		node = children.item(i);
+		allNodes.push(node);
+	}
+	
+	// Finding place where to put new module
+	var elementToInsertBefore = null;
+	var modules = getNeededBuilderElementsFromList(container.childNodes, "moduleContainer");
+	if (modules == null) {
+		reloadPageAfterAddingModule();
+		return;
+	}
+
+	if (modules.length == 0) {
+		elementToInsertBefore = container.firstChild;
+	}
+	else {
+		var lastModule = modules[modules.length - 1];
+		var elementAfterLastModule = lastModule.nextSibling;	// The proper place - after the last module container
+		if (elementAfterLastModule == null) {
+			elementToInsertBefore = container.lastChild;
+		}
+		else {
+			elementToInsertBefore = elementAfterLastModule;
+		}
+	}
+	
 	valid.deactivate();
+	
+	// Inserting nodes
+	var activeNode = null;
+	var realNode = null;
+	for (var i = 0; i < allNodes.length; i++) {
+		activeNode = allNodes[allNodes.length - (i + 1)];
+		realNode = createRealNode(activeNode);
+		container.insertBefore(realNode, elementToInsertBefore);
+		elementToInsertBefore = realNode;
+	}
+	
+	registerBuilderActions();//Behaviour.apply();	// Need to re-register actions
+}
+
+function createRealNode(element) {
+	// Text
+	if(element.nodeName == '#text') {
+		var textNode = document.createTextNode(element.nodeValue);
+		return textNode;
+	}
+	// Comment
+	if (element.nodeName == '#comment') {
+		var commentNode = document.createComment(element.nodeValue);
+		return commentNode;
+	}
+	// Element
+	var result = document.createElement(element.nodeName);
+	for (var i = 0; i < element.attributes.length; i++) {
+		result.setAttribute(element.attributes[i].nodeName, element.attributes[i].nodeValue);
+	}
+	for(var j = 0; j < element.childNodes.length; j++) {
+		result.appendChild(createRealNode(element.childNodes[j]));
+	}
+	return result;
 }
 
 function reloadPageAfterAddingModule() {

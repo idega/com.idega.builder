@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.4 2007/01/26 05:54:33 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.5 2007/04/06 13:50:17 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -575,7 +575,7 @@ public class IBXMLWriter {
 	/**
 	 *  
 	 */
-	private boolean addNewModule(XMLElement parent, String pageKey, int newICObjectTypeID) {
+	/*private boolean addNewModule(XMLElement parent, String pageKey, int newICObjectTypeID) {
 		//XMLElement parent = findModule(parentObjectInstanceID);
 		if (parent != null) {
 			try {
@@ -613,6 +613,56 @@ public class IBXMLWriter {
 			return true;
 		}
 		return false;
+	}*/
+	
+	/**
+	 * Replaced private boolean addNewModule(XMLElement parent, String pageKey, int newICObjectTypeID)
+	 * returns UUID of inserted object or null if error occurred
+	 */
+	private String addNewModule(XMLElement parent, String pageKey, int newICObjectTypeID) {
+		String uuid = null;
+		boolean result = false;
+		try {
+			ICObjectInstanceHome icoiHome = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+			ICObjectHome icoHome = (ICObjectHome)IDOLookup.getHome(ICObject.class);
+			
+			ICObjectInstance instance = icoiHome.create();
+			instance.setICObjectID(newICObjectTypeID);
+			instance.setIBPageByKey(pageKey);
+			instance.store();
+			
+			ICObject obj = icoHome.findByPrimaryKey(new Integer(newICObjectTypeID));
+			Class theClass = obj.getObjectClass();
+			
+			uuid = instance.getUniqueId();
+			String xmlId = new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
+			
+			result = addNewModule(xmlId, theClass, parent, pageKey, obj);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		if (result) {
+			return uuid;
+		}
+		return null;
+	}
+	
+	private boolean addNewModule(String xmlId, Class theClass, XMLElement parent, String pageKey, ICObject obj) {
+		try {
+			XMLElement newElement = new XMLElement(IBXMLConstants.MODULE_STRING);
+			XMLAttribute aId = new XMLAttribute(IBXMLConstants.ID_STRING, xmlId);
+			XMLAttribute aClass = new XMLAttribute(IBXMLConstants.CLASS_STRING, theClass.getName());
+			newElement.setAttribute(aId);
+			newElement.setAttribute(aClass);
+			parent.addContent(newElement);
+			onObjectAdd(parent,newElement,pageKey,xmlId,obj);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -658,14 +708,14 @@ public class IBXMLWriter {
 	/**
 	 *  
 	 */
-	public boolean addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
+	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
 			int xpos, int ypos, String label) {
 		String regionId = parentObjectInstanceID + "." + xpos + "." + ypos;
 		return addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, regionId, label);
 	}
 
-	public boolean addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
-			String regionId, String label) {
+	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,	String regionId,
+			String label) {
 		
 		if(label==null || "null".equals(label)){
 			label = regionId; 
@@ -691,12 +741,8 @@ public class IBXMLWriter {
 				parent = region;
 				xml.getPageRootElement().addContent(region);
 			}
-			addNewModule(parent, pageKey, newICObjectID);
 		}
-		else {
-			addNewModule(region, pageKey, newICObjectID);
-		}
-		return true;
+		return addNewModule(region, pageKey, newICObjectID);
 	}
 
 	protected XMLElement createRegion(String regionId, String label) {
@@ -713,7 +759,7 @@ public class IBXMLWriter {
 	/**
 	 *  
 	 */
-	public boolean addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
+	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
 			String label) {
 		if (label == null) {
 			if(parentObjectInstanceID.indexOf(".")>=0){
@@ -735,11 +781,15 @@ public class IBXMLWriter {
 			return addNewModule(xml, pageKey, parentId, newICObjectID, parentObjectInstanceID, label);
 		}
 	}
+	
+//	protected String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID) {
+//		return addNewModule(findModule(xml, parentObjectInstanceID), pageKey, newICObjectID);
+//	}
 
 	/**
 	 *  
 	 */
-	public boolean addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID,
+	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID,
 			ICObject newObjectType, String label) {
 		int icObjectId = ((Number) newObjectType.getPrimaryKey()).intValue();
 		return addNewModule(xml, pageKey, parentObjectInstanceID, icObjectId, label);

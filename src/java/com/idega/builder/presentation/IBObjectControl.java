@@ -12,6 +12,7 @@ package com.idega.builder.presentation;
 import javax.faces.component.UIComponent;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBXMLReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.IWContext;
@@ -37,28 +38,21 @@ public class IBObjectControl extends PresentationObjectContainer
 	private Layer nameLayer;
 	private Layer dropAreaLayer;
 	
-	private PresentationObjectContainer _parent;
-	private String _parentKey;
-	private UIComponent _theObject;
+	private PresentationObjectContainer parent;
+	private String parentKey;
+	private UIComponent object;
 	boolean isPresentationObject = false;
 	private int number = 0;
 
 	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
 	}
-	public IBObjectControl(
-		UIComponent obj,
-		PresentationObjectContainer objectParent,
-		String theParentKey,
-		IWContext iwc,
-		int index)
-	{
-		this._parent = objectParent;
-		this._theObject = obj;
-		this._parentKey = theParentKey;
+	public IBObjectControl(UIComponent obj, PresentationObjectContainer parent, String parentKey, IWContext iwc, int index) {
+		this.parent = parent;
+		this.object = obj;
+		this.parentKey = parentKey;
 		this.number = index;
-		this.isPresentationObject = this._theObject instanceof PresentationObject;
-		
+		this.isPresentationObject = this.object instanceof PresentationObject;
 		
 		init(iwc);
 		add(obj);
@@ -121,15 +115,15 @@ public class IBObjectControl extends PresentationObjectContainer
 		super.add(new Text("<!-- idegaweb-module ends -->"));
 		
 		//finally add the object to the contentlayer
-		if (this._theObject != null) {
+		if (this.object != null) {
 			Text text = null; 
 			
 			if(this.isPresentationObject){
-				text = new Text(((PresentationObject)this._theObject).getBuilderName(iwc));
+				text = new Text(((PresentationObject)this.object).getBuilderName(iwc));
 			}
 			else{
 				//TODO make this localizable and remove getBuilderName from PO
-				String className = this._theObject.getClass().getName();
+				String className = this.object.getClass().getName();
 				int indexOfDot = className.lastIndexOf(".");
 				String objectName = null;
 				if(indexOfDot!=-1){
@@ -144,12 +138,15 @@ public class IBObjectControl extends PresentationObjectContainer
 			this.nameLayer.add(text);
 			
 			//TODO change icobjectinstanceid to String 
-			String instanceId = BuilderLogic.getInstance().getInstanceId(this._theObject);
+			String instanceId = BuilderLogic.getInstance().getInstanceId(this.object);
+			if (instanceId == null) {
+				instanceId = object.getId();
+			}
 			
 			HiddenInput instanceIdHidden = new HiddenInput("instanceId_"+containerId,instanceId);
 			instanceIdHidden.setID("instanceId_"+containerId);
 			
-			HiddenInput parentIdHidden = new HiddenInput("parentId_"+containerId,this._parentKey);
+			HiddenInput parentIdHidden = new HiddenInput("parentId_"+containerId,this.parentKey);
 			parentIdHidden.setID("parentId_"+containerId);
 			
 			String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
@@ -190,7 +187,7 @@ public class IBObjectControl extends PresentationObjectContainer
 			propertiesContainer.setStyleClass("regionInfoImageContainer");
 			
 			Image deleteImage = iwb.getImage("del_16.gif", "Delete component",16,16);
-			deleteImage.setOnClick("deleteModule('"+containerId+"', '"+pageKey+"', '"+this._parentKey+"', '"+instanceId+"');");
+			deleteImage.setOnClick("deleteModule('"+containerId+"', '"+pageKey+"', '"+this.parentKey+"', '"+instanceId+"');");
 			propertiesContainer.add(deleteImage);
 			
 			Image propertiesImage = iwb.getImage("information.png", "Set module properties", 16, 16);
@@ -209,14 +206,14 @@ public class IBObjectControl extends PresentationObjectContainer
 			this.containerLayer.add(this.handleAndMenuLayer);
 			this.containerLayer.add(this.contentLayer);
 			
-			this.handleAndMenuLayer.add(getDeleteIcon("0", this._parentKey, iwc));
+			this.handleAndMenuLayer.add(getDeleteIcon("0", this.parentKey, iwc));
 			this.handleAndMenuLayer.add(getEditIcon("0", iwc));
 		}
 	}
 		
 	public void add(UIComponent obj) {
 		this.contentLayer.add(obj);
-		obj.setParent(this._parent);
+		obj.setParent(this.parent);
 	}
 	
 	public void add(PresentationObject obj) {
@@ -256,8 +253,8 @@ public class IBObjectControl extends PresentationObjectContainer
 		}
 		
 		this.contentLayer.add(obj);
-		obj.setParentObject(this._parent);
-		obj.setLocation(this._parent.getLocation());
+		obj.setParentObject(this.parent);
+		obj.setLocation(this.parent.getLocation());
 		
 }
 

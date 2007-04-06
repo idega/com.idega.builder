@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.232 2007/04/04 10:47:21 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.233 2007/04/06 13:50:17 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -80,6 +80,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
+import com.idega.slide.business.IWSlideSession;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.reflect.PropertyCache;
@@ -1030,12 +1031,49 @@ public class BuilderLogic implements Singleton {
 			return (false);
 		}
 	}
+	
+	
+	/**
+	 * After deleting module, saves (if successfully deleted) IBXMLPage in other thread
+	 * @param pageKey
+	 * @param parentObjectInstanceID
+	 * @param instanceId
+	 * @param session
+	 * @return
+	 */
+	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId, IWSlideSession session) {
+		IBXMLPage page = getIBXMLPage(pageKey);
+		deleteBlock(instanceId, pageKey);
+		boolean result = getIBXMLWriter().deleteModule(page, parentObjectInstanceID, instanceId);
+		
+		if (result) {
+			if (session == null) {
+				page.store();
+			}
+			else {
+				savePage(page, session);
+			}
+		}
+		
+		return result;
+	}
 
 	// add by Aron 20.sept 2001 01:49
 	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
+		
+		deleteBlock(instanceId, pageKey);
+		
+		if (getIBXMLWriter().deleteModule(xml, parentObjectInstanceID, instanceId)) {
+			xml.store();
+			return (true);
+		}
+		return (false);
+	}
+	
+	private boolean deleteBlock(String instanceId, String pageKey) {
 		try {
-			ICObjectInstance instance = getIBXMLReader().getICObjectInstanceFromComponentId(instanceId,null,pageKey);
+			ICObjectInstance instance = getIBXMLReader().getICObjectInstanceFromComponentId(instanceId, null, pageKey);
 			Object obj = ICObjectBusiness.getInstance().getNewObjectInstance(instance.getID());
 			if (obj != null) {
 				if (obj instanceof Builderaware) {
@@ -1045,13 +1083,9 @@ public class BuilderLogic implements Singleton {
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
+			return false;
 		}
-		
-		if (getIBXMLWriter().deleteModule(xml, parentObjectInstanceID, instanceId)) {
-			xml.store();
-			return (true);
-		}
-		return (false);
+		return true;
 	}
 
 	/**
@@ -1279,11 +1313,41 @@ public class BuilderLogic implements Singleton {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		//TODO add handling for generic UIComponent adding
 		
-		if (getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label)) {
-			xml.store();
-			return (true);
+		String id = getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label);
+		if (id == null) {
+			return false;
 		}
-		return (false);
+		xml.store();
+		return true;
+	}
+	
+	/**
+	 * After insering new module IBXMLPage is saved (if successfully inserted module) in other thread
+	 * @param pageKey
+	 * @param parentObjectInstanceID
+	 * @param newICObjectID
+	 * @param label
+	 * @param session
+	 * @return
+	 */
+	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, IWSlideSession session) {
+		IBXMLPage page = getIBXMLPage(pageKey);
+		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, newICObjectID, label);
+		if (id == null) {
+			return null;
+		}
+		if (session == null) {
+			page.store();
+		}
+		else {
+			savePage(page, session);
+		}
+		return id;
+	}
+	
+	private void savePage(IBXMLPage page, IWSlideSession session) {
+		Thread saver = new Thread(new BuilderLogicWorker(page, session));
+		saver.start();
 	}
 
 	/**
@@ -1291,11 +1355,12 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		if (getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label)) {
-			xml.store();
-			return true;
+		String id = getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label);
+		if (id == null) {
+			return false;
 		}
-		return false;
+		xml.store();
+		return true;	
 	}
 
 	public Class getObjectClass(int icObjectInstanceID) {

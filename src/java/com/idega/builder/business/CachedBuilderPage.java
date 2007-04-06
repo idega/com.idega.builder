@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.13 2007/03/08 16:34:58 valdas Exp $
+ * $Id: CachedBuilderPage.java,v 1.14 2007/04/06 13:50:17 valdas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -284,11 +284,13 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	 * @param pageType
 	 * @param templateString
 	 */
-	protected OutputStream getPageOutputStream(ICPage icPage){
+	protected OutputStream getPageOutputStream(ICPage icPage, IWSlideSession session){
 		String webdavUri = icPage.getWebDavUri();
 		if(webdavUri!=null){
 			try {
-				IWSlideSession session = (IWSlideSession) IBOLookup.getSessionInstance(IWContext.getInstance(),IWSlideSession.class);
+				if (session == null) {
+					session = (IWSlideSession) IBOLookup.getSessionInstance(IWContext.getInstance(), IWSlideSession.class);
+				}
 				
 				String basePath = "/files/cms/pages";
 				if(webdavUri.startsWith(basePath)){
@@ -332,10 +334,40 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	}
 
 	public synchronized boolean store() {
+//		try {
+//			ICPage icPage = getICPage();
+//			icPage.setFormat(this.getPageFormat());
+//			OutputStream stream = getPageOutputStream(icPage);
+//			storeStream(stream);
+//			icPage.store();
+//		}
+//		catch (NumberFormatException ne) {
+//			/*try {
+//				OutputStream stream = new FileOutputStream(_key);
+//				store(stream);
+//			}
+//			catch (FileNotFoundException fnfe) {
+//				fnfe.printStackTrace();
+//			}*/
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace(System.err);
+//		}
+//		//setPopulatedPage(XMLReader.getPopulatedPage(this));
+//		//setPopulatedPage(null);
+//		if (getType().equals(TYPE_TEMPLATE)) {
+//			invalidateAllPagesUsingThisTemplate();
+//		}
+//		
+//		return true;
+		return store(null);
+	}
+	
+	public synchronized boolean store(IWSlideSession session) {
 		try {
 			ICPage icPage = getICPage();
 			icPage.setFormat(this.getPageFormat());
-			OutputStream stream = getPageOutputStream(icPage);
+			OutputStream stream = getPageOutputStream(icPage, session);
 			storeStream(stream);
 			icPage.store();
 		}
