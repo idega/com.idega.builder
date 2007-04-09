@@ -187,7 +187,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	 * @see com.idega.core.builder.business.BuilderService#getPageKeyByRequestURI(java.lang.String)
 	 */
 	public String getPageKeyByRequestURIAndServerName(String pageRequestUri,String serverName) {
-		return getBuilderLogic().getPageKeyByURIAndServerName(pageRequestUri,serverName);
+		
+		ICDomain domain = getIWApplicationContext().getDomainByServerName(serverName);
+		
+		return getBuilderLogic().getPageKeyByURI(pageRequestUri,domain);
 	}
 	
 	/* (non-Javadoc)
@@ -373,10 +376,15 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 	
 	public String getPageKeyByURI(String requestURI){
-		return getBuilderLogic().getPageKeyByURI(requestURI);
+		
+		ICDomain domain = getIWApplicationContext().getDomain();
+		
+		return getBuilderLogic().getPageKeyByURI(requestURI,domain);
 	}
 	
 	public String getExistingPageKeyByURI(String requestURI){
-		return getBuilderLogic().getExistingPageKeyByURI(requestURI);
+
+		ICDomain domain = getIWApplicationContext().getDomain();
+		return getBuilderLogic().getExistingPageKeyByURI(requestURI,domain);
 	}
 }

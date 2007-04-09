@@ -55,7 +55,7 @@ public class IBPageWindow extends IWAdminWindow {
 				chooser.setSelectedPage(current.getID(),current.getName());
 			}
 			else {
-      	ICDomain domain = ICDomainBMPBean.getDomain(1);
+      	ICDomain domain = iwc.getDomain();
       	ICPage top = domain.getStartPage();
       	if (top != null) {
 					chooser.setSelectedPage(top.getID(),top.getName());
@@ -85,7 +85,7 @@ public class IBPageWindow extends IWAdminWindow {
 				}
 				else {
       	  if (type.equals(IBPageHelper.TEMPLATE)) {
-	          ICDomain domain = ICDomainBMPBean.getDomain(1);
+	          ICDomain domain = iwc.getDomain();
     	      ICPage top = domain.getStartTemplate();
     	      if (top != null) {
 							chooser.setSelectedPage(top);
