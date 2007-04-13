@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.234 2007/04/09 22:17:55 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.235 2007/04/13 08:05:23 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -27,7 +27,7 @@ import org.jdom.Element;
 
 import com.idega.block.web2.business.Web2Business;
 import com.idega.block.web2.business.Web2BusinessBean;
-import com.idega.builder.presentation.AddModuleWindow;
+import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
 import com.idega.builder.presentation.IBCutModuleWindow;
@@ -59,6 +59,7 @@ import com.idega.event.EventLogic;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWApplicationContextFactory;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
@@ -270,16 +271,20 @@ public class BuilderLogic implements Singleton {
 		if (pasted != null) {
 			clipboardEmpty = false;
 		}
+		
+		String addModuleUri = getUriToObject(AddModuleBlock.class);
+		
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
-				Layer marker = getLabelMarker("page");
+				String parentKey = Integer.toString(-1);
+				Layer marker = getLabelMarker(parentKey, "page");
 				page.add(marker);
 				
-				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
+				marker.add(getAddIcon(addModuleUri, null));
 							
 				if (!clipboardEmpty){
-					marker.add(getPasteIcon(Integer.toString(-1),null, iwc));
+					marker.add(getPasteIcon(parentKey, null, iwc));
 				}
 				
 				/*Script drop = new Script();
@@ -293,9 +298,9 @@ public class BuilderLogic implements Singleton {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					Layer marker = getLabelMarker(regionKey);
+					Layer marker = getLabelMarker(regionKey, regionKey);
 					hPage.add(marker,regionKey);
-					marker.add(getAddIcon(regionKey, iwc, regionKey));
+					marker.add(getAddIcon(addModuleUri, regionKey));
 					
 					if (!clipboardEmpty){
 						marker.add(getPasteIcon(regionKey,regionKey, iwc));
@@ -326,11 +331,12 @@ public class BuilderLogic implements Singleton {
 			}
 			
 			if(mayAddButtonsInPage){
-				Layer marker = getLabelMarker("page");
-				marker.add(getAddIcon(Integer.toString(-1), iwc, null));
+				String parentKey = Integer.toString(-1);
+				Layer marker = getLabelMarker(parentKey, "page");
+				marker.add(getAddIcon(addModuleUri, null));
 
 				if ((!clipboardEmpty)){
-					marker.add(getPasteIcon(Integer.toString(-1), null, iwc));
+					marker.add(getPasteIcon(parentKey, null, iwc));
 				}
 				page.add(marker);
 			}
@@ -347,7 +353,7 @@ public class BuilderLogic implements Singleton {
 		return (page);
 	}
 
-	public Layer getLabelMarker(String label) {
+	public Layer getLabelMarker(String label, String parentKey) {
 		Layer marker = new Layer(Layer.DIV);
 		marker.add(new CSSSpacer());
 		marker.setStyleClass("regionLabel");
@@ -361,6 +367,8 @@ public class BuilderLogic implements Singleton {
 			marker.add(regionLabel);
 			marker.setId(new StringBuffer("region_label").append(label).toString());
 		}
+		
+		marker.add(new HiddenInput("parentKey", parentKey));
 
 		return marker;
 	}
@@ -459,6 +467,7 @@ public class BuilderLogic implements Singleton {
 				transformTable(currentPage, pageKey, obj, iwc, clipboardEmpty);
 			}
 			else {
+				String addModuleUri = getUriToObject(AddModuleBlock.class);
 				List list = obj.getChildren();
 				if (list != null && !list.isEmpty()) {
 					ListIterator iter = list.listIterator();
@@ -499,9 +508,9 @@ public class BuilderLogic implements Singleton {
 					if (curr.getIsExtendingTemplate()) {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
-								Layer marker = getLabelMarker(container.getLabel());
+								Layer marker = getLabelMarker(instanceId, container.getLabel());
 								container.add(marker);
-								marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+								marker.add(getAddIcon(addModuleUri, container.getLabel()));
 								
 								if (!clipboardEmpty){
 									marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
@@ -513,9 +522,9 @@ public class BuilderLogic implements Singleton {
 							}
 						}
 						else {
-							Layer marker = getLabelMarker(container.getLabel());
+							Layer marker = getLabelMarker(instanceId, container.getLabel());
 							container.add(marker);
-							marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+							marker.add(getAddIcon(addModuleUri, container.getLabel()));
 														
 							if (!clipboardEmpty){
 								marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
@@ -539,9 +548,9 @@ public class BuilderLogic implements Singleton {
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(container.getLabel());
+						Layer marker = getLabelMarker(instanceId, container.getLabel());
 						container.add(marker);
-						marker.add(getAddIcon(instanceId, iwc, container.getLabel()));
+						marker.add(getAddIcon(addModuleUri, container.getLabel()));
 						
 												
 						if (!clipboardEmpty){
@@ -586,6 +595,7 @@ public class BuilderLogic implements Singleton {
 		Table tab = (Table) obj;
 		int cols = tab.getColumns();
 		int rows = tab.getRows();
+		String addModuleUri = getUriToObject(AddModuleBlock.class);
 		for (int x = 1; x <= cols; x++) {
 			for (int y = 1; y <= rows; y++) {
 				PresentationObjectContainer moc = tab.containerAt(x, y);
@@ -597,10 +607,10 @@ public class BuilderLogic implements Singleton {
 				if (currentPage.getIsExtendingTemplate()) {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
-							Layer marker = getLabelMarker(tab.getLabel(x, y));
+							Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y));
 							tab.add(marker, x, y);
 							
-							PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+							PresentationObject addIcon = getAddIcon(addModuleUri, tab.getLabel(x, y));
 							marker.add(addIcon);
 							
 							if (!clipboardEmpty){
@@ -613,10 +623,10 @@ public class BuilderLogic implements Singleton {
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(tab.getLabel(x, y));
+						Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y));
 						tab.add(marker, x, y);
 						
-						PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+						PresentationObject addIcon = getAddIcon(addModuleUri, tab.getLabel(x, y));
 						marker.add(addIcon);
 						
 						if (!clipboardEmpty) {
@@ -638,10 +648,10 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 				else {
-					Layer marker = getLabelMarker(tab.getLabel(x, y));
+					Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y));
 					tab.add(marker, x, y);
 					
-					PresentationObject addIcon = getAddIcon(newParentKey, iwc, tab.getLabel(x, y));
+					PresentationObject addIcon = getAddIcon(addModuleUri, tab.getLabel(x, y));
 					marker.add(addIcon);
 										
 					if (!clipboardEmpty) {
@@ -1353,6 +1363,20 @@ public class BuilderLogic implements Singleton {
 		Thread saver = new Thread(new BuilderLogicWorker(page, session));
 		saver.start();
 	}
+	
+	public boolean addRegion(String pageKey, String label, String parentId, boolean storePage) {
+		IBXMLPage page = getIBXMLPage(pageKey);
+		if (page == null) {
+			return false;
+		}
+		if (getIBXMLWriter().addRegionToRootElement(page, label, parentId)) {
+			if (storePage) {
+				page.store();
+			}
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 *  	 *
@@ -1777,16 +1801,13 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getAddIcon(String parentKey, IWContext iwc, String label) {
+	public PresentationObject getAddIcon(String uri, String label) {
 		Image addImage = getBuilderBundle().getImage("add.png", "Add new component");
 		addImage.setOnClick("setPropertiesForAddModule(this.parentNode);");
 
 		Link link = new Link(addImage);
 		link.setStyleClass("lbOn");
-		
-		Link temp = new Link();
-		temp.setWindowToOpen(AddModuleWindow.class);
-		link.setMarkupAttribute(Link.HREF_ATTRIBUTE, temp.getURL());
+		link.setURL(uri);
 
 		if (label != null) {
 			link.setToolTip(label);
@@ -2576,9 +2597,6 @@ public class BuilderLogic implements Singleton {
 		if (uri == null) {
 			return null;
 		}
-		if (uri.indexOf("javascript.js") != -1) { // Not valid page uri
-			return null;
-		}
 		try {
 			ICPageHome pageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
 			return pageHome.findExistingByUri(uri, getCurrentDomain().getID());
@@ -2604,6 +2622,49 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		return web2;
+	}
+	
+	public String getUriToObject(Class objectClass) {
+		if (objectClass == null) {
+			return null;
+		}
+		String className = objectClass.getName();
+		StringBuffer uri = new StringBuffer("/servlet/ObjectInstanciator?").append(IWMainApplication.classToInstanciateParameter);
+		uri.append("=").append(className);
+		return uri.toString();
+	}
+	
+	@SuppressWarnings("deprecation")
+	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey) {
+		if (iwc == null || cacheKey == null) {
+			return false;
+		}
+		IWCacheManager cache = iwc.getIWMainApplication().getIWCacheManager();
+		if (cache == null) {
+			return false;
+		}
+		if (cache.isCacheValid(cacheKey)) {
+			cache.invalidateCache(cacheKey);
+		}
+		else {
+			List <String> modifiedKeys = new ArrayList<String>();
+			Map cached = cache.getCacheMap();
+			if (cached != null) {
+				for (Iterator it = cached.keySet().iterator(); it.hasNext(); ) {
+					modifiedKeys.add(it.next().toString());
+				}
+			}
+			if (modifiedKeys.size() == 0) {
+				return false;
+			}
+			for (int i = 0; i < modifiedKeys.size(); i++) {
+				if (modifiedKeys.get(i).startsWith(cacheKey)) {
+					cache.invalidateCache(modifiedKeys.get(i));
+				}
+			}
+		}
+		
+		return true;
 	}
 
 }
