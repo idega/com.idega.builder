@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.59 2007/04/04 10:47:21 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.60 2007/04/13 07:59:35 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -508,7 +508,7 @@ public class IBPropertyHandler implements Singleton{
 				return (getMethodDescription(methodProperty, iwc.getCurrentLocale()));
 			}*/
 			Locale locale = iwc.getCurrentLocale();
-			List properties = getComponentProperties(instanceId, iwc.getIWMainApplication(),locale);
+			List properties = getComponentProperties(instanceId, iwc.getIWMainApplication(),locale, false);
 			for (Iterator iter = properties.iterator(); iter.hasNext();) {
 				ComponentProperty property = (ComponentProperty) iter.next();
 				if(property.getName().equals(methodPropertyKey)){
@@ -713,7 +713,7 @@ public class IBPropertyHandler implements Singleton{
 	 * @param mainApplication
 	 * @return
 	 */
-	public List getComponentProperties(String instanceId, IWMainApplication iwma,Locale currentLocale) {
+	public List getComponentProperties(String instanceId, IWMainApplication iwma, Locale currentLocale, boolean refillProperties) {
 		//List theReturn = new Vector();
 		
 
@@ -734,17 +734,31 @@ public class IBPropertyHandler implements Singleton{
 		
 		ComponentRegistry registry = ComponentRegistry.getInstance(iwma);
 		ComponentInfo component = registry.getComponentByClassName(componentClassName);
-		if(component!=null){
-			
-			List properties = component.getProperties();
-			if(properties!=null&&properties.size()==0){
-				//Try to populate the ComponentProperties from the IWPropertyList from bundle.pxml
-				IWPropertyList pList = getMethods(iwb, componentClassName);
-				fillComponentProperties(componentClassName, iwma, currentLocale, component,properties,pList);
-			}
-			return properties;
+		if (component == null) {
+			return null;
 		}
-		return null;
+		
+		List properties = component.getProperties();
+		if (properties == null) {
+			return null;
+		}
+		
+		if (refillProperties) {
+			properties = new ArrayList();
+			fillProperties(iwb, componentClassName, properties, iwma, currentLocale, component);
+		}
+		else {
+			if (properties.size() == 0) {
+			}
+		}
+
+		return properties;
+	}
+	
+	private void fillProperties(IWBundle iwb, String className, List properties, IWMainApplication iwma, Locale locale, ComponentInfo component) {
+		//	Try to populate the ComponentProperties from the IWPropertyList from bundle.pxml
+		IWPropertyList pList = getMethods(iwb, className);
+		fillComponentProperties(className, iwma, locale, component, properties, pList);
 	}
 
 	/**
@@ -755,8 +769,7 @@ public class IBPropertyHandler implements Singleton{
 	 */
 	private void fillComponentProperties(String instanceId, IWMainApplication iwma,Locale currentLocale,ComponentInfo component,List properties,IWPropertyList methodList) {
 		//IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(instanceId, iwma);
-		Iterator iter = methodList.iterator();
-		while (iter.hasNext()) {
+		for (Iterator iter = methodList.iterator(); iter.hasNext(); ) {
 			IWProperty methodProp = (IWProperty) iter.next();
 			String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
 			String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp, currentLocale);

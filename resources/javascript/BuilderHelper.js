@@ -1,8 +1,3 @@
-//var COMPONENT_INFO_CONTAINER = "builderRegionInfoImageContainer";
-//var REGION_ADD_COMPONENT_CONTAINER = "builderRegionAddComponentContainer";
-//var ACTIVE_ADD_COMPONENT_ELEMENT_ID = "addComponentToActiveRegionId";
-//var ACTIVE_ADD_INFO_ELEMENT_ID = "addInfoPanelToActiveRegionId";
-
 var ADD_NEW_COMPONENT_WINDOW_LINK = "/workspase/window/";
 var EDIT_COMPONENT_WINDOW_LINK = "/workspase/window/";
 
@@ -24,7 +19,6 @@ var PAGE_KEY = null;
 var IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
 var MODULE_NAME_PARAMETER = "moduleName";
 
-//var EXISTING_CONTAINERS_ID = new Array();
 var PROPERTIES_SHOWN = new Array();
 
 function getBuilderInitInfo() {
@@ -123,7 +117,6 @@ function closeAddComponentContainer(id) {
 	if (container == null) {
 		return;
 	}
-	//new Effect.Fade(container);	// Changes DOM
 	container.style.visibility = "hidden";
 }
 
@@ -145,55 +138,6 @@ function showAddComponentImage(parentElement, element, regionLabel) {
 	}
 	
 	element.style.visibility = "visible";	
-	/*
-	// Removing old containers
-	//removeAddComponentImage(element);
-	
-	// Checking if container allready exists in this element
-	var children = getNeededBuilderElementsFromListById(element.childNodes, REGION_ADD_COMPONENT_CONTAINER + regionLabel);
-	if (children.length > 0) {
-		new Effect.Appear(REGION_ADD_COMPONENT_CONTAINER + regionLabel);
-		return;
-	}
-	
-	element.className = "regionContainer";
-	
-	//EXISTING_CONTAINERS_ID.push(regionLabel);
-	
-	// Main container
-	var container = document.createElement("div");
-	container.setAttribute("id", REGION_ADD_COMPONENT_CONTAINER + regionLabel);
-	container.className = "regionComponentImageContainer";
-	
-	// Region name
-	var regionName = document.createTextNode(REGION_LABEL + ": " + regionLabel + " ");
-	container.appendChild(regionName);
-	
-	// Link
-	var linkToComponents = document.createElement("a");
-	linkToComponents.setAttribute("title", ADD_NEW_COMPONENT_LABEL);
-	linkToComponents.className = "lbOn";
-	linkToComponents.setAttribute("href", ADD_NEW_COMPONENT_WINDOW_LINK);
-	
-	// Image
-	var image = document.createElement("img");
-	image.setAttribute("src", ADD_NEW_COMPONENT_IMAGE);
-	image.setAttribute("title", ADD_NEW_COMPONENT_LABEL);
-	linkToComponents.appendChild(image);
-	if (typeof container.attachEvent == "undefined") {
-		image.addEventListener("click", function(e){setPropertiesForAddModule(element);}, false);
-	} else {
-		image.attachEvent("onclick", function(e){setPropertiesForAddModule(element);});
-	}
-	
-	// Appending elements to document
-	container.appendChild(linkToComponents);
-	element.appendChild(container);	
-	
-	// Initializing Lightbox
-	addLightboxMarkup();
-	modulesWindow = new lightbox(linkToComponents);
-	roundModulesListCorners();*/
 }
 
 function setPropertiesForAddModule(element) {
@@ -218,46 +162,51 @@ function setPropertiesForAddModule(element) {
 	}
 	
 	var child = null;
-	var found = false;
-	for (var i = 0; (i < children.length && !found); i++) {
+	var foundInstance = false;
+	var foundParent = false;
+	var inputs = null;
+	for (var i = 0; (i < children.length && !foundInstance && !foundParent); i++) {
 		child = children[i];
 		if (child.className) {
 			if (child.className == "moduleContainer") {
-				found = analyzeModuleContainerInputs(child.childNodes);
+				inputs = child.getElementsByTagName("input");
+				INSTANCE_ID = getInputValue(inputs, "instanceId");
+				if (INSTANCE_ID != null) {
+					foundInstance = true;
+				}
+				PARENT_ID = getInputValue(inputs, "parentId");
+				if (PARENT_ID != null) {
+					foundParent = true;
+				}
 			}
 		}
 	}
+	
+	if (!foundParent) {
+		PARENT_ID = getInputValue(region.getElementsByTagName("input"), "parentKey");
+	}
 
-	if (!found) {
+	/*if (!found) {
 		PARENT_ID = null;
 		INSTANCE_ID = null;
 		return;
-	}
+	}*/
 }
 
-function analyzeModuleContainerInputs(inputs) {
-	if (inputs == null) {
+function getInputValue(inputs, inputName) {
+	if (inputs == null || inputName == null) {
 		return false;			
 	}
-	var setInstanceId = false;
-	var setParentId = false;
+
 	for (var i = 0; i < inputs.length; i++) {
 		input = inputs[i];
-		if (input.id != null) {
-			if (input.id.indexOf("instanceId") != -1) {
-				INSTANCE_ID = input.value;
-				setInstanceId = true;
-			}
-			if (input.id.indexOf("parentId") != -1) {
-				PARENT_ID = input.value;
-				setParentId = true;
+		if (input.name != null) {
+			if (input.name.indexOf(inputName) != -1) {
+				return input.value;
 			}
 		}
 	}
-	if (setInstanceId && setParentId) {
-		return true;
-	}
-	return false;
+	return null;
 }
 
 function getFirstElementFromList(elements) {
@@ -331,7 +280,7 @@ function showComponentInfoImage(element) {
 
 		link.removeAttribute("href");
 		link.className = "lbOn";
-		var uri = EDIT_COMPONENT_WINDOW_LINK + "?" + MODULE_NAME_PARAMETER + "=" + moduleName + "&" + IC_OBJECT_INSTANCE_ID_PARAMETER +
+		var uri = EDIT_COMPONENT_WINDOW_LINK + "&" + MODULE_NAME_PARAMETER + "=" + moduleName + "&" + IC_OBJECT_INSTANCE_ID_PARAMETER +
 		 "=" + instanceId;
 		link.setAttribute("href", uri);
 		
@@ -341,7 +290,6 @@ function showComponentInfoImage(element) {
 	}
 	
 	container.style.visibility = "visible";
-	new Effect.Pulsate(link);
 }
 
 function getNeededBuilderElements(element, className) {
@@ -416,9 +364,13 @@ function hideOldLabels() {
 }
 
 function addSelectedModule(newObjectId, className) {
-	if (INSTANCE_ID == null || PARENT_ID == null || PAGE_KEY == null) {
+	if (PARENT_ID == null || PAGE_KEY == null) {
 		alert(NO_IDS_ERROR_MESSAGE);
 		return;
+	}
+	
+	if (INSTANCE_ID == null) {
+		INSTANCE_ID = PARENT_ID;
 	}
 	
 	var index = 0;
@@ -550,13 +502,21 @@ function initializeEditModuleWindow() {
 
 function manageComponentPropertiesList(id) {
 	if (existsValueInList(PROPERTIES_SHOWN, id)) {
-		PROPERTIES_SHOWN.pop(id);
-		closeComponentPropertiesList(id);
+		removeElementFromArray(PROPERTIES_SHOWN, id);
+		new Effect.SlideDown(id);
 	}
 	else {
 		PROPERTIES_SHOWN.push(id);
-		new Effect.SlideDown(id);
+		closeComponentPropertiesList(id);
 	}
+}
+
+function addPropertyIdAndClose(id) {
+	if (id == null) {
+		return;
+	}
+	PROPERTIES_SHOWN.push(id);
+	closeComponentPropertiesList(id);
 }
 
 function closeComponentPropertiesList(id) {

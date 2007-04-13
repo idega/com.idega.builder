@@ -18,8 +18,8 @@ import org.jdom.input.SAXBuilder;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLReader;
-import com.idega.builder.presentation.AddModuleWindow;
-import com.idega.builder.presentation.EditModuleWindow;
+import com.idega.builder.presentation.AddModuleBlock;
+import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.IBObjectControl;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -28,7 +28,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.text.Link;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 
@@ -49,12 +48,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		}
 	}
 	
-	private String getWindowLink(Class className) {
-		Link l = new Link();
-		l.setWindowToOpen(className);
-		return l.getURL();
-	}
-	
 	public List<String> getBuilderInitInfo() {
 		List<String> info = new ArrayList<String>();
 		IWContext iwc = getIWContext();
@@ -64,7 +57,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		
 		IWResourceBundle iwrb = builder.getBuilderBundle().getResourceBundle(iwc);
 		
-		info.add(getWindowLink(AddModuleWindow.class));																		// 0
+		info.add(builder.getUriToObject(AddModuleBlock.class));															// 0
 		info.add(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));										// 1
 		info.add(iwrb.getLocalizedString("set_module_properties", "Set module properties"));								// 2
 		info.add(new StringBuffer(builder.getBuilderBundle().getResourcesPath()).append("/add.png").toString());			// 3
@@ -73,7 +66,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		info.add(String.valueOf(iwc.getCurrentIBPageID()));																	// 6
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
 		info.add(iwrb.getLocalizedString("create_simple_template.Region", "Region"));										// 8
-		info.add(getWindowLink(EditModuleWindow.class));																	// 9
+		info.add(builder.getUriToObject(EditModuleBlock.class));															// 9
 		info.add(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);															// 10
 		info.add(BuilderConstants.MODULE_NAME);																				// 11
 		info.add(iwrb.getLocalizedString("deleting", "Deleting..."));														// 12
@@ -83,16 +76,22 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 	}
 	
 	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index) {
-		if (pageKey == null || instanceId == null || objectId < 0 || containerId == null || className == null) {
+		if (pageKey == null || instanceId == null || objectId < 0 || className == null) {
 			return null;
 		}
 		
+		// Getting needed parameters
 		IWContext iwc = getIWContext();
 		if (iwc == null) {
 			return null;
 		}
 		IWSlideSession session = getSession(iwc);
 		
+		// Adding region (if region doesn't exist)
+		builder.addRegion(pageKey, containerId, instanceId, false);
+		
+		
+		// Adding module
 		String uuid = null;
 		synchronized (BuilderEngineBean.class) {
 			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, session);
@@ -102,6 +101,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		}
 		uuid = new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
 
+		// Getting instance of selected component
 		Class objectClass = null;
 		try {
 			objectClass = RefactorClassRegistry.forName(className);
@@ -117,7 +117,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			log.error(e);
 			return null;
 		}
-
+		// Getting needed parameters
 		Page currentPage = builder.getPage(pageKey, iwc);
 		if (currentPage == null) {
 			return null;
@@ -127,6 +127,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 
+		// Writing (rendering) object to ResponseWriter
 		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
 		iwc.setResponseWriter(writer);		
 		try {
@@ -136,6 +137,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
+		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
 		String result = writer.toString();
 		InputStream stream = new ByteArrayInputStream(result.getBytes());
 		SAXBuilder sax = new SAXBuilder(false);
@@ -150,6 +152,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			closeStream(stream);
 		}
 		
+		// Returning result
 		if (newComponent != null) {
 			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache (also need to improve)
 		}

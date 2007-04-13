@@ -18,5 +18,8 @@ public class BuilderConstants
 	public static final String PRM_HISTORY_ID = ICBuilderConstants.PRM_HISTORY_ID;  // "ib_history";
 	public static final String SESSION_OBJECT_STATE = ICBuilderConstants.SESSION_OBJECT_STATE; // "obj_inst_state";
 	public static final String MODULE_NAME = "moduleName";
+	
+	public static final String ADD_NEW_MODULE_WINDOW_CACHE_KEY = "add_new_module_to_page_window";
+	public static final String EDIT_MODULE_WINDOW_CACHE_KEY = "edit_existing_module_properties_window";
 
 }

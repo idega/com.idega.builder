@@ -2,12 +2,13 @@ package com.idega.builder.presentation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.FinderException;
 
+import com.idega.builder.business.BuilderConstants;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.component.data.ICObject;
@@ -16,20 +17,31 @@ import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
-import com.idega.presentation.Script;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
-import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.ui.GenericButton;
 
-public class AddModuleWindow extends IBAdminWindow {
+public class AddModuleBlock extends Block {
+	
+	public AddModuleBlock() {
+		setCacheable(getCacheKey());
+	}
+	
+	public String getCacheKey() {
+		return BuilderConstants.ADD_NEW_MODULE_WINDOW_CACHE_KEY;
+	}
+	
+	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
+		return cacheStatePrefix;
+	}
 	
 	public void main(IWContext iwc) throws Exception {
-		IWResourceBundle iwrb = getBuilderLogic().getBuilderBundle().getResourceBundle(iwc);
+		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
 		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
 		
 		Collection allComoponents = getAllComponents();
@@ -39,19 +51,19 @@ public class AddModuleWindow extends IBAdminWindow {
 		items.setID("modules_lists");
 		
 		ListItem widgetsList = new ListItem();
-		widgetsList.setId("one");
+		widgetsList.setId("widget_modules");
 		List<ICObject> widgets = getConcreteComponents(iwc, allComoponents, true, false, false);
 		addListToWindow(widgets, iwrb.getLocalizedString("widget_modules", "Widgets"), "widgets_list", widgetsList);
 		items.add(widgetsList);
 		
 		ListItem blocksList = new ListItem();
-		blocksList.setId("two");
+		blocksList.setId("block_modules");
 		List<ICObject> blocks = getConcreteComponents(iwc, allComoponents, false, true, false);
 		addListToWindow(blocks, iwrb.getLocalizedString("blocks_header", "Blocks"), "blocks_list", blocksList);
 		items.add(blocksList);
 		
 		ListItem builderList = new ListItem();
-		builderList.setId("three");
+		builderList.setId("builder_modules");
 		List<ICObject> builder = null;
 		if (isBuilderUser) {
 			builder = getConcreteComponents(iwc, allComoponents, false, false, true);
@@ -71,11 +83,6 @@ public class AddModuleWindow extends IBAdminWindow {
 		close.setOnClick("closeAddModuleWindow();");
 		closeContainer.add(close);
 		this.add(closeContainer);
-		
-		// Be sure 'niftycube.js' and 'BuilderHelper.js' files are added to page
-		Script init = new Script();
-		init.addScriptLine("roundModulesListCorners();");
-		this.add(init);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -84,58 +91,22 @@ public class AddModuleWindow extends IBAdminWindow {
 		container.add(header);
 		
 		Layer content = new Layer();
-//		Lists items = new Lists();
-//		String itemStyleClass = "modulesListItemStyle";
-//		ListItem item = new ListItem();
-//		Link l = null;
-		Paragraph p = null;
-		String actionDefinition = "onclick";
-		ICObject object = null;
-		for (int i = 0; i < objects.size(); i++) {
-			object = objects.get(i);
-//			item = new ListItem();
-//			item.addText(object.getName());
-			//item.setStyleClass(itemStyleClass);
-//			item.attributes.put(actionDefinition, new StringBuffer("addSelectedModule(").append(object.getID()).append(");").toString());
-//			items.add(item);
-			p = new Paragraph();
-			p.add(object.getName());
-			if (p.attributes == null) {
-				p.attributes = new HashMap();
-			}
-			p.attributes.put(actionDefinition, new StringBuffer("addSelectedModule(").append(object.getID()).append(", '").append(object.getClassName()).append("');").toString());
-			content.add(p);
-		}
-//		content.add(items);
-		container.add(content);
-	}
-	
-	/*private void addListToWindow(List<ICObject> objects, String name, String id) {
-		Layer container = new Layer();
-		container.setStyleClass("modulesListContainerStyle");
-		container.setId(id);
-		this.add(container);
-		
-		if (objects == null) {
-			return;
-		}
-		container.add(name);
-		ICObject object = null;
 		Lists items = new Lists();
-		items.setStyleClass("modulesListStyle");
 		String itemStyleClass = "modulesListItemStyle";
 		ListItem item = new ListItem();
 		String actionDefinition = "onclick";
+		ICObject object = null;
 		for (int i = 0; i < objects.size(); i++) {
 			object = objects.get(i);
 			item = new ListItem();
 			item.addText(object.getName());
 			item.setStyleClass(itemStyleClass);
-			item.attributes.put(actionDefinition, new StringBuffer("addSelectedModule(").append(object.getID()).append(");").toString());
+			item.attributes.put(actionDefinition, new StringBuffer("addSelectedModule(").append(object.getID()).append(", '").append(object.getClassName()).append("');").toString());
 			items.add(item);
 		}
-		container.add(items);
-	}*/
+		content.add(items);
+		container.add(content);
+	}
 	
 	@SuppressWarnings("unchecked")
 	private List<ICObject> getConcreteComponents(IWContext iwc, Collection allComponents, boolean findWidgets, boolean findBlocks, boolean findBuilder) {

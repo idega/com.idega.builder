@@ -125,7 +125,7 @@ public class IBPropertiesWindowList extends Page {
 			desc.setDisplayName(methodDescr);
 			theReturn.add(desc);
 		}*/
-		List theReturn = IBPropertyHandler.getInstance().getComponentProperties(instanceId,iwc.getIWMainApplication(),iwc.getCurrentLocale());
+		List theReturn = IBPropertyHandler.getInstance().getComponentProperties(instanceId,iwc.getIWMainApplication(),iwc.getCurrentLocale(), false);
 		java.util.Collections.sort(theReturn, ComponentPropertyComparator.getInstance());
 		return theReturn;
 	}

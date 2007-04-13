@@ -312,7 +312,7 @@ html>body .sourceviewButtonsLeft {
 }
 
 /*for modules*/
-ul#modules_lists,ul#modules_lists li {
+ul#modules_lists, ul#modules_lists li {
 	margin:0;
 	padding:0;
 	list-style:none;
@@ -323,8 +323,6 @@ ul#modules_lists li {
 	margin:0 10px 10px 0;
 }
 ul#modules_lists h3 {
-	font: normal 120%/1.3 Verdana,sans-serif;
-    text-transform:uppercase;
     margin:0px;
     padding: 5px 0 0;
     text-align:center;
@@ -338,26 +336,8 @@ ul#modules_lists p:hover {
 	font-weight: bold;
 	cursor: pointer;
 }
-li#one h3 {
-	background: #C8C866;
-}
 ul#modules_lists div {
 	background: #FFC;
-}
-li#one div {
-	border:2px solid #C8C866;
-}
-li#two h3 {
-	background: #FFBD00;
-}
-li#two div {
-	border:2px solid #FFBD00;
- }
-li#three h3 {
-	background: #E3A1C4;
-}
-li#three div {
-	border:2px solid #E3A1C4;
 }
 
 div#editModuleHeader {

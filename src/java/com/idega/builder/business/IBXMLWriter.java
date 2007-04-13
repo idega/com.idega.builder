@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.5 2007/04/06 13:50:17 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.6 2007/04/13 07:59:35 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -759,8 +759,7 @@ public class IBXMLWriter {
 	/**
 	 *  
 	 */
-	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
-			String label) {
+	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,	String label) {
 		if (label == null) {
 			if(parentObjectInstanceID.indexOf(".")>=0){
 				String parentID = parentObjectInstanceID.substring(0, parentObjectInstanceID.indexOf("."));
@@ -781,10 +780,6 @@ public class IBXMLWriter {
 			return addNewModule(xml, pageKey, parentId, newICObjectID, parentObjectInstanceID, label);
 		}
 	}
-	
-//	protected String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID) {
-//		return addNewModule(findModule(xml, parentObjectInstanceID), pageKey, newICObjectID);
-//	}
 
 	/**
 	 *  
@@ -1137,6 +1132,16 @@ public class IBXMLWriter {
 				return true;
 			}
 		}
+	}
+	
+	protected boolean addRegionToRootElement(IBXMLAble xml, String label, String parentId) {
+		XMLElement region = findRegion(xml, label, parentId);
+		if (region == null) {
+			region = createRegion(parentId, label);
+			xml.getPageRootElement().addContent(region);
+			return true;
+		}
+		return false;
 	}
 
 	public boolean pasteElementBelow(IBXMLAble xml, String pageKey, String parentObjectInstanceID,String objectId, XMLElement element) {

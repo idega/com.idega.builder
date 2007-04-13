@@ -6,13 +6,9 @@
  */
 package com.idega.builder.presentation;
 
-
-
-
 import javax.faces.component.UIComponent;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.IBXMLReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.IWContext;
@@ -34,7 +30,7 @@ public class IBObjectControl extends PresentationObjectContainer
 	private Layer containerLayer;
 	private Layer handleAndMenuLayer;
 	private Layer contentLayer;
-//	private Layer buttonsLayer;
+	private Layer buttonsLayer;
 	private Layer nameLayer;
 	private Layer dropAreaLayer;
 	
@@ -84,7 +80,8 @@ public class IBObjectControl extends PresentationObjectContainer
 		this.contentLayer.setStyleClass("moduleContent");
 		this.contentLayer.setID("content_"+containerId);
 		
-//		this.buttonsLayer = new Layer(Layer.DIV);
+		this.buttonsLayer = new Layer(Layer.DIV);
+		this.buttonsLayer.setStyleClass("regionInfoImageContainer");
 //		this.buttonsLayer.setStyleClass("moduleButtons");
 		
 		this.dropAreaLayer = new Layer(Layer.DIV);
@@ -175,7 +172,7 @@ public class IBObjectControl extends PresentationObjectContainer
 //			}
 			
 			
-//			this.dropAreaLayer.add(this.buttonsLayer);
+			this.dropAreaLayer.add(this.buttonsLayer);
 			
 			tempDragDropContainer.add(this.nameLayer,1,1);
 			tempDragDropContainer.add(this.dropAreaLayer,2,1);
@@ -183,23 +180,22 @@ public class IBObjectControl extends PresentationObjectContainer
 			this.containerLayer.add(tempDragDropContainer);
 			this.containerLayer.add(this.contentLayer);
 			
-			Layer propertiesContainer = new Layer();
-			propertiesContainer.setStyleClass("regionInfoImageContainer");
-			
 			Image deleteImage = iwb.getImage("del_16.gif", "Delete component",16,16);
-			deleteImage.setOnClick("deleteModule('"+containerId+"', '"+pageKey+"', '"+this.parentKey+"', '"+instanceId+"');");
-			propertiesContainer.add(deleteImage);
+			String paramsSeparator = "', '";
+			StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(paramsSeparator).append(pageKey);
+			action.append(paramsSeparator).append(this.parentKey).append(paramsSeparator).append(instanceId).append("');");
+			deleteImage.setOnClick(action.toString());
+			this.buttonsLayer.add(deleteImage);
 			
 			Image propertiesImage = iwb.getImage("information.png", "Set module properties", 16, 16);
 			Link link = new Link(propertiesImage);
-			propertiesContainer.add(link);
-			containerLayer.add(propertiesContainer);
+			this.buttonsLayer.add(link);
 			
 			//experimental so the box always is around everything
 			this.containerLayer.add(new CSSSpacer());
 			
 //			handleAndMenuLayer.add(nameLayer);
-//			handleAndMenuLayer.add(buttonsLayer);
+			handleAndMenuLayer.add(this.buttonsLayer);
 		}
 		else {//object being added is null for some reason!
 			//setup layout

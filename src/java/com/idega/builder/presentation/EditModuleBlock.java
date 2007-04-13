@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Random;
 
 import com.idega.builder.business.BuilderConstants;
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.component.business.ComponentProperty;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Script;
@@ -22,7 +24,22 @@ import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.GenericButton;
 
-public class EditModuleWindow extends IBAdminWindow {
+public class EditModuleBlock extends Block {
+	
+	public EditModuleBlock() {
+		setCacheable(getCacheKey(), 0);
+	}
+	
+	public String getCacheKey() {
+		return BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY;
+	}
+	
+	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
+		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
+		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
+
+		return new StringBuffer(cacheStatePrefix).append(name).append(instanceId).toString();
+	}
 	
 	public void main(IWContext iwc) throws Exception {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
@@ -31,7 +48,7 @@ public class EditModuleWindow extends IBAdminWindow {
 			return;
 		}
 		
-		IWResourceBundle iwrb = getBuilderLogic().getBuilderBundle().getResourceBundle(iwc);
+		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
 		
 		List properties = getPropertyListOrdered(iwc, instanceId);
 		
@@ -83,7 +100,7 @@ public class EditModuleWindow extends IBAdminWindow {
 	
 	@SuppressWarnings("unchecked")
 	private List getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
-		List properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale());
+		List properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale(), true);
 		java.util.Collections.sort(properties, ComponentPropertyComparator.getInstance());
 		return properties;
 	}
@@ -142,7 +159,7 @@ public class EditModuleWindow extends IBAdminWindow {
 		header.setOnClick(new StringBuffer("manageComponentPropertiesList('").append(propertiesContainerId).append("');").toString());
 		if (hidePropertiesList) {
 			Script hide = new Script();
-			hide.addScriptLine(new StringBuffer("closeComponentPropertiesList('").append(propertiesContainerId).append("');").toString());
+			hide.addScriptLine(new StringBuffer("addPropertyIdAndClose('").append(propertiesContainerId).append("');").toString());
 			header.add(hide);
 		}
 		
