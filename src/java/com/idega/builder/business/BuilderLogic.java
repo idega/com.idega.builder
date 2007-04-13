@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.235 2007/04/13 08:05:23 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.236 2007/04/13 17:00:26 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -64,6 +64,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.HtmlPage;
@@ -927,6 +928,14 @@ public class BuilderLogic implements Singleton {
 	public ICDomain getCurrentDomain(){
 		//IWApplicationContext iwac = IWMainApplication.getDefaultIWApplicationContext();
 		IWApplicationContext iwac = IWApplicationContextFactory.getCurrentIWApplicationContext();
+		if(iwac == null){
+			try {
+				iwac = IWContext.getInstance();
+			} catch (UnavailableIWContext e) {
+				e.printStackTrace();
+			}
+		}
+		
 		return getCurrentDomain(iwac);
 	}
 	
