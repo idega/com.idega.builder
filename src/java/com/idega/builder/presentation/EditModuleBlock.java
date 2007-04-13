@@ -2,6 +2,7 @@ package com.idega.builder.presentation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import com.idega.builder.business.BuilderConstants;
@@ -80,7 +81,7 @@ public class EditModuleBlock extends Block {
 		this.add(new Break());
 		
 		Layer propertiesContainer = new Layer();
-		addProperties(properties, propertiesContainer, iwrb);
+		addProperties(properties, propertiesContainer, iwrb, iwc, instanceId);
 		this.add(propertiesContainer);
 		
 		// Cancel button
@@ -105,7 +106,7 @@ public class EditModuleBlock extends Block {
 		return properties;
 	}
 	
-	private void addProperties(List properties, Layer container, IWResourceBundle iwrb) {
+	private void addProperties(List properties, Layer container, IWResourceBundle iwrb, IWContext iwc, String instanceId) {
 		if (properties == null) {
 			return;
 		}
@@ -125,11 +126,11 @@ public class EditModuleBlock extends Block {
 				}
 			}
 		}
-		addPropertiesToContainer(simpleProperties, container, iwrb.getLocalizedString("simple_properties", "Simple Properties"), "simple_properties_box", null, false);		
-		addPropertiesToContainer(advancedProperties, container, iwrb.getLocalizedString("advanced_properties", "Advanced Properties"), "advanced_properties_box", null, true);	
+		addPropertiesToContainer(simpleProperties, container, iwrb.getLocalizedString("simple_properties", "Simple Properties"), "simple_properties_box", null, false, iwc.getCurrentLocale(), instanceId);		
+		addPropertiesToContainer(advancedProperties, container, iwrb.getLocalizedString("advanced_properties", "Advanced Properties"), "advanced_properties_box", null, true, iwc.getCurrentLocale(), instanceId);	
 	}
 	
-	private void addPropertiesToContainer(List<ComponentProperty> properties, Layer parent, String name, String id, String className, boolean hidePropertiesList) {
+	private void addPropertiesToContainer(List<ComponentProperty> properties, Layer parent, String name, String id, String className, boolean hidePropertiesList, Locale locale, String instanceId) {
 		if (properties == null || parent == null || name == null) {
 			return;
 		}
@@ -168,10 +169,16 @@ public class EditModuleBlock extends Block {
 		Lists list = new Lists();
 		list.setListOrdered(true);
 		ListItem item = null;
+		String itemStyle = "moduleProperty";
+		String propertyId = null;
 		for (int i = 0; i < properties.size(); i++) {
+			propertyId = new StringBuffer("property").append(generator.nextInt(Integer.MAX_VALUE)).toString();
 			property = properties.get(i);
 			item = new ListItem();
-			item.add(new Text(property.getDisplayName()));
+			item.setId(propertyId);
+			item.add(new Text(property.getDisplayName(locale)));
+			item.setStyleClass(itemStyle);
+			item.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(property.getName()).append("', '").append(instanceId).append("');").toString());
 			list.add(item);
 		}
 		

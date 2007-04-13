@@ -11,6 +11,8 @@ var ADDING_MODULE_LABEL = "Adding...";
 var REGION_LABEL = "Region";
 var DELETING_LABEL = "Deleting...";
 var ARE_YOU_SURE_MESSAGE = "Are You sure?";
+var SAVING_LABEL = "Saving...";
+var LOADING_LABEL = "Loading...";
 
 var INSTANCE_ID = null;
 var PARENT_ID = null;
@@ -29,7 +31,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return;
 	}
-	if (list.length != 14) {
+	if (list.length != 16) {
 		return;
 	}
 	
@@ -47,6 +49,8 @@ function getBuilderInitInfoCallback(list) {
 	MODULE_NAME_PARAMETER = list[11];
 	DELETING_LABEL = list[12];
 	ARE_YOU_SURE_MESSAGE = list[13];
+	SAVING_LABEL = list[14];
+	LOADING_LABEL = list[15];
 }
 
 function registerBuilderActions() {
@@ -186,11 +190,6 @@ function setPropertiesForAddModule(element) {
 		PARENT_ID = getInputValue(region.getElementsByTagName("input"), "parentKey");
 	}
 
-	/*if (!found) {
-		PARENT_ID = null;
-		INSTANCE_ID = null;
-		return;
-	}*/
 }
 
 function getInputValue(inputs, inputName) {
@@ -412,13 +411,7 @@ function addSelectedModuleCallback(component, id) {
 	}
 
 	// Making copy
-	var allNodes = new Array();
-	var size = children.length;
-	var node = null;
-	for (var i = 0; i < size; i++) {
-		node = children.item(i);
-		allNodes.push(node);
-	}
+	var allNodes = getTransformedDocumentToDom(component);
 	
 	// Finding place where to put new module
 	var elementToInsertBefore = null;
@@ -454,7 +447,7 @@ function addSelectedModuleCallback(component, id) {
 		elementToInsertBefore = realNode;
 	}
 	
-	registerBuilderActions();//Behaviour.apply();	// Need to re-register actions
+	registerBuilderActions();	// Need to re-register actions
 }
 
 function createRealNode(element) {
@@ -561,4 +554,82 @@ function deleteModuleCallback(result, id) {
 		}
 		parentDeleted.removeChild(deleted);
 	}
+}
+
+function getPropertyBox(id, propertyName, objectInstanceId) {
+	if (document.getElementById(id + "_property_setter_box") == null) {
+		showLoadingMessage(LOADING_LABEL);
+		BuilderEngine.getPropertyBox(PAGE_KEY, propertyName, objectInstanceId, {
+			callback: function(box) {
+				getPropertyBoxCallback(id, box);
+			}
+		});
+	}
+	else {
+		//new Effect.SlideDown(id + "_property_setter_box");
+	}
+}
+
+function getPropertyBoxCallback(id, box) {
+	closeLoadingMessage();
+	if (id == null) {
+		return;
+	}
+	var container = document.getElementById(id);
+	if (container == null) {
+		return;
+	}
+	if (box == null) {
+		// TODO: add error
+		return;
+	}
+	
+	var propertySetterBox = document.createElement("div");
+	propertySetterBox.setAttribute("id", id + "_property_setter_box");
+	
+	// Making copy
+	var nodes = getTransformedDocumentToDom(box);
+	
+	// Inserting nodes
+	var activeNode = null;
+	var realNode = null;
+	for (var i = 0; i < nodes.length; i++) {
+		activeNode = nodes[i];
+		realNode = createRealNode(activeNode);
+		propertySetterBox.appendChild(realNode);
+	}
+	
+	container.appendChild(propertySetterBox);
+	//new Effect.SlideDown(propertySetterBox);
+}
+
+function setModuleProperty(moduleId, propName, propValue) {
+	showLoadingMessage(SAVING_LABEL);
+	BuilderEngine.setModuleProperty(PAGE_KEY, moduleId, propName, propValue, setModulePropertyCallback);
+}
+
+function setModulePropertyCallback(result) {
+	closeLoadingMessage();
+}
+
+function getTransformedDocumentToDom(component) {
+	var nodes = new Array();
+	if (component == null) {
+		return nodes;
+	}
+	var children = component.childNodes;
+	if (children == null) {
+		return nodes;
+	}
+	if (children.length == 0) {
+		return nodes;
+	}
+	
+	var size = children.length;
+	var node = null;
+	for (var i = 0; i < size; i++) {
+		node = children.item(i);
+		nodes.push(node);
+	}
+	return nodes;
 }

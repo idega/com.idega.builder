@@ -401,3 +401,7 @@ div#simple_properties_box {
 	padding-top: 5px;
 	float: right;
 }
+
+.moduleProperty:HOVER {
+	cursor: pointer;
+}

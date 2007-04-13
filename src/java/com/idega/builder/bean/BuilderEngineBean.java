@@ -11,6 +11,7 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
+import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -21,8 +22,8 @@ import com.idega.builder.business.IBXMLReader;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.IBObjectControl;
+import com.idega.builder.presentation.IBPropertiesWindowSetter;
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -57,7 +58,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		
 		IWResourceBundle iwrb = builder.getBuilderBundle().getResourceBundle(iwc);
 		
-		info.add(builder.getUriToObject(AddModuleBlock.class));															// 0
+		info.add(builder.getUriToObject(AddModuleBlock.class));																// 0
 		info.add(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));										// 1
 		info.add(iwrb.getLocalizedString("set_module_properties", "Set module properties"));								// 2
 		info.add(new StringBuffer(builder.getBuilderBundle().getResourcesPath()).append("/add.png").toString());			// 3
@@ -71,6 +72,8 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		info.add(BuilderConstants.MODULE_NAME);																				// 11
 		info.add(iwrb.getLocalizedString("deleting", "Deleting..."));														// 12
 		info.add(iwrb.getLocalizedString("are_you_sure", "Are You sure?"));													// 13
+		info.add(iwrb.getLocalizedString("saving", "Saving..."));															// 14
+		info.add(iwrb.getLocalizedString("loading", "Loading..."));															// 15
 		
 		return info;
 	}
@@ -85,7 +88,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (iwc == null) {
 			return null;
 		}
-		IWSlideSession session = getSession(iwc);
 		
 		// Adding region (if region doesn't exist)
 		builder.addRegion(pageKey, containerId, instanceId, false);
@@ -94,7 +96,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		// Adding module
 		String uuid = null;
 		synchronized (BuilderEngineBean.class) {
-			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, session);
+			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, /*getSession(iwc)*/ null);
 		}
 		if (uuid == null) {
 			return null;
@@ -127,36 +129,37 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 
-		// Writing (rendering) object to ResponseWriter
-		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
-		iwc.setResponseWriter(writer);		
-		try {
-			objectComponent.renderComponent(iwc);
-		} catch (Exception e){
-			log.error(e);
-			return null;
-		}
+//		// Writing (rendering) object to ResponseWriter
+//		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+//		iwc.setResponseWriter(writer);		
+//		try {
+//			objectComponent.renderComponent(iwc);
+//		} catch (Exception e){
+//			log.error(e);
+//			return null;
+//		}
+//		
+//		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
+//		String result = writer.toString();
+//		InputStream stream = new ByteArrayInputStream(result.getBytes());
+//		SAXBuilder sax = new SAXBuilder(false);
+//		Document newComponent = null;
+//		try {
+//			newComponent = sax.build(stream);
+//		} catch (JDOMException e) {
+//			log.error(e);
+//		} catch (IOException e) {
+//			log.error(e);
+//		} finally {
+//			closeStream(stream);
+//		}
 		
-		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
-		String result = writer.toString();
-		InputStream stream = new ByteArrayInputStream(result.getBytes());
-		SAXBuilder sax = new SAXBuilder(false);
-		Document newComponent = null;
-		try {
-			newComponent = sax.build(stream);
-		} catch (JDOMException e) {
-			log.error(e);
-		} catch (IOException e) {
-			log.error(e);
-		} finally {
-			closeStream(stream);
-		}
-		
+		Document renderedObject = getRenderedPresentationObject(iwc, objectComponent);
 		// Returning result
-		if (newComponent != null) {
+		if (renderedObject != null) {
 			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache (also need to improve)
 		}
-		return newComponent;
+		return renderedObject;
 	}
 	
 	private void closeStream(InputStream stream) {
@@ -176,7 +179,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		}
 		boolean result = false;
 		synchronized (BuilderEngineBean.class) {
-			result = builder.deleteModule(pageKey, parentId, instanceId, getSession(getIWContext()));
+			result = builder.deleteModule(pageKey, parentId, instanceId, /*getSession(getIWContext())*/ null);
 		}
 		if (result) {
 			builder.clearAllCachedPages();
@@ -194,11 +197,85 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		IWSlideSession session = null;
 		try {
 			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
-		} catch (IBOLookupException e) {
+//			if (session.getIWApplicationContext() == null) {
+//				session.setIWApplicationContext(iwc);
+//			}
+//			if (session.getIWApplicationContext() == null) {
+//				System.out.println("Setting: " + iwc.getApplicationContext());
+//				session.setIWApplicationContext(iwc.getApplicationContext());
+//			}
+		} catch (Exception e) {
 			log.error(e);
 			return null;
 		}
 		return session;
+	}
+	
+	public boolean setModuleProperty(String pageKey, String moduleId, String propName, String propValue) {
+		return builder.addPropertyToModule(pageKey, moduleId, propName, propValue);
+	}
+	
+	private Document getRenderedPresentationObject(IWContext iwc, PresentationObject object) {
+		//	Writing (rendering) object to ResponseWriter
+		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+		iwc.setResponseWriter(writer);		
+		try {
+			object.renderComponent(iwc);
+		} catch (Exception e){
+			log.error(e);
+			return null;
+		}
+		
+		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
+		String result = writer.toString();
+		
+		// Cleaning - need valid XML structure
+		HtmlCleaner cleaner = new HtmlCleaner(result);
+		cleaner.setOmitDoctypeDeclaration(false);
+		try {
+			cleaner.clean();
+			result = cleaner.getPrettyXmlAsString();
+		} catch (IOException e) {
+			log.error(e);
+			return null;
+		}
+
+		// Building JDOM Document
+		InputStream stream = new ByteArrayInputStream(result.getBytes());
+		SAXBuilder sax = new SAXBuilder(false);
+		Document renderedObject = null;
+		try {
+			renderedObject = sax.build(stream);
+		} catch (JDOMException e) {
+			log.error(e);
+		} catch (IOException e) {
+			log.error(e);
+		} finally {
+			closeStream(stream);
+		}
+		
+		return renderedObject;
+	}
+	
+	public Document getPropertyBox(String pageKey, String propertyName, String objectInstanceId) {
+		if (propertyName == null || objectInstanceId == null) {
+			return null;
+		}
+		IWContext iwc = getIWContext();
+		if (iwc == null) {
+			return null;
+		}
+		
+		IBPropertiesWindowSetter setter = new IBPropertiesWindowSetter();
+		PresentationObject box = null;
+		try {
+			box = setter.getPropertySetterBox(propertyName, iwc, pageKey, objectInstanceId);
+		} catch (Exception e) {
+			log.error(e);
+			return null;
+		}
+		
+		return getRenderedPresentationObject(iwc, box);
 	}
 
 }
