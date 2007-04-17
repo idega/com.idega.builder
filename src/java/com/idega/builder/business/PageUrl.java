@@ -1,5 +1,5 @@
 /*
- * $Id: PageUrl.java,v 1.3 2007/04/09 22:17:55 tryggvil Exp $
+ * $Id: PageUrl.java,v 1.4 2007/04/17 17:12:07 justinas Exp $
  * Created on 24.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.util.StringHandler;
@@ -24,10 +25,10 @@ import com.idega.util.StringHandler;
  *  <p>
  *  Class for setting and manipulating generated URLs for builder pages
  *  <p>
- *  Last modified: $Date: 2007/04/09 22:17:55 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/04/17 17:12:07 $ by $Author: justinas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PageUrl {
 	
@@ -106,9 +107,20 @@ public class PageUrl {
 			PageNamePart part =  new PageNamePart(this.pageName);
 			l.add(part);
 		}
-
+System.out.println("page name "+((IDOEntity)ppage).getDatasource());
+System.out.println("entity name "+ppage.getEntityName());
 		while(ppage!=null){
-			PageNamePart part =  getParsedName(ppage);
+				PageNamePart part = null;
+				try {
+					part = getParsedName(ppage);
+				} catch (RuntimeException e) {
+					// TODO Auto-generated catch block
+					System.out.println("page name "+ppage.getName());
+					System.out.println("datasource "+((IDOEntity)ppage).getDatasource());
+					System.out.println("entity name "+ppage.getEntityName());
+					System.out.println("PAGE_URI "+ppage.getColumn("PAGE_URI"));
+					e.printStackTrace();
+				}
 			l.add(part);
 			ppage=(ICPage)ppage.getParentNode();
 		}
