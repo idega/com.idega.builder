@@ -74,7 +74,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		
 		// services registration
 		//IBOLookup.registerImplementationForBean(ICDomain.class, IBDomainBMPBean.class);
-		IBOLookup.registerImplementationForBean(ICPage.class, IBPageBMPBean.class);
+		//IBOLookup.registerImplementationForBean(ICPage.class, IBPageBMPBean.class);
 		IBOLookup.registerImplementationForBean(BuilderService.class, IBMainServiceBean.class);
 		IBOLookup.registerImplementationForBean(BuilderPageWriterService.class, IBMainServiceBean.class);
 		

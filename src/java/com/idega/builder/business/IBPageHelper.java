@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.72 2007/03/08 16:34:58 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.73 2007/04/17 19:02:10 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -310,7 +310,7 @@ public class IBPageHelper implements Singleton  {
 			ICPage parentpage = null;
 			try {
 				if(parentId!=null){
-					parentpage = this.getIBPageHome().findByPrimaryKey(parentId);
+					parentpage = this.getICPageHome().findByPrimaryKey(parentId);
 					//Create a pageUrl object to create the name with a generated name by default if not set
 					PageUrl pUrl = new PageUrl(parentpage,name,domainId);
 					pageUri = pUrl.getGeneratedUrlFromName();
@@ -701,7 +701,7 @@ public class IBPageHelper implements Singleton  {
 			if (pageId == newParentPageId) {
 				throw new Exception("Cannot move page under itself");
 			}
-			ICPage ibpage = getIBPageHome().findByPrimaryKey(new Integer(pageId));
+			ICPage ibpage = getICPageHome().findByPrimaryKey(new Integer(pageId));
 			if (!ibpage.isPage()) {
 				throw new Exception("Method only implemented for regular pages not templates");
 			}
@@ -733,7 +733,7 @@ public class IBPageHelper implements Singleton  {
 							for (Iterator iter = startPages.iterator(); iter.hasNext();) {
 								IBStartPage element = (IBStartPage) iter.next();
 								if (element.getPageId() != pageId){
-									domain.setIBPage(getIBPageHome().findByPrimaryKey(element.getPageId()));
+									domain.setIBPage(getICPageHome().findByPrimaryKey(element.getPageId()));
 									domain.store();
 								}
 							}
@@ -757,7 +757,7 @@ public class IBPageHelper implements Singleton  {
 				tree.remove(childNode);
 			}
 			
-			ICPage newParent = getIBPageHome().findByPrimaryKey(new Integer(newParentPageId));
+			ICPage newParent = getICPageHome().findByPrimaryKey(new Integer(newParentPageId));
 			if (newParent != null) {
 				newParent.addChild(ibpage);
 				PageTreeNode newParentNode = (PageTreeNode) tree.get((new Integer(newParent.getPageKey())));
@@ -779,7 +779,7 @@ public class IBPageHelper implements Singleton  {
 		 * @todo Implement authentication check
 		 */
 		try {
-			ICPage ibpage = getIBPageHome().findByPrimaryKey(new Integer(pageId));
+			ICPage ibpage = getICPageHome().findByPrimaryKey(new Integer(pageId));
 			return ibpage.isPage();
 		}
 		catch (Exception e) {
@@ -794,7 +794,7 @@ public class IBPageHelper implements Singleton  {
 		try {
 			t.begin();
 			int pageIdInt = Integer.parseInt(pageId);
-			ICPage ibpage = getIBPageHome().findByPrimaryKey(pageIdInt);
+			ICPage ibpage = getICPageHome().findByPrimaryKey(pageIdInt);
 			boolean isPage = ibpage.isPage();
 			ICPage parent = (ICPage) ibpage.getParentNode();
 			PageTreeNode childNode = (tree == null) ? null : (PageTreeNode) tree.get(ibpage.getIDInteger());
@@ -829,7 +829,7 @@ public class IBPageHelper implements Singleton  {
 							for (Iterator iter = startPages.iterator(); iter.hasNext();) {
 								IBStartPage element = (IBStartPage) iter.next();
 								if (element.getPageId() != pageIdInt){
-									domain.setIBPage(getIBPageHome().findByPrimaryKey(element.getPageId()));
+									domain.setIBPage(getICPageHome().findByPrimaryKey(element.getPageId()));
 									domain.store();
 								}
 							}
@@ -1020,7 +1020,7 @@ public class IBPageHelper implements Singleton  {
 		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKey()).intValue());
 	}
 	
-	protected ICPageHome getIBPageHome() {
+	protected ICPageHome getICPageHome() {
 		try {
 			return (ICPageHome) IDOLookup.getHome(ICPage.class);
 		}
@@ -1111,7 +1111,7 @@ public class IBPageHelper implements Singleton  {
 		
 		ICPage currentPage = null;
 		try {
-			currentPage = getIBPageHome().findByPrimaryKey(pageID);
+			currentPage = getICPageHome().findByPrimaryKey(pageID);
 		} catch (FinderException e) {
 			e.printStackTrace();
 			return false;

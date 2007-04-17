@@ -1,5 +1,5 @@
 /*
- * $Id: PageUrl.java,v 1.5 2007/04/17 17:28:48 justinas Exp $
+ * $Id: PageUrl.java,v 1.6 2007/04/17 19:02:10 eiki Exp $
  * Created on 24.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -9,13 +9,14 @@
  */
 package com.idega.builder.business;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.ejb.FinderException;
+
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.util.StringHandler;
@@ -25,10 +26,10 @@ import com.idega.util.StringHandler;
  *  <p>
  *  Class for setting and manipulating generated URLs for builder pages
  *  <p>
- *  Last modified: $Date: 2007/04/17 17:28:48 $ by $Author: justinas $
+ *  Last modified: $Date: 2007/04/17 19:02:10 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PageUrl {
 	
@@ -107,30 +108,13 @@ public class PageUrl {
 			PageNamePart part =  new PageNamePart(this.pageName);
 			l.add(part);
 		}
-		
-try {
-	System.out.println("page name "+((IDOEntity)ppage).getDatasource());
-	System.out.println("entity name "+ppage.getEntityName());
-} catch (RuntimeException e1) {
-	// TODO Auto-generated catch block
-	e1.printStackTrace();
-}
 
 		while(ppage!=null){
-				PageNamePart part = null;
-				try {
-					part = getParsedName(ppage);
-				} catch (RuntimeException e) {
-					// TODO Auto-generated catch block
-					System.out.println("page name "+ppage.getName());
-					System.out.println("datasource "+((IDOEntity)ppage).getDatasource());
-					System.out.println("entity name "+ppage.getEntityName());
-					System.out.println("PAGE_URI "+ppage.getColumn("PAGE_URI"));
-					e.printStackTrace();
-				}
+			PageNamePart part = getParsedName(ppage);
 			l.add(part);
 			ppage=(ICPage)ppage.getParentNode();
 		}
+		
 		return l;
 	}
 	
@@ -152,7 +136,7 @@ try {
 			
 			ICPage startPage = getBuilderLogic().getCurrentDomain().getStartPage();
 			
-			if(startPage!=null&&startPage.equals(page)){
+			if(startPage!=null && startPage.equals(page)){
 				this.isStartPage=true;
 			}
 			this.url = page.getDefaultPageURI();

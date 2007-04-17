@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.236 2007/04/13 17:00:26 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.237 2007/04/17 19:02:10 eiki Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2343,7 +2343,7 @@ public class BuilderLogic implements Singleton {
 		String pageUri = null;
 		if(parentId != null){
 			try {
-				parentPage = getIBPageHelper().getIBPageHome().findByPrimaryKey(parentId);
+				parentPage = getIBPageHelper().getICPageHome().findByPrimaryKey(parentId);
 			} catch (FinderException e) {
 				e.printStackTrace();
 				return false;
