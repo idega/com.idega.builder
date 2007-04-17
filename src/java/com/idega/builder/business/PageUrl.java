@@ -1,5 +1,5 @@
 /*
- * $Id: PageUrl.java,v 1.4 2007/04/17 17:12:07 justinas Exp $
+ * $Id: PageUrl.java,v 1.5 2007/04/17 17:28:48 justinas Exp $
  * Created on 24.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.util.StringHandler;
  *  <p>
  *  Class for setting and manipulating generated URLs for builder pages
  *  <p>
- *  Last modified: $Date: 2007/04/17 17:12:07 $ by $Author: justinas $
+ *  Last modified: $Date: 2007/04/17 17:28:48 $ by $Author: justinas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PageUrl {
 	
@@ -107,8 +107,15 @@ public class PageUrl {
 			PageNamePart part =  new PageNamePart(this.pageName);
 			l.add(part);
 		}
-System.out.println("page name "+((IDOEntity)ppage).getDatasource());
-System.out.println("entity name "+ppage.getEntityName());
+		
+try {
+	System.out.println("page name "+((IDOEntity)ppage).getDatasource());
+	System.out.println("entity name "+ppage.getEntityName());
+} catch (RuntimeException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
+
 		while(ppage!=null){
 				PageNamePart part = null;
 				try {
