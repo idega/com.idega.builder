@@ -76,6 +76,7 @@ url=URL
 user=User
 using_template=Using template
 yes=Yes
+no=No
 set_module_properties=Set module properties
 no_ids_inserting_module=Error occurred while inserting selected module!
 widget_modules=Widgets

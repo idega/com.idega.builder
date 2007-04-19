@@ -17,11 +17,15 @@ var LOADING_LABEL = "Loading...";
 var INSTANCE_ID = null;
 var PARENT_ID = null;
 var PAGE_KEY = null;
+var REGION_ID = null;
+var MODULE_CONTENT_ID = null;
 
 var IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
 var MODULE_NAME_PARAMETER = "moduleName";
 
 var PROPERTIES_SHOWN = new Array();
+var PROPERTY_BOX_SHOWN = new Array();
+var OBJECTS_TO_RERENDER = new Array();
 
 function getBuilderInitInfo() {
 	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
@@ -87,6 +91,24 @@ function registerBuilderActions() {
 			},
 			parentElement.onmouseout = function() {
 				closeAddComponentContainer(element.id);
+			}
+		},
+		'div.regionInfoImageContainer' : function(element) {
+			element.onclick = function() {
+				setRegionAndModuleContentId(element);
+			}
+		},
+		'input.modulePropertySetter' : function(element) {
+			element.onblur = function(event) {
+				if (element.type == "text") {
+					saveModuleProperty(null, element);
+				}
+			},
+			element.onkeypress = function(event) {
+				saveModuleProperty(event, element);
+			}
+			element.onclick = function(event) {
+				saveModuleProperty(event, element);
 			}
 		}
 	};
@@ -522,6 +544,7 @@ function closeComponentPropertiesList(id) {
 function exitFromPropertiesWindow() {
 	PROPERTIES_SHOWN = new Array();
 	editWindow.deactivate();
+	renderModulesAgain();
 }
 
 function closeAddModuleWindow() {
@@ -556,21 +579,54 @@ function deleteModuleCallback(result, id) {
 	}
 }
 
+function closeOldPropertyBoxes(currentID) {
+	if (currentID == null || PROPERTY_BOX_SHOWN == null) {
+		return;
+	}
+	var box = null;
+	var id = null;
+	var idsToRemove = new Array();
+	for (var i = 0; i < PROPERTY_BOX_SHOWN.length; i++) {
+		id = PROPERTY_BOX_SHOWN[i];
+		if (id != currentID) {
+			box = document.getElementById(id);
+			if (box != null) {
+				box.style.display = "none";
+				idsToRemove.push(id);
+			}
+		}
+	}
+	for (var i = 0; i < idsToRemove.length; i++) {
+		removeElementFromArray(PROPERTY_BOX_SHOWN, idsToRemove[i]);
+	}
+}
+
 function getPropertyBox(id, propertyName, objectInstanceId) {
-	if (document.getElementById(id + "_property_setter_box") == null) {
+	var fullId = id + "_property_setter_box";
+	closeOldPropertyBoxes(fullId);
+	var propertySetterBox = document.getElementById(fullId) ;
+	if (propertySetterBox == null) {
 		showLoadingMessage(LOADING_LABEL);
 		BuilderEngine.getPropertyBox(PAGE_KEY, propertyName, objectInstanceId, {
 			callback: function(box) {
-				getPropertyBoxCallback(id, box);
+				getPropertyBoxCallback(id, propertyName, objectInstanceId, box);
 			}
 		});
 	}
 	else {
-		//new Effect.SlideDown(id + "_property_setter_box");
+		// Box allready exists
+		if (propertySetterBox.style.display == "none") {
+			propertySetterBox.style.display = "block";
+			PROPERTY_BOX_SHOWN.push(fullId);
+		}
+		else {
+			propertySetterBox.style.display = "none";
+			removeElementFromArray(PROPERTY_BOX_SHOWN, fullId);
+		}
 	}
 }
 
-function getPropertyBoxCallback(id, box) {
+function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 	closeLoadingMessage();
 	if (id == null) {
 		return;
@@ -585,31 +641,14 @@ function getPropertyBoxCallback(id, box) {
 	}
 	
 	var propertySetterBox = document.createElement("div");
-	propertySetterBox.setAttribute("id", id + "_property_setter_box");
+	var fullId = id + "_property_setter_box";
+	propertySetterBox.setAttribute("id", fullId);
+	PROPERTY_BOX_SHOWN.push(fullId);
 	
-	// Making copy
-	var nodes = getTransformedDocumentToDom(box);
-	
-	// Inserting nodes
-	var activeNode = null;
-	var realNode = null;
-	for (var i = 0; i < nodes.length; i++) {
-		activeNode = nodes[i];
-		realNode = createRealNode(activeNode);
-		propertySetterBox.appendChild(realNode);
-	}
-	
+	insertNodesToContainer(box, propertySetterBox);	
 	container.appendChild(propertySetterBox);
-	//new Effect.SlideDown(propertySetterBox);
-}
-
-function setModuleProperty(moduleId, propName, propValue) {
-	showLoadingMessage(SAVING_LABEL);
-	BuilderEngine.setModuleProperty(PAGE_KEY, moduleId, propName, propValue, setModulePropertyCallback);
-}
-
-function setModulePropertyCallback(result) {
-	closeLoadingMessage();
+	
+	registerBuilderActions();	// Need to re-register actions
 }
 
 function getTransformedDocumentToDom(component) {
@@ -632,4 +671,133 @@ function getTransformedDocumentToDom(component) {
 		nodes.push(node);
 	}
 	return nodes;
+}
+
+function saveModuleProperty(event, element) {
+	if (element == null) {
+		return;
+	}
+	if (event != null) {
+		if (element.type == "text") { // Checking if "Enter" was pressed
+			if (!isEnterEvent(event)) {
+				return;
+			}
+		}
+	}
+	
+	var attr = element.attributes;	
+	var moduleId = attr.getNamedItem("moduleid").value;
+	var propertyName = attr.getNamedItem("propname").value;
+	var needsReload = attr.getNamedItem("needsreload").value;
+	
+	showLoadingMessage(SAVING_LABEL);
+	BuilderEngine.setSimpleModuleProperty(PAGE_KEY, moduleId, propertyName, element.value, {
+		callback: function(result) {
+			setSimpleModulePropertyCallback(result, moduleId, needsReload);
+		}
+	});
+}
+
+function setSimpleModulePropertyCallback(result, moduleId, needsReload) {
+	if (!result) {
+		closeLoadingMessage();
+		return;
+	}
+	if (needsReload == "true") {
+		window.location.href = window.location.href;
+		return;
+	}
+	
+	if (!isComponentMarkedForReRendering(moduleId)) {
+		var objectToRerender = new ReRenderObject(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
+		OBJECTS_TO_RERENDER.push(objectToRerender);
+	}
+	
+	closeLoadingMessage();
+}
+
+function isComponentMarkedForReRendering(moduleId) {
+	if (moduleId == null) {
+		return false;
+	}
+	var object = null;
+	for (var i = 0; i < OBJECTS_TO_RERENDER.length; i++) {
+		object = OBJECTS_TO_RERENDER[i];
+		if (object.moduleId == moduleId) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function renderModulesAgain() {
+	var object = null;
+	for (var i = 0; i < OBJECTS_TO_RERENDER.length; i++) {
+		object = OBJECTS_TO_RERENDER[i];
+		BuilderEngine.reRenderObject(object.pageKey, object.regionId, object.moduleId, {
+			callback: function(component) {
+				reRenderObjectCallback(component, object.moduleContentId);
+			}
+		});
+	}
+	OBJECTS_TO_RERENDER = new Array();
+}
+
+function reRenderObjectCallback(component, moduleContentId) {
+	closeLoadingMessage();
+	
+	var container = document.getElementById(moduleContentId);
+	if (container == null) {
+		return;
+	}
+	
+	removeChildren(container);
+	
+	showLoadingMessage(LOADING_LABEL);
+	
+	insertNodesToContainer(component, container);
+	
+	closeLoadingMessage();
+}
+
+function insertNodesToContainer(component, container) {
+	if (component == null || container == null) {
+		return;
+	}
+	
+	// Making copy
+	var nodes = getTransformedDocumentToDom(component);
+	
+	// Inserting nodes
+	var activeNode = null;
+	var realNode = null;
+	for (var i = 0; i < nodes.length; i++) {
+		activeNode = nodes[i];
+		realNode = createRealNode(activeNode);
+		container.appendChild(realNode);
+	}
+}
+
+function setRegionAndModuleContentId(element) {
+	if (element == null) {
+		REGION_ID = null;
+		MODULE_CONTENT_ID = null;
+		return;
+	}
+	var inputs = element.getElementsByTagName("input");
+	if (inputs == null) {
+		REGION_ID = null;
+		MODULE_CONTENT_ID = null;
+		return;
+	}
+	
+	REGION_ID = getInputValue(inputs, "regionId");
+	MODULE_CONTENT_ID = getInputValue(inputs, "moduleContentId");
+}
+
+function ReRenderObject(pageKey, regionId, moduleId, moduleContentId) {
+	this.pageKey = pageKey;
+	this.regionId = regionId;
+	this.moduleId = moduleId;
+	this.moduleContentId = moduleContentId;
 }

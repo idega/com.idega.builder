@@ -405,3 +405,6 @@ div#simple_properties_box {
 .moduleProperty:HOVER {
 	cursor: pointer;
 }
+
+.modulePropertySetter {
+}

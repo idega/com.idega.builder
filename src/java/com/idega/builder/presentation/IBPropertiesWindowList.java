@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
@@ -29,7 +30,7 @@ public class IBPropertiesWindowList extends Page {
 	public static final String IB_PAGE_PARAMETER = IBPropertiesWindow.IB_PAGE_PARAMETER;
 	final static String METHOD_ID_PARAMETER = IBPropertiesWindow.METHOD_ID_PARAMETER;
 	final static String VALUE_SAVE_PARAMETER = IBPropertiesWindow.VALUE_SAVE_PARAMETER;
-	final static String VALUE_PARAMETER = IBPropertiesWindow.VALUE_PARAMETER;
+	final static String VALUE_PARAMETER = BuilderConstants.VALUE_PARAMETER;
 	static final String LIST_FRAME = "ib_prop_list_frame";
 	static final String PROPERTY_FRAME = "ib_prop_frame";
 	final static String STYLE_NAME = "properties";

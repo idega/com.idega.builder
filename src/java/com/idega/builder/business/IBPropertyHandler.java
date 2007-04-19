@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.60 2007/04/13 07:59:35 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.61 2007/04/19 13:24:10 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,13 +38,18 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Span;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.IntegerInput;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.RefactorClassRegistry;
@@ -351,7 +356,7 @@ public class IBPropertyHandler implements Singleton{
 	}
 	/**
 	 *
-	 */
+	 */	
 	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue) {
 		PresentationObject obj = null;
 		try {
@@ -470,6 +475,154 @@ public class IBPropertyHandler implements Singleton{
 		}
 		return (obj);
 	}
+	
+	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue, String className, boolean needReload) {
+		boolean attributesSet = false;
+		PresentationObject obj = null;
+//		try {
+//			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue);
+//		}
+//		catch (Exception e) {
+//		}
+//		if (obj != null) {
+//			return (obj);
+//		}
+		if (parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)) {
+			obj = new IntegerInput(name);
+			((IntegerInput) obj).setMaxlength(9);
+			((IntegerInput) obj).setLength(9);
+			if (stringValue != null) {
+				((IntegerInput) obj).setContent(stringValue);
+			}
+		}
+		else if (parameterClass.equals(java.lang.String.class)) {
+			obj = new TextInput(name);
+			if (stringValue != null) {
+				((TextInput) obj).setContent(stringValue);
+			}
+		}
+		else if (parameterClass.equals(java.lang.Boolean.class) || parameterClass.equals(Boolean.TYPE)) {
+			IWResourceBundle iwrb = getBuilderLogic().getBuilderBundle().getResourceBundle(iwc);
+			
+			obj = new Layer();
+			
+			Span yesOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).append(":").toString()));
+			RadioButton yes = new RadioButton(name);
+			yes.setValue("Y");
+			setMarkupAttributes(yes, propertyName, ICObjectInstanceID, needReload, className);
+			
+			Span noOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("no", "No")).append(":").toString()));
+			RadioButton no = new RadioButton(name);
+			no.setValue("N");
+			setMarkupAttributes(no, propertyName, ICObjectInstanceID, needReload, className);
+			
+			if (stringValue.equalsIgnoreCase("Y") || stringValue.equalsIgnoreCase("T")) {
+				yes.setSelected();
+			}
+			else {
+				if (stringValue.equalsIgnoreCase("N") || stringValue.equalsIgnoreCase("F")) {
+					no.setSelected();
+				}
+			}
+			
+			yesOption.add(yes);
+			noOption.add(no);
+			
+			((Layer) obj).add(yesOption);
+			((Layer) obj).add(noOption);
+			attributesSet = true;
+		}
+		else if (parameterClass.equals(java.lang.Float.class) || parameterClass.equals(Float.TYPE)) {
+			obj = new FloatInput(name);
+			if (stringValue != null) {
+				((FloatInput) obj).setContent(stringValue);
+			}
+		}
+		else if (parameterClass.equals(java.lang.Void.class) || parameterClass.equals(Void.TYPE)) {
+			obj = new CheckBox(name);
+			if (stringValue != null) {
+				((CheckBox) obj).setChecked(true);
+			}
+		}
+		else if (parameterClass.equals(java.lang.Double.class) || parameterClass.equals(Double.TYPE)) {
+			obj = new FloatInput(name);
+			if (stringValue != null) {
+				((FloatInput) obj).setContent(stringValue);
+			}
+		}
+		else if (parameterClass.equals(com.idega.presentation.Image.class)) {
+			IBImageInserter inserter = null;
+			IBClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
+			inserter = builderClassesFactoryTemp.createImageInserterImpl();
+			inserter.setImSessionImageName(name);
+			inserter.setHasUseBox(false);
+			inserter.setNullImageIDDefault();
+			try {
+				inserter.setImageId(Integer.parseInt(stringValue));
+			}
+			catch (NumberFormatException e) {
+				// do nothing
+			}
+			// IBImageInserter extends PresentationObjectType
+			obj = (PresentationObject) inserter;
+		}
+		/**
+		
+		 * @todo handle page, template, file if the inputs already hava a value
+		
+		 */
+		else if (parameterClass.equals(com.idega.core.file.data.ICFile.class)) {
+			IBFileChooser fileChooser = null;
+			IBClassesFactory builderClassesFactoryTemp = getBuilderClassesFactory();
+			fileChooser = builderClassesFactoryTemp.createFileChooserImpl();
+			fileChooser.setChooserParameter(name);
+			try {
+				//extends block.media.presentation.FileChooser
+				int id = Integer.parseInt(stringValue);
+				IWMainApplication iwma = iwc.getIWMainApplication();
+				Cache cache = iwma.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
+				fileChooser.setValue(cache.getEntity());
+			}
+			catch (Exception e) {
+				//throw new RuntimeException(e.getMessage());
+			}
+			// IBImageInserter extends PresentationObjectType
+			obj = (PresentationObject) fileChooser;
+		}
+		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
+			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name);
+			try {
+				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
+				chooser.setValue(page);
+			}
+			catch (Exception e) {
+				//throw new RuntimeException(e.getMessage());
+			}
+			obj = chooser;
+		}
+		else {
+			obj = new TextInput(name);
+			if (stringValue != null) {
+				((TextInput) obj).setContent(stringValue);
+			}
+		}
+		if (!attributesSet) {
+			setMarkupAttributes(obj, propertyName, ICObjectInstanceID, needReload, className);
+		}
+		return obj;
+	}
+	
+	private void setMarkupAttributes(PresentationObject object, String propertyName, String instanceId, boolean needReload, String className) {
+		if (object == null) {
+			return;
+		}
+		object.setMarkupAttribute("propname", propertyName);
+		object.setMarkupAttribute("moduleid", instanceId);
+		object.setMarkupAttribute("needsreload", needReload);
+		
+		object.setStyleClass(className);
+	}
+	
 	/**
 	
 	 *

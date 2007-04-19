@@ -22,13 +22,15 @@ import com.idega.builder.business.IBXMLReader;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.IBObjectControl;
-import com.idega.builder.presentation.IBPropertiesWindowSetter;
+import com.idega.builder.presentation.SetModulePropertyBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 
@@ -95,8 +97,9 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		
 		// Adding module
 		String uuid = null;
+		IWSlideSession session = getSession(iwc);
 		synchronized (BuilderEngineBean.class) {
-			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, /*getSession(iwc)*/ null);
+			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, session);
 		}
 		if (uuid == null) {
 			return null;
@@ -128,35 +131,10 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (objectComponent == null) {
 			return null;
 		}
-
-//		// Writing (rendering) object to ResponseWriter
-//		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
-//		iwc.setResponseWriter(writer);		
-//		try {
-//			objectComponent.renderComponent(iwc);
-//		} catch (Exception e){
-//			log.error(e);
-//			return null;
-//		}
-//		
-//		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
-//		String result = writer.toString();
-//		InputStream stream = new ByteArrayInputStream(result.getBytes());
-//		SAXBuilder sax = new SAXBuilder(false);
-//		Document newComponent = null;
-//		try {
-//			newComponent = sax.build(stream);
-//		} catch (JDOMException e) {
-//			log.error(e);
-//		} catch (IOException e) {
-//			log.error(e);
-//		} finally {
-//			closeStream(stream);
-//		}
 		
-		Document renderedObject = getRenderedPresentationObject(iwc, objectComponent);
+		Document renderedObject = getRenderedPresentationObject(iwc, objectComponent, false);
 		// Returning result
-		if (renderedObject != null) {
+		if (renderedObject != null && session != null) {
 			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache (also need to improve)
 		}
 		return renderedObject;
@@ -178,10 +156,11 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return false;
 		}
 		boolean result = false;
+		IWSlideSession session = getSession(getIWContext());
 		synchronized (BuilderEngineBean.class) {
-			result = builder.deleteModule(pageKey, parentId, instanceId, /*getSession(getIWContext())*/ null);
+			result = builder.deleteModule(pageKey, parentId, instanceId, session);
 		}
-		if (result) {
+		if (result && session != null) {
 			builder.clearAllCachedPages();
 		}
 		return result;
@@ -197,13 +176,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		IWSlideSession session = null;
 		try {
 			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
-//			if (session.getIWApplicationContext() == null) {
-//				session.setIWApplicationContext(iwc);
-//			}
-//			if (session.getIWApplicationContext() == null) {
-//				System.out.println("Setting: " + iwc.getApplicationContext());
-//				session.setIWApplicationContext(iwc.getApplicationContext());
-//			}
 		} catch (Exception e) {
 			log.error(e);
 			return null;
@@ -211,11 +183,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return session;
 	}
 	
-	public boolean setModuleProperty(String pageKey, String moduleId, String propName, String propValue) {
-		return builder.addPropertyToModule(pageKey, moduleId, propName, propValue);
-	}
-	
-	private Document getRenderedPresentationObject(IWContext iwc, PresentationObject object) {
+	private Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
 		//	Writing (rendering) object to ResponseWriter
 		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
 		iwc.setResponseWriter(writer);		
@@ -229,15 +197,20 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
 		String result = writer.toString();
 		
-		// Cleaning - need valid XML structure
-		HtmlCleaner cleaner = new HtmlCleaner(result);
-		cleaner.setOmitDoctypeDeclaration(false);
-		try {
-			cleaner.clean();
-			result = cleaner.getPrettyXmlAsString();
-		} catch (IOException e) {
-			log.error(e);
-			return null;
+//		System.out.println("Before cleaning: \n" + result);
+		
+		if (cleanHtml) {
+			// Cleaning - need valid XML structure
+			HtmlCleaner cleaner = new HtmlCleaner(result);
+			cleaner.setOmitDoctypeDeclaration(true);
+			try {
+				cleaner.clean();
+				result = cleaner.getPrettyXmlAsString();
+			} catch (IOException e) {
+				log.error(e);
+				return null;
+			}
+//			System.out.println("Rendered & cleaned: \n" + result);
 		}
 
 		// Building JDOM Document
@@ -265,17 +238,102 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (iwc == null) {
 			return null;
 		}
+		if (pageKey == null) {
+			pageKey = String.valueOf(iwc.getCurrentIBPageID());
+		}
 		
-		IBPropertiesWindowSetter setter = new IBPropertiesWindowSetter();
-		PresentationObject box = null;
-		try {
-			box = setter.getPropertySetterBox(propertyName, iwc, pageKey, objectInstanceId);
-		} catch (Exception e) {
-			log.error(e);
+		iwc.setApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER, pageKey);
+		iwc.setApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER, propertyName);
+		iwc.setApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, objectInstanceId);
+		
+		PresentationObject propertyBox = new SetModulePropertyBlock();
+		Document renderedBox = getRenderedPresentationObject(iwc, propertyBox, false);
+		
+		iwc.removeApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER);
+		iwc.removeApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER);
+		iwc.removeApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
+		
+		return renderedBox;
+	}
+	
+	public boolean setSimpleModuleProperty(String pageKey, String moduleId, String propertyName, String propertyValue) {
+		if (pageKey == null || moduleId == null || propertyName == null) {
+			return false;
+		}
+		IWMainApplication application = null;
+		IWContext iwc = getIWContext();
+		if (iwc == null) {
+			application = IWMainApplication.getDefaultIWMainApplication();
+		}
+		else {
+			application = iwc.getIWMainApplication();
+		}
+		if (application == null) {
+			return false;
+		}
+		
+		boolean result = builder.setProperty(pageKey, moduleId, propertyName, propertyValue, application);
+		if (result) {
+			builder.removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
+		}
+		return result;
+	}
+	
+	public Document reRenderObject(String pageKey, String regionId, String instanceId) {
+		if (pageKey == null || instanceId == null) {
 			return null;
 		}
 		
-		return getRenderedPresentationObject(iwc, box);
+		IWContext iwc = getIWContext();
+		if (iwc == null) {
+			return null;
+		}
+		
+		Page page = builder.getPage(pageKey, iwc);
+		if (page == null) {
+			return null;
+		}
+		List pageChildren = page.getChildren();
+		if (pageChildren == null) {
+			return null;
+		}
+		boolean foundRegion = false;
+		PresentationObjectContainer container = null;
+		Object o = null;
+		for (int i = 0; (i < pageChildren.size() && !foundRegion); i++) {
+			o = pageChildren.get(i);
+			if (o instanceof PresentationObjectContainer) {
+				container = (PresentationObjectContainer) o;
+				if (regionId.equals(container.getLabel())) {
+					foundRegion = true;
+				}
+			}
+		}
+		if (!foundRegion) {
+			return null;
+		}
+		
+		List regionChildren = container.getChildren();
+		if (regionChildren == null) {
+			return null;
+		}
+		boolean foundComponent = false;
+		PresentationObject object = null;
+		for (int i = 0; (i < regionChildren.size() && !foundComponent); i++) {
+			o = regionChildren.get(i);
+			if (o instanceof PresentationObject) {
+				object = (PresentationObject) o;
+				if (instanceId.equals(object.getId())) {
+					foundComponent = true;
+				}
+			}
+		}
+		if (!foundComponent) {
+			return null;
+		}
+		
+		Document reRenderedObject = getRenderedPresentationObject(iwc, object, false);
+		return reRenderedObject;
 	}
 
 }

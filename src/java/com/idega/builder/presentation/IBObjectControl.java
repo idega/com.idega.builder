@@ -78,7 +78,8 @@ public class IBObjectControl extends PresentationObjectContainer
 		
 		this.contentLayer = new Layer(Layer.DIV);
 		this.contentLayer.setStyleClass("moduleContent");
-		this.contentLayer.setID("content_"+containerId);
+		String moduleContentId = new StringBuffer("content_").append(containerId).toString();
+		this.contentLayer.setID(moduleContentId);
 		
 		this.buttonsLayer = new Layer(Layer.DIV);
 		this.buttonsLayer.setStyleClass("regionInfoImageContainer");
@@ -190,6 +191,11 @@ public class IBObjectControl extends PresentationObjectContainer
 			Image propertiesImage = iwb.getImage("information.png", "Set module properties", 16, 16);
 			Link link = new Link(propertiesImage);
 			this.buttonsLayer.add(link);
+			
+			HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);
+			this.buttonsLayer.add(regionIdHidden);
+			HiddenInput moduleContentIdHidden = new HiddenInput("moduleContentId", moduleContentId);
+			this.buttonsLayer.add(moduleContentIdHidden);
 			
 			//experimental so the box always is around everything
 			this.containerLayer.add(new CSSSpacer());

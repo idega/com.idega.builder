@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.237 2007/04/17 19:02:10 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.238 2007/04/19 13:24:10 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -24,6 +24,8 @@ import javax.faces.context.FacesContext;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import com.idega.block.web2.business.Web2Business;
 import com.idega.block.web2.business.Web2BusinessBean;
@@ -247,9 +249,9 @@ public class BuilderLogic implements Singleton {
 		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
 		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		
-		page.getAssociatedScript().addScriptLine("addEvent(window, 'load', getBuilderInitInfo);");
-		page.getAssociatedScript().addScriptLine("addEvent(window, 'load', registerBuilderActions);");
-//		page.getAssociatedScript().addScriptLine("addEvent(document, 'click', removeOldLabels);");
+		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', getBuilderInitInfo);");
+		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', registerBuilderActions);");
+//		page.getAssociatedScript().addScriptLine("registerEvent(document, 'click', removeOldLabels);");
 		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
@@ -1070,14 +1072,8 @@ public class BuilderLogic implements Singleton {
 		boolean result = getIBXMLWriter().deleteModule(page, parentObjectInstanceID, instanceId);
 		
 		if (result) {
-			if (session == null) {
-				page.store();
-			}
-			else {
-				savePage(page, session);
-			}
+			return savePage(page, session);
 		}
-		
 		return result;
 	}
 
@@ -1359,18 +1355,54 @@ public class BuilderLogic implements Singleton {
 		if (id == null) {
 			return null;
 		}
-		if (session == null) {
-			page.store();
+		
+		if (savePage(page, session)) {
+			return id;
 		}
-		else {
-			savePage(page, session);
-		}
-		return id;
+		return null;
 	}
 	
-	private void savePage(IBXMLPage page, IWSlideSession session) {
-		Thread saver = new Thread(new BuilderLogicWorker(page, session));
-		saver.start();
+	protected boolean setPageSourceAsString(IBXMLPage page) {
+		XMLDocument doc = page.getXMLDocument();
+		if (doc == null) {
+			return false;
+		}
+		Object o = doc.getDocument();
+		if (o instanceof Document) {
+			Document d = (Document) o;
+			XMLOutputter out = new XMLOutputter();
+			out.setFormat(Format.getPrettyFormat());
+			try {
+				page.setSourceFromString(out.outputString(d));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean savePage(IBXMLPage page, IWSlideSession session) {
+		if (page == null) {
+			return false;
+		}
+		if (session == null) {
+			return page.store();
+		}
+		
+		boolean existPageSource = true;
+		if (page.getSourceAsString() == null) {
+			existPageSource = setPageSourceAsString(page);
+		}
+		if (existPageSource) {
+			Thread saver = new Thread(new BuilderLogicWorker(page, session));
+			saver.start();
+		}
+		else {
+			return page.store();
+		}
+		return true;
 	}
 	
 	public boolean addRegion(String pageKey, String label, String parentId, boolean storePage) {

@@ -14,8 +14,10 @@ public interface BuilderEngine extends IBOService {
 	
 	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId);
 	
-	public boolean setModuleProperty(String pageKey, String moduleId, String propName, String propValue);
-	
 	public Document getPropertyBox(String pageKey, String propertyName, String objectInstanceId);
+	
+	public boolean setSimpleModuleProperty(String pageKey, String moduleId, String propertyName, String propertyValue);
+	
+	public Document reRenderObject(String pageKey, String regionId, String instanceId);
 	
 }

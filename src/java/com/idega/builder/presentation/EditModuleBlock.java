@@ -171,14 +171,16 @@ public class EditModuleBlock extends Block {
 		ListItem item = null;
 		String itemStyle = "moduleProperty";
 		String propertyId = null;
+		Span propertyName = null;
 		for (int i = 0; i < properties.size(); i++) {
 			propertyId = new StringBuffer("property").append(generator.nextInt(Integer.MAX_VALUE)).toString();
 			property = properties.get(i);
 			item = new ListItem();
 			item.setId(propertyId);
-			item.add(new Text(property.getDisplayName(locale)));
 			item.setStyleClass(itemStyle);
-			item.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(property.getName()).append("', '").append(instanceId).append("');").toString());
+			propertyName = new Span(new Text(property.getDisplayName(locale)));
+			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(property.getName()).append("', '").append(instanceId).append("');").toString());
+			item.add(propertyName);
 			list.add(item);
 		}
 		

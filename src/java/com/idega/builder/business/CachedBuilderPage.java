@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.14 2007/04/06 13:50:17 valdas Exp $
+ * $Id: CachedBuilderPage.java,v 1.15 2007/04/19 13:24:09 valdas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.StringReader;
+import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -28,6 +29,7 @@ import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.IWContext;
+import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 
 /**
@@ -286,12 +288,16 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	 */
 	protected OutputStream getPageOutputStream(ICPage icPage, IWSlideSession session){
 		String webdavUri = icPage.getWebDavUri();
-		if(webdavUri!=null){
+		if (webdavUri == null) {
+			//	older method, read it from ICFile
+			return icPage.getPageValueForWrite();
+		}
+		else{
 			try {
 				if (session == null) {
 					session = (IWSlideSession) IBOLookup.getSessionInstance(IWContext.getInstance(), IWSlideSession.class);
 				}
-				
+						
 				String basePath = "/files/cms/pages";
 				if(webdavUri.startsWith(basePath)){
 					File baseDir = session.getFile(basePath);
@@ -307,13 +313,8 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			
 			}
 			catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		else{
-			//older method, read it from ICFile
-			return icPage.getPageValueForWrite();
 		}
 		throw new RuntimeException("Page OutputStream cannot be read");
 	}
@@ -333,33 +334,40 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 	}
 
+	private boolean store(String webDavUri, IWSlideSession session) {
+		if (webDavUri == null || session == null) {
+			return false;
+		}
+		IWSlideService service = null;
+		try {
+			service = session.getIWSlideService();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return false;
+		}
+		String source = getSourceAsString();
+		if (source == null) {
+			return false;
+		}
+
+		String fileName = webDavUri;
+		String[] pathParts = webDavUri.split(BuilderConstants.BASE_PAGE_PATH);
+		if (pathParts != null) {
+			if (pathParts.length == 2) {
+				fileName = pathParts[1];
+			}
+		}
+		boolean result = false;
+		try {
+			result = service.uploadFileAndCreateFoldersFromStringAsRoot(BuilderConstants.BASE_PAGE_PATH, fileName, source, "text/xml", true);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return result;
+	}
+	
 	public synchronized boolean store() {
-//		try {
-//			ICPage icPage = getICPage();
-//			icPage.setFormat(this.getPageFormat());
-//			OutputStream stream = getPageOutputStream(icPage);
-//			storeStream(stream);
-//			icPage.store();
-//		}
-//		catch (NumberFormatException ne) {
-//			/*try {
-//				OutputStream stream = new FileOutputStream(_key);
-//				store(stream);
-//			}
-//			catch (FileNotFoundException fnfe) {
-//				fnfe.printStackTrace();
-//			}*/
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace(System.err);
-//		}
-//		//setPopulatedPage(XMLReader.getPopulatedPage(this));
-//		//setPopulatedPage(null);
-//		if (getType().equals(TYPE_TEMPLATE)) {
-//			invalidateAllPagesUsingThisTemplate();
-//		}
-//		
-//		return true;
 		return store(null);
 	}
 	
@@ -367,8 +375,13 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		try {
 			ICPage icPage = getICPage();
 			icPage.setFormat(this.getPageFormat());
-			OutputStream stream = getPageOutputStream(icPage, session);
-			storeStream(stream);
+			if (icPage.getWebDavUri() == null || session == null) {
+				OutputStream stream = getPageOutputStream(icPage, session);
+				storeStream(stream);
+			}
+			else {
+				store(icPage.getWebDavUri(), session);
+			}
 			icPage.store();
 		}
 		catch (NumberFormatException ne) {

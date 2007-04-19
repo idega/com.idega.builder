@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.38 2006/05/27 09:41:15 laddi Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.39 2007/04/19 13:24:09 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -11,6 +11,7 @@ package com.idega.builder.presentation;
 
 import java.lang.reflect.Method;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.presentation.ICPropertyHandler;
@@ -39,7 +40,6 @@ public class IBPropertiesWindowSetter extends Page {
 	public static final String IB_PAGE_PARAMETER = IBPropertiesWindow.IB_PAGE_PARAMETER;
 	final static String METHOD_ID_PARAMETER = IBPropertiesWindow.METHOD_ID_PARAMETER;
 	final static String VALUE_SAVE_PARAMETER = IBPropertiesWindow.VALUE_SAVE_PARAMETER;
-	final static String VALUE_PARAMETER = IBPropertiesWindow.VALUE_PARAMETER;
 	final static String REMOVE_PARAMETER = "ib_remove_property";
 	final static String CHANGE_PROPERTY_PARAMETER = "ib_change_property";
 	final static String IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER = "ib_is_changing";
@@ -49,7 +49,6 @@ public class IBPropertiesWindowSetter extends Page {
 	final static String UPDATE_PROPERTY_FUNCTION_NAME = "update";
 	public final static String MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME = "multivalueChange";
 	private static final String BACKGROUND_COLOUR = "#FFFFFF";
-	private static final String HANDLER_PARAMETER = "handler_parameter";
 
 	public IBPropertiesWindowSetter() {
 		setBackgroundColor(BACKGROUND_COLOUR);
@@ -59,7 +58,7 @@ public class IBPropertiesWindowSetter extends Page {
 		return iwc.getParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
 	}
 
-	private boolean isChangingProperty(IWContext iwc) {
+	protected boolean isChangingProperty(IWContext iwc) {
 		String sValue = iwc.getParameter(IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER);
 		if (sValue != null) {
 			if (sValue.equals("Y")) {
@@ -141,10 +140,10 @@ public class IBPropertiesWindowSetter extends Page {
 					if (doSave) {
 						propertyChange = setProperty(propertyID, values, ic_object_id, pageKey,
 								iwc.getIWMainApplication());
-						ICPropertyHandler handler = (ICPropertyHandler) iwc.getSessionAttribute(HANDLER_PARAMETER);
+						ICPropertyHandler handler = (ICPropertyHandler) iwc.getSessionAttribute(BuilderConstants.HANDLER_PARAMETER);
 						if (handler != null) {
 							handler.onUpdate(values, iwc);
-							iwc.removeSessionAttribute(HANDLER_PARAMETER);
+							iwc.removeSessionAttribute(BuilderConstants.HANDLER_PARAMETER);
 						}
 					}
 				}
@@ -183,7 +182,7 @@ public class IBPropertiesWindowSetter extends Page {
 	}
 
 	public String[] parseValues(IWContext iwc) {
-		String valueParams[] = iwc.getParameterValues(VALUE_PARAMETER);
+		String valueParams[] = iwc.getParameterValues(BuilderConstants.VALUE_PARAMETER);
 		String values[] = null;
 		boolean setProperty = false;
 		if (valueParams != null) {
@@ -286,13 +285,13 @@ public class IBPropertiesWindowSetter extends Page {
 			if (handlerClass != null && !handlerClass.equals("")) {
 				handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
 				if (handler != null) {
-					iwc.setSessionAttribute(HANDLER_PARAMETER, handler);
+					iwc.setSessionAttribute(BuilderConstants.HANDLER_PARAMETER, handler);
 				}
 			}
 			if (handler == null) {
-				iwc.removeSessionAttribute(HANDLER_PARAMETER);
+				iwc.removeSessionAttribute(BuilderConstants.HANDLER_PARAMETER);
 			}
-			Parameter param = new Parameter(VALUE_PARAMETER, sName);
+			Parameter param = new Parameter(BuilderConstants.VALUE_PARAMETER, sName);
 			if (sParamDescription != null) {
 				Text tDescription = formatDescription(sParamDescription + ":");
 				tDescription.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;");
