@@ -88,7 +88,7 @@ public class EditModuleBlock extends Block {
 		Layer closeContainer = new Layer();
 		closeContainer.setId("closeButtonContainer");
 		closeContainer.setStyleClass("closeButtonContainerStyle");
-		GenericButton close = new GenericButton("cancel", iwrb.getLocalizedString("cancel", "Cancel"));
+		GenericButton close = new GenericButton("cancel", iwrb.getLocalizedString("close_lowercase", "Close"));
 		close.setOnClick("exitFromPropertiesWindow();");
 		closeContainer.add(close);
 		this.add(closeContainer);

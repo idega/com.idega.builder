@@ -544,7 +544,7 @@ function closeComponentPropertiesList(id) {
 function exitFromPropertiesWindow() {
 	PROPERTIES_SHOWN = new Array();
 	editWindow.deactivate();
-	renderModulesAgain();
+	//renderModulesAgain();
 }
 
 function closeAddModuleWindow() {
@@ -708,12 +708,15 @@ function setSimpleModulePropertyCallback(result, moduleId, needsReload) {
 		return;
 	}
 	
-	if (!isComponentMarkedForReRendering(moduleId)) {
+	/*if (!isComponentMarkedForReRendering(moduleId)) {
 		var objectToRerender = new ReRenderObject(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
 		OBJECTS_TO_RERENDER.push(objectToRerender);
-	}
+	}*/
 	
 	closeLoadingMessage();
+	
+	// Re-rendering module
+	renderModuleAgain(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
 }
 
 function isComponentMarkedForReRendering(moduleId) {
@@ -728,6 +731,15 @@ function isComponentMarkedForReRendering(moduleId) {
 		}
 	}
 	return false;
+}
+
+function renderModuleAgain(pageKey, regionId, moduleId, moduleContentId) {
+	showLoadingMessage(LOADING_LABEL);
+	BuilderEngine.reRenderObject(pageKey, regionId, moduleId, {
+		callback: function(component) {
+			reRenderObjectCallback(component, moduleContentId);
+		}
+	});
 }
 
 function renderModulesAgain() {
