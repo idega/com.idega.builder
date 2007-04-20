@@ -22,6 +22,7 @@ var MODULE_CONTENT_ID = null;
 
 var IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
 var MODULE_NAME_PARAMETER = "moduleName";
+var IB_PAGE_PARAMETER = "ib_page";
 
 var PROPERTIES_SHOWN = new Array();
 var PROPERTY_BOX_SHOWN = new Array();
@@ -35,7 +36,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return;
 	}
-	if (list.length != 16) {
+	if (list.length != 17) {
 		return;
 	}
 	
@@ -55,6 +56,7 @@ function getBuilderInitInfoCallback(list) {
 	ARE_YOU_SURE_MESSAGE = list[13];
 	SAVING_LABEL = list[14];
 	LOADING_LABEL = list[15];
+	IB_PAGE_PARAMETER = list[16];
 }
 
 function registerBuilderActions() {
@@ -302,7 +304,7 @@ function showComponentInfoImage(element) {
 		link.removeAttribute("href");
 		link.className = "lbOn";
 		var uri = EDIT_COMPONENT_WINDOW_LINK + "&" + MODULE_NAME_PARAMETER + "=" + moduleName + "&" + IC_OBJECT_INSTANCE_ID_PARAMETER +
-		 "=" + instanceId;
+		 "=" + instanceId + "&" + IB_PAGE_PARAMETER + "=" + PAGE_KEY;
 		link.setAttribute("href", uri);
 		
 		addLightboxMarkup();

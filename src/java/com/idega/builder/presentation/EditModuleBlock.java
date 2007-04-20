@@ -2,7 +2,6 @@ package com.idega.builder.presentation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 import com.idega.builder.business.BuilderConstants;
@@ -38,14 +37,16 @@ public class EditModuleBlock extends Block {
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
 		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
+		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
 
-		return new StringBuffer(cacheStatePrefix).append(name).append(instanceId).toString();
+		return new StringBuffer(cacheStatePrefix).append(name).append(instanceId).append(pageKey).toString();
 	}
 	
 	public void main(IWContext iwc) throws Exception {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
 		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
-		if (name == null || instanceId == null) {
+		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
+		if (name == null || instanceId == null || pageKey == null) {
 			return;
 		}
 		
@@ -81,7 +82,7 @@ public class EditModuleBlock extends Block {
 		this.add(new Break());
 		
 		Layer propertiesContainer = new Layer();
-		addProperties(properties, propertiesContainer, iwrb, iwc, instanceId);
+		addProperties(properties, propertiesContainer, iwrb, iwc, instanceId, pageKey);
 		this.add(propertiesContainer);
 		
 		// Cancel button
@@ -106,7 +107,7 @@ public class EditModuleBlock extends Block {
 		return properties;
 	}
 	
-	private void addProperties(List properties, Layer container, IWResourceBundle iwrb, IWContext iwc, String instanceId) {
+	private void addProperties(List properties, Layer container, IWResourceBundle iwrb, IWContext iwc, String instanceId, String pageKey) {
 		if (properties == null) {
 			return;
 		}
@@ -126,11 +127,11 @@ public class EditModuleBlock extends Block {
 				}
 			}
 		}
-		addPropertiesToContainer(simpleProperties, container, iwrb.getLocalizedString("simple_properties", "Simple Properties"), "simple_properties_box", null, false, iwc.getCurrentLocale(), instanceId);		
-		addPropertiesToContainer(advancedProperties, container, iwrb.getLocalizedString("advanced_properties", "Advanced Properties"), "advanced_properties_box", null, true, iwc.getCurrentLocale(), instanceId);	
+		addPropertiesToContainer(simpleProperties, container, iwrb.getLocalizedString("simple_properties", "Simple Properties"), "simple_properties_box", null, false, instanceId, iwc, pageKey);		
+		addPropertiesToContainer(advancedProperties, container, iwrb.getLocalizedString("advanced_properties", "Advanced Properties"), "advanced_properties_box", null, true, instanceId, iwc, pageKey);	
 	}
 	
-	private void addPropertiesToContainer(List<ComponentProperty> properties, Layer parent, String name, String id, String className, boolean hidePropertiesList, Locale locale, String instanceId) {
+	private void addPropertiesToContainer(List<ComponentProperty> properties, Layer parent, String name, String id, String className, boolean hidePropertiesList, String instanceId, IWContext iwc, String pageKey) {
 		if (properties == null || parent == null || name == null) {
 			return;
 		}
@@ -170,6 +171,7 @@ public class EditModuleBlock extends Block {
 		list.setListOrdered(true);
 		ListItem item = null;
 		String itemStyle = "moduleProperty";
+		String itemStyleSetProperty = "modulePropertyIsSet";
 		String propertyId = null;
 		Span propertyName = null;
 		for (int i = 0; i < properties.size(); i++) {
@@ -177,8 +179,13 @@ public class EditModuleBlock extends Block {
 			property = properties.get(i);
 			item = new ListItem();
 			item.setId(propertyId);
-			item.setStyleClass(itemStyle);
-			propertyName = new Span(new Text(property.getDisplayName(locale)));
+			if (BuilderLogic.getInstance().isPropertySet(pageKey, instanceId, property.getName(), iwc.getIWMainApplication())) {
+				item.setStyleClass(itemStyleSetProperty);
+			}
+			else {
+				item.setStyleClass(itemStyle);
+			}
+			propertyName = new Span(new Text(property.getDisplayName(iwc.getCurrentLocale())));
 			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(property.getName()).append("', '").append(instanceId).append("');").toString());
 			item.add(propertyName);
 			list.add(item);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.61 2007/04/19 13:24:10 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.62 2007/04/20 13:10:52 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -479,14 +479,14 @@ public class IBPropertyHandler implements Singleton{
 	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue, String className, boolean needReload) {
 		boolean attributesSet = false;
 		PresentationObject obj = null;
-//		try {
-//			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue);
-//		}
-//		catch (Exception e) {
-//		}
-//		if (obj != null) {
-//			return (obj);
-//		}
+		try {
+			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue);
+		}
+		catch (Exception e) {
+		}
+		if (obj != null) {
+			return obj;
+		}
 		if (parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)) {
 			obj = new IntegerInput(name);
 			((IntegerInput) obj).setMaxlength(9);
@@ -929,7 +929,8 @@ public class IBPropertyHandler implements Singleton{
 			DefaultComponentProperty desc = new DefaultComponentProperty(component);
 			desc.setDisplayName(methodDescr);
 			desc.setName(methodIdentifier);
-			desc.setSimpleProperty(methodProp.getPropertySimple());
+			desc.setSimpleProperty(methodProp.isPropertySimple());
+			desc.setNeedsReload(methodProp.doNeedReload());
 			properties.add(desc);
 		}
 		

@@ -76,6 +76,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		info.add(iwrb.getLocalizedString("are_you_sure", "Are You sure?"));													// 13
 		info.add(iwrb.getLocalizedString("saving", "Saving..."));															// 14
 		info.add(iwrb.getLocalizedString("loading", "Loading..."));															// 15
+		info.add(BuilderConstants.IB_PAGE_PARAMETER);																		// 16
 		
 		return info;
 	}

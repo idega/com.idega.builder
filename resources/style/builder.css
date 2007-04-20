@@ -406,5 +406,14 @@ div#simple_properties_box {
 	cursor: pointer;
 }
 
+.modulePropertyIsSet {
+	font-weight: bold;
+}
+
+.modulePropertyIsSet:HOVER {
+	font-weight: bold;
+	cursor: pointer;
+}
+
 .modulePropertySetter {
 }

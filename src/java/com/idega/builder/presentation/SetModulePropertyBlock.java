@@ -1,11 +1,13 @@
 package com.idega.builder.presentation;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.core.component.business.ComponentProperty;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -56,7 +58,7 @@ public class SetModulePropertyBlock extends Block {
 		MethodFinder methodFinder = MethodFinder.getInstance();
 		Class parameters[] = null;
 		boolean isMethodIdentifier = false;
-		// TODO: fix reload flag
+		boolean needsReload = doesPropertyNeedReload(instanceId, propertyName, iwc);
 		if (methodFinder.isMethodIdentifier(propertyName)) {
 			Method method = MethodFinder.getInstance().getMethod(propertyName, ICObjectClass);
 			parameters = method.getParameterTypes();
@@ -102,7 +104,7 @@ public class SetModulePropertyBlock extends Block {
 				}
 			}
 			
-			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	instanceId, propertyName, i, parameterClass, name, value, "modulePropertySetter", false);
+			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	instanceId, propertyName, i, parameterClass, name, value, "modulePropertySetter", needsReload);
 			container.add(handlerBox);
 			
 			ICPropertyHandler handler = null;
@@ -129,6 +131,31 @@ public class SetModulePropertyBlock extends Block {
 		}
 		
 		this.add(container);
+	}
+	
+	private boolean doesPropertyNeedReload(String instanceId, String propertyName, IWContext iwc) {
+		if (instanceId == null || propertyName == null || iwc == null) {
+			return false;
+		}
+		
+		List properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale(), true);
+		if (properties == null) {
+			return false;
+		}
+		
+		Object o = null;
+		ComponentProperty property = null;
+		for (int i = 0; i < properties.size(); i++) {
+			o = properties.get(i);
+			if (o instanceof ComponentProperty) {
+				property = (ComponentProperty) o;
+				if (propertyName.equals(property.getName())) {
+					return property.doNeedsReload();
+				}
+			}
+		}
+		
+		return false;
 	}
 
 }
