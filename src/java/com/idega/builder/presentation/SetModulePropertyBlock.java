@@ -40,8 +40,6 @@ public class SetModulePropertyBlock extends Block {
 		}
 		
 		Layer container = new Layer();
-//		container.setMarkupAttribute("propname", propertyName);
-//		container.setMarkupAttribute("moduleid", instanceId);
 		
 		IBPropertiesWindowSetter setter = new IBPropertiesWindowSetter();
 		
@@ -105,9 +103,6 @@ public class SetModulePropertyBlock extends Block {
 			}
 			
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	instanceId, propertyName, i, parameterClass, name, value, "modulePropertySetter", false);
-			//handlerBox.setStyleClass("modulePropertySetter");
-//			handlerBox.setMarkupAttribute("propname", propertyName);
-//			handlerBox.setMarkupAttribute("moduleid", instanceId);
 			container.add(handlerBox);
 			
 			ICPropertyHandler handler = null;
