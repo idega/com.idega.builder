@@ -20,6 +20,8 @@ var PAGE_KEY = null;
 var REGION_ID = null;
 var MODULE_CONTENT_ID = null;
 
+var ACTIVE_PROPERTY_SETTER_BOX = null;
+
 var IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
 var MODULE_NAME_PARAMETER = "moduleName";
 var IB_PAGE_PARAMETER = "ib_page";
@@ -604,6 +606,7 @@ function closeOldPropertyBoxes(currentID) {
 }
 
 function getPropertyBox(id, propertyName, objectInstanceId) {
+	ACTIVE_PROPERTY_SETTER_BOX = id;
 	var fullId = id + "_property_setter_box";
 	closeOldPropertyBoxes(fullId);
 	var propertySetterBox = document.getElementById(fullId) ;
@@ -714,6 +717,13 @@ function setSimpleModulePropertyCallback(result, moduleId, needsReload) {
 		var objectToRerender = new ReRenderObject(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
 		OBJECTS_TO_RERENDER.push(objectToRerender);
 	}*/
+	
+	if (ACTIVE_PROPERTY_SETTER_BOX != null) {
+		var setterBox = document.getElementById(ACTIVE_PROPERTY_SETTER_BOX);
+		if (setterBox != null) {
+			setterBox.className = "modulePropertyIsSet";
+		}
+	}
 	
 	closeLoadingMessage();
 	

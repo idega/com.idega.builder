@@ -276,6 +276,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		boolean result = builder.setProperty(pageKey, moduleId, propertyName, propertyValue, application);
 		if (result) {
 			builder.removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
+			builder.removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
 		}
 		return result;
 	}
