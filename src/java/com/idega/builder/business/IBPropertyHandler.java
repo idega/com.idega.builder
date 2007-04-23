@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.62 2007/04/20 13:10:52 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.63 2007/04/23 12:06:01 gediminas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -930,7 +930,7 @@ public class IBPropertyHandler implements Singleton{
 			desc.setDisplayName(methodDescr);
 			desc.setName(methodIdentifier);
 			desc.setSimpleProperty(methodProp.isPropertySimple());
-			desc.setNeedsReload(methodProp.doNeedReload());
+			desc.setNeedsReload(methodProp.isNeedsReload());
 			properties.add(desc);
 		}
 		

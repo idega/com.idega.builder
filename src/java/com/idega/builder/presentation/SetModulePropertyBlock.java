@@ -150,7 +150,7 @@ public class SetModulePropertyBlock extends Block {
 			if (o instanceof ComponentProperty) {
 				property = (ComponentProperty) o;
 				if (propertyName.equals(property.getName())) {
-					return property.doNeedsReload();
+					return property.isNeedsReload();
 				}
 			}
 		}
