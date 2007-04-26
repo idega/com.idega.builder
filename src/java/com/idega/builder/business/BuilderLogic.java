@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.239 2007/04/26 10:23:55 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.240 2007/04/26 12:28:19 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -27,6 +27,7 @@ import javax.faces.context.FacesContext;
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
 import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
+import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -2765,7 +2766,51 @@ public class BuilderLogic implements Singleton {
 			closeStream(stream);
 		}
 		
+		if (cleanHtml) {
+			// After clean up, the whole <html> document is created, but our real component is in html > body > real component
+			Document realComponentContent = getRealComponentContent(renderedObject);
+			if (realComponentContent != null) {
+				return realComponentContent;
+			}
+		}
+		
 		return renderedObject;
+	}
+	
+	private Document getRealComponentContent(Document renderedObject) {
+		if (renderedObject == null) {
+			return null;
+		}
+		Element root = renderedObject.getRootElement();
+		if (root == null) {
+			return null;
+		}
+		Element body = root.getChild("body");
+		if (body == null) {
+			return null;
+		}
+		List oldContent = body.getContent();
+		if (oldContent == null) {
+			return null;
+		}
+		List<Content> needless = new ArrayList<Content>();
+		Content c = null;
+		for (int i = 0; i < oldContent.size(); i++) {
+			c = (Content) oldContent.get(i);
+			if (!(c instanceof Element)) {
+				needless.add(c);
+			}
+		}
+		for (int i = 0; i < needless.size(); i++) {
+			needless.get(i).detach();
+		}
+		
+		try {
+			return new Document(body.cloneContent());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	private void closeStream(InputStream stream) {
