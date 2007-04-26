@@ -476,28 +476,6 @@ function addSelectedModuleCallback(component, id) {
 	registerBuilderActions();	// Need to re-register actions
 }
 
-function createRealNode(element) {
-	// Text
-	if(element.nodeName == '#text') {
-		var textNode = document.createTextNode(element.nodeValue);
-		return textNode;
-	}
-	// Comment
-	if (element.nodeName == '#comment') {
-		var commentNode = document.createComment(element.nodeValue);
-		return commentNode;
-	}
-	// Element
-	var result = document.createElement(element.nodeName);
-	for (var i = 0; i < element.attributes.length; i++) {
-		result.setAttribute(element.attributes[i].nodeName, element.attributes[i].nodeValue);
-	}
-	for(var j = 0; j < element.childNodes.length; j++) {
-		result.appendChild(createRealNode(element.childNodes[j]));
-	}
-	return result;
-}
-
 function reloadPageAfterAddingModule() {
 	valid.deactivate();
 	window.location.href = window.location.href;
@@ -656,28 +634,6 @@ function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 	registerBuilderActions();	// Need to re-register actions
 }
 
-function getTransformedDocumentToDom(component) {
-	var nodes = new Array();
-	if (component == null) {
-		return nodes;
-	}
-	var children = component.childNodes;
-	if (children == null) {
-		return nodes;
-	}
-	if (children.length == 0) {
-		return nodes;
-	}
-	
-	var size = children.length;
-	var node = null;
-	for (var i = 0; i < size; i++) {
-		node = children.item(i);
-		nodes.push(node);
-	}
-	return nodes;
-}
-
 function saveModuleProperty(event, element) {
 	if (element == null) {
 		return;
@@ -782,24 +738,6 @@ function reRenderObjectCallback(component, moduleContentId) {
 	insertNodesToContainer(component, container);
 	
 	closeLoadingMessage();
-}
-
-function insertNodesToContainer(component, container) {
-	if (component == null || container == null) {
-		return;
-	}
-	
-	// Making copy
-	var nodes = getTransformedDocumentToDom(component);
-	
-	// Inserting nodes
-	var activeNode = null;
-	var realNode = null;
-	for (var i = 0; i < nodes.length; i++) {
-		activeNode = nodes[i];
-		realNode = createRealNode(activeNode);
-		container.appendChild(realNode);
-	}
 }
 
 function setRegionAndModuleContentId(element) {

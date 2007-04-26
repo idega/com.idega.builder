@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 
+import org.jdom.Document;
+
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderPageWriterService;
@@ -26,6 +28,7 @@ import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
@@ -386,5 +389,13 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 
 		ICDomain domain = getIWApplicationContext().getDomain();
 		return getBuilderLogic().getExistingPageKeyByURI(requestURI,domain);
+	}
+	
+	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
+		return getBuilderLogic().getRenderedPresentationObject(iwc, object, cleanHtml);
+	}
+	
+	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey) {
+		return getBuilderLogic().removeBlockObjectFromCache(iwc, cacheKey);
 	}
 }

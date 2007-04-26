@@ -1,8 +1,5 @@
 package com.idega.builder.bean;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +7,7 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
-import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
@@ -133,23 +126,12 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		Document renderedObject = getRenderedPresentationObject(iwc, objectComponent, false);
+		Document renderedObject = builder.getRenderedPresentationObject(iwc, objectComponent, false);
 		// Returning result
 		if (renderedObject != null && session != null) {
 			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache (also need to improve)
 		}
 		return renderedObject;
-	}
-	
-	private void closeStream(InputStream stream) {
-		if (stream == null) {
-			return;
-		}
-		try {
-			stream.close();
-		} catch (IOException e) {
-			log.error(e);
-		}
 	}
 	
 	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId) {
@@ -184,53 +166,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return session;
 	}
 	
-	private Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
-		//	Writing (rendering) object to ResponseWriter
-		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
-		iwc.setResponseWriter(writer);		
-		try {
-			object.renderComponent(iwc);
-		} catch (Exception e){
-			log.error(e);
-			return null;
-		}
-		
-		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
-		String result = writer.toString();
-		
-//		System.out.println("Before cleaning: \n" + result);
-		
-		if (cleanHtml) {
-			// Cleaning - need valid XML structure
-			HtmlCleaner cleaner = new HtmlCleaner(result);
-			cleaner.setOmitDoctypeDeclaration(true);
-			try {
-				cleaner.clean();
-				result = cleaner.getPrettyXmlAsString();
-			} catch (IOException e) {
-				log.error(e);
-				return null;
-			}
-//			System.out.println("Rendered & cleaned: \n" + result);
-		}
-
-		// Building JDOM Document
-		InputStream stream = new ByteArrayInputStream(result.getBytes());
-		SAXBuilder sax = new SAXBuilder(false);
-		Document renderedObject = null;
-		try {
-			renderedObject = sax.build(stream);
-		} catch (JDOMException e) {
-			log.error(e);
-		} catch (IOException e) {
-			log.error(e);
-		} finally {
-			closeStream(stream);
-		}
-		
-		return renderedObject;
-	}
-	
 	public Document getPropertyBox(String pageKey, String propertyName, String objectInstanceId) {
 		if (propertyName == null || objectInstanceId == null) {
 			return null;
@@ -248,7 +183,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		iwc.setApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, objectInstanceId);
 		
 		PresentationObject propertyBox = new SetModulePropertyBlock();
-		Document renderedBox = getRenderedPresentationObject(iwc, propertyBox, false);
+		Document renderedBox = builder.getRenderedPresentationObject(iwc, propertyBox, false);
 		
 		iwc.removeApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER);
 		iwc.removeApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER);
@@ -334,7 +269,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		Document reRenderedObject = getRenderedPresentationObject(iwc, object, false);
+		Document reRenderedObject = builder.getRenderedPresentationObject(iwc, object, false);
 		return reRenderedObject;
 	}
 

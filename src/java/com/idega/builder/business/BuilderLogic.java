@@ -1,10 +1,13 @@
 /*
- * $Id: BuilderLogic.java,v 1.238 2007/04/19 13:24:10 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.239 2007/04/26 10:23:55 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,9 +24,13 @@ import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
+import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -368,7 +375,13 @@ public class BuilderLogic implements Singleton {
 			marker.add(label);
 			HiddenInput regionLabel = new HiddenInput("region_label", label);
 			marker.add(regionLabel);
-			marker.setId(new StringBuffer("region_label").append(label).toString());
+			if (label.indexOf(BuilderConstants.DOT) != -1) {
+				Random generator = new Random();
+				marker.setId(new StringBuffer("region_label").append(generator.nextInt(Integer.MAX_VALUE)).toString());
+			}
+			else {
+				marker.setId(new StringBuffer("region_label").append(label).toString());
+			}
 		}
 		
 		marker.add(new HiddenInput("parentKey", parentKey));
@@ -2706,6 +2719,64 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return true;
+	}
+	
+	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
+		//	Writing (rendering) object to ResponseWriter
+		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+		iwc.setResponseWriter(writer);		
+		try {
+			object.renderComponent(iwc);
+		} catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		
+		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
+		String result = writer.toString();
+		
+//		System.out.println("Before cleaning: \n" + result);
+		
+		if (cleanHtml) {
+			// Cleaning - need valid XML structure
+			HtmlCleaner cleaner = new HtmlCleaner(result);
+			cleaner.setOmitDoctypeDeclaration(true);
+			try {
+				cleaner.clean();
+				result = cleaner.getPrettyXmlAsString();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+//			System.out.println("Rendered & cleaned: \n" + result);
+		}
+
+		// Building JDOM Document
+		InputStream stream = new ByteArrayInputStream(result.getBytes());
+		SAXBuilder sax = new SAXBuilder(false);
+		Document renderedObject = null;
+		try {
+			renderedObject = sax.build(stream);
+		} catch (JDOMException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			closeStream(stream);
+		}
+		
+		return renderedObject;
+	}
+	
+	private void closeStream(InputStream stream) {
+		if (stream == null) {
+			return;
+		}
+		try {
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

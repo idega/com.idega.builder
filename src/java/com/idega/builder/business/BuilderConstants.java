@@ -26,6 +26,7 @@ public class BuilderConstants {
 	
 	public static final String EMPTY = "";
 	public static final String SLASH = "/";
+	public static final String DOT = ".";
 	
 	public static final String ADD_NEW_MODULE_WINDOW_CACHE_KEY = "add_new_module_to_page_window";
 	public static final String EDIT_MODULE_WINDOW_CACHE_KEY = "edit_existing_module_properties_window";
