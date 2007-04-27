@@ -1,5 +1,5 @@
 /*
- * $Id: PageCacher.java,v 1.22 2006/11/29 17:36:12 valdas Exp $
+ * $Id: PageCacher.java,v 1.23 2007/04/27 16:05:16 eiki Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,13 +13,15 @@ package com.idega.builder.business;
  *  The instance of this class holds an manages a cache of Builder pages that are instances
  * of CachedBuilderPage.<br>
  * 
- *  Last modified: $Date: 2006/11/29 17:36:12 $ by $Author: valdas $
+ *  Last modified: $Date: 2007/04/27 16:05:16 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 import java.util.Map;
+
 import javax.ejb.FinderException;
+
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.cache.IWCacheManager2;

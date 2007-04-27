@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.35 2007/03/19 08:49:07 justinas Exp $
+ * $Id: PageTreeNode.java,v 1.36 2007/04/27 16:05:16 eiki Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
+
 import com.idega.builder.data.IBPageName;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
@@ -33,7 +34,6 @@ import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
-//import com.sun.tools.doclets.internal.toolkit.builders.BuilderFactory;
 
 /**
  * <p>
@@ -595,9 +595,16 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 * Gets the tree and preloads it and stores in cache
 	 */
 	public static Map getTree(IWApplicationContext iwc) {
+		return getTree(iwc,true);
+	}
+	
+	/**
+	 * Gets the tree and preloads it if you set the boolean loadIfEmpty to true
+	 */
+	public static Map getTree(IWApplicationContext iwc, boolean loadIfEmpty) {
 		//Map tree = (Map) iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
 		Map tree = getCacheManager(iwc).getCache(getCacheName(),10000,true,true);
-		if (tree.isEmpty()) {
+		if (tree.isEmpty() && loadIfEmpty) {
 			synchronized(iwc.getIWMainApplication()){
 				if(tree.isEmpty()){
 					Map newTree = getTreeFromDatabase();
@@ -642,7 +649,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 * @param iwc
 	 */
 	public static void clearTree(IWApplicationContext iwc){
-		getTree(iwc).clear();
+		getTree(iwc,false).clear();
 		//iwc.removeApplicationAttribute(PageTreeNode.PAGE_TREE);
 		//iwc.removeApplicationAttribute(PageTreeNode.NAME_TREE);
 	}
