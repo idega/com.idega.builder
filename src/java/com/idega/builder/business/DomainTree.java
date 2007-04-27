@@ -1,5 +1,5 @@
 /*
- * $Id: DomainTree.java,v 1.4 2007/02/15 11:52:46 justinas Exp $
+ * $Id: DomainTree.java,v 1.5 2007/04/27 14:59:45 eiki Exp $
  * Created on 26.5.2006 in project com.idega.builder
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.idegaweb.IWApplicationContext;
  * <p>
  * Cache for each domain and its page and templates tree
  * </p>
- *  Last modified: $Date: 2007/02/15 11:52:46 $ by $Author: justinas $
+ *  Last modified: $Date: 2007/04/27 14:59:45 $ by $Author: eiki $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DomainTree extends DefaultTreeNode {
 	
@@ -58,7 +58,7 @@ public class DomainTree extends DefaultTreeNode {
 	}
 	
 	public static void clearCache(IWApplicationContext iwac){
-		ICDomain domain = BuilderLogic.getInstance().getCurrentDomain();
+		ICDomain domain = iwac.getDomain();
 		String domainKey = DOMAIN_TREE_KEY+domain.getPrimaryKey();
 		iwac.removeApplicationAttribute(domainKey);
 	}
