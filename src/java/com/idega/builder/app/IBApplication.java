@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.100 2006/06/15 17:43:48 tryggvil Exp $
+ *  $Id: IBApplication.java,v 1.101 2007/05/07 14:34:23 valdas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -144,7 +144,7 @@ public class IBApplication extends IWApplication {
 	 *
 	 *@param  iwc  Description of the Parameter
 	 */
-	static void startIBApplication(IWContext iwc) {
+	public static void startIBApplication(IWContext iwc) {
 		BuilderLogic.getInstance().startBuilderSession(iwc);
 		//To prevent constant realoding when many frames are loaded at the same time
 		List l = (List) iwc.getSessionAttribute("ib_startup_class_list");
