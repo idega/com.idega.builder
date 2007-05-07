@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.73 2007/04/17 19:02:10 eiki Exp $
+ * $Id: IBPageHelper.java,v 1.74 2007/05/07 14:38:14 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -931,14 +931,21 @@ public class IBPageHelper implements Singleton  {
 			}
 		}
 	}
+	
+	public TreeViewer getPageTreeViewer(IWContext iwc, boolean setBasicParameters) {
+		return getTreeViewer(iwc, this.PAGEVIEWER, setBasicParameters);
+	}
+	
 	public TreeViewer getPageTreeViewer(IWContext iwc) {
-		return getTreeViewer(iwc, this.PAGEVIEWER);
+		return getTreeViewer(iwc, this.PAGEVIEWER, false);
 	}
+	
 	public TreeViewer getTemplateTreeViewer(IWContext iwc) {
-		return getTreeViewer(iwc, this.TEMPLATEVIEWER);
+		return getTreeViewer(iwc, this.TEMPLATEVIEWER, false);
 	}
-	private TreeViewer getTreeViewer(IWContext iwc, int type) {
-		com.idega.core.builder.data.ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
+	
+	private TreeViewer getTreeViewer(IWContext iwc, int type, boolean setBasicParameters) {
+		ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
 		int id = -1;
 		if (type == this.PAGEVIEWER) {
 			id = domain.getStartPageID();
@@ -955,8 +962,7 @@ public class IBPageHelper implements Singleton  {
 			else {
 				coll = DomainTree.getDomainTree(iwc).getTemplatesNode().getChildren();//getTemplateStartPages(domain);
 			}
-			java.util.Iterator it = coll.iterator();
-			while (it.hasNext()) {
+			for (Iterator it = coll.iterator(); it.hasNext();) {
 				//com.idega.builder.data.IBStartPage startPage = (com.idega.builder.data.IBStartPage) it.next();
 				PageTreeNode startPage = (PageTreeNode)it.next();
 				//if (startPage.getPageId() != id) {
@@ -969,14 +975,16 @@ public class IBPageHelper implements Singleton  {
 			e.printStackTrace();
 			return null;
 		}
-		viewer.setNodeActionParameter(BuilderConstants.IB_PAGE_PARAMETER);
-		Link l = new Link();
-		l.setNoTextObject(true);
-		l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-		l.addParameter("reload", "t");
-		viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
-		viewer.setTreeStyle(this.LINK_STYLE);
-		viewer.setLinkPrototype(l);
+		if (setBasicParameters) {
+			viewer.setNodeActionParameter(BuilderConstants.IB_PAGE_PARAMETER);
+			Link l = new Link();
+			l.setNoTextObject(true);
+			l.maintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+			l.addParameter("reload", "t");
+			viewer.setToMaintainParameter(Page.IW_FRAME_CLASS_PARAMETER, iwc);
+			viewer.setTreeStyle(this.LINK_STYLE);
+			viewer.setLinkPrototype(l);
+		}
 		return viewer;
 	}
 	
