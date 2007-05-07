@@ -259,5 +259,9 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	
 	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml);
 	
+	public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml);
+	
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey);
+	
+	public void startBuilderSession(IWContext iwc);
 }

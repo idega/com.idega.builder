@@ -13,6 +13,7 @@ import javax.faces.component.UIComponent;
 
 import org.jdom.Document;
 
+import com.idega.builder.app.IBApplication;
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderPageWriterService;
@@ -391,11 +392,19 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getExistingPageKeyByURI(requestURI,domain);
 	}
 	
+	public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml) {
+		return getBuilderLogic().getRenderedPresentationObjectAsString(iwc, object, cleanHtml);
+	}
+	
 	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
 		return getBuilderLogic().getRenderedPresentationObject(iwc, object, cleanHtml);
 	}
 	
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey) {
 		return getBuilderLogic().removeBlockObjectFromCache(iwc, cacheKey);
+	}
+	
+	public void startBuilderSession(IWContext iwc) {
+		IBApplication.startIBApplication(iwc);
 	}
 }
