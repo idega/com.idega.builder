@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.241 2007/04/27 19:55:49 eiki Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.242 2007/05/07 14:36:03 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2720,7 +2720,14 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 	
-	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
+	/**
+	 * Renders single PresentationObject
+	 * @param iwc
+	 * @param object - object to render
+	 * @param cleanHtml
+	 * @return String of rendered object or null
+	 */
+	public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml) {
 		//	Writing (rendering) object to ResponseWriter
 		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
 		iwc.setResponseWriter(writer);		
@@ -2731,27 +2738,41 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		// Getting rendered component as JDOM Document (and DWR will convert it to DOM object)
-		String result = writer.toString();
-		
-//		System.out.println("Before cleaning: \n" + result);
+		String renderedObject = writer.toString();
+//		System.out.println("Rendered object: " + renderedObject);
 		
 		if (cleanHtml) {
 			// Cleaning - need valid XML structure
-			HtmlCleaner cleaner = new HtmlCleaner(result);
+			HtmlCleaner cleaner = new HtmlCleaner(renderedObject);
 			cleaner.setOmitDoctypeDeclaration(true);
 			try {
 				cleaner.clean();
-				result = cleaner.getPrettyXmlAsString();
+				renderedObject = cleaner.getPrettyXmlAsString();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return null;
 			}
-//			System.out.println("Rendered & cleaned: \n" + result);
+//			System.out.println("Cleaned object: " + renderedObject);
 		}
-
+		
+		return renderedObject;
+	}
+	
+	/**
+	 * Renders single PresentationObject and created JDOM Document of rendered object
+	 * @param iwc
+	 * @param object - object to render
+	 * @param cleanHtml
+	 * @return JDOM Document or null
+	 */
+	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
+		String rendered = getRenderedPresentationObjectAsString(iwc, object, cleanHtml);
+		if (rendered == null) {
+			return null;
+		}
+		
 		// Building JDOM Document
-		InputStream stream = new ByteArrayInputStream(result.getBytes());
+		InputStream stream = new ByteArrayInputStream(rendered.getBytes());
 		SAXBuilder sax = new SAXBuilder(false);
 		Document renderedObject = null;
 		try {
