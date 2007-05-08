@@ -13,7 +13,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
-import com.idega.presentation.Script;
 import com.idega.presentation.Span;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Heading1;
@@ -22,7 +21,6 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.GenericButton;
 
 public class EditModuleBlock extends Block {
 	
@@ -68,7 +66,6 @@ public class EditModuleBlock extends Block {
 		
 		ListItem settings = new ListItem();
 		Link settingsLink = new Link(iwrb.getLocalizedString("settings", "Settings"), "#");
-		//settingsLink.setOnClick("alert('settings')");
 		settings.add(settingsLink);
 		navigation.add(settings);
 		
@@ -84,20 +81,6 @@ public class EditModuleBlock extends Block {
 		Layer propertiesContainer = new Layer();
 		addProperties(properties, propertiesContainer, iwrb, iwc, instanceId, pageKey);
 		this.add(propertiesContainer);
-		
-		// Cancel button
-		Layer closeContainer = new Layer();
-		closeContainer.setId("closeButtonContainer");
-		closeContainer.setStyleClass("closeButtonContainerStyle");
-		GenericButton close = new GenericButton("cancel", iwrb.getLocalizedString("close_lowercase", "Close"));
-		close.setOnClick("exitFromPropertiesWindow();");
-		closeContainer.add(close);
-		this.add(closeContainer);
-		
-		// Be sure 'niftycube.js' and 'BuilderHelper.js' files are added to page
-		Script init = new Script();
-		init.addScriptLine("initializeEditModuleWindow();");
-		this.add(init);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -151,6 +134,9 @@ public class EditModuleBlock extends Block {
 			container.setStyleClass(className);
 		}
 		
+		//	Properties wrapper
+		Layer propertiesWrapper = new Layer();
+		
 		// Properties container
 		Layer propertiesContainer = new Layer();
 		Random generator = new Random();
@@ -160,9 +146,10 @@ public class EditModuleBlock extends Block {
 		header.setStyleClass("componentPropertiesListHeader");
 		header.setOnClick(new StringBuffer("manageComponentPropertiesList('").append(propertiesContainerId).append("');").toString());
 		if (hidePropertiesList) {
-			Script hide = new Script();
-			hide.addScriptLine(new StringBuffer("addPropertyIdAndClose('").append(propertiesContainerId).append("');").toString());
-			header.add(hide);
+			propertiesContainer.setStyleAttribute("display: none;");
+//			Script hide = new Script();
+//			hide.addScriptLine(new StringBuffer("addPropertyIdAndClose('").append(propertiesContainerId).append("');").toString());
+//			header.add(hide);
 		}
 		
 		// Properties
@@ -192,7 +179,9 @@ public class EditModuleBlock extends Block {
 		}
 		
 		propertiesContainer.add(list);
-		container.add(propertiesContainer);
+		propertiesWrapper.add(propertiesContainer);
+		propertiesWrapper.setId(new StringBuffer(propertiesContainer.getId()).append("Wrapper").toString());
+		container.add(propertiesWrapper);
 		parent.add(container);
 	}
 

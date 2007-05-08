@@ -8,6 +8,7 @@ package com.idega.builder.presentation;
 
 import javax.faces.component.UIComponent;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.CSSSpacer;
@@ -24,9 +25,8 @@ import com.idega.presentation.ui.HiddenInput;
 /**
  * @author tryggvil
  */
-public class IBObjectControl extends PresentationObjectContainer
-{
-	private static String IW_BUNDLE_IDENTIFIER="com.idega.builder";
+public class IBObjectControl extends PresentationObjectContainer {
+
 	private Layer containerLayer;
 	private Layer handleAndMenuLayer;
 	private Layer contentLayer;
@@ -37,12 +37,13 @@ public class IBObjectControl extends PresentationObjectContainer
 	private PresentationObjectContainer parent;
 	private String parentKey;
 	private UIComponent object;
-	boolean isPresentationObject = false;
+	private boolean isPresentationObject = false;
 	private int number = 0;
 
 	public String getBundleIdentifier(){
-		return IW_BUNDLE_IDENTIFIER;
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
+	
 	public IBObjectControl(UIComponent obj, PresentationObjectContainer parent, String parentKey, IWContext iwc, int index) {
 		this.parent = parent;
 		this.object = obj;
@@ -83,7 +84,6 @@ public class IBObjectControl extends PresentationObjectContainer
 		
 		this.buttonsLayer = new Layer(Layer.DIV);
 		this.buttonsLayer.setStyleClass("regionInfoImageContainer");
-//		this.buttonsLayer.setStyleClass("moduleButtons");
 		
 		this.dropAreaLayer = new Layer(Layer.DIV);
 		this.dropAreaLayer.setStyleClass("moduleDropArea");
@@ -135,7 +135,6 @@ public class IBObjectControl extends PresentationObjectContainer
 			}
 			this.nameLayer.add(text);
 			
-			//TODO change icobjectinstanceid to String 
 			String instanceId = BuilderLogic.getInstance().getInstanceId(this.object);
 			if (instanceId == null) {
 				instanceId = object.getId();
@@ -190,6 +189,7 @@ public class IBObjectControl extends PresentationObjectContainer
 			
 			Image propertiesImage = iwb.getImage("information.png", "Set module properties", 16, 16);
 			Link link = new Link(propertiesImage);
+			link.setMarkupAttribute("rel", "moodalbox");
 			this.buttonsLayer.add(link);
 			
 			HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);
@@ -263,43 +263,35 @@ public class IBObjectControl extends PresentationObjectContainer
 	/**
 	 *
 	 */
-	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label)
-	{
+	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label) {
 		return getBuilderLogic().getLabelIcon(parentKey,iwc,label);
 	}
 
-	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc)
-	{
+	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc) {
 		return getBuilderLogic().getCutIcon(key,parentKey,iwc);
 	}
 
-	public PresentationObject getCopyIcon(String key, String parentKey, IWContext iwc)
-	{
+	public PresentationObject getCopyIcon(String key, String parentKey, IWContext iwc) {
 		return getBuilderLogic().getCopyIcon(key,parentKey,iwc);
 	}
 
-	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc)
-	{
+	public PresentationObject getDeleteIcon(String key, String parentKey, IWContext iwc) {
 		return getBuilderLogic().getDeleteIcon(key,parentKey,iwc);
 	}
 
-	public PresentationObject getPermissionIcon(String key, IWContext iwc)
-	{
+	public PresentationObject getPermissionIcon(String key, IWContext iwc) {
 		return getBuilderLogic().getPermissionIcon(key,iwc);
 	}
 
-	public PresentationObject getEditIcon(String key, IWContext iwc)
-	{
+	public PresentationObject getEditIcon(String key, IWContext iwc) {
 		return getBuilderLogic().getEditIcon(key,iwc);
 	}
 
-	public PresentationObject getPasteAboveIcon(String key, String parentKey, IWContext iwc)
-	{
+	public PresentationObject getPasteAboveIcon(String key, String parentKey, IWContext iwc) {
 		return getBuilderLogic().getPasteAboveIcon(key,parentKey,iwc);
 	}
 
-	
-	protected BuilderLogic getBuilderLogic(){
+	protected BuilderLogic getBuilderLogic() {
 		return BuilderLogic.getInstance();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.63 2007/04/23 12:06:01 gediminas Exp $
+ * $Id: IBPropertyHandler.java,v 1.64 2007/05/08 15:05:03 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -460,7 +460,7 @@ public class IBPropertyHandler implements Singleton{
 			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name);
 			try {
 				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
-				chooser.setValue(page);
+				chooser.setSelectedPage(page.getId(), page.getName());
 			}
 			catch (Exception e) {
 				//throw new RuntimeException(e.getMessage());
@@ -476,15 +476,19 @@ public class IBPropertyHandler implements Singleton{
 		return (obj);
 	}
 	
-	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue, String className, boolean needReload) {
+	/**
+	 * New generation setter
+	 */
+	public PresentationObject getPropertySetterComponent(IWContext iwc, String presentationObjectInstanceId, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue, String className, boolean needReload) {
 		boolean attributesSet = false;
 		PresentationObject obj = null;
 		try {
-			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue);
+			obj = getHandlerInstance(iwc, presentationObjectInstanceId, propertyName, parameterIndex, name, stringValue);
 		}
 		catch (Exception e) {
 		}
 		if (obj != null) {
+			setMarkupAttributes(obj, propertyName, presentationObjectInstanceId, needReload, className);
 			return obj;
 		}
 		if (parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)) {
@@ -509,12 +513,12 @@ public class IBPropertyHandler implements Singleton{
 			Span yesOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).append(":").toString()));
 			RadioButton yes = new RadioButton(name);
 			yes.setValue("Y");
-			setMarkupAttributes(yes, propertyName, ICObjectInstanceID, needReload, className);
+			setMarkupAttributes(yes, propertyName, presentationObjectInstanceId, needReload, className);
 			
 			Span noOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("no", "No")).append(":").toString()));
 			RadioButton no = new RadioButton(name);
 			no.setValue("N");
-			setMarkupAttributes(no, propertyName, ICObjectInstanceID, needReload, className);
+			setMarkupAttributes(no, propertyName, presentationObjectInstanceId, needReload, className);
 			
 			if (stringValue.equalsIgnoreCase("Y") || stringValue.equalsIgnoreCase("T")) {
 				yes.setSelected();
@@ -593,7 +597,7 @@ public class IBPropertyHandler implements Singleton{
 			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name);
 			try {
 				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
-				chooser.setValue(page);
+				chooser.setSelectedPage(page.getId(), page.getName());
 			}
 			catch (Exception e) {
 				//throw new RuntimeException(e.getMessage());
@@ -607,7 +611,7 @@ public class IBPropertyHandler implements Singleton{
 			}
 		}
 		if (!attributesSet) {
-			setMarkupAttributes(obj, propertyName, ICObjectInstanceID, needReload, className);
+			setMarkupAttributes(obj, propertyName, presentationObjectInstanceId, needReload, className);
 		}
 		return obj;
 	}

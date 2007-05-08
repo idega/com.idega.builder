@@ -13,22 +13,27 @@ var DELETING_LABEL = "Deleting...";
 var ARE_YOU_SURE_MESSAGE = "Are You sure?";
 var SAVING_LABEL = "Saving...";
 var LOADING_LABEL = "Loading...";
+var RELOADING_LABEL = "Reloading...";
 
+var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
 var PARENT_ID = null;
 var PAGE_KEY = null;
 var REGION_ID = null;
 var MODULE_CONTENT_ID = null;
+var CHOOSER_VALUE_VIEWER_ID = null;
 
 var ACTIVE_PROPERTY_SETTER_BOX = null;
 
 var IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
 var MODULE_NAME_PARAMETER = "moduleName";
 var IB_PAGE_PARAMETER = "ib_page";
+var HANLDER_VALUE_OBJECTS_STYLE_CLASS = "handlerValueObjects";
 
 var PROPERTIES_SHOWN = new Array();
 var PROPERTY_BOX_SHOWN = new Array();
 var OBJECTS_TO_RERENDER = new Array();
+var ADVANCED_PROPERTIES = new Array();
 
 function getBuilderInitInfo() {
 	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
@@ -38,7 +43,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return;
 	}
-	if (list.length != 17) {
+	if (list.length != 19) {
 		return;
 	}
 	
@@ -59,11 +64,14 @@ function getBuilderInitInfoCallback(list) {
 	SAVING_LABEL = list[14];
 	LOADING_LABEL = list[15];
 	IB_PAGE_PARAMETER = list[16];
+	HANLDER_VALUE_OBJECTS_STYLE_CLASS = list[17];
+	RELOADING_LABEL = list[18];
+	
 }
 
 function registerBuilderActions() {
-	var builderRules = {
-		'div.moduleContainer' : function(element) {
+	$$('div.moduleContainer').each(
+		function(element) {
 			element.onmouseover = function() {
 				showAllComponentsLabels(element);
 				showComponentInfoImage(element);
@@ -72,9 +80,12 @@ function registerBuilderActions() {
 				hideOldLabels();
 				hideComponentInfoImage(element);
 			}
-		},
-		'div.regionLabel' : function(element) {
-			var parentElement = element.parentNode;
+    	}
+    );
+
+	$$('div.regionLabel').each(
+		function(element) {
+    		var parentElement = element.parentNode;
 			if (parentElement == null) {
 				return;
 			}
@@ -96,13 +107,19 @@ function registerBuilderActions() {
 			parentElement.onmouseout = function() {
 				closeAddComponentContainer(element.id);
 			}
-		},
-		'div.regionInfoImageContainer' : function(element) {
+    	}
+    );
+    
+    $$('div.regionInfoImageContainer').each(
+    	function(element) {
 			element.onclick = function() {
 				setRegionAndModuleContentId(element);
 			}
-		},
-		'input.modulePropertySetter' : function(element) {
+		}
+	);
+	
+	$$('input.modulePropertySetter').each(
+		function(element) {
 			element.onblur = function(event) {
 				if (element.type == "text") {
 					saveModuleProperty(null, element);
@@ -115,9 +132,7 @@ function registerBuilderActions() {
 				saveModuleProperty(event, element);
 			}
 		}
-	};
-	Behaviour.register(builderRules);
-	Behaviour.apply();
+	);
 }
 
 function showAllComponentsLabels(element) {
@@ -126,7 +141,7 @@ function showAllComponentsLabels(element) {
 	}
 	hideOldLabels();
 	
-	var children = getNeededBuilderElements(element, "DnDAreaTable");
+	var children = getNeededElements(element, "DnDAreaTable");
 	if (children == null) {
 		return;
 	}
@@ -135,10 +150,10 @@ function showAllComponentsLabels(element) {
 	for (var i = 0; i < children.length; i++) {
 		child = children[i];
 		child.style.visibility = "visible";
-		elementsToHighlight = getNeededBuilderElementsFromList(child.getElementsByTagName("div"), "moduleName");
+		/*elementsToHighlight = getNeededElementsFromList(child.getElementsByTagName("div"), "moduleName");
 		for (var j = 0; j < elementsToHighlight.length; j++) {
-			new Effect.Highlight(elementsToHighlight[j]);
-		}
+			highlightElement(elementsToHighlight[j], 1000, "#FFFFFF");
+		}*/
 	}
 }
 
@@ -249,7 +264,7 @@ function hideComponentInfoImage(element) {
 		return;
 	}
 	
-	var list = element.getElementsByClassName("regionInfoImageContainer");
+	var list = getNeededElementsFromList(element.childNodes, "regionInfoImageContainer");
 	var container = getFirstElementFromList(list);
 	if (container == null) {
 		return;
@@ -263,7 +278,7 @@ function showComponentInfoImage(element) {
 		return;
 	}
 	
-	var list = element.getElementsByClassName("regionInfoImageContainer");
+	var list = getElementsByClassName(element, "*", "regionInfoImageContainer");
 	var container = getFirstElementFromList(list);
 	if (container == null) {
 		return;
@@ -276,7 +291,7 @@ function showComponentInfoImage(element) {
 	if (container.style.visibility == "") {	// If it is the first time
 		
 		var moduleName = "Undefined";
-		var moduleNameContainerList = element.getElementsByClassName("moduleName");
+		var moduleNameContainerList = getElementsByClassName(element, "*", "moduleName");
 		if (moduleNameContainerList != null) {
 			if (moduleNameContainerList.length > 0) {
 				if (moduleNameContainerList[0].childNodes != null) {
@@ -304,62 +319,20 @@ function showComponentInfoImage(element) {
 		}
 
 		link.removeAttribute("href");
-		link.className = "lbOn";
+		
 		var uri = EDIT_COMPONENT_WINDOW_LINK + "&" + MODULE_NAME_PARAMETER + "=" + moduleName + "&" + IC_OBJECT_INSTANCE_ID_PARAMETER +
 		 "=" + instanceId + "&" + IB_PAGE_PARAMETER + "=" + PAGE_KEY;
 		link.setAttribute("href", uri);
 		
-		addLightboxMarkup();
-		editWindow = new lightbox(link);
-		roundModulesListCorners();
+		/*var relAttribute = link.getAttribute("rel");
+		if (relAttribute == null || relAttribute == "") {
+			link.setAttribute("rel", "moodalbox");
+			alert("init modal");
+			MOOdalBox.init({});
+		}*/
 	}
 	
 	container.style.visibility = "visible";
-}
-
-function getNeededBuilderElements(element, className) {
-	if (element == null) {
-		return null;
-	}
-	return getNeededBuilderElementsFromList(element.childNodes, className);
-}
-
-function getNeededBuilderElementsFromList(list, className) {
-	if (list == null || className == null) {
-		return new Array();
-	}
-	var childElement = null;
-	var elements = new Array();
-	for (var i = 0; i < list.length; i++) {
-		childElement = list[i];
-		if (childElement != null) {
-			if (childElement.className != null) {
-				if (childElement.className == className) {
-					elements.push(childElement);
-				}
-			}
-		}
-	}
-	return elements;
-}
-
-function getNeededBuilderElementsFromListById(list, id) {
-	if (list == null || id == null) {
-		return new Array();
-	}
-	var childElement = null;
-	var elements = new Array();
-	for (var i = 0; i < list.length; i++) {
-		childElement = list[i];
-		if (childElement != null) {
-			if (childElement.id != null) {
-				if (childElement.id == id) {
-					elements.push(childElement);
-				}
-			}
-		}
-	}
-	return elements;
 }
 
 function removeOldContainer(element, id) {
@@ -401,7 +374,7 @@ function addSelectedModule(newObjectId, className) {
 	var index = 0;
 	var container = document.getElementById(PARENT_ID);
 	if (container != null) {
-		var modules = getNeededBuilderElementsFromList(container.childNodes, "moduleContainer");
+		var modules = getNeededElementsFromList(container.childNodes, "moduleContainer");
 		if (modules != null) {
 			index = modules.length;
 		}
@@ -441,7 +414,7 @@ function addSelectedModuleCallback(component, id) {
 	
 	// Finding place where to put new module
 	var elementToInsertBefore = null;
-	var modules = getNeededBuilderElementsFromList(container.childNodes, "moduleContainer");
+	var modules = getNeededElementsFromList(container.childNodes, "moduleContainer");
 	if (modules == null) {
 		reloadPageAfterAddingModule();
 		return;
@@ -461,8 +434,6 @@ function addSelectedModuleCallback(component, id) {
 		}
 	}
 	
-	valid.deactivate();
-	
 	// Inserting nodes
 	var activeNode = null;
 	var realNode = null;
@@ -476,35 +447,17 @@ function addSelectedModuleCallback(component, id) {
 	registerBuilderActions();	// Need to re-register actions
 }
 
-function reloadPageAfterAddingModule() {
-	valid.deactivate();
-	window.location.href = window.location.href;
-}
-
-function roundModulesListCorners() {
-	Nifty("ul#modules_lists h3","top");
-	Nifty("ul#modules_lists div","bottom same-height");
-}
-
-function roundLightboxWindow() {
-	Nifty("div#lightbox","big");
-}
-
-function initializeEditModuleWindow() {
-	Nifty("div#editModuleHeader","big");
-	Nifty("ul#editModuleMenuNavigation a","small transparent top");
-	Nifty("div#simple_properties_box","transparent");
-	Nifty("div#advanced_properties_box","transparent");
-}
-
-function manageComponentPropertiesList(id) {
+function manageComponentPropertiesList(id) {	
 	if (existsValueInList(PROPERTIES_SHOWN, id)) {
 		removeElementFromArray(PROPERTIES_SHOWN, id);
-		new Effect.SlideDown(id);
+		
+		closeComponentPropertiesList(id);
 	}
 	else {
 		PROPERTIES_SHOWN.push(id);
-		closeComponentPropertiesList(id);
+		
+		var el = document.getElementById(id);
+		el.style.display = "block";	
 	}
 }
 
@@ -520,13 +473,14 @@ function closeComponentPropertiesList(id) {
 	if (id == null) {
 		return;
 	}
-	new Effect.SlideUp(id);
+	
+	var el = document.getElementById(id);
+	el.style.display = "none";
 }
 
 function exitFromPropertiesWindow() {
 	PROPERTIES_SHOWN = new Array();
 	editWindow.deactivate();
-	//renderModulesAgain();
 }
 
 function closeAddModuleWindow() {
@@ -585,6 +539,8 @@ function closeOldPropertyBoxes(currentID) {
 
 function getPropertyBox(id, propertyName, objectInstanceId) {
 	ACTIVE_PROPERTY_SETTER_BOX = id;
+	PROPERTY_NAME = propertyName;
+	INSTANCE_ID = objectInstanceId;
 	var fullId = id + "_property_setter_box";
 	closeOldPropertyBoxes(fullId);
 	var propertySetterBox = document.getElementById(fullId) ;
@@ -639,7 +595,8 @@ function saveModuleProperty(event, element) {
 		return;
 	}
 	if (event != null) {
-		if (element.type == "text") { // Checking if "Enter" was pressed
+		if (element.type == "text") {
+			//	Checking if "Enter" was pressed
 			if (!isEnterEvent(event)) {
 				return;
 			}
@@ -647,32 +604,44 @@ function saveModuleProperty(event, element) {
 	}
 	
 	var attr = element.attributes;	
-	var moduleId = attr.getNamedItem("moduleid").value;
-	var propertyName = attr.getNamedItem("propname").value;
-	var needsReload = attr.getNamedItem("needsreload").value;
+	var moduleId = null;
+	if (attr.getNamedItem("moduleid") != null) {
+		moduleId = attr.getNamedItem("moduleid").value;
+	}
+	var propertyName = null;
+	if (attr.getNamedItem("propname") != null) {
+		propertyName = attr.getNamedItem("propname").value;
+	}
+	var needsReload = null;
+	if (attr.getNamedItem("needsreload") != null) {
+		needsReload = attr.getNamedItem("needsreload").value;
+	}
 	
 	showLoadingMessage(SAVING_LABEL);
 	BuilderEngine.setSimpleModuleProperty(PAGE_KEY, moduleId, propertyName, element.value, {
 		callback: function(result) {
-			setSimpleModulePropertyCallback(result, moduleId, needsReload);
+			saveModulePropertyCallback(result, moduleId, needsReload);
 		}
 	});
 }
 
-function setSimpleModulePropertyCallback(result, moduleId, needsReload) {
+function saveModulePropertyCallback(result, moduleId, needsReload) {
 	if (!result) {
 		closeLoadingMessage();
 		return;
 	}
+	
 	if (needsReload == "true") {
-		window.location.href = window.location.href;
+		closeLoadingMessage();
+		showLoadingMessage(RELOADING_LABEL);
+		
+		var oldLocation = "" + window.location.href;
+		var parts = oldLocation.split("#");
+		var date = new Date();
+		window.location.href = parts[0]  + "&reloading=" + date.getTime();
+		
 		return;
 	}
-	
-	/*if (!isComponentMarkedForReRendering(moduleId)) {
-		var objectToRerender = new ReRenderObject(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
-		OBJECTS_TO_RERENDER.push(objectToRerender);
-	}*/
 	
 	if (ACTIVE_PROPERTY_SETTER_BOX != null) {
 		var setterBox = document.getElementById(ACTIVE_PROPERTY_SETTER_BOX);
@@ -763,3 +732,163 @@ function ReRenderObject(pageKey, regionId, moduleId, moduleContentId) {
 	this.moduleId = moduleId;
 	this.moduleContentId = moduleContentId;
 }
+
+/** Logic for Choosers/Advanced handlers starts **/
+function saveSelectedValues() {
+	showLoadingMessage(SAVING_LABEL);
+	var values = new Array();
+	var advancedProperty = null;
+	for (var i = 0; i < ADVANCED_PROPERTIES.length; i++) {
+		advancedProperty = ADVANCED_PROPERTIES[i];
+		values.push(advancedProperty.value);
+	}
+
+	BuilderEngine.updateHandler(values, saveSelectedValuesCallback);
+}
+
+function saveSelectedValuesCallback(result) {
+	closeLoadingMessage();
+	if (result) {
+		showLoadingMessage(SAVING_LABEL);
+		BuilderEngine.setModuleProperty(PAGE_KEY, INSTANCE_ID, PROPERTY_NAME, ADVANCED_PROPERTIES, {
+			callback: function(savedSuccessfully) {
+				setModulePropertyCallback(savedSuccessfully, INSTANCE_ID, "true");	//	Temporary
+			}
+		});
+	}
+}
+
+function setModulePropertyCallback(result, moduleId, needsReload) {
+	if (result) {
+		ADVANCED_PROPERTIES = new Array();
+	}
+	closeLoadingMessage();
+	saveModulePropertyCallback(result, moduleId, needsReload);
+}
+
+function addChooserObject(chooserObject, objectClass, chooserValueViewerId) {
+	var container = chooserObject.parentNode;
+	
+	CHOOSER_VALUE_VIEWER_ID = null;
+	var attributes = chooserObject.attributes;
+	if (attributes != null) {
+		if (attributes.getNamedItem(chooserValueViewerId) != null) {
+			CHOOSER_VALUE_VIEWER_ID = attributes.getNamedItem(chooserValueViewerId).value;
+		}
+	}
+	
+	var chooser = null;
+	var choosers = getNeededElementsFromListById(container.childNodes, "chooser_presentation_object");
+	if (choosers != null) {
+		if (choosers.length > 0) {
+			chooser = choosers[0];
+		}
+	}
+	if (chooser == null) {
+		showLoadingMessage(LOADING_LABEL);
+		BuilderEngine.getRenderedPresentationObject(objectClass, false, {
+			callback: function(renderedObject) {
+				getRenderedPresentationObjectCallback(renderedObject, container);
+			}
+		});
+	}
+	else {
+		if (chooser.style.display == null) {
+			chooser.style.display = "block";
+		}
+		else {
+			if (chooser.style.display == "block") {
+				chooser.style.display = "none";
+			}
+			else {
+				chooser.style.display = "block";
+			}
+		}
+	}
+}
+
+function getRenderedPresentationObjectCallback(renderedObject, container) {
+	closeLoadingMessage();
+	insertNodesToContainer(renderedObject, container);
+}
+
+function chooseObject(element, attributeId, attributeValue) {
+	if (element == null) {
+		return;
+	}
+	var attributes = element.attributes;
+	if (attributes == null) {
+		return;
+	}
+	var id = attributeId;
+	var value = attributes.getNamedItem(attributeId).value;
+	
+	addAdvancedProperty(id, value);
+}
+
+function setChooserView(element, attributeValue) {
+	if (element == null || attributeValue == null || CHOOSER_VALUE_VIEWER_ID == null) {
+		return;
+	}
+	var attributes = element.attributes;
+	if (attributes == null) {
+		return;
+	}
+	var value = attributes.getNamedItem(attributeValue).value;
+	if (value == null) {
+		return;
+	}
+	
+	var viewer = document.getElementById(CHOOSER_VALUE_VIEWER_ID);
+	if (viewer == null) {
+		return;
+	}
+	viewer.value = value;
+}
+
+function addAdvancedProperty(id, value) {
+	if (ADVANCED_PROPERTIES == null) {
+		ADVANCED_PROPERTIES = new Array();
+	}
+	if (existAdvancedProperty(id, value)) {
+		return;
+	}
+	ADVANCED_PROPERTIES.push(new AdvancedProperty(id, value));
+}
+
+function removeAdvancedProperty(id) {
+	if (id == null) {
+		return;
+	}
+	if (ADVANCED_PROPERTIES == null) {
+		return;
+	}
+	var needless = new Array();
+	for (var i = 0; i < ADVANCED_PROPERTIES.length; i++) {
+		if (ADVANCED_PROPERTIES[i].id == id) {
+			needless.push(ADVANCED_PROPERTIES[i]);
+		}
+	}
+	for (var i = 0; i < needless.length; i++) {
+		removeElementFromArray(ADVANCED_PROPERTIES, needless[i]);
+	}
+}
+
+function existAdvancedProperty(id, value) {
+	if (id == null && value == null) {
+		return false;
+	}
+	var advancedProperty = null;
+	for (var i = 0; i < ADVANCED_PROPERTIES.length; i++) {
+		advancedProperty = ADVANCED_PROPERTIES[i];
+		if (advancedProperty.id == id && advancedProperty.value == value) {
+			return true;
+		}
+	}
+}
+
+function AdvancedProperty(id, value) {
+	this.id = id;
+	this.value = value;
+}
+/** Logic for Choosers/Advanced handlers ends **/

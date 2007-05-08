@@ -1,7 +1,6 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.AbstractChooser;
@@ -17,53 +16,45 @@ import com.idega.presentation.ui.AbstractChooser;
  */
 
 public class IBPageChooser extends AbstractChooser {
-  public IBPageChooser(){
-  	addForm(false);
-  }
+	
+	public IBPageChooser(){
+		addForm(false);
+	}
 
-  public IBPageChooser(String chooserName) {
-    addForm(false);
-    //setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
-    setChooserParameter(chooserName);
-  }
+	public IBPageChooser(String chooserName) {
+		this();
+		setChooserParameter(chooserName);
+	}
 
-  public IBPageChooser(String chooserName,String style) {
-    this(chooserName);
-    setInputStyle(style);
-  }
+	public IBPageChooser(String chooserName, String style) {
+		this(chooserName);
+		setInputStyle(style);
+	}
 
-  public void main(IWContext iwc){
-  	this.empty();
-    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-    setChooseButtonImage(iwb.getImage("open.gif","Choose"));
-  }
+	public void main(IWContext iwc){
+		this.empty();
+	    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+	    setChooseButtonImage(iwb.getImage("choose.png", "Choose"));
+	}
 
-  public Class getChooserWindowClass() {
-    return IBPageChooserWindow.class;
-  }
+	public Class getChooserWindowClass() {
+		return IBPageChooserBlock.class;
+//		return IBPageChooserWindow.class;
+	}
+	
+	/**
+	 * Sets the page designated by pageId to be the page that is selected
+	 * in the page tree
+	 *
+	 * @param pageId The id of the page that is to be selected
+	 * @param pageName The name of the page that is to be selected
+	 */
+	public void setSelectedPage(int pageId, String pageName) {
+		setChooserValue(pageName, pageId);
+	}
+	
+	public void setSelectedPage(String pageId, String pageName) {
+		setChooserValue(pageName, pageId);
+	}
 
-  /**
-   * Sets the page designated by pageId to be the page that is selected
-   * in the page tree.
-   *
-   * @param pageId The id of the page that is to be selected
-   * @param pageName The name of the page that is to be selected
-   */
-  public void setSelectedPage(int pageId, String pageName) {
-    super.setChooserValue(pageName,pageId);
-  }
-
-  /**
-   * @deprecated Replaced by {@link #setSelectedPage(int,String)}
-   */
-  public void setSelectedPage(ICPage page){
-    super.setChooserValue(page.getName(),page.getID());
-  }
-
-  /**
-   * @deprecated Replaced by {@link #setSelectedPage(int,String)}
-   */
-  public void setValue(Object page){
-    setSelectedPage((ICPage)page);
-  }
 }

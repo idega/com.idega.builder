@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.9 2006/04/09 11:43:35 laddi Exp $
+ * $Id: IBPageHandler.java,v 1.10 2007/05/08 15:05:03 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ import com.idega.presentation.PresentationObject;
  * @version 1.0
  */
 public class IBPageHandler implements ICPropertyHandler {
+	
 	public IBPageHandler() {
 	}
 
@@ -46,7 +47,7 @@ public class IBPageHandler implements ICPropertyHandler {
 		catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
-		return (chooser);
+		return chooser;
 	}
 
 	public void onUpdate(String values[], IWContext iwc) {

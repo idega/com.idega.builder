@@ -18,6 +18,12 @@ public interface BuilderEngine extends IBOService {
 	
 	public boolean setSimpleModuleProperty(String pageKey, String moduleId, String propertyName, String propertyValue);
 	
+	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, List<AdvancedProperty> properties);
+	
 	public Document reRenderObject(String pageKey, String regionId, String instanceId);
+	
+	public boolean updateHandler(String[] values);
+	
+	public Document getRenderedPresentationObject(String className, boolean cleanHtml);
 	
 }

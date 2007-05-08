@@ -12,6 +12,8 @@ import com.idega.core.builder.business.ICBuilderConstants;
  */
 public class BuilderConstants {
 	
+	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
+	
 	public static final String BASE_PAGE_PATH = "/files/cms/pages";
 	
 	public static final String STANDARD_IW_BUNDLE_IDENTIFIER="com.idega.builder";
@@ -31,5 +33,7 @@ public class BuilderConstants {
 	public static final String ADD_NEW_MODULE_WINDOW_CACHE_KEY = "add_new_module_to_page_window";
 	public static final String EDIT_MODULE_WINDOW_CACHE_KEY = "edit_existing_module_properties_window";
 	public static final String SET_MODULE_PROPERTY_CACHE_KEY = "set_existing_module_property_box";
+	
+	public static final String HANLDER_VALUE_OBJECTS_STYLE_CLASS = ICBuilderConstants.HANLDER_VALUE_OBJECTS_STYLE_CLASS;
 
 }

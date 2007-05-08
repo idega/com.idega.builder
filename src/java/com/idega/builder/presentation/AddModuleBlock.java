@@ -20,11 +20,9 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
-import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
-import com.idega.presentation.ui.GenericButton;
 
 public class AddModuleBlock extends Block {
 	
@@ -73,16 +71,6 @@ public class AddModuleBlock extends Block {
 		items.add(builderList);
 		componentsContainer.add(items);
 		this.add(componentsContainer);
-		
-		this.add(new Break());
-		
-		Layer closeContainer = new Layer();
-		closeContainer.setId("closeButtonContainer");
-		closeContainer.setStyleClass("closeButtonContainerStyle");
-		GenericButton close = new GenericButton("cancel", iwrb.getLocalizedString("close_lowercase", "Close"));
-		close.setOnClick("closeAddModuleWindow();");
-		closeContainer.add(close);
-		this.add(closeContainer);
 	}
 	
 	@SuppressWarnings("unchecked")

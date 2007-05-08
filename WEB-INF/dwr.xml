@@ -10,7 +10,14 @@
     <create creator="ibo" javascript="BuilderEngine" scope="application">
       <param name="class" value="com.idega.builder.bean.BuilderEngine"/>
     </create>
+    <convert converter="bean" match="com.idega.builder.bean.AdvancedProperty" />
   </allow>
   <signatures>
+	<![CDATA[
+		import java.util.List;
+  		import com.idega.builder.bean.AdvancedProperty
+  		
+  		BuilderEngine.applyMultipleChangesToTheme(String, String, String, List<AdvancedProperty>);
+	]]>
   </signatures>
 </dwr>
