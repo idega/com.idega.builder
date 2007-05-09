@@ -27,7 +27,7 @@ public class IBPageChooserBlock extends Block {
 		
 		Link link = new Link();
 		link = new Link();
-		link.setURL("#");
+		link.setURL(new StringBuffer("#").append(container.getId()).toString());
 		link.setNoTextObject(true);
 		viewer.setLinkOpenClosePrototype(link);
 		

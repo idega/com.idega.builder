@@ -264,7 +264,7 @@ function hideComponentInfoImage(element) {
 		return;
 	}
 	
-	var list = getNeededElementsFromList(element.childNodes, "regionInfoImageContainer");
+	var list = getElementsByClassName(element, "*", "regionInfoImageContainer");
 	var container = getFirstElementFromList(list);
 	if (container == null) {
 		return;
@@ -324,12 +324,8 @@ function showComponentInfoImage(element) {
 		 "=" + instanceId + "&" + IB_PAGE_PARAMETER + "=" + PAGE_KEY;
 		link.setAttribute("href", uri);
 		
-		/*var relAttribute = link.getAttribute("rel");
-		if (relAttribute == null || relAttribute == "") {
-			link.setAttribute("rel", "moodalbox");
-			alert("init modal");
-			MOOdalBox.init({});
-		}*/
+		//	Link will be registered to MOOdalBox (if needed)
+		MOOdalBox.register(link);
 	}
 	
 	container.style.visibility = "visible";
@@ -445,6 +441,8 @@ function addSelectedModuleCallback(component, id) {
 	}
 	
 	registerBuilderActions();	// Need to re-register actions
+	
+	MOOdalBox.close();
 }
 
 function manageComponentPropertiesList(id) {	
