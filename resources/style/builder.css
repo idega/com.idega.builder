@@ -108,8 +108,10 @@ div.moduleButtons a {
 }
 
 .regionLabel{
-	visibility: hidden;
-	/*font-size: 11px !important;
+	/*visibility: hidden;*/
+	
+	/*old style
+	font-size: 11px !important;
 	font-family: Arial !important;
 	background-color: yellow;
 	border: 1px #000000 solid;	

@@ -83,32 +83,7 @@ function registerBuilderActions() {
     	}
     );
 
-	$$('div.regionLabel').each(
-		function(element) {
-    		var parentElement = element.parentNode;
-			if (parentElement == null) {
-				return;
-			}
-			var regionLabel = "";
-			var inputs = element.getElementsByTagName("input");
-			if (inputs != null) {
-				if (inputs.length > 0) {
-					var input = inputs[0];
-					if (input.type != null) {
-						if (input.type == "hidden") {
-							regionLabel = input.value;
-						}
-					}
-				}
-			}
-			parentElement.onmouseover = function() {
-				showAddComponentImage(parentElement, element, regionLabel);
-			},
-			parentElement.onmouseout = function() {
-				closeAddComponentContainer(element.id);
-			}
-    	}
-    );
+	//setActionsForRegion();
     
     $$('div.regionInfoImageContainer').each(
     	function(element) {
@@ -812,16 +787,54 @@ function getRenderedPresentationObjectCallback(renderedObject, container) {
 
 function chooseObject(element, attributeId, attributeValue) {
 	if (element == null) {
-		return;
+		return null;
 	}
 	var attributes = element.attributes;
 	if (attributes == null) {
-		return;
+		return null;
 	}
 	var id = attributeId;
-	var value = attributes.getNamedItem(attributeId).value;
+	var value = null;
+	if (attributes.getNamedItem(attributeId) != null) {
+		value = attributes.getNamedItem(attributeId).value;
+	}
+	
+	if (value == null) {
+		return null;
+	}
 	
 	addAdvancedProperty(id, value);
+	
+	return value;
+}
+
+function chooseObjectWithHidden(element, attributeId, attributeValue, hiddenName) {
+	var value = chooseObject(element, attributeId, attributeValue);
+	if (value == null) {
+		return;
+	}
+	var forms = document.getElementsByTagName("form");
+	if (forms == null) {
+		return;
+	}
+	if (forms.length == 0) {
+		return;
+	}
+	
+	var form = forms[0];
+	if (form == null) {
+		return;
+	}
+	
+	var hidden = document.getElementById(hiddenName);
+	if (hidden == null) {
+		hidden = document.createElement("input");
+		hidden.setAttribute("type", "hidden");
+		hidden.setAttribute("id", hiddenName);
+		hidden.setAttribute("name", hiddenName);
+		form.appendChild(hidden);
+	}
+	hidden.setAttribute("value", value);
 }
 
 function setChooserView(element, attributeValue) {
@@ -832,8 +845,12 @@ function setChooserView(element, attributeValue) {
 	if (attributes == null) {
 		return;
 	}
-	var value = attributes.getNamedItem(attributeValue).value;
+	var value = null;
+	if (attributes.getNamedItem(attributeValue) != null) {
+		value = attributes.getNamedItem(attributeValue).value;
+	}
 	if (value == null) {
+		alert("Error: no value found to set!");
 		return;
 	}
 	
