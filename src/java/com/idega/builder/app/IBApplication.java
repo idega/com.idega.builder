@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.101 2007/05/07 14:34:23 valdas Exp $
+ *  $Id: IBApplication.java,v 1.102 2007/05/09 17:43:18 valdas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -251,6 +251,7 @@ public class IBApplication extends IWApplication {
 			add(IBStatusBar.class);
 			super.setFrameName(1, IB_TOOLBAR_FRAME);
 			super.setFrameName(2, IB_CONTENT_FRAME);
+			super.setFrameProperty(2, "id", IB_CONTENT_FRAME);
 			super.setFrameName(3, IB_STATUS_FRAME);
 			setNoresize(1, true);
 			setNoresize(3, true);
@@ -668,6 +669,15 @@ public class IBApplication extends IWApplication {
 				add(propertiesIcon);
 				PresentationObject permissionIcon = getPermissionIcon(iwc);
 				add(permissionIcon);
+				
+				/*//	Button to hide all regions and attach events for showing/hiding region
+				Image hideRegionsImage = iwb.getImage("new_16.gif", iwrb.getLocalizedString("tooltip.hide_regions", "Hide Regions"), 16, 16);
+				hideRegionsImage.setOnClick("setActionsForRegion('"+IB_FRAMESET2_FRAME+"', '"+IB_CONTENT_FRAME+"');");
+				Link hideRegionsLink = new Link(hideRegionsImage);
+				hideRegionsLink.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
+				hideRegionsLink.setURL("#");
+				add(hideRegionsLink);*/
+				
 				add((Image) separator.clone());
 
 //				Image tool_1 = iwb.getImage("shared/toolbar/back.gif", "shared/toolbar/back1.gif", "Go back", 20, 20);
