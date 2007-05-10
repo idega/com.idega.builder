@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.15 2007/04/19 13:24:09 valdas Exp $
+ * $Id: CachedBuilderPage.java,v 1.16 2007/05/10 15:23:30 thomas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -398,6 +398,8 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 		//setPopulatedPage(XMLReader.getPopulatedPage(this));
 		//setPopulatedPage(null);
+		// invalidate the page
+		getPageCacher().flagPageInvalid(getPageKey());
 		if (getType().equals(TYPE_TEMPLATE)) {
 			invalidateAllPagesUsingThisTemplate();
 		}
