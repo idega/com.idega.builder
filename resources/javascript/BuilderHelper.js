@@ -461,16 +461,15 @@ function closeAddModuleWindow() {
 }
 
 function deleteModule(id, pageKey, parentId, instanceId) {
-	var confirmed = confirm(ARE_YOU_SURE_MESSAGE);
-	if (!confirmed) {
-		return;
+	var deleteConfirmed = window.confirm(ARE_YOU_SURE_MESSAGE);
+	if (deleteConfirmed) {
+		showLoadingMessage(DELETING_LABEL);
+		BuilderEngine.deleteSelectedModule(pageKey, parentId, instanceId, {
+  			callback: function(result) {
+    			deleteModuleCallback(result, id);
+  			}
+		});
 	}
-	showLoadingMessage(DELETING_LABEL);
-	BuilderEngine.deleteSelectedModule(pageKey, parentId, instanceId, {
-  		callback: function(result) {
-    		deleteModuleCallback(result, id);
-  		}
-	});
 }
 
 function deleteModuleCallback(result, id) {
