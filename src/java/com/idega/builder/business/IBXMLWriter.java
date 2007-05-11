@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.6 2007/04/13 07:59:35 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.7 2007/05/11 12:28:19 civilis Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -55,7 +55,7 @@ public class IBXMLWriter {
 	 * Find the XMLElement for the region with label label or id id. Label has
 	 * precedence so regionId does not necessarily have to be the same.
 	 */
-	private XMLElement findRegion(IBXMLAble xml, String label, String regionId) {
+	public XMLElement findRegion(IBXMLAble xml, String label, String regionId) {
 		XMLElement region;
 		if (label != null) {
 			//first try to search by the label identifier
