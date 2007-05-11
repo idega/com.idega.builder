@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.244 2007/05/10 10:07:55 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.245 2007/05/11 12:29:15 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2742,6 +2742,35 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return true;
+	}
+	
+	public void renameRegion(String pageKey, String region_id, String region_label, String new_region_id, String new_region_label) {
+		
+		if (pageKey == null || region_id == null || new_region_id == null) {
+			throw new NullPointerException(
+					"Either is not provided: "+
+					"\npageKey: "+pageKey+
+					"\nregion_id: "+region_id+
+					"\nnew_region_id: "+new_region_id
+			);
+		}
+		IBXMLPage xml = getIBXMLPage(pageKey);
+		
+		if (xml == null)
+			throw new NullPointerException("Page not found by key provided: "+pageKey);
+		
+		XMLElement region = getIBXMLWriter().findRegion(xml, region_label == null ? region_id : region_label, region_id);
+		
+		if(region == null)
+			throw new NullPointerException(
+					"Region not found by values provided: "+
+					"\nregion_id: "+region_id+
+					"\nregion_label: "+region_label
+			);
+		
+		region.setAttribute(IBXMLConstants.ID_STRING, new_region_id);
+		region.setAttribute(IBXMLConstants.LABEL_STRING, new_region_label == null ? new_region_id : new_region_label);
+		xml.store();
 	}
 	
 	/**

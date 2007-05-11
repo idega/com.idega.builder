@@ -331,6 +331,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().unlockRegion(pageKey, parentObjectInstanceID, label);
 	}
 	
+	public void renameRegion(String pageKey, String region_id, String region_label, String new_region_id, String new_region_label) {
+		getBuilderLogic().renameRegion(pageKey, region_id, region_label, new_region_id, new_region_label);
+	}
+	
 	public void setCurrentPageId(IWContext iwc, String pageKey) {
 		getBuilderLogic().setCurrentIBPage(iwc, pageKey);
 	}
