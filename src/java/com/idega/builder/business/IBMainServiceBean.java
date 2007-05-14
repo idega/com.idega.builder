@@ -411,4 +411,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public void startBuilderSession(IWContext iwc) {
 		IBApplication.startIBApplication(iwc);
 	}
+	
+	public void clearAllCaches() {
+		getBuilderLogic().clearAllCaches();
+	}
 }

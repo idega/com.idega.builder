@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.246 2007/05/11 13:47:23 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.247 2007/05/14 10:16:54 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1747,7 +1747,19 @@ public class BuilderLogic implements Singleton {
 	 * Invalidates cache for all pages and the cached page tree
 	 */
 	public void clearAllCachedPages() {
+		clearCaches(IWMainApplication.getDefaultIWApplicationContext());
+	}
+	
+	/**
+	 * Clears all caches
+	 */
+	public void clearAllCaches() {
 		IWApplicationContext iwac = IWMainApplication.getDefaultIWApplicationContext();
+		clearCaches(iwac);
+		PageTreeNode.clearTree(iwac);
+	}
+	
+	private void clearCaches(IWApplicationContext iwac) {
 		System.out.println("Clearing all DomainTree Cache");
 		DomainTree.clearCache(iwac);
 		getPageCacher().flagAllPagesInvalid();
