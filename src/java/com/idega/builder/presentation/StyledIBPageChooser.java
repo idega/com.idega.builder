@@ -19,15 +19,17 @@ import com.idega.presentation.ui.AbstractChooser;
  */
 
 public class StyledIBPageChooser extends AbstractChooser {
+	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 
 	public StyledIBPageChooser(String chooserName) {
 		addForm(false);
 		//setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
 		setChooserParameter(chooserName);
+		setAddSaveButton(false);
 	}
 
-	public StyledIBPageChooser(String chooserName,String style) {
+	public StyledIBPageChooser(String chooserName, String style) {
 		this(chooserName);
 		setInputStyle(style);
 	}
@@ -39,7 +41,7 @@ public class StyledIBPageChooser extends AbstractChooser {
 	}
 
 	public Class getChooserWindowClass() {
-		return StyledIBPageChooserWindow.class;
+		return IBPageChooserBlock.class;
 	}
 
 	/**

@@ -415,4 +415,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public void clearAllCaches() {
 		getBuilderLogic().clearAllCaches();
 	}
+	
+	public void addJavaScriptForChooser(Page page) {
+		getBuilderLogic().addJavaScriptForChooser(page);
+	}
 }

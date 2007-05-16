@@ -13,7 +13,6 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.data.ICDomain;
-import com.idega.core.builder.data.ICDomainBMPBean;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.idegaweb.IWConstants;
@@ -47,6 +46,8 @@ public class IBPageWindow extends IWAdminWindow {
    */
   protected IBPageChooser getPageChooser(String name, IWContext iwc) {
     IBPageChooser chooser = new IBPageChooser(name);
+    chooser.setAddSaveButton(false);
+    chooser.setHiddenInputAttribute(PAGE_CHOOSER_NAME);
     chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 
     try {
@@ -74,6 +75,8 @@ public class IBPageWindow extends IWAdminWindow {
    */
   protected IBTemplateChooser getTemplateChooser(String name, IWContext iwc, String type){
     IBTemplateChooser chooser = new IBTemplateChooser(name);
+    chooser.setAddSaveButton(false);
+    chooser.setHiddenInputAttribute(TEMPLATE_CHOOSER_NAME);
     chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
 
     try {

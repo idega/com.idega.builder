@@ -738,7 +738,7 @@ function setModulePropertyCallback(result, moduleId, needsReload) {
 	saveModulePropertyCallback(result, moduleId, needsReload);
 }
 
-function addChooserObject(chooserObject, objectClass, chooserValueViewerId) {
+function addChooserObject(chooserObject, objectClass, hiddenInputAttribute, chooserValueViewerId) {
 	var container = chooserObject.parentNode;
 	
 	CHOOSER_VALUE_VIEWER_ID = null;
@@ -758,7 +758,7 @@ function addChooserObject(chooserObject, objectClass, chooserValueViewerId) {
 	}
 	if (chooser == null) {
 		showLoadingMessage(LOADING_LABEL);
-		BuilderEngine.getRenderedPresentationObject(objectClass, false, {
+		BuilderEngine.getRenderedPresentationObject(objectClass, hiddenInputAttribute, false, {
 			callback: function(renderedObject) {
 				getRenderedPresentationObjectCallback(renderedObject, container);
 			}

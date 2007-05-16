@@ -16,7 +16,7 @@ public class BuilderConstants {
 	
 	public static final String BASE_PAGE_PATH = "/files/cms/pages";
 	
-	public static final String STANDARD_IW_BUNDLE_IDENTIFIER="com.idega.builder";
+	public static final String STANDARD_IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
 	public static final String IB_PAGE_PARAMETER = ICBuilderConstants.IB_PAGE_PARAMETER;  //"ib_page";
 	public static final String PRM_HISTORY_ID = ICBuilderConstants.PRM_HISTORY_ID;  // "ib_history";

@@ -39,7 +39,6 @@ public class IBPageChooser extends AbstractChooser {
 
 	public Class getChooserWindowClass() {
 		return IBPageChooserBlock.class;
-//		return IBPageChooserWindow.class;
 	}
 	
 	/**

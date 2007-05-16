@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.247 2007/05/14 10:16:54 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.248 2007/05/16 14:15:14 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -72,6 +72,7 @@ import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
@@ -255,11 +256,12 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 		}
 		
-		page.addJavascriptURL("/dwr/engine.js");
-		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
+		addJavaScriptForChooser(page);
+//		page.addJavascriptURL("/dwr/engine.js");
+//		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
 		
 		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
-		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
+//		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		
 		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', getBuilderInitInfo);");
 		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', registerBuilderActions);");
@@ -2877,6 +2879,19 @@ public class BuilderLogic implements Singleton {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void addJavaScriptForChooser(Page page) {
+		if (page == null) {
+			return;
+		}
+		IWBundle iwb = getBuilderBundle();
+		if (iwb == null) {
+			return;
+		}
+		page.addJavascriptURL("/dwr/engine.js");
+		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
+		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 	}
 
 }

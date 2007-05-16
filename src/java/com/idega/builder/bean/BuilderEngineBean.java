@@ -26,6 +26,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.ui.util.AbstractChooserBlock;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 
@@ -235,6 +236,9 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (properties == null) {
 			return false;
 		}
+		if (properties.size() == 0) {
+			return false;
+		}
 		
 		String[] parsedProperties = new String[properties.size()];
 		for (int i = 0; i < properties.size(); i++) {
@@ -330,7 +334,25 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return true;
 	}
 	
-	public Document getRenderedPresentationObject(String className, boolean cleanHtml) {
+	public Document getRenderedPresentationObject(String className, String hiddenInputAttribute, boolean cleanHtml) {
+		Object o = getObjectInstance(className);
+		if (hiddenInputAttribute != null) {
+			if (o instanceof AbstractChooserBlock) {
+				((AbstractChooserBlock) o).setHiddenInputAttribute(hiddenInputAttribute);
+			}
+		}
+		return getRenderedPresentationObject(o, cleanHtml);
+	}
+	
+	private Document getRenderedPresentationObject(Object object, boolean cleanHtml) {
+		if (object instanceof PresentationObject) {
+			IWContext iwc = getIWContext();
+			return builder.getRenderedPresentationObject(iwc, (PresentationObject) object, cleanHtml);
+		}
+		return null;
+	}
+	
+	private Object getObjectInstance(String className) {
 		if (className == null) {
 			return null;
 		}
@@ -351,11 +373,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			log.error(e);
 			return null;
 		}
-		if (o instanceof PresentationObject) {
-			IWContext iwc = getIWContext();
-			return builder.getRenderedPresentationObject(iwc, (PresentationObject) o, cleanHtml);
-		}
-		return null;
+		return o;
 	}
 
 }

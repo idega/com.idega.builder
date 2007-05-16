@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.47 2006/05/03 13:51:23 eiki Exp $
+ * $Id: IBCreatePageWindow.java,v 1.48 2007/05/16 14:15:14 valdas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -47,6 +48,12 @@ public class IBCreatePageWindow extends IBPageWindow {
 	}
 
 	public void main(IWContext iwc) throws Exception {
+		BuilderLogic.getInstance().addJavaScriptForChooser(getParentPage());
+		
+		Layer container = new Layer();
+		container.setStyleAttribute("overflow: auto");
+		add(container);
+		
 		IWBundle iwb = getBundle(iwc);
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		boolean allowMultiplePageCreation = Boolean.valueOf(iwb.getProperty("allow_multiple_page_creation",Boolean.toString(false))).booleanValue();
@@ -73,7 +80,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 			addTitle(iwrb.getLocalizedString("create_new_page", "Create a new Page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		}
 
-		add(form);
+		container.add(form);
 		Table tab = new Table(2,7);
 		tab.setColumnAlignment(1, "right");
 		tab.setWidth(1, "110");

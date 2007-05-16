@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.75 2007/05/09 09:25:34 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.76 2007/05/16 14:15:14 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -932,8 +932,11 @@ public class IBPageHelper implements Singleton  {
 		}
 	}
 	
-	public TreeViewer getPageTreeViewer(IWContext iwc, boolean setBasicParameters) {
-		return getTreeViewer(iwc, this.PAGEVIEWER, setBasicParameters);
+	public TreeViewer getTreeViewer(IWContext iwc, boolean setBasicParameters, boolean siteTree) {
+		if (siteTree) {
+			return getTreeViewer(iwc, this.PAGEVIEWER, setBasicParameters);
+		}
+		return getTreeViewer(iwc, this.TEMPLATEVIEWER, setBasicParameters);
 	}
 	
 	public TreeViewer getPageTreeViewer(IWContext iwc) {

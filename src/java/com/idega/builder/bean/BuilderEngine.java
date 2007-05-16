@@ -24,6 +24,6 @@ public interface BuilderEngine extends IBOService {
 	
 	public boolean updateHandler(String[] values);
 	
-	public Document getRenderedPresentationObject(String className, boolean cleanHtml);
+	public Document getRenderedPresentationObject(String className, String hiddenInputAttribute, boolean cleanHtml);
 	
 }

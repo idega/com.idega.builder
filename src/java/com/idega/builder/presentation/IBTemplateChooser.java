@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.14 2006/02/22 20:55:21 laddi Exp $
+ * $Id: IBTemplateChooser.java,v 1.15 2007/05/16 14:15:14 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,14 +37,14 @@ public class IBTemplateChooser extends AbstractChooser {
    */
   public void main(IWContext iwc) {
     IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-    setChooseButtonImage(iwb.getImage("open.gif","Choose"));
+    setChooseButtonImage(iwb.getImage("choose.png", "Choose"));
   }
 
   /**
    *
    */
   public Class getChooserWindowClass() {
-    return(IBTemplateChooserWindow.class);
+    return IBTemplateChooserBlock.class;
   }
 
   /**

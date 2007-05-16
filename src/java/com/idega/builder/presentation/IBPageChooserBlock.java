@@ -2,28 +2,32 @@ package com.idega.builder.presentation;
 
 import com.idega.builder.business.IBPageHelper;
 import com.idega.core.builder.business.ICBuilderConstants;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.presentation.ui.util.AbstractChooserBlock;
 
-public class IBPageChooserBlock extends Block {
+public class IBPageChooserBlock extends AbstractChooserBlock {
+	
+	private boolean useSiteTree = true;
+	
+	public IBPageChooserBlock() {
+		super();
+	}
+	
+	public IBPageChooserBlock(String idAttribute, String valueAttribute) {
+		super(idAttribute, valueAttribute);
+	}
 	
 	public void main(IWContext iwc) {
-		Layer container = new Layer();
-		container.setId("chooser_presentation_object");
-		container.setStyleAttribute("display: block;");
+		super.main(iwc);
+		
+		Layer container = getMainContaier();
 		this.add(container);
 
-		TreeViewer viewer = IBPageHelper.getInstance().getPageTreeViewer(iwc, false);
+		TreeViewer viewer = getTreeViewer(iwc, false);
 		container.add(viewer);
-
-		viewer.setAddPageIdAtribute(true);
-		viewer.setAddPageNameAttribute(true);
-		
-		//	Setting all nodes open
-		viewer.setDefaultOpenLevel(Integer.MAX_VALUE);
 		
 		Link link = new Link();
 		link = new Link();
@@ -33,17 +37,45 @@ public class IBPageChooserBlock extends Block {
 		
 		StringBuffer action = new StringBuffer();
 		//	Action to remove old value
-		action.append("removeAdvancedProperty('").append(ICBuilderConstants.PAGE_ID_ATTRIBUTE).append("');");
+		action.append(getRemoveSelectedPropertyAction());
 		
 		//	Action to add new Value
-		action.append("chooseObject(this, '").append(ICBuilderConstants.PAGE_ID_ATTRIBUTE);
-		action.append("', '").append(ICBuilderConstants.PAGE_NAME_ATTRIBUTE).append("');");
+		boolean simpleAction = getHiddenInputAttribute() == null ? true : false;
+		action.append(getChooserObjectAction(simpleAction));
 		
 		// Action to set view
-		action.append("setChooserView(this, '").append(ICBuilderConstants.PAGE_NAME_ATTRIBUTE).append("');");
+		action.append(getChooserViewAction());
 		
 		link.setOnClick(action.toString());
 		viewer.setLinkPrototype(link);
+	}
+	
+	public TreeViewer getTreeViewer(IWContext iwc, boolean setDefaultParameters) {
+		TreeViewer viewer = IBPageHelper.getInstance().getTreeViewer(iwc, setDefaultParameters, useSiteTree);
+		
+		viewer.setAddPageIdAtribute(true);
+		viewer.setAddPageNameAttribute(true);
+		
+		//	Setting all nodes open
+		viewer.setDefaultOpenLevel(Integer.MAX_VALUE);
+		
+		return viewer;
+	}
+	
+	public boolean getChooserAttributes() {
+		//	Setting default values
+		if (getIdAttribute() == null) {
+			setIdAttribute(ICBuilderConstants.PAGE_ID_ATTRIBUTE);
+		}
+		if (getValueAttribute() == null) {
+			setValueAttribute(ICBuilderConstants.PAGE_NAME_ATTRIBUTE);
+		}
+		
+		return true;
+	}
+
+	public void setUseSiteTree(boolean useSiteTree) {
+		this.useSiteTree = useSiteTree;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPageImportBusiness;
 import com.idega.business.IBOLookup;
@@ -68,6 +69,8 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
 
   public void main(IWContext iwc) throws Exception {
+	  BuilderLogic.getInstance().addJavaScriptForChooser(getParentPage());
+	  
   	setTitle("PageImporter");
   	String action = parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
@@ -95,11 +98,15 @@ public class IBPageImporterWindow extends IBPageWindow {
   	table.add(getTopLevelCheckBox(TOP_LEVEL_PAGE_KEY, this.topLevelForPagesIsChosen,  resourceBundle), 1, row++);
 		// page chooser
   	if (! this.topLevelForPagesIsChosen) {
-  		table.add(getPageChooser(PAGE_CHOOSER_NAME, iwc), 1, row++);
+  		IBPageChooser chooser = getPageChooser(PAGE_CHOOSER_NAME, iwc);
+  		chooser.setHiddenInputAttribute(PAGE_CHOOSER_NAME);
+  		table.add(chooser, 1, row++);
   	}
   	table.add(getTopLevelCheckBox(TOP_LEVEL_TEMPLATE_KEY, this.topLevelForTemplatesIsChosen, resourceBundle), 1, row++);
   	if (! this.topLevelForTemplatesIsChosen) {
-  		table.add(getTemplateChooser(TEMPLATE_CHOOSER_NAME, iwc, IBPageHelper.TEMPLATE), 1, row++);
+  		IBTemplateChooser templateChooser = getTemplateChooser(TEMPLATE_CHOOSER_NAME, iwc, IBPageHelper.TEMPLATE);
+  		templateChooser.setHiddenInputAttribute(TEMPLATE_CHOOSER_NAME);
+  		table.add(templateChooser, 1, row++);
   	}
   	Form form = new Form();
   	form.add(table);
