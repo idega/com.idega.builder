@@ -26,7 +26,6 @@ public class StyledIBPageChooser extends AbstractChooser {
 		addForm(false);
 		//setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
 		setChooserParameter(chooserName);
-		setAddSaveButton(false);
 	}
 
 	public StyledIBPageChooser(String chooserName, String style) {
