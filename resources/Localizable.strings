@@ -34,6 +34,7 @@ ib_page_import_success=Files were successfully imported
 ib_page_import_top_level_key=Top level
 ib_template_import_top-level_key=Top level
 initialsetup=initialsetup
+iw.component.com.idega.builder.dynamicpagetrigger.presentation.DPTCrawlableLink.name=DPTCrawlableLink
 iwapplication_name.idegaWeb\ Builder=idegaWeb Builder
 jsfuicomponents_header=JSF Components
 label=Label

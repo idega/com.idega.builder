@@ -1,8 +1,13 @@
 package com.idega.builder.dynamicpagetrigger.business;
 
+import java.util.LinkedList;
+
+import com.idega.builder.dynamicpagetrigger.util.DPTCrawlableContainer;
+
 
 public interface DPTCopySession extends com.idega.business.IBOSession,com.idega.core.builder.business.ICDynamicPageTriggerCopySession
 {
+ public void collectDPTCrawlableContainer(Object pageID, DPTCrawlableContainer con);
  public void collectDPTCrawlable(java.lang.Object p0,com.idega.builder.dynamicpagetrigger.util.DPTCrawlable p1) throws java.rmi.RemoteException;
  public boolean doCopyInstancePermissions() throws java.rmi.RemoteException;
  public boolean doCopyPagePermissions() throws java.rmi.RemoteException;
@@ -18,4 +23,7 @@ public interface DPTCopySession extends com.idega.business.IBOSession,com.idega.
  public void setToCopyInstancePermissions(boolean p0) throws java.rmi.RemoteException;
  public void setToCopyPagePermissions(boolean p0) throws java.rmi.RemoteException;
  public void startCopySession()throws java.lang.Exception, java.rmi.RemoteException;
+ public LinkedList nextCollectionDPTCrawlableContainerObjects();
+ public boolean hasNextCollectedDPTCrawlableContainer();
+
 }

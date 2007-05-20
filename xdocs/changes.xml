@@ -1,106 +1,122 @@
 <document>
-  <properties>
-    <title>Builder changes</title>
-    <author email="tryggvi@idega.com">Tryggvi Larusson</author>
-  </properties>
-  <body>
-      <release version="3.1.4" date="2007-05-07">
-      <action dev="thomas" type="fix">
-      page cache was not invalidated when storing updated page
-      </action>
-    </release>
-  
-    <release version="3.1.3" date="2007-03-28">
-      <action dev="eiki" type="update">
-		Updated slide to versions 3.1.3 and 2.2pre1.iwbuild5 and core and content
-      </action>
-    </release>
-    
+	<properties>
+		<title>Builder changes</title>
+		<author email="tryggvi@idega.com">Tryggvi Larusson</author>
+	</properties>
+	<body>
 
-	<release version="3.1.2" date="2006-07-20">
-		<action dev="gimmi" type="fix">
-			Fixed a bug with the importing of pages
-		</action>
-		<action dev="gimmi" type="add">
-			Added page format and uri to the export/import process
-		</action>
-	</release>
-	
-	<release version="3.1.1" date="2006-07-20">
-		<action dev="gimmi" type="fix">
-			Reimplemented exporting pages
-		</action>
-		<action dev="gimmi" type="update">
-			Updated to Core.v3.1.5
-		</action>
-	</release>
+		<release version="3.1.5" date="2007-05-20">
+			<action dev="gimmi" type="add">
+				DPTCrawlableContainer
+			</action>
+		</release>
 
-    <release version="3.1.0" date="2006-06-19">
-      <action dev="tryggvil" type="update">
-      	New version to be included in ePlatform 3.1 Release.
-      </action>
-      <action dev="tryggvil" type="update">
-      	JSF UIComponents are now supported inside Builder pages just like older style
-      	idegaWeb Block and Element components.
-      </action>
-      <action dev="tryggvil" type="update">
-      	Experimental support for storing Builder Pages as version controlled documents
-      	in the Slide WebDAV repository.
-      </action>
-      <action dev="tryggvil" type="fix">
-      	Performance optimizations and caching when dealing with database access on reload
-      	of Builder application and pages.
-      </action>
-      <action dev="tryggvil" type="update">
-      	Builder Page structure is now initialized when first going into the Builder.
-      </action>
-      <action dev="tryggvil" type="update">
-      	IBXML Document format slightly changed to use UUID's as id attributes to be more portable.
-      </action>
-      <action dev="tryggvil" type="update">
-      	Caching updated to use newer IWCacheManager2
-      </action>
-    </release>
-    <release version="1.4.3" date="2005-09-15">
-      <action dev="thomas" type="update">
-        Declaration of version based on core 3.0.6.
-      </action>              
-    </release>
-        <release version="1.4.2" date="2005-05-25">
-      <action dev="tryggvil" type="update">
-        Declaration of version based on core 3.0.4.
-      </action>              
-    </release>
-    <release version="1.4.1" date="2005-04-06">
-      <action dev="tryggvil" type="update">
-        Declaration of version based on core 3.0.4.
-      </action>              
-    </release>
-  
-    <release version="1.4.0" date="2005-03-10">
-      <action dev="tryggvil" type="update">
-        Declaration of version for use in new systems that are based on JSF.
-      </action>              
-    </release>
+		<release version="3.1.4" date="2007-05-07">
+			<action dev="thomas" type="fix">
+				page cache was not invalidated when storing updated page
+			</action>
+		</release>
 
-    <release version="1.3.0" date="2005-01-14">
-      <action dev="tryggvil" type="update">
-        Declaration of version for use in old style systems before a 3.0 release is declared.
-      </action>              
-    </release>
+		<release version="3.1.3" date="2007-03-28">
+			<action dev="eiki" type="update">
+				Updated slide to versions 3.1.3 and 2.2pre1.iwbuild5 and
+				core and content
+			</action>
+		</release>
 
-    <release version="1.1" date="2004-09-07">
-      <action dev="tryggvil" type="update">
-        Declaring a 1.1 version before much of the maven refactoring is done.
-      </action>
-      <!--     
-      <action dev="tryggvil" type="fix" issue="JIRA-XXX">
-        Corrected bug blah blah.
-      </action>              
-      <action dev="vmassol" type="remove" due-to="John Doe" due-to-email="john@doe.com">
-        Removed blah blah.
-      </action>
-      -->
-    </release>
-  </body>
+
+		<release version="3.1.2" date="2006-07-20">
+			<action dev="gimmi" type="fix">
+				Fixed a bug with the importing of pages
+			</action>
+			<action dev="gimmi" type="add">
+				Added page format and uri to the export/import process
+			</action>
+		</release>
+
+		<release version="3.1.1" date="2006-07-20">
+			<action dev="gimmi" type="fix">
+				Reimplemented exporting pages
+			</action>
+			<action dev="gimmi" type="update">
+				Updated to Core.v3.1.5
+			</action>
+		</release>
+
+		<release version="3.1.0" date="2006-06-19">
+			<action dev="tryggvil" type="update">
+				New version to be included in ePlatform 3.1 Release.
+			</action>
+			<action dev="tryggvil" type="update">
+				JSF UIComponents are now supported inside Builder pages
+				just like older style idegaWeb Block and Element
+				components.
+			</action>
+			<action dev="tryggvil" type="update">
+				Experimental support for storing Builder Pages as
+				version controlled documents in the Slide WebDAV
+				repository.
+			</action>
+			<action dev="tryggvil" type="fix">
+				Performance optimizations and caching when dealing with
+				database access on reload of Builder application and
+				pages.
+			</action>
+			<action dev="tryggvil" type="update">
+				Builder Page structure is now initialized when first
+				going into the Builder.
+			</action>
+			<action dev="tryggvil" type="update">
+				IBXML Document format slightly changed to use UUID's as
+				id attributes to be more portable.
+			</action>
+			<action dev="tryggvil" type="update">
+				Caching updated to use newer IWCacheManager2
+			</action>
+		</release>
+		<release version="1.4.3" date="2005-09-15">
+			<action dev="thomas" type="update">
+				Declaration of version based on core 3.0.6.
+			</action>
+		</release>
+		<release version="1.4.2" date="2005-05-25">
+			<action dev="tryggvil" type="update">
+				Declaration of version based on core 3.0.4.
+			</action>
+		</release>
+		<release version="1.4.1" date="2005-04-06">
+			<action dev="tryggvil" type="update">
+				Declaration of version based on core 3.0.4.
+			</action>
+		</release>
+
+		<release version="1.4.0" date="2005-03-10">
+			<action dev="tryggvil" type="update">
+				Declaration of version for use in new systems that are
+				based on JSF.
+			</action>
+		</release>
+
+		<release version="1.3.0" date="2005-01-14">
+			<action dev="tryggvil" type="update">
+				Declaration of version for use in old style systems
+				before a 3.0 release is declared.
+			</action>
+		</release>
+
+		<release version="1.1" date="2004-09-07">
+			<action dev="tryggvil" type="update">
+				Declaring a 1.1 version before much of the maven
+				refactoring is done.
+			</action>
+			<!--     
+				<action dev="tryggvil" type="fix" issue="JIRA-XXX">
+				Corrected bug blah blah.
+				</action>              
+				<action dev="vmassol" type="remove" due-to="John Doe" due-to-email="john@doe.com">
+				Removed blah blah.
+				</action>
+			-->
+		</release>
+	</body>
 </document>
