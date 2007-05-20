@@ -18,7 +18,7 @@ import com.idega.user.data.Group;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
- * @author <a href="gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="gummi@idega.is">Gudmundur Agust Saemundsson</a>
  * @version 1.0
  */
 
@@ -47,7 +47,7 @@ public class PageTriggerInfoBMPBean extends com.idega.data.GenericEntity impleme
   public void initializeAttributes() {
     this.addAttribute(this.getIDColumnName());
     this.addAttribute(_COLUMNNAME_NAME,"Name",true,true,String.class);
-    this.addAttribute(_COLUMNNAME_REFERENCED_IC_OBJECT_ID,"ICObject sem tengst er við",true,true,Integer.class,ONE_TO_MANY,ICObject.class);
+    this.addAttribute(_COLUMNNAME_REFERENCED_IC_OBJECT_ID,"ICObject sem tengst er viï¿½",true,true,Integer.class,ONE_TO_MANY,ICObject.class);
     this.addAttribute(_COLUMNNAME_DEFAULT_TEMPLATE_ID,"default tempalte",true,true,Integer.class,ONE_TO_MANY,ICPage.class);
     this.addAttribute(_COLUMNNAME_ROOT_PAGE_ID,"root page",true,true,Integer.class,ONE_TO_MANY,ICPage.class);
 

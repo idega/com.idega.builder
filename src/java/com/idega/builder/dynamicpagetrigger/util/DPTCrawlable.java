@@ -15,8 +15,10 @@ import com.idega.presentation.IWContext;
  * @version 1.0
  */
 public interface DPTCrawlable {
+	
 	public int getICObjectInstanceID();
 	public int getLinkedDPTTemplateID();
 	public String getLinkedDPTPageName(IWContext iwc);
 	public void setLinkedDPTPageID(int pageId);
+	
 }

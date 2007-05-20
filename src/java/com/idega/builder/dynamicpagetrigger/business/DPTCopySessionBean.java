@@ -3,9 +3,14 @@
  */
 package com.idega.builder.dynamicpagetrigger.business;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
+import com.idega.builder.dynamicpagetrigger.util.DPTCrawlableContainer;
 import com.idega.builder.dynamicpagetrigger.util.KeyAndValue;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
@@ -31,8 +36,9 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	private boolean copyInstancePermissions = false;
 	private boolean copyPagePermissions=false;
 	private LinkedList subPageQueue = null;
+	private LinkedList subContainer = null;
 	private Object rootPagePrimaryKey = null;
-	
+	private Map pageMap = null;
 	
 	/**
 	 * 
@@ -50,8 +56,10 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 			this.runningSession = true;
 			this.matrix = new HashMatrix();
 			this.subPageQueue = new LinkedList();
+			this.subContainer = new LinkedList();
 			this.copyInstancePermissions = false;
 			this.copyPagePermissions=false;
+			pageMap = new HashMap();
 		}
 	}
 	
@@ -60,6 +68,8 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 			this.runningSession = false;
 			this.matrix = null;
 			this.subPageQueue=null;
+			this.pageMap = null;
+			this.subContainer=null;
 		} else {
 			System.out.println("No copySession to end.  Either it has not started or already ended.");
 		}
@@ -130,7 +140,16 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	public boolean isRunningSession() {
 		return this.runningSession;
 	}
-	
+
+	public void collectDPTCrawlableContainer(Object pageID, DPTCrawlableContainer con) {
+		subPageQueue.addLast(new KeyAndValue(pageID,con));
+//		Collection coll = con.getDPTCrawlables();
+//		if (coll != null && !coll.isEmpty()) {
+//			this.subContainer.add(con);
+//			this.pageMap.put(con, pageID);
+//		}
+	}
+
 	public void collectDPTCrawlable(Object pageID, DPTCrawlable c) {
 		this.subPageQueue.addLast(new KeyAndValue(pageID,c));
 	}
@@ -141,6 +160,26 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 	
 	public boolean hasNextCollectedDPTCrawlable() {
 		return !this.subPageQueue.isEmpty();
+	}
+	
+	public boolean hasNextCollectedDPTCrawlableContainer() {
+		return !this.subContainer.isEmpty();
+	}
+	
+	public LinkedList nextCollectionDPTCrawlableContainerObjects() {
+		DPTCrawlableContainer con = (DPTCrawlableContainer) this.subContainer.removeFirst();
+		Collection coll = con.getDPTCrawlables();
+		String pageID = (String) pageMap.get(con);
+		Iterator iter = coll.iterator();
+		LinkedList l = new LinkedList();
+		while (iter.hasNext()) {
+			Object o = iter.next();
+			if (o instanceof DPTCrawlable && !(((DPTCrawlable)o).getLinkedDPTTemplateID() == 0)) {
+				l.addLast(new KeyAndValue(pageID,(DPTCrawlable) o));
+			}
+		}
+
+		return l;
 	}
 	
 	
