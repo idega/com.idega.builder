@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.15 2007/05/16 14:15:14 valdas Exp $
+ * $Id: IBTemplateChooser.java,v 1.16 2007/05/21 09:54:18 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,15 +20,21 @@ import com.idega.presentation.ui.AbstractChooser;
  * @version 1.3
  */
 public class IBTemplateChooser extends AbstractChooser {
-  public IBTemplateChooser(){
-  	addForm(false);
-  }
+  
+	public IBTemplateChooser(){
+		this(false);
+	}
+	
+	public IBTemplateChooser(boolean useOldLogic) {
+		super(useOldLogic);
+		addForm(false);
+	}
   
   /**
    *
    */
-  public IBTemplateChooser(String name) {
-    addForm(false);
+  public IBTemplateChooser(String name, boolean useOldLogic) {
+    this(useOldLogic);
     setChooserParameter(name);
   }
 
@@ -44,7 +50,10 @@ public class IBTemplateChooser extends AbstractChooser {
    *
    */
   public Class getChooserWindowClass() {
-    return IBTemplateChooserBlock.class;
+	  if (isUseOldLogic()) {
+		  return IBTemplateChooserWindow.class;
+	  }
+	  return IBTemplateChooserBlock.class;
   }
 
   /**

@@ -22,14 +22,24 @@ public class StyledIBPageChooser extends AbstractChooser {
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.user";
 
-	public StyledIBPageChooser(String chooserName) {
+	public StyledIBPageChooser(boolean useOldLogic) {
+		super(useOldLogic);
 		addForm(false);
+	}
+	
+	public StyledIBPageChooser(String chooserName, boolean useOldLogic) {
+		this(useOldLogic);
 		//setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
 		setChooserParameter(chooserName);
 	}
+	
+	public StyledIBPageChooser(String chooserName, String style, boolean useOldLogic) {
+		this(chooserName, useOldLogic);
+		setInputStyle(style);
+	}
 
 	public StyledIBPageChooser(String chooserName, String style) {
-		this(chooserName);
+		this(chooserName, true);
 		setInputStyle(style);
 	}
 
@@ -40,6 +50,9 @@ public class StyledIBPageChooser extends AbstractChooser {
 	}
 
 	public Class getChooserWindowClass() {
+		if (isUseOldLogic()) {
+			return StyledIBPageChooserWindow.class;
+		}
 		return IBPageChooserBlock.class;
 	}
 

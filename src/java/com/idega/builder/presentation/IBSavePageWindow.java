@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBSavePageWindow.java,v 1.11 2006/05/10 08:27:08 laddi Exp $
+ * $Id: IBSavePageWindow.java,v 1.12 2007/05/21 09:54:18 valdas Exp $
 
  *
 
@@ -270,7 +270,7 @@ public class IBSavePageWindow extends IWAdminWindow {
 
   private PresentationObject getPageChooser(String name){
 
-    return new IBPageChooser(name);
+    return new IBPageChooser(name, true);
 
   }
 
@@ -284,7 +284,7 @@ public class IBSavePageWindow extends IWAdminWindow {
 
   private PresentationObject getTemplateChooser(String name){
 
-    return new IBTemplateChooser(name);
+    return new IBTemplateChooser(name, true);
 
   }
 

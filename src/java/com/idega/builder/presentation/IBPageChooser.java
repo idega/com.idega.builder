@@ -17,17 +17,22 @@ import com.idega.presentation.ui.AbstractChooser;
 
 public class IBPageChooser extends AbstractChooser {
 	
-	public IBPageChooser(){
+	public IBPageChooser() {
+		this(false);
+	}
+	
+	public IBPageChooser(boolean useOldLogic) {
+		super(useOldLogic);
 		addForm(false);
 	}
 
-	public IBPageChooser(String chooserName) {
-		this();
+	public IBPageChooser(String chooserName, boolean useOldLogic) {
+		this(useOldLogic);
 		setChooserParameter(chooserName);
 	}
 
-	public IBPageChooser(String chooserName, String style) {
-		this(chooserName);
+	public IBPageChooser(String chooserName, String style, boolean useOldLogic) {
+		this(chooserName, useOldLogic);
 		setInputStyle(style);
 	}
 
@@ -38,6 +43,9 @@ public class IBPageChooser extends AbstractChooser {
 	}
 
 	public Class getChooserWindowClass() {
+		if (isUseOldLogic()) {
+			return IBPageChooserWindow.class;
+		}
 		return IBPageChooserBlock.class;
 	}
 	
