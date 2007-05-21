@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateHandler.java,v 1.11 2006/04/09 11:43:35 laddi Exp $
+ * $Id: IBTemplateHandler.java,v 1.12 2007/05/21 09:57:01 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,8 +41,8 @@ public class IBTemplateHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
-    IBTemplateChooser chooser = new IBTemplateChooser(name);
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+    IBTemplateChooser chooser = new IBTemplateChooser(name, oldGenerationHandler);
 
     try {
       if (value != null && !value.equals("")) {

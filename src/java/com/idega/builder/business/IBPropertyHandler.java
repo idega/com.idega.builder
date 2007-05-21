@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.64 2007/05/08 15:05:03 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.65 2007/05/21 09:57:01 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -285,13 +285,13 @@ public class IBPropertyHandler implements Singleton{
 	 *
 	
 	 */
-	public PresentationObject getHandlerInstance(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String name, String stringValue) throws Exception {
+	public PresentationObject getHandlerInstance(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String name, String stringValue, boolean newGenerationChooser) throws Exception {
 		String handlerClass = getMethodParameterProperty(iwc, ICObjectInstanceID, methodIdentifier, parameterIndex, METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
 		if (handlerClass.equals("")) {
 			return (null);
 		}
 		ICPropertyHandler handler = getPropertyHandler(handlerClass);
-		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc);
+		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc, newGenerationChooser);
 
     /* 
      * special treatment for a drop down menu that gets the choice 
@@ -360,7 +360,7 @@ public class IBPropertyHandler implements Singleton{
 	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue) {
 		PresentationObject obj = null;
 		try {
-			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue);
+			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue, true);
 		}
 		catch (Exception e) {
 		}
@@ -457,7 +457,7 @@ public class IBPropertyHandler implements Singleton{
 			obj = (PresentationObject) fileChooser;
 		}
 		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
-			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name);
+			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, true);
 			try {
 				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
 				chooser.setSelectedPage(page.getId(), page.getName());
@@ -483,7 +483,7 @@ public class IBPropertyHandler implements Singleton{
 		boolean attributesSet = false;
 		PresentationObject obj = null;
 		try {
-			obj = getHandlerInstance(iwc, presentationObjectInstanceId, propertyName, parameterIndex, name, stringValue);
+			obj = getHandlerInstance(iwc, presentationObjectInstanceId, propertyName, parameterIndex, name, stringValue, false);
 		}
 		catch (Exception e) {
 		}
@@ -594,7 +594,7 @@ public class IBPropertyHandler implements Singleton{
 			obj = (PresentationObject) fileChooser;
 		}
 		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
-			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name);
+			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, false);
 			try {
 				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
 				chooser.setSelectedPage(page.getId(), page.getName());

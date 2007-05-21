@@ -1,5 +1,5 @@
 /*
- * $Id: FileHandler.java,v 1.7 2004/06/28 14:07:21 thomas Exp $
+ * $Id: FileHandler.java,v 1.8 2007/05/21 09:57:01 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ public class FileHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
   	IBClassesFactory classesFactory = new IBClassesFactory();
   	IBImageInserter inserter = classesFactory.createImageInserterImpl();
   	inserter.setImSessionImageName(name);

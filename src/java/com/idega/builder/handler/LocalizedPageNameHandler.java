@@ -47,7 +47,7 @@ public class LocalizedPageNameHandler implements ICPropertyHandler {
 	/**
 	 * @see com.idega.core.builder.presentation.ICPropertyHandler#getHandlerObject(String, String, IWContext)
 	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
+	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler) {
 		System.out.println("Entering LocalizedPageNameHandler.getHandlerObject");
 		Table t = new Table(1,2);
 		

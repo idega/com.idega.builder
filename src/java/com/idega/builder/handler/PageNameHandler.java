@@ -1,5 +1,5 @@
 /*
- * $Id: PageNameHandler.java,v 1.8 2006/11/28 18:29:01 laddi Exp $
+ * $Id: PageNameHandler.java,v 1.9 2007/05/21 09:57:01 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class PageNameHandler implements ICPropertyHandler {
 		return (null);
 	}
 
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc) {
+	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler) {
 		TextInput input = new TextInput(name);
 		input.setValue(stringValue);
 

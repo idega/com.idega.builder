@@ -1,5 +1,5 @@
 /*
- * $Id: DateTimeStyleHandler.java,v 1.4 2004/06/28 14:07:21 thomas Exp $
+ * $Id: DateTimeStyleHandler.java,v 1.5 2007/05/21 09:57:01 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ public class DateTimeStyleHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
     menu.addMenuElement(IWTimestamp.SHORT,"Short");

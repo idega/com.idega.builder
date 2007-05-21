@@ -40,7 +40,7 @@ public class StyleClassHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
     IWStyleManager manager = IWStyleManager.getInstance();
     List list = manager.getStyleList();
     Collections.sort(list);
