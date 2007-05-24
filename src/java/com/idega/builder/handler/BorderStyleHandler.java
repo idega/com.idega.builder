@@ -1,5 +1,5 @@
 /*
- * $Id: BorderStyleHandler.java,v 1.2 2007/05/21 09:57:01 valdas Exp $
+ * $Id: BorderStyleHandler.java,v 1.3 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2004 Idega hf. All Rights Reserved.
  *
@@ -48,7 +48,7 @@ public class BorderStyleHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Default");
     menu.addMenuElement(StyleConstants.BORDER_NONE,"None");

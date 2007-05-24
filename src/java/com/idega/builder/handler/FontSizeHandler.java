@@ -1,5 +1,5 @@
 /*
- * $Id: FontSizeHandler.java,v 1.6 2007/05/21 09:57:01 valdas Exp $
+ * $Id: FontSizeHandler.java,v 1.7 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ public class FontSizeHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
     menu.addMenuElement(Text.FONT_SIZE_7_HTML_1,"7  points");

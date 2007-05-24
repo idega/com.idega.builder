@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPageImportBusiness;
 import com.idega.business.IBOLookup;
@@ -21,6 +20,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.FileInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.CoreUtil;
 import com.idega.util.datastructures.MessageContainer;
 
 /**
@@ -69,7 +69,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
 
   public void main(IWContext iwc) throws Exception {
-	  BuilderLogic.getInstance().addJavaScriptForChooser(getParentPage());
+	  CoreUtil.addJavaSciptForChooser(iwc);
 	  
   	setTitle("PageImporter");
   	String action = parseAction(iwc);

@@ -1,5 +1,5 @@
 /*
- * $Id: DropdownMenuHandler.java,v 1.4 2007/05/21 09:57:01 valdas Exp $
+ * $Id: DropdownMenuHandler.java,v 1.5 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ public class DropdownMenuHandler implements ICPropertyHandler {
 	/**
 	 * @see com.idega.core.builder.presentation.ICPropertyHandler#getHandlerObject(String, String, IWContext)
 	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler) {		
+	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {		
 		TextArea area = new TextArea();
 		area.setName(name);
 		area.setValue(stringValue);

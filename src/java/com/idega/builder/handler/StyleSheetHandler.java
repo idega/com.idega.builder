@@ -41,7 +41,7 @@ public class StyleSheetHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     IWStyleManager manager = IWStyleManager.getInstance();
     List list = manager.getStyleList();
     Collections.sort(list);

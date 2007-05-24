@@ -1,5 +1,5 @@
 /*
- * $Id: LocaleHandler.java,v 1.12 2007/05/21 09:57:01 valdas Exp $
+ * $Id: LocaleHandler.java,v 1.13 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ public class LocaleHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     DropdownMenu menu = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getIWMainApplication(),name);
     menu.addMenuElementFirst("","Select:");
     menu.setSelectedElement(value);

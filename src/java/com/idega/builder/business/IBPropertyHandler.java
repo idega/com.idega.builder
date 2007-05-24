@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.65 2007/05/21 09:57:01 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.66 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -291,7 +291,7 @@ public class IBPropertyHandler implements Singleton{
 			return (null);
 		}
 		ICPropertyHandler handler = getPropertyHandler(handlerClass);
-		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc, newGenerationChooser);
+		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc, newGenerationChooser, ICObjectInstanceID, methodIdentifier);
 
     /* 
      * special treatment for a drop down menu that gets the choice 
@@ -338,8 +338,9 @@ public class IBPropertyHandler implements Singleton{
 			int numberOfColumns = getColumnCountForTable(iwc, ICObjectInstanceID);
 			((TableRowColumnPropertyPresentation) handlerPresentation).setRowOrColumnCount(numberOfColumns, iwc);
 		}
-		return (handlerPresentation);
+		return handlerPresentation;
 	}
+	
 	public String[] getPropertyDescriptions(IWContext iwc, String instanceId, String methodIdentifier) {
 		try {
 			int numberOfParametersForMethod = MethodFinder.getInstance().getArgumentClasses(methodIdentifier).length;
@@ -457,7 +458,7 @@ public class IBPropertyHandler implements Singleton{
 			obj = (PresentationObject) fileChooser;
 		}
 		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
-			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, true);
+			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, true, ICObjectInstanceID, propertyName);
 			try {
 				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
 				chooser.setSelectedPage(page.getId(), page.getName());
@@ -594,7 +595,7 @@ public class IBPropertyHandler implements Singleton{
 			obj = (PresentationObject) fileChooser;
 		}
 		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
-			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, false);
+			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, false, presentationObjectInstanceId, propertyName);
 			try {
 				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
 				chooser.setSelectedPage(page.getId(), page.getName());

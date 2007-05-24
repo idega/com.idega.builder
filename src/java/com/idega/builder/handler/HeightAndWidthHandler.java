@@ -1,5 +1,5 @@
 /*
- * $Id: HeightAndWidthHandler.java,v 1.7 2007/05/21 09:57:01 valdas Exp $
+ * $Id: HeightAndWidthHandler.java,v 1.8 2007/05/24 11:31:11 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ public class HeightAndWidthHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     Table table = new Table();
     TextInput input = new TextInput(name);
     if (value != null) {

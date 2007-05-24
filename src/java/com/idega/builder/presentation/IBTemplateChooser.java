@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.16 2007/05/21 09:54:18 valdas Exp $
+ * $Id: IBTemplateChooser.java,v 1.17 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,8 +33,10 @@ public class IBTemplateChooser extends AbstractChooser {
   /**
    *
    */
-  public IBTemplateChooser(String name, boolean useOldLogic) {
+  public IBTemplateChooser(String name, boolean useOldLogic, String instanceId, String method) {
     this(useOldLogic);
+    setInstanceId(instanceId);
+    setMethod(method);
     setChooserParameter(name);
   }
 

@@ -26,7 +26,7 @@ public class TimestampHandler implements ICPropertyHandler {
 	/* (non-Javadoc)
 	 * @see com.idega.builder.handler.ICPropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler) {
+	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
 		TimestampInput timeInput = new TimestampInput(name);
 		if(!"".equals(stringValue)){
 			timeInput.setTimestamp(new com.idega.util.IWTimestamp(stringValue).getTimestamp());

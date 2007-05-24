@@ -1,5 +1,5 @@
 /*
- * $Id: TableColumnsHandler.java,v 1.7 2007/05/21 09:57:01 valdas Exp $
+ * $Id: TableColumnsHandler.java,v 1.8 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ public class TableColumnsHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     TableRowColumnPropertyPresentation menu = new TableRowColumnPropertyPresentation(name,value,iwc);
     return(menu);
   }

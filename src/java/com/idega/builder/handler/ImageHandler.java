@@ -1,5 +1,5 @@
 /*
- * $Id: ImageHandler.java,v 1.10 2007/05/21 09:57:01 valdas Exp $
+ * $Id: ImageHandler.java,v 1.11 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ public class ImageHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
   	IBClassesFactory builderClassesFactory = new IBClassesFactory();
   	IBImageInserter inserter = builderClassesFactory.createImageInserterImpl();
   	inserter.setImSessionImageName(name);

@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.48 2007/05/16 14:15:14 valdas Exp $
+ * $Id: IBCreatePageWindow.java,v 1.49 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.CoreUtil;
 
 /**
  * The widow for creating a page.
@@ -48,7 +49,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		BuilderLogic.getInstance().addJavaScriptForChooser(getParentPage());
+		CoreUtil.addJavaSciptForChooser(iwc);
 		
 		Layer container = new Layer();
 		container.setStyleAttribute("overflow: auto");

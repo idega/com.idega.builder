@@ -26,13 +26,15 @@ public class IBPageChooser extends AbstractChooser {
 		addForm(false);
 	}
 
-	public IBPageChooser(String chooserName, boolean useOldLogic) {
+	public IBPageChooser(String chooserName, boolean useOldLogic, String instanceId, String method) {
 		this(useOldLogic);
+		setInstanceId(instanceId);
+		setMethod(method);
 		setChooserParameter(chooserName);
 	}
 
 	public IBPageChooser(String chooserName, String style, boolean useOldLogic) {
-		this(chooserName, useOldLogic);
+		this(chooserName, useOldLogic, null, null);
 		setInputStyle(style);
 	}
 

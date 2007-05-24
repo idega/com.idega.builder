@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.249 2007/05/20 21:21:40 gimmi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.250 2007/05/24 11:31:12 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -72,7 +72,6 @@ import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
@@ -94,6 +93,7 @@ import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.slide.business.IWSlideSession;
+import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.reflect.PropertyCache;
@@ -239,6 +239,8 @@ public class BuilderLogic implements Singleton {
 		IWBundle iwb = getBuilderBundle();
 		page.addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
 		
+		CoreUtil.addJavaSciptForChooser(iwc);
+		
 		try {
 //			page.addJavascriptURL(getWeb2Business(iwc).getPrototypeScriptFilePath(Web2BusinessBean.PROTOTYPE_LATEST_VERSION));			
 //			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToScriptaculousLib());
@@ -255,17 +257,15 @@ public class BuilderLogic implements Singleton {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
-		addJavaScriptForChooser(page);
+
 //		page.addJavascriptURL("/dwr/engine.js");
-//		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
+		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
 		
 		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
-//		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
+		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		
 		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', getBuilderInitInfo);");
 		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', registerBuilderActions);");
-//		page.getAssociatedScript().addScriptLine("registerEvent(document, 'click', removeOldLabels);");
 		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
@@ -2890,17 +2890,31 @@ public class BuilderLogic implements Singleton {
 		}
 	}
 	
-	public void addJavaScriptForChooser(Page page) {
-		if (page == null) {
-			return;
+	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] properties) {
+		if (pageKey == null || moduleId == null || propertyName == null || properties == null) {
+			return false;
 		}
-		IWBundle iwb = getBuilderBundle();
-		if (iwb == null) {
-			return;
+		
+		IWMainApplication application = null;
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			application = IWMainApplication.getDefaultIWMainApplication();
 		}
-		page.addJavascriptURL("/dwr/engine.js");
-		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
-		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
+		else {
+			application = iwc.getIWMainApplication();
+		}
+		if (application == null) {
+			return false;
+		}
+		
+		boolean result = setProperty(pageKey, moduleId, propertyName, properties, application);
+		
+		if (result) {
+			removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
+			removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
+		}
+		
+		return result;
 	}
 
 }

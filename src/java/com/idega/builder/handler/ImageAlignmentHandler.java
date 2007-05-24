@@ -1,5 +1,5 @@
 /*
- * $Id: ImageAlignmentHandler.java,v 1.5 2007/05/21 09:57:01 valdas Exp $
+ * $Id: ImageAlignmentHandler.java,v 1.6 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,7 +40,7 @@ public class ImageAlignmentHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     Table table = new Table(1,3);
       table.setCellpadding(0);
       table.setCellspacing(0);

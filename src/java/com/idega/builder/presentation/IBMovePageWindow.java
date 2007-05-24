@@ -26,6 +26,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.CoreUtil;
 /**
 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -46,7 +47,7 @@ public class IBMovePageWindow extends IBPageWindow {
 	public void main(IWContext iwc) throws Exception {
 		BuilderLogic instance = BuilderLogic.getInstance();
 		
-		instance.addJavaScriptForChooser(getParentPage());
+		CoreUtil.addJavaSciptForChooser(iwc);
 		
 		boolean okToMove = false;
 		boolean submit = false;

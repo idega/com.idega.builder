@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertiesWindowSetter.java,v 1.39 2007/04/19 13:24:09 valdas Exp $
+ * $Id: IBPropertiesWindowSetter.java,v 1.40 2007/05/24 11:31:12 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -27,6 +27,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
+import com.idega.util.CoreConstants;
 import com.idega.util.reflect.MethodFinder;
 
 /**
@@ -140,10 +141,10 @@ public class IBPropertiesWindowSetter extends Page {
 					if (doSave) {
 						propertyChange = setProperty(propertyID, values, ic_object_id, pageKey,
 								iwc.getIWMainApplication());
-						ICPropertyHandler handler = (ICPropertyHandler) iwc.getSessionAttribute(BuilderConstants.HANDLER_PARAMETER);
+						ICPropertyHandler handler = (ICPropertyHandler) iwc.getSessionAttribute(CoreConstants.HANDLER_PARAMETER);
 						if (handler != null) {
 							handler.onUpdate(values, iwc);
-							iwc.removeSessionAttribute(BuilderConstants.HANDLER_PARAMETER);
+							iwc.removeSessionAttribute(CoreConstants.HANDLER_PARAMETER);
 						}
 					}
 				}
@@ -285,11 +286,11 @@ public class IBPropertiesWindowSetter extends Page {
 			if (handlerClass != null && !handlerClass.equals("")) {
 				handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
 				if (handler != null) {
-					iwc.setSessionAttribute(BuilderConstants.HANDLER_PARAMETER, handler);
+					iwc.setSessionAttribute(CoreConstants.HANDLER_PARAMETER, handler);
 				}
 			}
 			if (handler == null) {
-				iwc.removeSessionAttribute(BuilderConstants.HANDLER_PARAMETER);
+				iwc.removeSessionAttribute(CoreConstants.HANDLER_PARAMETER);
 			}
 			Parameter param = new Parameter(BuilderConstants.VALUE_PARAMETER, sName);
 			if (sParamDescription != null) {

@@ -23,7 +23,6 @@ public class BuilderConstants {
 	public static final String SESSION_OBJECT_STATE = ICBuilderConstants.SESSION_OBJECT_STATE; // "obj_inst_state";
 	public static final String MODULE_NAME = "moduleName";
 	public static final String METHOD_ID_PARAMETER = "iw_method_identifier";
-	public static final String HANDLER_PARAMETER = "handler_parameter";
 	public static final String VALUE_PARAMETER = "ib_method_value";
 	
 	public static final String EMPTY = "";

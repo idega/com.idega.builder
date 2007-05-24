@@ -45,7 +45,7 @@ public class IBPageWindow extends IWAdminWindow {
    *
    */
   protected IBPageChooser getPageChooser(String name, IWContext iwc) {
-    IBPageChooser chooser = new IBPageChooser(name, false);
+    IBPageChooser chooser = new IBPageChooser(name, false, null, null);
     chooser.setAddSaveButton(false);
     chooser.setHiddenInputAttribute(PAGE_CHOOSER_NAME);
     chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);
@@ -74,7 +74,7 @@ public class IBPageWindow extends IWAdminWindow {
    *
    */
   protected IBTemplateChooser getTemplateChooser(String name, IWContext iwc, String type){
-    IBTemplateChooser chooser = new IBTemplateChooser(name, false);
+    IBTemplateChooser chooser = new IBTemplateChooser(name, false, null, null);
     chooser.setAddSaveButton(false);
     chooser.setHiddenInputAttribute(TEMPLATE_CHOOSER_NAME);
     chooser.setInputStyle(IWConstants.BUILDER_FONT_STYLE_INTERFACE);

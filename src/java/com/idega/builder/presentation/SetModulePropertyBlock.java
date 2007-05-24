@@ -13,6 +13,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
+import com.idega.util.CoreConstants;
 import com.idega.util.reflect.MethodFinder;
 
 public class SetModulePropertyBlock extends Block {
@@ -111,11 +112,11 @@ public class SetModulePropertyBlock extends Block {
 			if (handlerClass != null && !handlerClass.equals(BuilderConstants.EMPTY)) {
 				handler = IBPropertyHandler.getInstance().getPropertyHandler(handlerClass);
 				if (handler != null) {
-					iwc.setSessionAttribute(BuilderConstants.HANDLER_PARAMETER, handler);
+					iwc.setSessionAttribute(CoreConstants.HANDLER_PARAMETER, handler);
 				}
 			}
 			if (handler == null) {
-				iwc.removeSessionAttribute(BuilderConstants.HANDLER_PARAMETER);
+				iwc.removeSessionAttribute(CoreConstants.HANDLER_PARAMETER);
 			}
 			
 //			Parameter param = new Parameter(BuilderConstants.VALUE_PARAMETER, sName);

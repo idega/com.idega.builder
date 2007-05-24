@@ -35,7 +35,7 @@ public class ICObjectClassHandler implements ICPropertyHandler {
 	/* (non-Javadoc)
 	 * @see com.idega.builder.handler.ICPropertyHandler#getHandlerObject(java.lang.String, java.lang.String, com.idega.presentation.IWContext)
 	 */
-	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler) {
+	public PresentationObject getHandlerObject(String name, String stringValue, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
 		IBObjectChooser chooser = new IBObjectChooser(name);
 		chooser.setToUseClassValue(true);
 			try {

@@ -1,5 +1,5 @@
 /*
- * $Id: URLHandler.java,v 1.7 2007/05/21 09:57:01 valdas Exp $
+ * $Id: URLHandler.java,v 1.8 2007/05/24 11:31:11 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,8 +37,8 @@ public class URLHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
-    IBPageChooser chooser = new IBPageChooser(name, oldGenerationHandler);
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
+    IBPageChooser chooser = new IBPageChooser(name, oldGenerationHandler, instanceId, method);
     return(chooser);
   }
 

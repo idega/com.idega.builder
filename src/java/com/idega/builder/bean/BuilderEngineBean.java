@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,14 +18,11 @@ import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.SetModulePropertyBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.builder.presentation.ICPropertyHandler;
-import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.ui.util.AbstractChooserBlock;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 
@@ -197,59 +193,8 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return renderedBox;
 	}
 	
-	private void clearBuilderBlocks() {
-		IWContext iwc = getIWContext();
-		builder.removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
-		builder.removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
-	}
-	
-	private boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] properties) {
-		if (pageKey == null || moduleId == null || propertyName == null || properties == null) {
-			return false;
-		}
-		
-		IWMainApplication application = null;
-		IWContext iwc = getIWContext();
-		if (iwc == null) {
-			application = IWMainApplication.getDefaultIWMainApplication();
-		}
-		else {
-			application = iwc.getIWMainApplication();
-		}
-		if (application == null) {
-			return false;
-		}
-		
-		return builder.setProperty(pageKey, moduleId, propertyName, properties, application);
-	}
-	
 	public boolean setSimpleModuleProperty(String pageKey, String moduleId, String propertyName, String propertyValue) {
-		boolean result = setModuleProperty(pageKey, moduleId, propertyName, new String[] {propertyValue});
-		
-		if (result) {
-			clearBuilderBlocks();
-		}
-		return result;
-	}
-	
-	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, List<AdvancedProperty> properties) {
-		if (properties == null) {
-			return false;
-		}
-		if (properties.size() == 0) {
-			return false;
-		}
-		
-		String[] parsedProperties = new String[properties.size()];
-		for (int i = 0; i < properties.size(); i++) {
-			parsedProperties[i] = properties.get(i).getValue();
-		}
-		
-		boolean result = setModuleProperty(pageKey, moduleId, propertyName, parsedProperties);
-		if (result) {
-			clearBuilderBlocks();
-		}
-		return result;
+		return builder.setModuleProperty(pageKey, moduleId, propertyName, new String[] {propertyValue});
 	}
 	
 	public Document reRenderObject(String pageKey, String regionId, String instanceId) {
@@ -307,73 +252,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		
 		Document reRenderedObject = builder.getRenderedPresentationObject(iwc, object, false);
 		return reRenderedObject;
-	}
-	
-	public boolean updateHandler(String[] values) {
-		IWContext iwc = getIWContext();
-		if (iwc == null) {
-			return false;
-		}
-		
-		HttpSession session = iwc.getSession();
-		if (session == null) {
-			return false;
-		}
-		
-		Object o = session.getAttribute(BuilderConstants.HANDLER_PARAMETER);
-		if (!(o instanceof ICPropertyHandler)) {
-			return false;
-		}
-		ICPropertyHandler handler = (ICPropertyHandler) o;
-		if (handler == null) {
-			return false;
-		}
-		
-		handler.onUpdate(values, iwc);
-		
-		return true;
-	}
-	
-	public Document getRenderedPresentationObject(String className, String hiddenInputAttribute, boolean cleanHtml) {
-		Object o = getObjectInstance(className);
-		if (hiddenInputAttribute != null) {
-			if (o instanceof AbstractChooserBlock) {
-				((AbstractChooserBlock) o).setHiddenInputAttribute(hiddenInputAttribute);
-			}
-		}
-		return getRenderedPresentationObject(o, cleanHtml);
-	}
-	
-	private Document getRenderedPresentationObject(Object object, boolean cleanHtml) {
-		if (object instanceof PresentationObject) {
-			IWContext iwc = getIWContext();
-			return builder.getRenderedPresentationObject(iwc, (PresentationObject) object, cleanHtml);
-		}
-		return null;
-	}
-	
-	private Object getObjectInstance(String className) {
-		if (className == null) {
-			return null;
-		}
-		Class objectClass = null;
-		try {
-			objectClass = RefactorClassRegistry.forName(className);
-		} catch (ClassNotFoundException e) {
-			log.error(e);
-			return null;
-		}
-		Object o = null;
-		try {
-			o = objectClass.newInstance();
-		} catch (InstantiationException e) {
-			log.error(e);
-			return null;
-		} catch (IllegalAccessException e) {
-			log.error(e);
-			return null;
-		}
-		return o;
 	}
 
 }

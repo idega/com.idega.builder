@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.11 2007/05/21 09:57:01 valdas Exp $
+ * $Id: IBPageHandler.java,v 1.12 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,8 +31,8 @@ public class IBPageHandler implements ICPropertyHandler {
 		return (null);
 	}
 
-	public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
-		IBPageChooser chooser = new IBPageChooser(name, oldGenerationHandler);
+	public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
+		IBPageChooser chooser = new IBPageChooser(name, oldGenerationHandler, instanceId, method);
 		try {
 			if (value != null && !value.equals("")) {
 				Map tree = PageTreeNode.getTree(iwc);
@@ -47,6 +47,7 @@ public class IBPageHandler implements ICPropertyHandler {
 		catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
+
 		return chooser;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: StyleHandler.java,v 1.7 2007/05/21 09:57:01 valdas Exp $
+ * $Id: StyleHandler.java,v 1.8 2007/05/24 11:31:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ public class StyleHandler implements ICPropertyHandler {
   /**
    *
    */
-  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler) {
+  public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
     IBStyleChooser chooser = new IBStyleChooser(name,"font-size: 8pt; border: 1 solid #000000");
     chooser.setSelected(value);
     return(chooser);
