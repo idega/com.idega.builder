@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.2.2.1 2007/05/20 21:04:05 gimmi Exp $
+ * $Id: IBXMLReader.java,v 1.2.2.2 2007/05/25 16:12:50 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -819,7 +819,6 @@ public class IBXMLReader {
 				}
 			}
 		}
-		System.out.println("GIMMEH");
 	}
 	
 	void changeDPTCrawlableLinkedPageProperty(XMLElement change, PresentationObjectContainer parent) {
