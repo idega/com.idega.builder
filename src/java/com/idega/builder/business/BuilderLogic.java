@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.250 2007/05/24 11:31:12 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.251 2007/05/25 18:30:22 gimmi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1669,7 +1669,7 @@ public class BuilderLogic implements Singleton {
 
 	public void changeDPTCrawlableLinkContainerPageIds(int moduleId, String currentPageID, String newLinkedPageIds) {
 		IBXMLPage page = getIBXMLPage(currentPageID);
-		XMLElement element = new XMLElement(IBXMLConstants.CHANGE_PAGE_LINKS);
+		XMLElement element = new XMLElement(IBXMLConstants.CHANGE_ROOT_PAGE);
 		XMLAttribute id = new XMLAttribute(IBXMLConstants.LINK_ID_STRING, Integer.toString(moduleId));
 		XMLAttribute newPageLink = new XMLAttribute(IBXMLConstants.LINK_TO, newLinkedPageIds);
 		element.setAttribute(id);

@@ -4,7 +4,9 @@ import java.util.Collection;
 
 public interface DPTCrawlableContainer {
 
-	public String getId();
+	public void setRootId(int rootId);
+	public int getRootId();
+	
 	public int getICObjectInstanceID();
 	
 	public Collection getDPTCrawlables();

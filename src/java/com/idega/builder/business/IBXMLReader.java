@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.6 2007/05/20 21:21:40 gimmi Exp $
+ * $Id: IBXMLReader.java,v 1.7 2007/05/25 18:30:22 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -213,7 +213,7 @@ public class IBXMLReader {
 				else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_PAGE_LINK)) {
 					changeDPTCrawlableLinkedPageProperty(child, parentContainer);
 				}
-				else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_PAGE_LINKS)) {
+				else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_ROOT_PAGE)) {
 					changeDPTCrawlableCollectionLinkedPagesProperties(child, parentContainer);
 				}
 				else if (child.getName().equals(IBXMLConstants.CHANGE_IC_INSTANCE_ID)) {
@@ -796,14 +796,13 @@ public class IBXMLReader {
 		XMLAttribute id = change.getAttribute(IBXMLConstants.LINK_ID_STRING);
 		XMLAttribute newPageIds = change.getAttribute(IBXMLConstants.LINK_TO);
 
-		StringTokenizer st = new StringTokenizer(newPageIds.getValue(), ",");
-		int intId = -1;
+		int iId = -1;
 		try {
-			intId = id.getIntValue();
+			iId = id.getIntValue();
+		} catch (XMLException e1) {
+			e1.printStackTrace();
 		}
-		catch (com.idega.xml.XMLException e) {
-			e.printStackTrace();
-		}
+		
 		List li = parent.getChildrenRecursive();
 		if (li != null) {
 			Iterator it = li.iterator();
@@ -811,19 +810,16 @@ public class IBXMLReader {
 				PresentationObject obj = (PresentationObject) it.next();
 				if (obj instanceof DPTCrawlableContainer) {
 					DPTCrawlableContainer l = (DPTCrawlableContainer) obj;
-					if (intId == l.getICObjectInstanceID()) {
-						Iterator iter = l.getDPTCrawlables().iterator();
-						while (iter.hasNext()) {
-							String token = st.nextToken();
-							int intNewPage = Integer.parseInt(token);
-							DPTCrawlable c = (DPTCrawlable) iter.next();
-							c.setLinkedDPTPageID(intNewPage);
+					if (l.getICObjectInstanceID() == iId) {
+						try {
+							l.setRootId(newPageIds.getIntValue());
+						} catch (XMLException e) {
+							e.printStackTrace();
 						}
 					}
 				}
 			}
 		}
-		System.out.println("GIMMEH");
 	}
 	
 	void changeDPTCrawlableLinkedPageProperty(XMLElement change, PresentationObjectContainer parent) {
