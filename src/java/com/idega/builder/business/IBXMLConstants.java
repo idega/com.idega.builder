@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLConstants.java,v 1.1.2.2 2007/05/20 21:04:04 gimmi Exp $
+ * $Id: IBXMLConstants.java,v 1.1.2.3 2007/05/25 18:24:40 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ public abstract class IBXMLConstants {
   public static final String IC_INSTANCE_ID_FROM = "from";
   public static final String IC_INSTANCE_ID_TO = "to";
   public static final String CHANGE_PAGE_LINK = "changelink";
-  public static final String CHANGE_PAGE_LINKS = "changelinks";
+  public static final String CHANGE_ROOT_PAGE = "changeroot";
   public static final String LINK_ID_STRING = "id";
   public static final String LINK_TO = "to";
 

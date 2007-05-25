@@ -237,7 +237,6 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
   private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name, int rootPageID) throws SQLException, RemoteException{
     BuilderLogic instance = BuilderLogic.getInstance();
     DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class);
-    handledContainers = new Vector(); // RESETTING
     int id = createPageCollectingDPTCrowlable(iwc,dptTemplateId,parentId,name,rootPageID);
 
       while(cSession.hasNextCollectedDPTCrawlable()){
@@ -265,9 +264,10 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
       	} else if (oItem instanceof DPTCrawlableContainer){
       		DPTCrawlableContainer itemC = (DPTCrawlableContainer)oItem;
       		Collection coll = itemC.getDPTCrawlables();
+      		int iRootID = itemC.getRootId();
+      		String rootIdString = "";
       		if (coll != null && !coll.isEmpty()) {
       			Iterator iter = coll.iterator();
-      			StringBuffer idString = new StringBuffer();
       			while (iter.hasNext()) {
       				DPTCrawlable dpt = (DPTCrawlable) iter.next();
       		        int templateId = dpt.getLinkedDPTTemplateID();
@@ -278,20 +278,23 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
       		            subpageName = "Untitled";
       		          }
       		          int newID = this.createPageCollectingDPTCrowlable(iwc,templateId, id, subpageName,((rootPageID!=-1)?rootPageID:id));
-    		        	idString.append(newID);
-      		          if(newID == -1){
+
+          		        if (iRootID == templateId) {
+          		        	rootIdString = String.valueOf(newID);
+          		        }
+
+    		          if(newID == -1){
       		            return (-1);
       		          }
       		        } else {
-      		        	idString.append(createdPage);
-      		        }
-      		        if (iter.hasNext()) {
-      		        	idString.append(",");
+          		        if (iRootID == templateId) {
+          		        	rootIdString = createdPage;
+          		        }
       		        }
       			}
-      			instance.changeDPTCrawlableLinkContainerPageIds(((PresentationObject)itemC).getICObjectInstanceID(),pageIDString,idString.toString());
       		}
       		
+  			instance.changeDPTCrawlableLinkContainerPageIds(((PresentationObject)itemC).getICObjectInstanceID(),pageIDString,rootIdString.toString());
       	}
       } 
       
@@ -350,12 +353,7 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
         if((item instanceof DPTCrawlable)&&!(((DPTCrawlable)item).getLinkedDPTTemplateID() == 0)){
           cSession.collectDPTCrawlable(pageIDString,(DPTCrawlable)item);
         } else if (item instanceof DPTCrawlableContainer) {
-        	String itemId = ((DPTCrawlableContainer)item).getId();
-        	if (!handledContainers.contains(itemId)) {
-                cSession.collectDPTCrawlableContainer(pageIDString,(DPTCrawlableContainer)item);
-            	handledContainers.add(itemId);
-        	} else {
-        	}
+            cSession.collectDPTCrawlableContainer(pageIDString,(DPTCrawlableContainer)item);
         }
       }
       
@@ -363,8 +361,6 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
     
     return id;
   }
-
-  private Collection handledContainers = new Vector();
 
   private int createPage(IWContext iwc, int dptTemplateId, int parentId, String name) throws Exception{
     DPTCopySession cSession = ((DPTCopySession)IBOLookup.getSessionInstance(iwc,DPTCopySession.class));
