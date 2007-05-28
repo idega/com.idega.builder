@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.251 2007/05/25 18:30:22 gimmi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.252 2007/05/28 09:36:32 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2786,7 +2786,7 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		String renderedObject = writer.toString();
-//		System.out.println("Rendered object: " + renderedObject);
+//		System.out.println("Rendered object: \n" + renderedObject);
 		
 		if (cleanHtml) {
 			// Cleaning - need valid XML structure
@@ -2799,7 +2799,7 @@ public class BuilderLogic implements Singleton {
 				e.printStackTrace();
 				return null;
 			}
-//			System.out.println("Cleaned object: " + renderedObject);
+//			System.out.println("Cleaned object: \n" + renderedObject);
 		}
 		
 		return renderedObject;
