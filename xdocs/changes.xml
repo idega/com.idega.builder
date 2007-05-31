@@ -5,6 +5,12 @@
 	</properties>
 	<body>
 
+		<release version="3.1.6" date="2007-05-31">
+			<action dev="eiki" type="update">
+				Added syntax coloring support to the source view
+			</action>
+		</release>
+		
 		<release version="3.1.5" date="2007-05-20">
 			<action dev="gimmi" type="add">
 				DPTCrawlableContainer

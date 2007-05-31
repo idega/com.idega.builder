@@ -3,8 +3,14 @@ package com.idega.builder.presentation;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.myfaces.component.html.ext.HtmlInputTextarea;
+
+import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.HtmlTemplateGrabber;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -15,7 +21,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
 
@@ -40,6 +45,13 @@ public class IBSourceView extends Window {
 	public void main(IWContext iwc) {
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
 		
+		try {
+			Web2Business web2 = (Web2Business) IBOLookup.getServiceInstance(iwc, Web2Business.class);
+			this.getParentPage().addJavascriptURL(web2.getCodePressScriptFilePath());
+		} catch (IBOLookupException e1) {
+			e1.printStackTrace();
+		}
+			
 		String action = iwc.getParameter(IB_SOURCE_ACTION);
 		if (action != null) {
 			if (action.equals("update")) {
@@ -95,7 +107,7 @@ public class IBSourceView extends Window {
 		////////////////
 	
 		Form form = new Form();
-		sourceView.add(form);
+		//sourceView.add(form);
 		
 		
 		try {
@@ -117,14 +129,20 @@ public class IBSourceView extends Window {
 //				table.add(area, 1, 1);
 //			}
 //			else {
-				TextArea area = new TextArea(SOURCE_PARAMETER, source);
-				area.setWrap(false);
+			HtmlInputTextarea area = new HtmlInputTextarea();
+			area.setId(SOURCE_PARAMETER);
+			area.setWrap("OFF");
+			area.setValue(source);
 				
-				if(isFubarBrowserForNow){
-					area.setStyleAttribute("height", "83%");
-				}
-				form.add(area);
-			//}
+			//enable syntax coloring!
+			area.setStyleClass("codepress html linenumbers-on");
+			
+			if(isFubarBrowserForNow){
+				area.setStyle("height: 83%");
+			}
+			
+			form.add(area);
+	
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -157,6 +175,7 @@ public class IBSourceView extends Window {
 		Text grabText = new Text(templateGrabString);
 		grabText.setStyleClass("helpText");
 		sourceViewButtonsLeft.add(grabText);
+		sourceView.add(form);
 		
 	}
 
