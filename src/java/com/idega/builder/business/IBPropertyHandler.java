@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.66 2007/05/24 11:31:12 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.67 2007/05/31 13:52:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,6 +49,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.IntegerInput;
+import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.repository.data.Instantiator;
@@ -504,6 +505,12 @@ public class IBPropertyHandler implements Singleton{
 			obj = new TextInput(name);
 			if (stringValue != null) {
 				((TextInput) obj).setContent(stringValue);
+			}
+		}
+		else if (parameterClass.equals(com.idega.presentation.ui.PasswordInput.class)) {
+			obj = new PasswordInput(name);
+			if (stringValue != null) {
+				((PasswordInput) obj).setContent(stringValue);
 			}
 		}
 		else if (parameterClass.equals(java.lang.Boolean.class) || parameterClass.equals(Boolean.TYPE)) {

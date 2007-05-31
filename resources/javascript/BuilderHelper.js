@@ -565,7 +565,7 @@ function saveModuleProperty(event, element) {
 		return;
 	}
 	if (event != null) {
-		if (element.type == "text") {
+		if (element.type == "text" || element.type == "password") {
 			//	Checking if "Enter" was pressed
 			if (!isEnterEvent(event)) {
 				return;

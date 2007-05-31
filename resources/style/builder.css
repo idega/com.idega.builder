@@ -412,8 +412,7 @@ div#simple_properties_box {
 	font-weight: bold;
 }
 
-.modulePropertyIsSet:HOVER {
-	font-weight: bold;
+.modulePropertyIsSet:HOVER span{
 	cursor: pointer;
 }
 
