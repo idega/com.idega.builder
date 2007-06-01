@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.252 2007/05/28 09:36:32 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.253 2007/06/01 15:29:47 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2733,6 +2733,34 @@ public class BuilderLogic implements Singleton {
 					cache.invalidateCache(modifiedKeys.get(i));
 				}
 			}
+		}
+		
+		return true;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public boolean removeAllBlockObjectsFromCache(IWContext iwc) {
+		if (iwc == null) {
+			return false;
+		}
+		
+		IWCacheManager cache = iwc.getIWMainApplication().getIWCacheManager();
+		if (cache == null) {
+			return false;
+		}
+		
+		List <String> cacheKeys = new ArrayList<String>();
+		Map cached = cache.getCacheMap();
+		if (cached != null) {
+			for (Iterator it = cached.keySet().iterator(); it.hasNext(); ) {
+				cacheKeys.add(it.next().toString());
+			}
+		}
+		if (cacheKeys.size() == 0) {
+			return false;
+		}
+		for (int i = 0; i < cacheKeys.size(); i++) {
+			cache.invalidateCache(cacheKeys.get(i));
 		}
 		
 		return true;
