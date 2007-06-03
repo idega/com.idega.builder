@@ -44,7 +44,11 @@ public class FormEmailer extends Block {
 	private boolean sendReceipt = false;
 
 	private String receiptEmailParameter;
-
+	
+	private String spambot_catch_dummy_parameter;
+	private String spambot_catch_time_parameter;
+	private Integer spambot_catch_timeup;
+	
 	private static String CONFIRM_PARAMETER = "ib_formem_conf";
 
 	private static String TEXT_SESSION_KEY = "IB_FORMEMAILER_TEXT";
@@ -54,8 +58,17 @@ public class FormEmailer extends Block {
 	public FormEmailer() {
 		this.handler = new IBGenericFormHandler();
 	}
-
+	
 	public void main(IWContext iwc) {
+		
+		if(isSpambot(iwc)) {
+			add(
+				getBundle(iwc).getResourceBundle(iwc).getLocalizedString("formemailer.spambotdetected",
+				"Sorry, you're most likely to be a spambot. If that's not the case, please press back and refill the form.")
+			);
+			return;
+		}
+		
 		UploadFile uploadFile = iwc.getUploadedFile();
 		if (uploadFile != null) {
 			String uploadedFileName = uploadFile.getAbsolutePath();
@@ -176,6 +189,7 @@ public class FormEmailer extends Block {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		try {
 			com.idega.util.SendMail.send(emailFrom, this.emailToSendTo, "", "", this.emailServer, this.subject, bodyText, uploadFile);
 		}
@@ -207,7 +221,39 @@ public class FormEmailer extends Block {
 				}
 			}
 		}
+		
 		cleanUpFromSession(iwc);
+	}
+	
+	protected boolean isSpambot(IWContext iwc) {
+		
+		String dsc_par = getSpambotCatchDummyParameter() == null ? null : handler.getParameterValue(iwc, getSpambotCatchDummyParameter());
+		
+		if(dsc_par != null && !"0".equals(dsc_par))
+			return true;
+		else {
+			
+			if(getSpambotCatchTimeParameter() == null)
+				return false;
+			
+			String sct_par = handler.getParameterValue(iwc, getSpambotCatchTimeParameter());
+		
+			if(sct_par == null)
+				return false;
+			else {
+				
+				try {
+					Integer sct = Integer.parseInt(sct_par);
+					
+					if(sct < getSpambotCatchTimeup())
+						return true;
+					
+				} catch (Exception e) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void setToAddRecievedParameter(String paramName, String description, String type) {
@@ -269,5 +315,30 @@ public class FormEmailer extends Block {
 
 	public String getReceiptEmailParameter() {
 		return this.receiptEmailParameter;
+	}
+
+	public String getSpambotCatchDummyParameter() {
+		return spambot_catch_dummy_parameter;
+	}
+
+	public void setSpambotCatchDummyParameter(
+			String spambot_catch_dummy_parameter) {
+		this.spambot_catch_dummy_parameter = spambot_catch_dummy_parameter;
+	}
+
+	public String getSpambotCatchTimeParameter() {
+		return spambot_catch_time_parameter;
+	}
+
+	public void setSpambotCatchTimeParameter(String spambot_catch_time_parameter) {
+		this.spambot_catch_time_parameter = spambot_catch_time_parameter;
+	}
+
+	public Integer getSpambotCatchTimeup() {
+		return spambot_catch_timeup == null ? 10000 : spambot_catch_timeup;
+	}
+
+	public void setSpambotCatchTimeup(Integer spambot_catch_timeout) {
+		this.spambot_catch_timeup = spambot_catch_timeout;
 	}
 }

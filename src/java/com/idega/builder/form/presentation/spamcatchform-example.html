@@ -1,0 +1,775 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+<link href="style.css" rel="stylesheet" type="text/css" />
+<style type="text/css">
+	div#catchthebot {display:none;}
+</style>
+<script language="javascript" type="text/javascript">
+	<!--
+	var ctime = 0;
+	var furl = "http://localhost:8080/pages/";
+	var form_id = "childCareApplicationForm";
+	
+	function time1() {
+		ctime = (new Date()).getTime();
+	}
+	function time2() {
+		document.getElementById('catchthebot_time').value = (new Date()).getTime() - ctime;
+	}
+	function form_onsubmit() {
+		time2();
+		var the_form = document.forms[form_id];
+		the_form.action = furl;
+		the_form.submit();
+	}
+// -->
+</script>
+</head>
+
+<body onload="javascript: time1();">
+<form id="childCareApplicationForm" method="post" action="/nop">
+
+	<div class="header">
+		<h1>Umsókn um leikskólapláss</h1>
+
+		<a href="/content/files/public/umsoknir/Umsokn_um_leikskola.pdf" target="_blank" class="printButton"><div class="buttonContainer"><div class="sinistra"></div><div class="centrale">Prentvæn útgáfa</div><div class="destra"</div></div></a>	
+	</div>
+	
+	<h1 class="subHeader topSubHeader">1. Nafn leikskóla</h1>
+
+	<div class="formSection">
+		<p class="requiredInformation">
+			<span  class="required">*</span>Verður að fylla í stjörnumerkta reiti
+		</p>
+		<div id="catchthebot">
+			<label>Do not input this field.</label>
+			<input type="text" name="catchthebot_text" value="0" />
+			<input type="hidden" name="catchthebot_time" id="catchthebot_time" />
+		</div>
+
+		<div class="formItem">
+			<label><span class="required">*</span>Veldu leikskóla</label>
+			<select name="school">
+				<option value="enginn">Veldu leikskóla</option>
+				<option value="Arnarborg">Arnarborg</option>
+				<option value="Austurborg">Austurborg</option>
+
+				<option value="Álftaborg">Álftaborg</option>
+				<option value="Árborg">Árborg</option>
+				<option value="Ásborg">Ásborg</option>
+				<option value="Bakkaborg">Bakkaborg</option>
+				<option value="Bakki">Bakki</option>
+				<option value="Barónsborg">Barónsborg</option>
+
+				<option value="Berg (við Kléberg)">Berg (við Kléberg)</option>
+				<option value="Blásalir">Blásalir</option>
+				<option value="Brákarborg">Brákarborg</option>
+				<option value="Brekkuborg">Brekkuborg</option>
+				<option value="Drafnarborg">Drafnarborg</option>
+				<option value="Dvergasteinn">Dvergasteinn</option>
+
+				<option value="Engjaborg">Engjaborg</option>
+				<option value="Fálkaborg">Fálkaborg</option>
+				<option value="Fellaborg">Fellaborg</option>
+				<option value="Fífuborg">Fífuborg</option>
+				<option value="Foldaborg">Foldaborg</option>
+				<option value="Foldakot">Foldakot</option>
+
+				<option value="Funaborg">Funaborg</option>
+				<option value="Furuborg">Furuborg</option>
+				<option value="Garðaborg">Garðaborg</option>
+				<option value="Geislabaugur">Geislabaugur</option>
+				<option value="Grandaborg">Grandaborg</option>
+				<option value="Grænaborg">Grænaborg</option>
+
+				<option value="Gullborg">Gullborg</option>
+				<option value="Hagaborg">Hagaborg</option>
+				<option value="Hamraborg">Hamraborg</option>
+				<option value="Hamrar">Hamrar</option>
+				<option value="Hálsaborg">Hálsaborg</option>
+				<option value="Hálsakot">Hálsakot</option>
+
+				<option value="Heiðarborg">Heiðarborg</option>
+				<option value="Hlíðaborg">Hlíðaborg</option>
+				<option value="Hlíðarendi">Hlíðarendi</option>
+				<option value="Hof">Hof</option>
+				<option value="Holtaborg">Holtaborg</option>
+				<option value="Hólaborg">Hólaborg</option>
+
+				<option value="Hraunborg">Hraunborg</option>
+				<option value="Hulduheimar">Hulduheimar</option>
+				<option value="Jöklaborg">Jöklaborg</option>
+				<option value="Jörfi">Jörfi</option>
+				<option value="Klambrar">Klambrar</option>
+				<option value="Klettaborg">Klettaborg</option>
+
+				<option value="Kvarnaborg">Kvarnaborg</option>
+				<option value="Kvistaborg">Kvistaborg</option>
+				<option value="Laufásborg">Laufásborg</option>
+				<option value="Laufskálar">Laufskálar</option>
+				<option value="Laugaborg">Laugaborg</option>
+				<option value="Lindarborg">Lindarborg</option>
+
+				<option value="Lyngheimar">Lyngheimar</option>
+				<option value="Lækjaborg">Lækjaborg</option>
+				<option value="Maríuborg">Maríuborg</option>
+				<option value="Mánagarður">Mánagarður</option>
+				<option value="Múlaborg">Múlaborg</option>
+				<option value="Mýri">Mýri</option>
+
+				<option value="Njálsborg">Njálsborg</option>
+				<option value="Norðlingaholt">Norðlingaholt</option>
+				<option value="Nóaborg">Nóaborg</option>
+				<option value="Rauðaborg">Rauðaborg</option>
+				<option value="Reynisholt">Reynisholt</option>
+				<option value="Rofaborg">Rofaborg</option>
+
+				<option value="Seljaborg">Seljaborg</option>
+				<option value="Seljakot">Seljakot</option>
+				<option value="Sjónarhóll">Sjónarhóll</option>
+				<option value="Skógarborg">Skógarborg</option>
+				<option value="Sólbakki">Sólbakki</option>
+				<option value="Sólborg">Sólborg</option>
+
+				<option value="Sólhlíð">Sólhlíð</option>
+				<option value="Stakkaborg">Stakkaborg</option>
+				<option value="Steinahlíð">Steinahlíð</option>
+				<option value="Suðurborg">Suðurborg</option>
+				<option value="Sunnuborg">Sunnuborg</option>
+				<option value="Sæborg">Sæborg</option>
+
+				<option value="Tjarnarborg">Tjarnarborg</option>
+				<option value="Vesturborg">Vesturborg</option>
+				<option value="Vinagerði">Vinagerði</option>
+				<option value="Völvuborg">Völvuborg</option>
+				<option value="Ægisborg">Ægisborg</option>
+				<option value="Öldukot">Öldukot</option>
+
+				<option value="Ösp">Ösp</option>
+			</select>
+		</div>
+		<div class="formItem">
+			<label><span class="required">*</span>Ósk um leikskóladvöl</label>
+			<div class="radioSection">
+				<input class="radiobutton" checked="checked" type="radio" name="duration_of_stay" value="Allan daginn" />
+
+				<label>Allan daginn</label>
+				<input class="radiobutton" type="radio" name="duration_of_stay" value="Fyrir hádegi" />
+				<label>Fyrir hádegi</label>
+				<input class="radiobutton" type="radio" name="duration_of_stay" value="Eftir hádegi" />
+				<label>Eftir hádegi</label>
+				<div class="Clear"></div>
+			</div>
+
+		</div>
+		<div class="formItem">
+			<label><span class="required">*</span>Æskilegur dvalartími</label>
+			<div class="radioSection multiRowRadioSection">
+				<input class="radiobutton clearRadioButton" checked="checked" type="radio" name="staying_hours" value="4 stundir" />
+				<label>4 stundir</label>
+				<input class="radiobutton" type="radio" name="staying_hours" value="4,5 stundir" />
+
+				<label>4,5 stundir</label>
+				<input class="radiobutton clearRadioButton" type="radio" name="staying_hours" value="5 stundir" />
+				<label>5 stundir</label>
+				<input class="radiobutton" type="radio" name="staying_hours" value="5,5 stundir" />
+				<label>5,5 stundir</label>
+				<input class="radiobutton clearRadioButton" type="radio" name="staying_hours" value="6 stundir" />
+				<label>6 stundir</label>
+
+				<input class="radiobutton" type="radio" name="staying_hours" value="6,5 stundir" />
+				<label>6,5 stundir</label>
+				<input class="radiobutton clearRadioButton" type="radio" name="staying_hours" value="7 stundir" />
+				<label>7 stundir</label>
+				<input class="radiobutton" type="radio" name="staying_hours" value="7,5 stundir" />
+				<label>7,5 stundir</label>
+				<input class="radiobutton clearRadioButton" type="radio" name="staying_hours" value="8 stundir" />
+
+				<label>8 stundir</label>
+				<input class="radiobutton" type="radio" name="staying_hours" value="8,5 stundir" />
+				<label>8,5 stundir</label>
+				<input class="radiobutton clearRadioButton" type="radio" name="staying_hours" value="9 stundir" />
+				<label>9 stundir</label>
+				<div class="Clear"></div>
+			</div>
+
+		</div>
+		<div class="formItem">
+			<label>Koma aðrir leikskólar til greina?</label>
+			<div class="radioSection">
+				<input class="radiobutton" checked="checked" type="radio" name="other_schools" value="Já" />
+				<label>Já</label>
+				<input class="radiobutton" type="radio" name="other_schools" value="Nei" />
+				<label>Nei</label>
+
+				<div class="Clear"></div>
+			</div>
+		</div>
+		<div class="formItem">
+			<label>Til vara 1:</label>
+			<select name="other_school_1">
+				<option value="Enginn">Veldu leikskóla</option>
+				<option value="Arnarborg">Arnarborg</option>
+
+				<option value="Austurborg">Austurborg</option>
+				<option value="Álftaborg">Álftaborg</option>
+				<option value="Árborg">Árborg</option>
+				<option value="Ásborg">Ásborg</option>
+				<option value="Bakkaborg">Bakkaborg</option>
+				<option value="Bakki">Bakki</option>
+
+				<option value="Barónsborg">Barónsborg</option>
+				<option value="Berg (við Kléberg)">Berg (við Kléberg)</option>
+				<option value="Blásalir">Blásalir</option>
+				<option value="Brákarborg">Brákarborg</option>
+				<option value="Brekkuborg">Brekkuborg</option>
+				<option value="Drafnarborg">Drafnarborg</option>
+
+				<option value="Dvergasteinn">Dvergasteinn</option>
+				<option value="Engjaborg">Engjaborg</option>
+				<option value="Fálkaborg">Fálkaborg</option>
+				<option value="Fellaborg">Fellaborg</option>
+				<option value="Fífuborg">Fífuborg</option>
+				<option value="Foldaborg">Foldaborg</option>
+
+				<option value="Foldakot">Foldakot</option>
+				<option value="Funaborg">Funaborg</option>
+				<option value="Furuborg">Furuborg</option>
+				<option value="Garðaborg">Garðaborg</option>
+				<option value="Geislabaugur">Geislabaugur</option>
+				<option value="Grandaborg">Grandaborg</option>
+
+				<option value="Grænaborg">Grænaborg</option>
+				<option value="Gullborg">Gullborg</option>
+				<option value="Hagaborg">Hagaborg</option>
+				<option value="Hamraborg">Hamraborg</option>
+				<option value="Hamrar">Hamrar</option>
+				<option value="Hálsaborg">Hálsaborg</option>
+
+				<option value="Hálsakot">Hálsakot</option>
+				<option value="Heiðarborg">Heiðarborg</option>
+				<option value="Hlíðaborg">Hlíðaborg</option>
+				<option value="Hlíðarendi">Hlíðarendi</option>
+				<option value="Hof">Hof</option>
+				<option value="Holtaborg">Holtaborg</option>
+
+				<option value="Hólaborg">Hólaborg</option>
+				<option value="Hraunborg">Hraunborg</option>
+				<option value="Hulduheimar">Hulduheimar</option>
+				<option value="Jöklaborg">Jöklaborg</option>
+				<option value="Jörfi">Jörfi</option>
+				<option value="Klambrar">Klambrar</option>
+
+				<option value="Klettaborg">Klettaborg</option>
+				<option value="Kvarnaborg">Kvarnaborg</option>
+				<option value="Kvistaborg">Kvistaborg</option>
+				<option value="Laufásborg">Laufásborg</option>
+				<option value="Laufskálar">Laufskálar</option>
+				<option value="Laugaborg">Laugaborg</option>
+
+				<option value="Lindarborg">Lindarborg</option>
+				<option value="Lyngheimar">Lyngheimar</option>
+				<option value="Lækjaborg">Lækjaborg</option>
+				<option value="Maríuborg">Maríuborg</option>
+				<option value="Mánagarður">Mánagarður</option>
+				<option value="Múlaborg">Múlaborg</option>
+
+				<option value="Mýri">Mýri</option>
+				<option value="Njálsborg">Njálsborg</option>
+				<option value="Norðlingaholt">Norðlingaholt</option>
+				<option value="Nóaborg">Nóaborg</option>
+				<option value="Rauðaborg">Rauðaborg</option>
+				<option value="Reynisholt">Reynisholt</option>
+
+				<option value="Rofaborg">Rofaborg</option>
+				<option value="Seljaborg">Seljaborg</option>
+				<option value="Seljakot">Seljakot</option>
+				<option value="Sjónarhóll">Sjónarhóll</option>
+				<option value="Skógarborg">Skógarborg</option>
+				<option value="Sólbakki">Sólbakki</option>
+
+				<option value="Sólborg">Sólborg</option>
+				<option value="Sólhlíð">Sólhlíð</option>
+				<option value="Stakkaborg">Stakkaborg</option>
+				<option value="Steinahlíð">Steinahlíð</option>
+				<option value="Suðurborg">Suðurborg</option>
+				<option value="Sunnuborg">Sunnuborg</option>
+
+				<option value="Sæborg">Sæborg</option>
+				<option value="Tjarnarborg">Tjarnarborg</option>
+				<option value="Vesturborg">Vesturborg</option>
+				<option value="Vinagerði">Vinagerði</option>
+				<option value="Völvuborg">Völvuborg</option>
+				<option value="Ægisborg">Ægisborg</option>
+
+				<option value="Öldukot">Öldukot</option>
+				<option value="Ösp">Ösp</option>
+			</select>
+		</div>
+		<div class="formItem">
+			<label>Til vara 2:</label>
+			<select name="other_school_2">
+
+				<option value="Enginn">Veldu leikskóla</option>
+				<option value="Arnarborg">Arnarborg</option>
+				<option value="Austurborg">Austurborg</option>
+				<option value="Álftaborg">Álftaborg</option>
+				<option value="Árborg">Árborg</option>
+				<option value="Ásborg">Ásborg</option>
+
+				<option value="Bakkaborg">Bakkaborg</option>
+				<option value="Bakki">Bakki</option>
+				<option value="Barónsborg">Barónsborg</option>
+				<option value="Berg (við Kléberg)">Berg (við Kléberg)</option>
+				<option value="Blásalir">Blásalir</option>
+				<option value="Brákarborg">Brákarborg</option>
+
+				<option value="Brekkuborg">Brekkuborg</option>
+				<option value="Drafnarborg">Drafnarborg</option>
+				<option value="Dvergasteinn">Dvergasteinn</option>
+				<option value="Engjaborg">Engjaborg</option>
+				<option value="Fálkaborg">Fálkaborg</option>
+				<option value="Fellaborg">Fellaborg</option>
+
+				<option value="Fífuborg">Fífuborg</option>
+				<option value="Foldaborg">Foldaborg</option>
+				<option value="Foldakot">Foldakot</option>
+				<option value="Funaborg">Funaborg</option>
+				<option value="Furuborg">Furuborg</option>
+				<option value="Garðaborg">Garðaborg</option>
+
+				<option value="Geislabaugur">Geislabaugur</option>
+				<option value="Grandaborg">Grandaborg</option>
+				<option value="Grænaborg">Grænaborg</option>
+				<option value="Gullborg">Gullborg</option>
+				<option value="Hagaborg">Hagaborg</option>
+				<option value="Hamraborg">Hamraborg</option>
+
+				<option value="Hamrar">Hamrar</option>
+				<option value="Hálsaborg">Hálsaborg</option>
+				<option value="Hálsakot">Hálsakot</option>
+				<option value="Heiðarborg">Heiðarborg</option>
+				<option value="Hlíðaborg">Hlíðaborg</option>
+				<option value="Hlíðarendi">Hlíðarendi</option>
+
+				<option value="Hof">Hof</option>
+				<option value="Holtaborg">Holtaborg</option>
+				<option value="Hólaborg">Hólaborg</option>
+				<option value="Hraunborg">Hraunborg</option>
+				<option value="Hulduheimar">Hulduheimar</option>
+				<option value="Jöklaborg">Jöklaborg</option>
+
+				<option value="Jörfi">Jörfi</option>
+				<option value="Klambrar">Klambrar</option>
+				<option value="Klettaborg">Klettaborg</option>
+				<option value="Kvarnaborg">Kvarnaborg</option>
+				<option value="Kvistaborg">Kvistaborg</option>
+				<option value="Laufásborg">Laufásborg</option>
+
+				<option value="Laufskálar">Laufskálar</option>
+				<option value="Laugaborg">Laugaborg</option>
+				<option value="Lindarborg">Lindarborg</option>
+				<option value="Lyngheimar">Lyngheimar</option>
+				<option value="Lækjaborg">Lækjaborg</option>
+				<option value="Maríuborg">Maríuborg</option>
+
+				<option value="Mánagarður">Mánagarður</option>
+				<option value="Múlaborg">Múlaborg</option>
+				<option value="Mýri">Mýri</option>
+				<option value="Njálsborg">Njálsborg</option>
+				<option value="Norðlingaholt">Norðlingaholt</option>
+				<option value="Nóaborg">Nóaborg</option>
+
+				<option value="Rauðaborg">Rauðaborg</option>
+				<option value="Reynisholt">Reynisholt</option>
+				<option value="Rofaborg">Rofaborg</option>
+				<option value="Seljaborg">Seljaborg</option>
+				<option value="Seljakot">Seljakot</option>
+				<option value="Sjónarhóll">Sjónarhóll</option>
+
+				<option value="Skógarborg">Skógarborg</option>
+				<option value="Sólbakki">Sólbakki</option>
+				<option value="Sólborg">Sólborg</option>
+				<option value="Sólhlíð">Sólhlíð</option>
+				<option value="Stakkaborg">Stakkaborg</option>
+				<option value="Steinahlíð">Steinahlíð</option>
+
+				<option value="Suðurborg">Suðurborg</option>
+				<option value="Sunnuborg">Sunnuborg</option>
+				<option value="Sæborg">Sæborg</option>
+				<option value="Tjarnarborg">Tjarnarborg</option>
+				<option value="Vesturborg">Vesturborg</option>
+				<option value="Vinagerði">Vinagerði</option>
+
+				<option value="Völvuborg">Völvuborg</option>
+				<option value="Ægisborg">Ægisborg</option>
+				<option value="Öldukot">Öldukot</option>
+				<option value="Ösp">Ösp</option>
+			</select>
+		</div>
+		<div class="formItem">
+
+			<label>Til vara 3:</label>
+			<select name="other_school_3">
+				<option value="Enginn">Veldu leikskóla</option>
+				<option value="Arnarborg">Arnarborg</option>
+				<option value="Austurborg">Austurborg</option>
+				<option value="Álftaborg">Álftaborg</option>
+
+				<option value="Árborg">Árborg</option>
+				<option value="Ásborg">Ásborg</option>
+				<option value="Bakkaborg">Bakkaborg</option>
+				<option value="Bakki">Bakki</option>
+				<option value="Barónsborg">Barónsborg</option>
+				<option value="Berg (við Kléberg)">Berg (við Kléberg)</option>
+
+				<option value="Blásalir">Blásalir</option>
+				<option value="Brákarborg">Brákarborg</option>
+				<option value="Brekkuborg">Brekkuborg</option>
+				<option value="Drafnarborg">Drafnarborg</option>
+				<option value="Dvergasteinn">Dvergasteinn</option>
+				<option value="Engjaborg">Engjaborg</option>
+
+				<option value="Fálkaborg">Fálkaborg</option>
+				<option value="Fellaborg">Fellaborg</option>
+				<option value="Fífuborg">Fífuborg</option>
+				<option value="Foldaborg">Foldaborg</option>
+				<option value="Foldakot">Foldakot</option>
+				<option value="Funaborg">Funaborg</option>
+
+				<option value="Furuborg">Furuborg</option>
+				<option value="Garðaborg">Garðaborg</option>
+				<option value="Geislabaugur">Geislabaugur</option>
+				<option value="Grandaborg">Grandaborg</option>
+				<option value="Grænaborg">Grænaborg</option>
+				<option value="Gullborg">Gullborg</option>
+
+				<option value="Hagaborg">Hagaborg</option>
+				<option value="Hamraborg">Hamraborg</option>
+				<option value="Hamrar">Hamrar</option>
+				<option value="Hálsaborg">Hálsaborg</option>
+				<option value="Hálsakot">Hálsakot</option>
+				<option value="Heiðarborg">Heiðarborg</option>
+
+				<option value="Hlíðaborg">Hlíðaborg</option>
+				<option value="Hlíðarendi">Hlíðarendi</option>
+				<option value="Hof">Hof</option>
+				<option value="Holtaborg">Holtaborg</option>
+				<option value="Hólaborg">Hólaborg</option>
+				<option value="Hraunborg">Hraunborg</option>
+
+				<option value="Hulduheimar">Hulduheimar</option>
+				<option value="Jöklaborg">Jöklaborg</option>
+				<option value="Jörfi">Jörfi</option>
+				<option value="Klambrar">Klambrar</option>
+				<option value="Klettaborg">Klettaborg</option>
+				<option value="Kvarnaborg">Kvarnaborg</option>
+
+				<option value="Kvistaborg">Kvistaborg</option>
+				<option value="Laufásborg">Laufásborg</option>
+				<option value="Laufskálar">Laufskálar</option>
+				<option value="Laugaborg">Laugaborg</option>
+				<option value="Lindarborg">Lindarborg</option>
+				<option value="Lyngheimar">Lyngheimar</option>
+
+				<option value="Lækjaborg">Lækjaborg</option>
+				<option value="Maríuborg">Maríuborg</option>
+				<option value="Mánagarður">Mánagarður</option>
+				<option value="Múlaborg">Múlaborg</option>
+				<option value="Mýri">Mýri</option>
+				<option value="Njálsborg">Njálsborg</option>
+
+				<option value="Norðlingaholt">Norðlingaholt</option>
+				<option value="Nóaborg">Nóaborg</option>
+				<option value="Rauðaborg">Rauðaborg</option>
+				<option value="Reynisholt">Reynisholt</option>
+				<option value="Rofaborg">Rofaborg</option>
+				<option value="Seljaborg">Seljaborg</option>
+
+				<option value="Seljakot">Seljakot</option>
+				<option value="Sjónarhóll">Sjónarhóll</option>
+				<option value="Skógarborg">Skógarborg</option>
+				<option value="Sólbakki">Sólbakki</option>
+				<option value="Sólborg">Sólborg</option>
+				<option value="Sólhlíð">Sólhlíð</option>
+
+				<option value="Stakkaborg">Stakkaborg</option>
+				<option value="Steinahlíð">Steinahlíð</option>
+				<option value="Suðurborg">Suðurborg</option>
+				<option value="Sunnuborg">Sunnuborg</option>
+				<option value="Sæborg">Sæborg</option>
+				<option value="Tjarnarborg">Tjarnarborg</option>
+
+				<option value="Vesturborg">Vesturborg</option>
+				<option value="Vinagerði">Vinagerði</option>
+				<option value="Völvuborg">Völvuborg</option>
+				<option value="Ægisborg">Ægisborg</option>
+				<option value="Öldukot">Öldukot</option>
+				<option value="Ösp">Ösp</option>
+
+			</select>
+		</div>
+		<div class="formItem">
+			<label>Til vara 4:</label>
+			<select name="other_school_4">
+				<option value="Enginn">Veldu leikskóla</option>
+				<option value="Arnarborg">Arnarborg</option>
+
+				<option value="Austurborg">Austurborg</option>
+				<option value="Álftaborg">Álftaborg</option>
+				<option value="Árborg">Árborg</option>
+				<option value="Ásborg">Ásborg</option>
+				<option value="Bakkaborg">Bakkaborg</option>
+				<option value="Bakki">Bakki</option>
+
+				<option value="Barónsborg">Barónsborg</option>
+				<option value="Berg (við Kléberg)">Berg (við Kléberg)</option>
+				<option value="Blásalir">Blásalir</option>
+				<option value="Brákarborg">Brákarborg</option>
+				<option value="Brekkuborg">Brekkuborg</option>
+				<option value="Drafnarborg">Drafnarborg</option>
+
+				<option value="Dvergasteinn">Dvergasteinn</option>
+				<option value="Engjaborg">Engjaborg</option>
+				<option value="Fálkaborg">Fálkaborg</option>
+				<option value="Fellaborg">Fellaborg</option>
+				<option value="Fífuborg">Fífuborg</option>
+				<option value="Foldaborg">Foldaborg</option>
+
+				<option value="Foldakot">Foldakot</option>
+				<option value="Funaborg">Funaborg</option>
+				<option value="Furuborg">Furuborg</option>
+				<option value="Garðaborg">Garðaborg</option>
+				<option value="Geislabaugur">Geislabaugur</option>
+				<option value="Grandaborg">Grandaborg</option>
+
+				<option value="Grænaborg">Grænaborg</option>
+				<option value="Gullborg">Gullborg</option>
+				<option value="Hagaborg">Hagaborg</option>
+				<option value="Hamraborg">Hamraborg</option>
+				<option value="Hamrar">Hamrar</option>
+				<option value="Hálsaborg">Hálsaborg</option>
+
+				<option value="Hálsakot">Hálsakot</option>
+				<option value="Heiðarborg">Heiðarborg</option>
+				<option value="Hlíðaborg">Hlíðaborg</option>
+				<option value="Hlíðarendi">Hlíðarendi</option>
+				<option value="Hof">Hof</option>
+				<option value="Holtaborg">Holtaborg</option>
+
+				<option value="Hólaborg">Hólaborg</option>
+				<option value="Hraunborg">Hraunborg</option>
+				<option value="Hulduheimar">Hulduheimar</option>
+				<option value="Jöklaborg">Jöklaborg</option>
+				<option value="Jörfi">Jörfi</option>
+				<option value="Klambrar">Klambrar</option>
+
+				<option value="Klettaborg">Klettaborg</option>
+				<option value="Kvarnaborg">Kvarnaborg</option>
+				<option value="Kvistaborg">Kvistaborg</option>
+				<option value="Laufásborg">Laufásborg</option>
+				<option value="Laufskálar">Laufskálar</option>
+				<option value="Laugaborg">Laugaborg</option>
+
+				<option value="Lindarborg">Lindarborg</option>
+				<option value="Lyngheimar">Lyngheimar</option>
+				<option value="Lækjaborg">Lækjaborg</option>
+				<option value="Maríuborg">Maríuborg</option>
+				<option value="Mánagarður">Mánagarður</option>
+				<option value="Múlaborg">Múlaborg</option>
+
+				<option value="Mýri">Mýri</option>
+				<option value="Njálsborg">Njálsborg</option>
+				<option value="Norðlingaholt">Norðlingaholt</option>
+				<option value="Nóaborg">Nóaborg</option>
+				<option value="Rauðaborg">Rauðaborg</option>
+				<option value="Reynisholt">Reynisholt</option>
+
+				<option value="Rofaborg">Rofaborg</option>
+				<option value="Seljaborg">Seljaborg</option>
+				<option value="Seljakot">Seljakot</option>
+				<option value="Sjónarhóll">Sjónarhóll</option>
+				<option value="Skógarborg">Skógarborg</option>
+				<option value="Sólbakki">Sólbakki</option>
+
+				<option value="Sólborg">Sólborg</option>
+				<option value="Sólhlíð">Sólhlíð</option>
+				<option value="Stakkaborg">Stakkaborg</option>
+				<option value="Steinahlíð">Steinahlíð</option>
+				<option value="Suðurborg">Suðurborg</option>
+				<option value="Sunnuborg">Sunnuborg</option>
+
+				<option value="Sæborg">Sæborg</option>
+				<option value="Tjarnarborg">Tjarnarborg</option>
+				<option value="Vesturborg">Vesturborg</option>
+				<option value="Vinagerði">Vinagerði</option>
+				<option value="Völvuborg">Völvuborg</option>
+				<option value="Ægisborg">Ægisborg</option>
+
+				<option value="Öldukot">Öldukot</option>
+				<option value="Ösp">Ösp</option>
+			</select>
+		</div>
+		
+		<div class="Clear"></div>
+	</div>
+
+	<h1 class="subHeader">2. Persónulegar upplýsingar</h1>
+
+	<div class="formSection">
+		<p class="requiredInformation">
+			<span  class="required">*</span>Verður að fylla í stjörnumerkta reiti
+		</p>
+
+		<div class="formItem">
+			<label><span class="required">*</span>Nafn barns</label>
+			<input type="text" name="child_name" />
+
+		</div>
+		<div class="formItem">
+			<label><span class="required">*</span>Kennitala barns</label>
+			<input type="text" name="child_personal_id" />
+		</div>
+		<div class="formItem">
+			<label>Lögheimili</label>
+
+			<input type="text" name="child_address" />
+		</div>
+		<div class="formItem">
+			<label>Póstnúmer og sveitarfélag</label>
+			<input id="zip" type="text" name="child_zip" />
+			<input id="area" type="text" name="child_area" />
+		</div>
+		
+		<div class="Clear"></div>
+
+		<br /><br />
+
+		<p>Símanúmer þar sem hægt er að ná í forráðamenn barnsins yfir daginn.</p>
+		<div class="formItem">
+			<label><span class="required">*</span>Aðalsími</label>
+			<input type="text" name="main_phone" />
+		</div>
+
+		<div class="Clear"></div>
+		<br />
+
+		<div class="formItem">
+			<label><span class="required">*</span>Nafn foreldris/forráðamanns</label>
+			<input type="text" name="custodian_name" />
+		</div>
+		<div class="formItem">
+
+			<label>Kennitala</label>
+			<input type="text" name="custodian_personal_id" />
+		</div>
+		<div class="formItem">
+			<label>Sími</label>
+			<input type="text" name="custodian_phone" />
+		</div>
+		<div class="formItem">
+
+			<label>Vinnusími</label>
+			<input type="text" name="custodian_work_phone" />
+		</div>
+
+
+		<div class="Clear"></div>
+		<br /><br />
+
+		<div class="formItem">
+			<label><span class="required">*</span>Nafn foreldris/forráðamanns</label>
+
+			<input type="text" name="other_custodian_name" />
+		</div>
+		<div class="formItem">
+			<label>Kennitala</label>
+			<input type="text" name="other_custodian_personal_id" />
+		</div>
+		<div class="formItem">
+			<label>Sími</label>
+
+			<input type="text" name="other_custodian_phone" />
+		</div>
+		<div class="formItem">
+			<label>Vinnusími</label>
+			<input type="text" name="other_custodian_work_phone" />
+		</div>
+
+		<div class="Clear"></div>
+		<br /><br />
+
+		<p>Svar verður sent á uppgefið netfang. Ef netfang er ekki gefið upp verður svar sent í bréfpósti.</p>
+		<div class="formItem">
+			<label>Netfang</label>
+			<input type="text" name="email_receiver_email" />
+		</div>
+
+		<div class="Clear"></div>
+		<br />
+
+		<div class="formItem">
+			<label>Eru töluð önnur tungumál en íslenska á heimili barnsins?</label>
+			<div class="radioSection">
+				<input class="radiobutton" checked="checked" type="radio" name="other_language" value="Já" />
+				<label>Já</label>
+				<input class="radiobutton" type="radio" name="other_language" value="Nei" />
+				<label>Nei</label>
+
+				<div class="Clear"></div>
+			</div>
+		</div>
+			<div class="formItem">
+			<label>Ef svarið er já, hvaða tungumál</label>
+			<input type="text" name="other_language_language" />
+		</div>
+		<div class="Clear"></div>
+
+		
+		<div class="attention">
+			<div class="attentionImage"></div>
+			<div class="attentionText">
+				<p>Gjald fyrir leikskóladvöl barna er mismunandi og ákvarðast af lengd dvalar, hjúskaparstöðu og ef foreldrar eru í lánshæfu námi.  Námsmönnum ber að skila námsvottorði.</p>
+			</div>
+			<div class="Clear"></div>
+		</div>
+	</div>
+
+	<h1 class="subHeader">3. Upplýsingar um sérstakar aðstæður</h1>
+
+	<div class="formSection">
+		<div class="attention">
+			<div class="attentionImage"></div>
+			<div class="attentionText">
+				<p>Hægt er að sækja um forgang ef um sérstakar aðstæður er að ræða, svo sem fötlun barns, alvarleg veikindi eða mjög erfiðar aðstæður fjölskyldunnar.  Með umsókn um forgang að leikskóla vegna sérstakra aðstæðna þarf að fylgja vottorð frá heilbrigðisstofnun eða öðrum ábyrgum aðila.</p>
+			</div>
+
+			<div class="Clear"></div>
+		</div>
+
+		<p>Annað sem þú vilt nefna?</p>
+		<textarea name="other_information"></textarea>
+	</div>
+
+	<h1  class="subHeader" >Skilmálar</h1>
+
+	<div  class="formSection">
+		<p  class="agreement">Aðeins foreldri með forsjá barns og þar sem það hefur lögheimili hjá, getur innritað það í leikskóla, sbr. barnalög nr. 76/2003.</p>
+		<div  class="formItem radioButtonItem required">
+			<input type="checkbox" name="prm_agreement"  class="checkbox" value="true" id="id24667854" />
+			<label  for="id24667854" id="id27620788" ><span >Ég staðfesti að ég samþykki skilmála um innritun barna í leikskóla. </span></label>
+		</div>
+		<div  class="Clear"></div>
+	</div>
+
+		
+	<div class="bottom">
+		<a href="javascript: form_onsubmit();" class="button"><span class="buttonSpan"><span class="left"></span><span class="middle">Senda</span><span class="right"></span></span></a>
+		<a href="/pages/notandi/sidanmin/" class="buttonCancel">Hætta við</a>
+	</div>
+</form>
+</body>
+</html>
