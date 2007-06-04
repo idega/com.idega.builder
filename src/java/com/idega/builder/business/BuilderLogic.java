@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.253 2007/06/01 15:29:47 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.254 2007/06/04 10:38:30 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -72,6 +72,7 @@ import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
@@ -237,28 +238,20 @@ public class BuilderLogic implements Singleton {
 	public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc) {
 
 		IWBundle iwb = getBuilderBundle();
+		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		page.addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
 		
 		CoreUtil.addJavaSciptForChooser(iwc);
 		
 		try {
-//			page.addJavascriptURL(getWeb2Business(iwc).getPrototypeScriptFilePath(Web2BusinessBean.PROTOTYPE_LATEST_VERSION));			
-//			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToScriptaculousLib());
-//			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToBehaviourLib());
-//			page.addJavascriptURL(getWeb2Business(iwc).getLightboxScriptFilePath());
-//			page.addJavascriptURL(getWeb2Business(iwc).getNiftyCubeScriptFilePath());
-//			
-//			page.addStyleSheetURL(getWeb2Business(iwc).getLightboxStyleFilePath());
-			
-			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToMootoolsLib());				//	Mootools
-			page.addJavascriptURL(getWeb2Business(iwc).getMoodalboxScriptFilePath(false));			//	MOOdalBox
+			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToMootoolsLib());		//	Mootools
+			page.addJavascriptURL(getWeb2Business(iwc).getMoodalboxScriptFilePath(false));	//	MOOdalBox
 			
 			page.addStyleSheetURL(getWeb2Business(iwc).getMoodalboxStyleFilePath());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
 
-//		page.addJavascriptURL("/dwr/engine.js");
 		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
 		
 		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
@@ -295,7 +288,7 @@ public class BuilderLogic implements Singleton {
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", getAddIcon(addModuleUri, null));
+				Layer marker = getLabelMarker(parentKey, "page", getAddIcon(addModuleUri, null, iwrb));
 				page.add(marker);
 							
 				if (!clipboardEmpty){
@@ -313,7 +306,7 @@ public class BuilderLogic implements Singleton {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					Layer marker = getLabelMarker(regionKey, regionKey, getAddIcon(addModuleUri, regionKey));
+					Layer marker = getLabelMarker(regionKey, regionKey, getAddIcon(addModuleUri, regionKey, iwrb));
 					hPage.add(marker,regionKey);
 					
 					if (!clipboardEmpty){
@@ -346,7 +339,7 @@ public class BuilderLogic implements Singleton {
 			
 			if(mayAddButtonsInPage){
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", getAddIcon(addModuleUri, null));
+				Layer marker = getLabelMarker(parentKey, "page", getAddIcon(addModuleUri, null, iwrb));
 
 				if ((!clipboardEmpty)){
 					marker.add(getPasteIcon(parentKey, null, iwc));
@@ -381,7 +374,7 @@ public class BuilderLogic implements Singleton {
 		}
 		else {
 			Layer labelContainer = new Layer();
-			labelContainer.add(label);
+			//labelContainer.add(label);
 			marker.add(labelContainer);
 			HiddenInput regionLabel = new HiddenInput("region_label", label);
 			marker.add(regionLabel);
@@ -479,6 +472,8 @@ public class BuilderLogic implements Singleton {
 	}
 
 	private void transformObject(Page currentPage,String pageKey, UIComponent obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
+		IWResourceBundle iwrb = getBuilderBundle().getResourceBundle(iwc);
+		
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		boolean clipboardEmpty = (pasted == null);
 		//We can either be working with pure UIComponents or PresentationObjects
@@ -534,7 +529,7 @@ public class BuilderLogic implements Singleton {
 					if (curr.getIsExtendingTemplate()) {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
-								Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel()));
+								Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel(), iwrb));
 								container.add(marker);
 								
 								if (!clipboardEmpty){
@@ -547,7 +542,7 @@ public class BuilderLogic implements Singleton {
 							}
 						}
 						else {
-							Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel()));
+							Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel(), iwrb));
 							container.add(marker);
 														
 							if (!clipboardEmpty){
@@ -572,7 +567,7 @@ public class BuilderLogic implements Singleton {
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel()));
+						Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel(), iwrb));
 						container.add(marker);
 												
 						if (!clipboardEmpty){
@@ -614,6 +609,8 @@ public class BuilderLogic implements Singleton {
 	 * @param clipboardEmpty
 	 */
 	protected void transformTable(Page currentPage, String pageKey, UIComponent obj, IWContext iwc, boolean clipboardEmpty) {
+		IWResourceBundle iwrb = getBuilderBundle().getResourceBundle(iwc);
+		
 		Table tab = (Table) obj;
 		int cols = tab.getColumns();
 		int rows = tab.getRows();
@@ -629,7 +626,7 @@ public class BuilderLogic implements Singleton {
 				if (currentPage.getIsExtendingTemplate()) {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
-							Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y)));
+							Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y), iwrb));
 							tab.add(marker, x, y);
 							
 							if (!clipboardEmpty){
@@ -642,7 +639,7 @@ public class BuilderLogic implements Singleton {
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y)));
+						Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y), iwrb));
 						tab.add(marker, x, y);
 						
 						if (!clipboardEmpty) {
@@ -664,7 +661,7 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 				else {
-					Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y)));
+					Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y), iwrb));
 					tab.add(marker, x, y);
 					
 					if (!clipboardEmpty) {
@@ -1871,35 +1868,24 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getAddIcon(String uri, String label) {
-		Image addImage = getBuilderBundle().getImage("add.png", "Add new component");
+	public PresentationObject getAddIcon(String uri, String label, IWResourceBundle iwrb) {
+		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("create_simple_template.Region", "Region"));
+		if (label != null) {
+			title.append(": ").append(label);
+		}
+		title.append(" :: ").append(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));
+		
+		
+		Image addImage = getBuilderBundle().getImage("add.png", title.toString());
 		addImage.setOnClick("setPropertiesForAddModule(this.parentNode);");
+		addImage.setStyleClass("add_module_to_region_image");
 
-		//	Link for MOOdalBox
+		// Link for MOOdalBox
 		Link link = new Link(addImage);
 		link.setMarkupAttribute("rel", "moodalbox");
 		link.setURL(uri);
 
-		if (label != null) {
-			link.setToolTip(label);
-		}
-	
 		return link;
-		
-		/*Image addImage = getBuilderBundle().getImage("add.gif", "Add new component");
-
-		Link link = new Link(addImage);
-		link.setStyleClass("regionButton");	
-		link.setWindowToOpen(IBAddModuleWindow.class);
-		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_ADD);
-		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
-		if(label!=null){
-			link.setToolTip(label);
-		}
-	
-		return link;*/
 	}
 	
 

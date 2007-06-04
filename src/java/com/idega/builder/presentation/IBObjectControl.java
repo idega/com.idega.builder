@@ -11,6 +11,7 @@ import javax.faces.component.UIComponent;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -58,6 +59,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 	private void init(IWContext iwc) {
 		
 		IWBundle iwb = getBundle(iwc);
+		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		
 		//details for divs and layout are changed in the stylesheet
 		//initilize stuff
@@ -187,7 +189,10 @@ public class IBObjectControl extends PresentationObjectContainer {
 			deleteImage.setOnClick(action.toString());
 			this.buttonsLayer.add(deleteImage);
 			
-			Image propertiesImage = iwb.getImage("information.png", "Set module properties", 16, 16);
+			StringBuffer title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
+			title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
+			Image propertiesImage = iwb.getImage("information.png", title.toString(), 16, 16);
+			propertiesImage.setStyleClass("module_properties_link");
 			Link link = new Link(propertiesImage);
 			link.setMarkupAttribute("rel", "moodalbox");
 			this.buttonsLayer.add(link);
