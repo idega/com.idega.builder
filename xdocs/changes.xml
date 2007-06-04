@@ -5,6 +5,12 @@
 	</properties>
 	<body>
 
+		<release version="3.1.7" date="2007-06-04">
+			<action dev="civilis" type="update">
+				The basic ability to catch spambots added to FormEmailer.
+			</action>
+		</release>
+		
 		<release version="3.1.6" date="2007-05-31">
 			<action dev="eiki" type="update">
 				Added syntax coloring support to the source view
