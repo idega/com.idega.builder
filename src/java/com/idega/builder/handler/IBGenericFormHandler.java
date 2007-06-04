@@ -107,7 +107,9 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	}
 	
 	private String getTypeForParameter(String parameterName) {
-		return (String) getTypesMap().get(parameterName);
+		
+		String type = (String) getTypesMap().get(parameterName);
+		return type == null ? STRING_TYPE : type;
 	}
 	
 	private String getProcessedValueForDisplay(IWContext iwc, String parameterName, String parameterValue) {
