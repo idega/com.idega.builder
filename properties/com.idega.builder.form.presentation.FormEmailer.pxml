@@ -512,7 +512,7 @@
             </value>
             <type>map</type>
           </key>
-           <key>
+          <key>
             <name>:method:1:implied:void:setSpambotCatchDummyParameter:java.lang.String:</name>
             <value>
               <map>
@@ -620,7 +620,7 @@
             </value>
             <type>map</type>
           </key>
-           <key>
+          <key>
             <name>:method:1:implied:void:setSpambotCatchTimeup:java.lang.Integer:</name>
             <value>
               <map>
