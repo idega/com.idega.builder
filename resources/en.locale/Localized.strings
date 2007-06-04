@@ -76,3 +76,5 @@ url=URL
 user=User
 using_template=Using template
 yes=Yes
+
+formemailer.spambotdetected=Sorry, you're most likely to be a spambot. If that's not the case, please press back and refill the form.
