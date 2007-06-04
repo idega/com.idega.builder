@@ -19,6 +19,7 @@ create_simple_template.Reset=Reset
 create_simple_template.Save=Save
 create_simple_template.Type=Type
 deleting_not_allowed=This page (template) is either used by other pages (templates) or is the start page (template) of the domain so you can't delete it.
+formemailer.spambotdetected=Sorry, you're most likely to be a spambot. If that's not the case, please press back and refill the form.
 frontPageName=frontPageName
 ib_page_export_Close=Close
 ib_page_export_Export=Export
