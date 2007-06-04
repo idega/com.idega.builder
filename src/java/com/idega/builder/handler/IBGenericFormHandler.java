@@ -90,7 +90,6 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 				}
 			}
 		}
-		System.out.println("Added " + count + " parameters to message, " + debugBuf);
 		return buffer.toString();
 	}
 	
