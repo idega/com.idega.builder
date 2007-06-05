@@ -3,7 +3,6 @@ package com.idega.builder.business;
 
 import com.idega.core.builder.data.ICDomain;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 
 import java.util.List;
 import java.util.Map;
@@ -12,8 +11,6 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.idegaweb.IWMainApplication;
 import java.rmi.RemoteException;
 import javax.faces.component.UIComponent;
-
-import org.jdom.Document;
 
 import com.idega.io.serialization.ObjectWriter;
 import java.util.Collection;
@@ -256,10 +253,6 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	public boolean isPropertyValueSet(String pageKey, String moduleId, String propertyName, String propertyValue);
 	
 	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove);
-	
-	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml);
-	
-	public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml);
 	
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey);
 	

@@ -29,7 +29,6 @@ import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
-import com.idega.presentation.PresentationObject;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
@@ -396,12 +395,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getExistingPageKeyByURI(requestURI,domain);
 	}
 	
-	public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml) {
-		return getBuilderLogic().getRenderedPresentationObjectAsString(iwc, object, cleanHtml);
+	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml) {
+		return getBuilderLogic().getRenderedComponent(component, iwc, cleanHtml);
 	}
 	
-	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
-		return getBuilderLogic().getRenderedPresentationObject(iwc, object, cleanHtml);
+	public Document getRenderedComponent(IWContext iwc, UIComponent object, boolean cleanHtml) {
+		return getBuilderLogic().getRenderedComponent(iwc, object, cleanHtml);
 	}
 	
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey) {

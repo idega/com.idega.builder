@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.254 2007/06/04 10:38:30 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.255 2007/06/05 17:00:15 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -22,7 +22,9 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.faces.render.RenderKitFactory;
 
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
 import org.htmlcleaner.HtmlCleaner;
@@ -57,6 +59,7 @@ import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.view.ViewManager;
@@ -96,6 +99,7 @@ import com.idega.repository.data.SingletonRepository;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
+import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
@@ -288,7 +292,7 @@ public class BuilderLogic implements Singleton {
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", getAddIcon(addModuleUri, null, iwrb));
+				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, null, iwrb));
 				page.add(marker);
 							
 				if (!clipboardEmpty){
@@ -306,7 +310,7 @@ public class BuilderLogic implements Singleton {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
-					Layer marker = getLabelMarker(regionKey, regionKey, getAddIcon(addModuleUri, regionKey, iwrb));
+					Layer marker = getLabelMarker(regionKey, regionKey, getButtonsLayer(addModuleUri, regionKey, iwrb));
 					hPage.add(marker,regionKey);
 					
 					if (!clipboardEmpty){
@@ -339,7 +343,7 @@ public class BuilderLogic implements Singleton {
 			
 			if(mayAddButtonsInPage){
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", getAddIcon(addModuleUri, null, iwrb));
+				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, null, iwrb));
 
 				if ((!clipboardEmpty)){
 					marker.add(getPasteIcon(parentKey, null, iwc));
@@ -359,13 +363,13 @@ public class BuilderLogic implements Singleton {
 		return (page);
 	}
 
-	public Layer getLabelMarker(String label, String parentKey, PresentationObject addIcon) {
+	public Layer getLabelMarker(String label, String parentKey, PresentationObject buttons) {
 		Layer marker = new Layer(Layer.DIV);
 		marker.add(new CSSSpacer());
 		marker.setStyleClass("regionLabel");
 		
-		if (addIcon != null) {
-			marker.add(addIcon);
+		if (buttons != null) {
+			marker.add(buttons);
 		}
 		
 		if (label == null) {
@@ -529,7 +533,7 @@ public class BuilderLogic implements Singleton {
 					if (curr.getIsExtendingTemplate()) {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
-								Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel(), iwrb));
+								Layer marker = getLabelMarker(instanceId, container.getLabel(), getButtonsLayer(addModuleUri, container.getLabel(), iwrb));
 								container.add(marker);
 								
 								if (!clipboardEmpty){
@@ -542,7 +546,7 @@ public class BuilderLogic implements Singleton {
 							}
 						}
 						else {
-							Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel(), iwrb));
+							Layer marker = getLabelMarker(instanceId, container.getLabel(), getButtonsLayer(addModuleUri, container.getLabel(), iwrb));
 							container.add(marker);
 														
 							if (!clipboardEmpty){
@@ -567,7 +571,7 @@ public class BuilderLogic implements Singleton {
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(instanceId, container.getLabel(), getAddIcon(addModuleUri, container.getLabel(), iwrb));
+						Layer marker = getLabelMarker(instanceId, container.getLabel(), getButtonsLayer(addModuleUri, container.getLabel(), iwrb));
 						container.add(marker);
 												
 						if (!clipboardEmpty){
@@ -626,7 +630,7 @@ public class BuilderLogic implements Singleton {
 				if (currentPage.getIsExtendingTemplate()) {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
-							Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y), iwrb));
+							Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb));
 							tab.add(marker, x, y);
 							
 							if (!clipboardEmpty){
@@ -639,7 +643,7 @@ public class BuilderLogic implements Singleton {
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y), iwrb));
+						Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb));
 						tab.add(marker, x, y);
 						
 						if (!clipboardEmpty) {
@@ -661,7 +665,7 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 				else {
-					Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getAddIcon(addModuleUri, tab.getLabel(x, y), iwrb));
+					Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb));
 					tab.add(marker, x, y);
 					
 					if (!clipboardEmpty) {
@@ -1868,24 +1872,44 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getAddIcon(String uri, String label, IWResourceBundle iwrb) {
+	public PresentationObject getButtonsLayer(String uri, String label, IWResourceBundle iwrb) {
+		Layer buttons = new Layer();
+		
+		//	Add module button
 		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("create_simple_template.Region", "Region"));
 		if (label != null) {
 			title.append(": ").append(label);
 		}
 		title.append(" :: ").append(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));
-		
-		
-		Image addImage = getBuilderBundle().getImage("add.png", title.toString());
-		addImage.setOnClick("setPropertiesForAddModule(this.parentNode);");
-		addImage.setStyleClass("add_module_to_region_image");
-
+		Image addModule = getBuilderBundle().getImage("add_32.png", title.toString(), 24, 24);
+		addModule.setOnClick("setPropertiesForAddModule(this.parentNode.parentNode);");
+		addModule.setStyleClass("add_module_to_region_image");
 		// Link for MOOdalBox
-		Link link = new Link(addImage);
+		Link link = new Link(addModule);
 		link.setMarkupAttribute("rel", "moodalbox");
 		link.setURL(uri);
-
-		return link;
+		buttons.add(link);
+		
+		//	Add article button
+		title = new StringBuffer(iwrb.getLocalizedString("article_module", "Article")).append(" :: ");
+		title.append(iwrb.getLocalizedString("add_article_module", "Add article module"));
+		Image addArticle = getBuilderBundle().getImage("article_32.png", title.toString(), 24, 24);
+		addArticle.setStyleClass("add_article_module_to_region_image");
+		
+		ICObject article = null;
+		try {
+			article = getICObjectHome().findByClassName("com.idega.block.article.component.ArticleItemViewer");	//	TODO
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (article != null) {
+			addArticle.setMarkupAttribute("icobjectid", article.getID());
+			addArticle.setMarkupAttribute("icobjectclass", article.getClassName());
+		}
+		
+		buttons.add(addArticle);
+		
+		return buttons;
 	}
 	
 
@@ -2227,6 +2251,15 @@ public class BuilderLogic implements Singleton {
 		}
 		catch (IDOLookupException e) {
 			throw new RuntimeException(e);
+		}
+	}
+	
+	private ICObjectHome getICObjectHome() {
+		try {
+			return (ICObjectHome) IDOLookup.getHome(ICObject.class);
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 	
@@ -2788,7 +2821,7 @@ public class BuilderLogic implements Singleton {
 	 * @param cleanHtml
 	 * @return String of rendered object or null
 	 */
-	public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml) {
+	/*public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml) {
 		//	Writing (rendering) object to ResponseWriter
 		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
 		iwc.setResponseWriter(writer);		
@@ -2817,17 +2850,68 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return renderedObject;
+	}*/
+	
+	/**
+	 * Renders single UIComponent
+	 * @param iwc
+	 * @param component - object to render
+	 * @param cleanHtml
+	 * @return String of rendered object or null
+	 */
+	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml) {
+		if (iwc == null || component == null) {
+			return null;
+		}
+		
+		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+		iwc.setResponseWriter(writer);
+		
+		if (iwc.getViewRoot() == null) {
+			UIViewRoot root = new UIViewRoot();
+			root.setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
+			iwc.setViewRoot(root);
+		}
+		
+		try {
+			RenderUtils.renderChild(iwc, component);			
+		} catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		
+		String rendered = writer.toString();
+//		System.out.println("Rendered object: \n" + rendered);
+		if (rendered == null) {
+			return null;
+		}
+		
+		if (cleanHtml) {
+			// Cleaning - need valid XML structure
+			HtmlCleaner cleaner = new HtmlCleaner(rendered);
+			cleaner.setOmitDoctypeDeclaration(true);
+			try {
+				cleaner.clean();
+				rendered = cleaner.getPrettyXmlAsString();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+//			System.out.println("Cleaned object: \n" + renderedObject);
+		}
+		
+		return rendered;
 	}
 	
 	/**
-	 * Renders single PresentationObject and created JDOM Document of rendered object
+	 * Renders single UIComponent and creates JDOM Document of rendered object
 	 * @param iwc
-	 * @param object - object to render
+	 * @param component - object to render
 	 * @param cleanHtml
 	 * @return JDOM Document or null
 	 */
-	public Document getRenderedPresentationObject(IWContext iwc, PresentationObject object, boolean cleanHtml) {
-		String rendered = getRenderedPresentationObjectAsString(iwc, object, cleanHtml);
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml) {
+		String rendered = getRenderedComponent(component, iwc, cleanHtml);
 		if (rendered == null) {
 			return null;
 		}
