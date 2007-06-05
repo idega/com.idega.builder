@@ -227,32 +227,32 @@ public class FormEmailer extends Block {
 	
 	protected boolean isSpambot(IWContext iwc) {
 		
-		String dsc_par = getSpambotCatchDummyParameter() == null ? null : handler.getParameterValue(iwc, getSpambotCatchDummyParameter());
-		
-		if(dsc_par != null && !"0".equals(dsc_par))
-			return true;
-		else {
+		if(getSpambotCatchDummyParameter() != null) {
 			
-			if(getSpambotCatchTimeParameter() == null)
-				return false;
+			String dsc_par = handler.getParameterValue(iwc, getSpambotCatchDummyParameter());
+			
+			if(!"0".equals(dsc_par))
+				return true;
+		}
+		
+		if(getSpambotCatchTimeParameter() != null) {
 			
 			String sct_par = handler.getParameterValue(iwc, getSpambotCatchTimeParameter());
-		
+			
 			if(sct_par == null)
-				return false;
-			else {
+				return true;
+			
+			try {
+				int sct = Integer.parseInt(sct_par);
 				
-				try {
-					Integer sct = Integer.parseInt(sct_par);
-					
-					if(sct < getSpambotCatchTimeup())
-						return true;
-					
-				} catch (Exception e) {
+				if(sct < getSpambotCatchTimeup().intValue())
 					return true;
-				}
+				
+			} catch (Exception e) {
+				return true;
 			}
 		}
+		
 		return false;
 	}
 
