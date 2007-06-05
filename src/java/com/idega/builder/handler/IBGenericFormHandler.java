@@ -90,7 +90,6 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 				}
 			}
 		}
-		System.out.println("Added " + count + " parameters to message, " + debugBuf);
 		return buffer.toString();
 	}
 	
@@ -107,7 +106,8 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	}
 	
 	private String getTypeForParameter(String parameterName) {
-		return (String) getTypesMap().get(parameterName);
+		String type = (String) getTypesMap().get(parameterName);
+		return type == null ? STRING_TYPE : type;
 	}
 	
 	private String getProcessedValueForDisplay(IWContext iwc, String parameterName, String parameterValue) {
