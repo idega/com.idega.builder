@@ -182,16 +182,21 @@ public class IBObjectControl extends PresentationObjectContainer {
 			this.containerLayer.add(tempDragDropContainer);
 			this.containerLayer.add(this.contentLayer);
 			
-			Image deleteImage = iwb.getImage("del_16.gif", "Delete component",16,16);
+			//	Delete module
+			StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
+			title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
+			Image deleteImage = iwb.getImage("delete_32.png", title.toString(), 24, 24);
 			String paramsSeparator = "', '";
 			StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(paramsSeparator).append(pageKey);
 			action.append(paramsSeparator).append(this.parentKey).append(paramsSeparator).append(instanceId).append("');");
 			deleteImage.setOnClick(action.toString());
+			deleteImage.setStyleClass("delete_module_image");
 			this.buttonsLayer.add(deleteImage);
 			
-			StringBuffer title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
+			//	Module properties
+			title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
 			title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
-			Image propertiesImage = iwb.getImage("information.png", title.toString(), 16, 16);
+			Image propertiesImage = iwb.getImage("info_32.png", title.toString(), 24, 24);
 			propertiesImage.setStyleClass("module_properties_link");
 			Link link = new Link(propertiesImage);
 			link.setMarkupAttribute("rel", "moodalbox");
