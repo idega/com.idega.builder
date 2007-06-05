@@ -3,7 +3,7 @@ package com.idega.builder.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
+import javax.faces.component.UIComponent;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +25,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
+import com.idega.util.CoreUtil;
 
 public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 	
@@ -33,19 +34,9 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 	
 	private BuilderLogic builder = BuilderLogic.getInstance();
 	
-	private IWContext getIWContext() {
-		FacesContext fc = FacesContext.getCurrentInstance();
-		if (fc == null) {
-			return IWContext.getInstance();
-		}
-		else {
-			return IWContext.getIWContext(fc);
-		}
-	}
-	
 	public List<String> getBuilderInitInfo() {
 		List<String> info = new ArrayList<String>();
-		IWContext iwc = getIWContext();
+		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return info;
 		}
@@ -75,64 +66,65 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return info;
 	}
 	
+	public String addModule(String pageKey, String containerId, String instanceId, int objectId, boolean useThread) {
+		if (pageKey == null || instanceId == null || objectId < 0) {
+			return null;
+		}
+		
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return null;
+		}
+		
+		return addModule(iwc, pageKey, containerId, instanceId, objectId, useThread);
+	}
+	
 	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index) {
 		if (pageKey == null || instanceId == null || objectId < 0 || className == null) {
 			return null;
 		}
 		
-		// Getting needed parameters
-		IWContext iwc = getIWContext();
+		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
 		}
 		
-		// Adding region (if region doesn't exist)
-		builder.addRegion(pageKey, containerId, instanceId, false);
-		
-		
-		// Adding module
-		String uuid = null;
-		IWSlideSession session = getSession(iwc);
-		synchronized (BuilderEngineBean.class) {
-			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, session);
-		}
+		String uuid = addModule(iwc, pageKey, containerId, instanceId, objectId, true);
 		if (uuid == null) {
 			return null;
 		}
-		uuid = new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
 
-		// Getting instance of selected component
-		Class objectClass = null;
-		try {
-			objectClass = RefactorClassRegistry.forName(className);
-		} catch (ClassNotFoundException e) {
-			log.error(e);
-			return null;
-		}
-		PresentationObject obj = null;
-		try {
-			obj = (PresentationObject) objectClass.newInstance();
-			obj.setId(uuid);
-		} catch (Exception e){
-			log.error(e);
-			return null;
-		}
-		// Getting needed parameters
-		Page currentPage = builder.getPage(pageKey, iwc);
-		if (currentPage == null) {
-			return null;
-		}
-		IBObjectControl objectComponent =  new IBObjectControl(obj, currentPage, containerId, iwc, index);
-		if (objectComponent == null) {
+		UIComponent component = getComponentInstance(className, uuid);
+		if (component == null) {
 			return null;
 		}
 		
-		Document renderedObject = builder.getRenderedPresentationObject(iwc, objectComponent, false);
+		Document transformedModule = getTransformedModule(pageKey, iwc, component, containerId, index);
+		IWSlideSession session = getSession(iwc);
 		// Returning result
-		if (renderedObject != null && session != null) {
-			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache (also need to improve)
+		if (transformedModule != null && session != null) {
+			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache
 		}
-		return renderedObject;
+		
+		return transformedModule;
+	}
+	
+	public Document getRenderedModule(String pageKey, String uuid, String containerId, int index) {
+		if (pageKey == null || uuid == null || containerId == null) {
+			return null;
+		}
+		
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return null;
+		}
+		
+		UIComponent component = findComponentInPage(iwc, pageKey, containerId, uuid);
+		if (component == null) {
+			return null;
+		}
+		
+		return getTransformedModule(pageKey, iwc, component, containerId, index);
 	}
 	
 	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId) {
@@ -140,7 +132,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return false;
 		}
 		boolean result = false;
-		IWSlideSession session = getSession(getIWContext());
+		IWSlideSession session = getSession(CoreUtil.getIWContext());
 		synchronized (BuilderEngineBean.class) {
 			result = builder.deleteModule(pageKey, parentId, instanceId, session);
 		}
@@ -150,28 +142,11 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return result;
 	}
 	
-	private IWSlideSession getSession(IWContext iwc) {
-		if (iwc == null) {
-			iwc = getIWContext();
-			if (iwc == null) {
-				return null;
-			}
-		}
-		IWSlideSession session = null;
-		try {
-			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
-		} catch (Exception e) {
-			log.error(e);
-			return null;
-		}
-		return session;
-	}
-	
 	public Document getPropertyBox(String pageKey, String propertyName, String objectInstanceId) {
 		if (propertyName == null || objectInstanceId == null) {
 			return null;
 		}
-		IWContext iwc = getIWContext();
+		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
 		}
@@ -184,7 +159,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		iwc.setApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, objectInstanceId);
 		
 		PresentationObject propertyBox = new SetModulePropertyBlock();
-		Document renderedBox = builder.getRenderedPresentationObject(iwc, propertyBox, false);
+		Document renderedBox = builder.getRenderedComponent(iwc, propertyBox, false);
 		
 		iwc.removeApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER);
 		iwc.removeApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER);
@@ -198,12 +173,15 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 	}
 	
 	public Document reRenderObject(String pageKey, String regionId, String instanceId) {
-		if (pageKey == null || instanceId == null) {
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
 			return null;
 		}
-		
-		IWContext iwc = getIWContext();
-		if (iwc == null) {
+		return builder.getRenderedComponent(iwc, findComponentInPage(iwc, pageKey, regionId, instanceId), false);
+	}
+	
+	private UIComponent findComponentInPage(IWContext iwc, String pageKey, String regionId, String instanceId) {
+		if (pageKey == null || regionId == null || instanceId == null || iwc == null) {
 			return null;
 		}
 		
@@ -236,22 +214,102 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		boolean foundComponent = false;
-		PresentationObject object = null;
+		UIComponent component = null;
 		for (int i = 0; (i < regionChildren.size() && !foundComponent); i++) {
 			o = regionChildren.get(i);
-			if (o instanceof PresentationObject) {
-				object = (PresentationObject) o;
-				if (instanceId.equals(object.getId())) {
+			if (o instanceof UIComponent) {
+				component = (UIComponent) o;
+				if (instanceId.equals(component.getId())) {
 					foundComponent = true;
 				}
 			}
 		}
+		
 		if (!foundComponent) {
 			return null;
 		}
 		
-		Document reRenderedObject = builder.getRenderedPresentationObject(iwc, object, false);
-		return reRenderedObject;
+		return component;
+	}
+	
+	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, String containerId, int index) {
+		//	Getting IBObjectControl - 'container'
+		Page currentPage = builder.getPage(pageKey, iwc);
+		if (currentPage == null) {
+			return null;
+		}
+		IBObjectControl objectComponent = new IBObjectControl(component, currentPage, containerId, iwc, index);
+		if (objectComponent == null) {
+			return null;
+		}
+		
+		return builder.getRenderedComponent(iwc, objectComponent, false);
+	}
+	
+	private UIComponent getComponentInstance(String className, String uuid) {
+		//	Getting instance of selected component
+		Class objectClass = null;
+		try {
+			objectClass = RefactorClassRegistry.forName(className);
+		} catch (ClassNotFoundException e) {
+			log.error(e);
+			return null;
+		}
+
+		Object o = null;
+		try {
+			o = objectClass.newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		UIComponent component = null;
+		if (o instanceof UIComponent) {
+			component = (UIComponent) o;
+		}
+		else {
+			log.error("Unknown object: " + o);
+			return null;
+		}
+		component.setId(uuid);
+		
+		return component;
+	}
+	
+	private String addModule(IWContext iwc, String pageKey, String containerId, String instanceId, int objectId, boolean useThread) {
+		//	Adding region (if region doesn't exist)
+		builder.addRegion(pageKey, containerId, instanceId, false);
+		
+		// Adding module
+		String uuid = null;
+		IWSlideSession session = null;
+		if (useThread) {
+			session = getSession(iwc);
+		}
+		synchronized (BuilderEngineBean.class) {
+			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, session);
+		}
+		if (uuid == null) {
+			return null;
+		}
+		return new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
+	}
+	
+	private IWSlideSession getSession(IWContext iwc) {
+		if (iwc == null) {
+			iwc = CoreUtil.getIWContext();
+			if (iwc == null) {
+				return null;
+			}
+		}
+		IWSlideSession session = null;
+		try {
+			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
+		} catch (Exception e) {
+			log.error(e);
+			return null;
+		}
+		return session;
 	}
 
 }

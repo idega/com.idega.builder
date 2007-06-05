@@ -118,6 +118,44 @@ function registerBuilderActions() {
 			initToolTipForElement(element);
 		}
 	);
+	
+	$$('img.delete_module_image').each(
+		function(element) {
+			initToolTipForElement(element);
+		}
+	);
+	
+	$$('img.add_article_module_to_region_image').each(
+		function(element) {
+			initToolTipForElement(element);
+			element.onclick = function() {
+				addConcreteModule(element);
+			}
+		}
+	);
+}
+
+function addConcreteModule(element) {
+	if (element == null) {
+		return;
+	}
+	
+	setPropertiesForAddModule(element.parentNode);
+	
+	var attr = element.attributes;	
+	var objectId = null;
+	if (attr.getNamedItem("icobjectid") != null) {
+		objectId = attr.getNamedItem("icobjectid").value;
+	}
+	var objectClass = null;
+	if (attr.getNamedItem("icobjectclass") != null) {
+		objectClass = attr.getNamedItem("icobjectclass").value;
+	}
+	if (objectId == null || objectClass == null) {
+		return;
+	}
+
+	addSelectedModule(objectId, objectClass);
 }
 
 function initToolTipForElement(element) {
@@ -376,9 +414,32 @@ function addSelectedModule(newObjectId, className) {
 	}
 	
 	showLoadingMessage(ADDING_MODULE_LABEL);
-	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, {
-		callback: function(component) {
-			addSelectedModuleCallback(component, PARENT_ID);
+	
+	if (className == 'com.idega.block.article.component.ArticleItemViewer') {
+		BuilderEngine.addModule(PAGE_KEY, PARENT_ID, INSTANCE_ID, newObjectId, false, {
+			callback: function(uuid) {
+				addConcreteModuleCallback(uuid, index, PARENT_ID);
+			}
+		});
+	}
+	else {
+		BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, {
+			callback: function(component) {
+				addSelectedModuleCallback(component, PARENT_ID);
+			}
+		});
+	}
+}
+
+function addConcreteModuleCallback(uuid, index, id) {
+	if (uuid == null) {
+		closeLoadingMessage();
+		return false;
+	}
+	
+	BuilderEngine.getRenderedModule(PAGE_KEY, uuid, id, index, {
+		callback: function(componentContainer) {
+			addSelectedModuleCallback(componentContainer, id);
 		}
 	});
 }

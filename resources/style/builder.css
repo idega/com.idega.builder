@@ -467,3 +467,7 @@ div#simple_properties_box {
 	background: #CFDFA7;
 }
 /** Tooltips ends **/
+
+.add_article_module_to_region_image:hover {
+	cursor: pointer;
+}
