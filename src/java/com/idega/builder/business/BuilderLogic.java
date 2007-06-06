@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.255 2007/06/05 17:00:15 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.256 2007/06/06 12:08:00 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -96,16 +96,17 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
+import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
+import com.idega.util.IWTimestamp;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
-
 
 /**
  * <p>
@@ -161,6 +162,7 @@ public class BuilderLogic implements Singleton {
 	private String[] pageFormats = {this.PAGE_FORMAT_IBXML,this.PAGE_FORMAT_HTML,this.PAGE_FORMAT_JSP_1_2};
 	
 	private volatile Web2Business web2 = null;
+	private IWSlideService slideService = null;
 	
 	protected BuilderLogic() {
 		// empty
@@ -3013,6 +3015,47 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return result;
+	}
+	
+	public String generateResourcePath(String base, String scope, String fileName) {
+		IWSlideService service = getSlideService();
+		StringBuffer path = new StringBuffer(getYearMonthPath(base)).append(BuilderConstants.SLASH);
+		path.append(service.createUniqueFileName(scope)).append(BuilderConstants.DOT);
+		path.append(fileName);
+		return path.toString();
+	}
+	
+	/**
+	 * Creates path (uri) based on base path and current time
+	 * @return
+	 */
+	private String getYearMonthPath(String basePath) {
+		StringBuffer path = new StringBuffer(basePath).append(BuilderConstants.SLASH);
+		path.append(getYearMonthPath());
+		return path.toString();
+	}
+	
+	/**
+	 * Creates path (uri) based on current time
+	 * @return
+	 */
+	public String getYearMonthPath() {
+		IWTimestamp now = new IWTimestamp();
+		StringBuffer path = new StringBuffer();
+		path.append(now.getYear()).append(BuilderConstants.SLASH).append(now.getDateString("MM"));
+		return path.toString();
+	}
+	
+	private synchronized IWSlideService getSlideService() {
+		if (slideService == null) {
+			try {
+				slideService = (IWSlideService) IBOLookup.getServiceInstance(CoreUtil.getIWContext(), IWSlideService.class);
+			} catch (IBOLookupException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		return slideService;
 	}
 
 }

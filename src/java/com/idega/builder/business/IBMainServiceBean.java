@@ -422,4 +422,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean removeAllBlockObjectsFromCache(IWContext iwc) {
 		return getBuilderLogic().removeAllBlockObjectsFromCache(iwc);
 	}
+	
+	public String generateResourcePath(String base, String scope, String fileName) {
+		return getBuilderLogic().generateResourcePath(base, scope, fileName);
+	}
+	
+	public String getYearMonthPath() {
+		return getBuilderLogic().getYearMonthPath();
+	}
 }

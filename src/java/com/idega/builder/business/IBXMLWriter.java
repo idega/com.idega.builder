@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.7 2007/05/11 12:28:19 civilis Exp $
+ * $Id: IBXMLWriter.java,v 1.8 2007/06/06 12:08:00 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -20,6 +20,7 @@ import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.idgenerator.business.UUIDGenerator;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.CoreConstants;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -675,24 +676,14 @@ public class IBXMLWriter {
 	 * @param obj
 	 */
 	private void onObjectAdd(XMLElement parent, XMLElement newElement, String pageKey, String newInstanceId, ICObject obj) {
-		// TODO: Temparary hardcoding for article, move this to article block.
-		if(obj.getClassName().indexOf("ArticleItemViewer")!=-1){
+		if(obj.getClassName().indexOf("ArticleItemViewer") != -1) {
 			
 			IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageKey);
 			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			
 			String propertyName = "resourcePath";
-			String pageUri = xml.getURI();
-			if(pageUri.startsWith("/pages")){
-					pageUri = pageUri.substring("/pages".length(),pageUri.length());
-			}
-			if(pageUri.endsWith("/")){
-				pageUri=pageUri.substring(0,pageUri.length()-1);
-			}
-			if(pageUri.equals("/")||pageUri.equals("")){
-				pageUri="/root";
-			}
-			String propertyValue = "/files/cms/article"+pageUri+".article";
+			String base = new StringBuffer(CoreConstants.CONTENT_PATH).append(CoreConstants.ARTICLE_CONTENT_PATH).toString();
+			String propertyValue = getBuilderLogic().generateResourcePath(base, CoreConstants.ARTICLE_FILENAME_SCOPE, CoreConstants.ARTICLE_FILENAME_SCOPE);
 			
 			setProperty(iwma, xml, newInstanceId, propertyName, propertyValue);
 		}

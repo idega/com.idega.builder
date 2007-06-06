@@ -1,8 +1,8 @@
 package com.idega.builder.bean;
 
-
 import com.idega.business.IBOService;
 import java.util.List;
+
 import org.jdom.Document;
 import java.rmi.RemoteException;
 
