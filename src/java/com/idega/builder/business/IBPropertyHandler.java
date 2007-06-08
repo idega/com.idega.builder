@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.67 2007/05/31 13:52:12 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.68 2007/06/08 08:46:44 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,8 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Span;
+import com.idega.presentation.Table;
+import com.idega.presentation.TableCell;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.CheckBox;
@@ -628,11 +630,44 @@ public class IBPropertyHandler implements Singleton{
 		if (object == null) {
 			return;
 		}
-		object.setMarkupAttribute("propname", propertyName);
-		object.setMarkupAttribute("moduleid", instanceId);
-		object.setMarkupAttribute("needsreload", needReload);
 		
-		object.setStyleClass(className);
+		if (object instanceof Table) {
+			Table t = (Table) object;
+			TableCell cell = null;
+			
+			int columns = t.getColumns() + 1;
+			int rows = t.getRows() + 1;
+			for (int i = 1; i < rows; i++) {
+				cell = null;
+				for (int j = 1; j < columns; j++) {
+					cell = t.getCellAt(j, i);
+					if (cell != null) {
+						List children = cell.getChildren();
+						if (children != null) {
+							for (int k = 0; k < children.size(); k++) {
+								setMarkupAttributesToObject(children.get(k), propertyName, instanceId, needReload, className);
+							}
+						}
+					}
+				}
+			}
+		}
+		else {
+			setMarkupAttributesToObject(object, propertyName, instanceId, needReload, className);
+		}
+	}
+	
+	private boolean setMarkupAttributesToObject(Object object, String propertyName, String instanceId, boolean needReload, String className) {
+		if (!(object instanceof PresentationObject)) {
+			return false;
+		}
+		PresentationObject po = (PresentationObject) object;
+		po.setMarkupAttribute("propname", propertyName);
+		po.setMarkupAttribute("moduleid", instanceId);
+		po.setMarkupAttribute("needsreload", needReload);
+		po.setStyleClass(className);
+		
+		return true;
 	}
 	
 	/**

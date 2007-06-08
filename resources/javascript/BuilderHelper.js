@@ -1,19 +1,19 @@
-var ADD_NEW_COMPONENT_WINDOW_LINK = "/workspase/window/";
-var EDIT_COMPONENT_WINDOW_LINK = "/workspase/window/";
+var ADD_NEW_COMPONENT_WINDOW_LINK = '/workspase/window/';
+var EDIT_COMPONENT_WINDOW_LINK = '/workspase/window/';
 
-var ADD_NEW_COMPONENT_IMAGE = "/idegaweb/bundles/com.idega.builder.bundle/resources/add.png";
-var COMPONENT_INFORMATION_IMAGE = "/idegaweb/bundles/com.idega.builder.bundle/resources/information.png";
+var ADD_NEW_COMPONENT_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/add.png';
+var COMPONENT_INFORMATION_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/information.png';
 
-var ADD_NEW_COMPONENT_LABEL = "Add a new Module";
-var COMPONENT_INFORMATION_LABEL = "Set module properties";
-var NO_IDS_ERROR_MESSAGE = "Error occurred while inserting selected module!";
-var ADDING_MODULE_LABEL = "Adding...";
-var REGION_LABEL = "Region";
-var DELETING_LABEL = "Deleting...";
-var ARE_YOU_SURE_MESSAGE = "Are You sure?";
-var SAVING_LABEL = "Saving...";
-var LOADING_LABEL = "Loading...";
-var RELOADING_LABEL = "Reloading...";
+var ADD_NEW_COMPONENT_LABEL = 'Add a new Module';
+var COMPONENT_INFORMATION_LABEL = 'Set module properties';
+var NO_IDS_ERROR_MESSAGE = 'Error occurred while inserting selected module!';
+var ADDING_MODULE_LABEL = 'Adding...';
+var REGION_LABEL = 'Region';
+var DELETING_LABEL = 'Deleting...';
+var ARE_YOU_SURE_MESSAGE = 'Are You sure?';
+var SAVING_LABEL = 'Saving...';
+var LOADING_LABEL = 'Loading...';
+var RELOADING_LABEL = 'Reloading...';
 
 var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
@@ -24,10 +24,10 @@ var MODULE_CONTENT_ID = null;
 
 var ACTIVE_PROPERTY_SETTER_BOX = null;
 
-var IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
-var MODULE_NAME_PARAMETER = "moduleName";
-var IB_PAGE_PARAMETER = "ib_page";
-var HANLDER_VALUE_OBJECTS_STYLE_CLASS = "handlerValueObjects";
+var IC_OBJECT_INSTANCE_ID_PARAMETER = 'ic_object_instance_id_par';
+var MODULE_NAME_PARAMETER = 'moduleName';
+var IB_PAGE_PARAMETER = 'ib_page';
+var HANLDER_VALUE_OBJECTS_STYLE_CLASS = 'handlerValueObjects';
 
 var PROPERTIES_SHOWN = new Array();
 var PROPERTY_BOX_SHOWN = new Array();
@@ -94,14 +94,21 @@ function registerBuilderActions() {
 	$$('input.modulePropertySetter').each(
 		function(element) {
 			element.onblur = function(event) {
-				if (element.type == "text") {
+				if (element.type == 'text' || element.type == 'password') {
 					saveModuleProperty(null, element);
 				}
 			},
 			element.onkeypress = function(event) {
 				saveModuleProperty(event, element);
-			}
+			},
 			element.onclick = function(event) {
+				saveModuleProperty(event, element);
+			}
+		}
+	);
+	$$('select.modulePropertySetter').each(
+		function(element) {
+			element.onchange = function(event) {
 				saveModuleProperty(event, element);
 			}
 		}
@@ -144,12 +151,12 @@ function addConcreteModule(element) {
 	
 	var attr = element.attributes;	
 	var objectId = null;
-	if (attr.getNamedItem("icobjectid") != null) {
-		objectId = attr.getNamedItem("icobjectid").value;
+	if (attr.getNamedItem('icobjectid') != null) {
+		objectId = attr.getNamedItem('icobjectid').value;
 	}
 	var objectClass = null;
-	if (attr.getNamedItem("icobjectclass") != null) {
-		objectClass = attr.getNamedItem("icobjectclass").value;
+	if (attr.getNamedItem('icobjectclass') != null) {
+		objectClass = attr.getNamedItem('icobjectclass').value;
 	}
 	if (objectId == null || objectClass == null) {
 		return;
@@ -158,27 +165,13 @@ function addConcreteModule(element) {
 	addSelectedModule(objectId, objectClass);
 }
 
-function initToolTipForElement(element) {
-	var tip = new Tips(element, {
-		initialize:function(){
-			this.fx = new Fx.Style(this.toolTip, 'opacity', {duration: 500, wait: false}).set(0);
-		},
-		onShow: function(toolTip) {
-			this.fx.start(0.75);
-		},
-		onHide: function(toolTip) {
-			this.fx.start(0);
-		}
-	});
-}
-
 function showAllComponentsLabels(element) {
 	if (element == null) {
 		return;
 	}
 	hideOldLabels();
 	
-	var children = getNeededElements(element, "DnDAreaTable");
+	var children = getNeededElements(element, 'DnDAreaTable');
 	if (children == null) {
 		return;
 	}
@@ -186,10 +179,10 @@ function showAllComponentsLabels(element) {
 	var elementsToHighlight = null;
 	for (var i = 0; i < children.length; i++) {
 		child = children[i];
-		child.style.visibility = "visible";
-		/*elementsToHighlight = getNeededElementsFromList(child.getElementsByTagName("div"), "moduleName");
+		child.style.visibility = 'visible';
+		/*elementsToHighlight = getNeededElementsFromList(child.getElementsByTagName('div'), 'moduleName');
 		for (var j = 0; j < elementsToHighlight.length; j++) {
-			highlightElement(elementsToHighlight[j], 1000, "#FFFFFF");
+			highlightElement(elementsToHighlight[j], 1000, '#FFFFFF');
 		}*/
 	}
 }
@@ -199,7 +192,7 @@ function closeAddComponentContainer(id) {
 	if (container == null) {
 		return;
 	}
-	container.style.visibility = "hidden";
+	container.style.visibility = 'hidden';
 }
 
 function existsValueInList(list, value) {
@@ -219,7 +212,7 @@ function showAddComponentImage(parentElement, element, regionLabel) {
 		return;
 	}
 	
-	element.style.visibility = "visible";	
+	element.style.visibility = 'visible';	
 }
 
 function setPropertiesForAddModule(element) {
@@ -250,13 +243,13 @@ function setPropertiesForAddModule(element) {
 	for (var i = 0; (i < children.length && !foundInstance && !foundParent); i++) {
 		child = children[i];
 		if (child.className) {
-			if (child.className == "moduleContainer") {
-				inputs = child.getElementsByTagName("input");
-				INSTANCE_ID = getInputValue(inputs, "instanceId");
+			if (child.className == 'moduleContainer') {
+				inputs = child.getElementsByTagName('input');
+				INSTANCE_ID = getInputValue(inputs, 'instanceId');
 				if (INSTANCE_ID != null) {
 					foundInstance = true;
 				}
-				PARENT_ID = getInputValue(inputs, "parentId");
+				PARENT_ID = getInputValue(inputs, 'parentId');
 				if (PARENT_ID != null) {
 					foundParent = true;
 				}
@@ -265,7 +258,7 @@ function setPropertiesForAddModule(element) {
 	}
 	
 	if (!foundParent) {
-		PARENT_ID = getInputValue(region.getElementsByTagName("input"), "parentKey");
+		PARENT_ID = getInputValue(region.getElementsByTagName('input'), 'parentKey');
 	}
 
 }
@@ -301,13 +294,13 @@ function hideComponentInfoImage(element) {
 		return;
 	}
 	
-	var list = getElementsByClassName(element, "*", "regionInfoImageContainer");
+	var list = getElementsByClassName(element, '*', 'regionInfoImageContainer');
 	var container = getFirstElementFromList(list);
 	if (container == null) {
 		return;
 	}
 	
-	container.style.visibility = "hidden";
+	container.style.visibility = 'hidden';
 }
 
 function showComponentInfoImage(element) {
@@ -315,20 +308,20 @@ function showComponentInfoImage(element) {
 		return;
 	}
 	
-	var list = getElementsByClassName(element, "*", "regionInfoImageContainer");
+	var list = getElementsByClassName(element, '*', 'regionInfoImageContainer');
 	var container = getFirstElementFromList(list);
 	if (container == null) {
 		return;
 	}
 	
-	var link = getFirstElementFromList(container.getElementsByTagName("a"));
+	var link = getFirstElementFromList(container.getElementsByTagName('a'));
 	if (link == null) {
 		return;
 	}
-	if (container.style.visibility == "") {	// If it is the first time
+	if (container.style.visibility == '') {	// If it is the first time
 		
-		var moduleName = "Undefined";
-		var moduleNameContainerList = getElementsByClassName(element, "*", "moduleName");
+		var moduleName = 'Undefined';
+		var moduleNameContainerList = getElementsByClassName(element, '*', 'moduleName');
 		if (moduleNameContainerList != null) {
 			if (moduleNameContainerList.length > 0) {
 				if (moduleNameContainerList[0].childNodes != null) {
@@ -340,14 +333,14 @@ function showComponentInfoImage(element) {
 		}
 		
 		var instanceId = null;
-		var inputs = element.getElementsByTagName("input");
+		var inputs = element.getElementsByTagName('input');
 		if (inputs != null) {
 			var input = null;
 			var foundInstance = false;
 			for (var i = 0; (i < inputs.length && !foundInstance); i++) {
 				input = inputs[i];
 				if (input.id != null) {
-					if (input.id.indexOf("instanceId") != -1) {
+					if (input.id.indexOf('instanceId') != -1) {
 						instanceId = input.value;
 						foundInstance = true;
 					}
@@ -355,17 +348,17 @@ function showComponentInfoImage(element) {
 			}
 		}
 
-		link.removeAttribute("href");
+		link.removeAttribute('href');
 		
-		var uri = EDIT_COMPONENT_WINDOW_LINK + "&" + MODULE_NAME_PARAMETER + "=" + moduleName + "&" + IC_OBJECT_INSTANCE_ID_PARAMETER +
-		 "=" + instanceId + "&" + IB_PAGE_PARAMETER + "=" + PAGE_KEY;
-		link.setAttribute("href", uri);
+		var uri = EDIT_COMPONENT_WINDOW_LINK + '&' + MODULE_NAME_PARAMETER + '=' + moduleName + '&' + IC_OBJECT_INSTANCE_ID_PARAMETER +
+		 '=' + instanceId + '&' + IB_PAGE_PARAMETER + '=' + PAGE_KEY;
+		link.setAttribute('href', uri);
 		
 		//	Link will be registered to MOOdalBox (if needed)
 		MOOdalBox.register(link);
 	}
 	
-	container.style.visibility = "visible";
+	container.style.visibility = 'visible';
 }
 
 function removeOldContainer(element, id) {
@@ -383,14 +376,14 @@ function removeOldContainer(element, id) {
 }
 
 function hideOldLabels() {
-	var children = document.getElementsByClassName("DnDAreaTable");
+	var children = document.getElementsByClassName('DnDAreaTable');
 	if (children == null) {
 		return;
 	}
 	var element = null;
 	for (var i = 0; i < children.length; i++) {
 		element = children[i];
-		element.style.visibility = "hidden";
+		element.style.visibility = 'hidden';
 	}
 }
 
@@ -407,7 +400,7 @@ function addSelectedModule(newObjectId, className) {
 	var index = 0;
 	var container = document.getElementById(PARENT_ID);
 	if (container != null) {
-		var modules = getNeededElementsFromList(container.childNodes, "moduleContainer");
+		var modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 		if (modules != null) {
 			index = modules.length;
 		}
@@ -470,7 +463,7 @@ function addSelectedModuleCallback(component, id) {
 	
 	// Finding place where to put new module
 	var elementToInsertBefore = null;
-	var modules = getNeededElementsFromList(container.childNodes, "moduleContainer");
+	var modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 	if (modules == null) {
 		reloadPageAfterAddingModule();
 		return;
@@ -515,7 +508,7 @@ function manageComponentPropertiesList(id) {
 		PROPERTIES_SHOWN.push(id);
 		
 		var el = document.getElementById(id);
-		el.style.display = "block";	
+		el.style.display = 'block';	
 	}
 }
 
@@ -533,7 +526,7 @@ function closeComponentPropertiesList(id) {
 	}
 	
 	var el = document.getElementById(id);
-	el.style.display = "none";
+	el.style.display = 'none';
 }
 
 function exitFromPropertiesWindow() {
@@ -584,7 +577,7 @@ function closeOldPropertyBoxes(currentID) {
 		if (id != currentID) {
 			box = document.getElementById(id);
 			if (box != null) {
-				box.style.display = "none";
+				box.style.display = 'none';
 				idsToRemove.push(id);
 			}
 		}
@@ -598,7 +591,7 @@ function getPropertyBox(id, propertyName, objectInstanceId) {
 	ACTIVE_PROPERTY_SETTER_BOX = id;
 	PROPERTY_NAME = propertyName;
 	INSTANCE_ID = objectInstanceId;
-	var fullId = id + "_property_setter_box";
+	var fullId = id + '_property_setter_box';
 	closeOldPropertyBoxes(fullId);
 	var propertySetterBox = document.getElementById(fullId) ;
 	if (propertySetterBox == null) {
@@ -611,12 +604,12 @@ function getPropertyBox(id, propertyName, objectInstanceId) {
 	}
 	else {
 		// Box allready exists
-		if (propertySetterBox.style.display == "none") {
-			propertySetterBox.style.display = "block";
+		if (propertySetterBox.style.display == 'none') {
+			propertySetterBox.style.display = 'block';
 			PROPERTY_BOX_SHOWN.push(fullId);
 		}
 		else {
-			propertySetterBox.style.display = "none";
+			propertySetterBox.style.display = 'none';
 			removeElementFromArray(PROPERTY_BOX_SHOWN, fullId);
 		}
 	}
@@ -636,9 +629,9 @@ function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 		return;
 	}
 	
-	var propertySetterBox = document.createElement("div");
-	var fullId = id + "_property_setter_box";
-	propertySetterBox.setAttribute("id", fullId);
+	var propertySetterBox = document.createElement('div');
+	var fullId = id + '_property_setter_box';
+	propertySetterBox.setAttribute('id', fullId);
 	PROPERTY_BOX_SHOWN.push(fullId);
 	
 	insertNodesToContainer(box, propertySetterBox);	
@@ -652,8 +645,8 @@ function saveModuleProperty(event, element) {
 		return;
 	}
 	if (event != null) {
-		if (element.type == "text" || element.type == "password") {
-			//	Checking if "Enter" was pressed
+		if (element.type == 'text' || element.type == 'password') {
+			//	Checking if 'Enter' was pressed
 			if (!isEnterEvent(event)) {
 				return;
 			}
@@ -662,16 +655,16 @@ function saveModuleProperty(event, element) {
 	
 	var attr = element.attributes;	
 	var moduleId = null;
-	if (attr.getNamedItem("moduleid") != null) {
-		moduleId = attr.getNamedItem("moduleid").value;
+	if (attr.getNamedItem('moduleid') != null) {
+		moduleId = attr.getNamedItem('moduleid').value;
 	}
 	var propertyName = null;
-	if (attr.getNamedItem("propname") != null) {
-		propertyName = attr.getNamedItem("propname").value;
+	if (attr.getNamedItem('propname') != null) {
+		propertyName = attr.getNamedItem('propname').value;
 	}
 	var needsReload = null;
-	if (attr.getNamedItem("needsreload") != null) {
-		needsReload = attr.getNamedItem("needsreload").value;
+	if (attr.getNamedItem('needsreload') != null) {
+		needsReload = attr.getNamedItem('needsreload').value;
 	}
 	
 	showLoadingMessage(SAVING_LABEL);
@@ -695,7 +688,7 @@ function saveModulePropertyCallback(result, moduleId, needsReload) {
 		return;
 	}
 	
-	if (needsReload == "true") {
+	if (needsReload == 'true') {
 		reloadPageAfterAddingModule();
 		return;
 	}
@@ -703,7 +696,7 @@ function saveModulePropertyCallback(result, moduleId, needsReload) {
 	if (ACTIVE_PROPERTY_SETTER_BOX != null) {
 		var setterBox = document.getElementById(ACTIVE_PROPERTY_SETTER_BOX);
 		if (setterBox != null) {
-			setterBox.className = "modulePropertyIsSet";
+			setterBox.className = 'modulePropertyIsSet';
 		}
 	}
 	
@@ -772,15 +765,15 @@ function setRegionAndModuleContentId(element) {
 		MODULE_CONTENT_ID = null;
 		return;
 	}
-	var inputs = element.getElementsByTagName("input");
+	var inputs = element.getElementsByTagName('input');
 	if (inputs == null) {
 		REGION_ID = null;
 		MODULE_CONTENT_ID = null;
 		return;
 	}
 	
-	REGION_ID = getInputValue(inputs, "regionId");
-	MODULE_CONTENT_ID = getInputValue(inputs, "moduleContentId");
+	REGION_ID = getInputValue(inputs, 'regionId');
+	MODULE_CONTENT_ID = getInputValue(inputs, 'moduleContentId');
 }
 
 function ReRenderObject(pageKey, regionId, moduleId, moduleContentId) {
