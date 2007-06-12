@@ -79,12 +79,6 @@
       <version>4.0-SNAPSHOT</version>
       <type>jar</type>
     </dependency>
-    <dependency>
-      <groupId>com.idega.block.platform</groupId>
-      <artifactId>com.idega.block.media</artifactId>
-      <version>4.0-SNAPSHOT</version>
-      <type>jar</type>
-    </dependency>
   </dependencies>
   
 </project>
