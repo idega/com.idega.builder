@@ -32,6 +32,7 @@ var HANLDER_VALUE_OBJECTS_STYLE_CLASS = 'handlerValueObjects';
 var PROPERTIES_SHOWN = new Array();
 var PROPERTY_BOX_SHOWN = new Array();
 var OBJECTS_TO_RERENDER = new Array();
+var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer', 'com.idega.user.presentation.group.GroupUsersViewer'];
 
 function getBuilderInitInfo() {
 	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
@@ -408,20 +409,20 @@ function addSelectedModule(newObjectId, className) {
 	
 	showLoadingMessage(ADDING_MODULE_LABEL);
 	
-	if (className == 'com.idega.block.article.component.ArticleItemViewer') {
+	if (existsValueInList(SPECIAL_OBJECTS, className)) {
 		BuilderEngine.addModule(PAGE_KEY, PARENT_ID, INSTANCE_ID, newObjectId, false, {
 			callback: function(uuid) {
 				addConcreteModuleCallback(uuid, index, PARENT_ID);
 			}
 		});
+		return;
 	}
-	else {
-		BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, {
-			callback: function(component) {
-				addSelectedModuleCallback(component, PARENT_ID);
-			}
-		});
-	}
+
+	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, {
+		callback: function(component) {
+			addSelectedModuleCallback(component, PARENT_ID);
+		}
+	});
 }
 
 function addConcreteModuleCallback(uuid, index, id) {
@@ -440,21 +441,21 @@ function addConcreteModuleCallback(uuid, index, id) {
 function addSelectedModuleCallback(component, id) {
 	closeLoadingMessage();
 	if (component == null) {
-		reloadPageAfterAddingModule();
+		executeActionsBeforeReloading();
 		return;
 	}
 	var container = document.getElementById(id);
 	if (container == null) {
-		reloadPageAfterAddingModule();
+		executeActionsBeforeReloading();
 		return;
 	}
 	var children = component.childNodes;
 	if (children == null) {
-		reloadPageAfterAddingModule();
+		executeActionsBeforeReloading();
 		return;
 	}
 	if (children.length == 0) {
-		reloadPageAfterAddingModule();
+		executeActionsBeforeReloading();
 		return;
 	}
 
@@ -465,7 +466,7 @@ function addSelectedModuleCallback(component, id) {
 	var elementToInsertBefore = null;
 	var modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 	if (modules == null) {
-		reloadPageAfterAddingModule();
+		executeActionsBeforeReloading();
 		return;
 	}
 
@@ -486,9 +487,15 @@ function addSelectedModuleCallback(component, id) {
 	// Inserting nodes
 	var activeNode = null;
 	var realNode = null;
+	var elementToHighlight = null;
 	for (var i = 0; i < allNodes.length; i++) {
 		activeNode = allNodes[allNodes.length - (i + 1)];
 		realNode = createRealNode(activeNode);
+		if (realNode.className) {
+			if (realNode.className == 'moduleContainer') {
+				elementToHighlight = realNode;
+			}
+		}
 		container.insertBefore(realNode, elementToInsertBefore);
 		elementToInsertBefore = realNode;
 	}
@@ -496,6 +503,9 @@ function addSelectedModuleCallback(component, id) {
 	registerBuilderActions();	// Need to re-register actions
 	
 	MOOdalBox.close();
+	if (elementToHighlight != null) {
+		highlightElement(elementToHighlight, 4000, '#ffffff');
+	}
 }
 
 function manageComponentPropertiesList(id) {	
@@ -587,6 +597,10 @@ function closeOldPropertyBoxes(currentID) {
 	}
 }
 
+function getActivePropertyBoxId() {
+	return ACTIVE_PROPERTY_SETTER_BOX;
+}
+
 function getPropertyBox(id, propertyName, objectInstanceId) {
 	ACTIVE_PROPERTY_SETTER_BOX = id;
 	PROPERTY_NAME = propertyName;
@@ -675,7 +689,7 @@ function saveModuleProperty(event, element) {
 	});
 }
 
-function reloadPageAfterAddingModule() {
+function executeActionsBeforeReloading() {
 	closeLoadingMessage();
 	showLoadingMessage(RELOADING_LABEL);
 		
@@ -688,16 +702,20 @@ function saveModulePropertyCallback(result, moduleId, needsReload) {
 		return;
 	}
 	
-	if (needsReload == 'true') {
-		reloadPageAfterAddingModule();
-		return;
-	}
-	
 	if (ACTIVE_PROPERTY_SETTER_BOX != null) {
 		var setterBox = document.getElementById(ACTIVE_PROPERTY_SETTER_BOX);
 		if (setterBox != null) {
 			setterBox.className = 'modulePropertyIsSet';
 		}
+	}
+	
+	if (needsReload == 'true') {
+		closeLoadingMessage();
+		var actionOnClose = function() {
+			executeActionsBeforeReloading();
+		};
+		addActionForMoodalBoxOnCloseEvent(actionOnClose);
+		return;
 	}
 	
 	closeLoadingMessage();
