@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.256 2007/06/06 12:08:00 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.257 2007/06/12 17:27:21 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2495,6 +2495,25 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		return ids;
+	}
+	
+	public String getModuleClassName(String pageKey, String instanceId) {
+		if (pageKey == null || instanceId == null) {
+			return null;
+		}
+		IBXMLPage xml = getIBXMLPage(pageKey);
+		if (xml == null) {
+			return null;
+		}
+		XMLElement module = getIBXMLWriter().findModule(xml, instanceId);
+		if (module == null) {
+			return null;
+		}
+		XMLAttribute className = module.getAttribute(IBXMLConstants.CLASS_STRING);
+		if (className == null) {
+			return null;
+		}
+		return className.getValue();
 	}
 	
 	/**
