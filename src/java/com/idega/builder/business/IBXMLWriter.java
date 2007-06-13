@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.8 2007/06/06 12:08:00 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.9 2007/06/13 12:57:14 alexis Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -9,18 +9,28 @@
  */
 package com.idega.builder.business;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
+
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.idgenerator.business.UUIDGenerator;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.slide.business.IWSlideService;
 import com.idega.util.CoreConstants;
+import com.idega.util.bundles.BundleResourceResolver;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -676,7 +686,7 @@ public class IBXMLWriter {
 	 * @param obj
 	 */
 	private void onObjectAdd(XMLElement parent, XMLElement newElement, String pageKey, String newInstanceId, ICObject obj) {
-		if(obj.getClassName().indexOf("ArticleItemViewer") != -1) {
+		if(obj.getClassName().indexOf("ArticleItemViewer")!=-1) {
 			
 			IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageKey);
 			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
@@ -686,6 +696,44 @@ public class IBXMLWriter {
 			String propertyValue = getBuilderLogic().generateResourcePath(base, CoreConstants.ARTICLE_FILENAME_SCOPE, CoreConstants.ARTICLE_FILENAME_SCOPE);
 			
 			setProperty(iwma, xml, newInstanceId, propertyName, propertyValue);
+		}
+		if(obj.getClassName().indexOf("VideoViewer")!=-1){
+//			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
+//			try {
+//				VideoServices videoServices = (VideoServices) IBOLookup.getServiceInstance(iwma.getIWApplicationContext(), VideoServices.class);
+//				IWBundle bundle = obj.getBundle(iwma);
+//				videoServices.uploadConfigFile(bundle.getBundleIdentifier(), "/properties/services.xml");
+//			} catch (IBOLookupException ile) {
+//				throw new IBORuntimeException(ile);
+//			} catch (RemoteException re) {
+//				//TODO
+//			}
+			//TODO remove this hardcoded stuff
+			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
+			IWBundle bundle = obj.getBundle(iwma);
+			try {
+				IWSlideService slide = (IWSlideService) IBOLookup.getServiceInstance(iwma.getIWApplicationContext(), IWSlideService.class);
+				String config_uri_string = 
+					new StringBuffer("bundle://")
+					.append(bundle.getBundleIdentifier())
+					.append("/properties/services.xml")
+					.toString();
+				
+				BundleResourceResolver resolver = new BundleResourceResolver(iwma);
+				URI config_uri = URI.create(config_uri_string);
+				
+				InputStream resource = resolver.resolve(config_uri).getInputStream();
+				slide.uploadFileAndCreateFoldersFromStringAsRoot("/files/cms/settings/", "video-services.xml", resource, null, true);
+				resource.close();
+				
+			} catch (IBOLookupException ile) {
+				//TODO
+//				throw new IBORuntimeException(ile);
+			} catch(RemoteException re) {
+				//TODO handling
+			} catch(IOException ioe) {
+				//TODO handling
+			}
 		}
 	}
 
