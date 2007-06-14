@@ -398,7 +398,7 @@ function addConcreteModuleCallback(uuid, index, id) {
 		return false;
 	}
 	
-	BuilderEngine.getRenderedModule(PAGE_KEY, uuid, id, index, {
+	BuilderEngine.getRenderedModule(PAGE_KEY, uuid, index, {
 		callback: function(componentContainer) {
 			addSelectedModuleCallback(componentContainer, id);
 		}
@@ -707,7 +707,7 @@ function isComponentMarkedForReRendering(moduleId) {
 
 function renderModuleAgain(pageKey, regionId, moduleId, moduleContentId) {
 	showLoadingMessage(LOADING_LABEL);
-	BuilderEngine.reRenderObject(pageKey, regionId, moduleId, {
+	BuilderEngine.reRenderObject(pageKey, moduleId, {
 		callback: function(component) {
 			reRenderObjectCallback(component, moduleContentId);
 		}
@@ -718,7 +718,7 @@ function renderModulesAgain() {
 	var object = null;
 	for (var i = 0; i < OBJECTS_TO_RERENDER.length; i++) {
 		object = OBJECTS_TO_RERENDER[i];
-		BuilderEngine.reRenderObject(object.pageKey, object.regionId, object.moduleId, {
+		BuilderEngine.reRenderObject(object.pageKey, object.moduleId, {
 			callback: function(component) {
 				reRenderObjectCallback(component, object.moduleContentId);
 			}

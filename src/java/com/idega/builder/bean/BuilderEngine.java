@@ -25,7 +25,7 @@ public interface BuilderEngine extends IBOService {
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#getRenderedModule
 	 */
-	public Document getRenderedModule(String pageKey, String uuid, String containerId, int index) throws RemoteException;
+	public Document getRenderedModule(String pageKey, String uuid, int index) throws RemoteException;
 
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#deleteSelectedModule
@@ -45,5 +45,5 @@ public interface BuilderEngine extends IBOService {
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#reRenderObject
 	 */
-	public Document reRenderObject(String pageKey, String regionId, String instanceId) throws RemoteException;
+	public Document reRenderObject(String pageKey, String instanceId) throws RemoteException;
 }

@@ -99,7 +99,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		Document transformedModule = getTransformedModule(pageKey, iwc, component, containerId, index);
+		Document transformedModule = getTransformedModule(pageKey, iwc, component, index);
 		IWSlideSession session = getSession(iwc);
 		// Returning result
 		if (transformedModule != null && session != null) {
@@ -109,8 +109,8 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return transformedModule;
 	}
 	
-	public Document getRenderedModule(String pageKey, String uuid, String containerId, int index) {
-		if (pageKey == null || uuid == null || containerId == null) {
+	public Document getRenderedModule(String pageKey, String uuid, int index) {
+		if (pageKey == null || uuid == null) {
 			return null;
 		}
 		
@@ -119,12 +119,12 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		UIComponent component = findComponentInPage(iwc, pageKey, containerId, uuid);
+		UIComponent component = findComponentInPage(iwc, pageKey, uuid);
 		if (component == null) {
 			return null;
 		}
 		
-		return getTransformedModule(pageKey, iwc, component, containerId, index);
+		return getTransformedModule(pageKey, iwc, component, index);
 	}
 	
 	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId) {
@@ -172,16 +172,16 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return builder.setModuleProperty(pageKey, moduleId, propertyName, new String[] {propertyValue});
 	}
 	
-	public Document reRenderObject(String pageKey, String regionId, String instanceId) {
+	public Document reRenderObject(String pageKey, String instanceId) {
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
 		}
-		return builder.getRenderedComponent(iwc, findComponentInPage(iwc, pageKey, regionId, instanceId), false);
+		return builder.getRenderedComponent(iwc, findComponentInPage(iwc, pageKey, instanceId), false);
 	}
 	
-	private UIComponent findComponentInPage(IWContext iwc, String pageKey, String regionId, String instanceId) {
-		if (pageKey == null || regionId == null || instanceId == null || iwc == null) {
+	private UIComponent findComponentInPage(IWContext iwc, String pageKey, String instanceId) {
+		if (pageKey == null || instanceId == null || iwc == null) {
 			return null;
 		}
 		
@@ -193,38 +193,32 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (pageChildren == null) {
 			return null;
 		}
-		boolean foundRegion = false;
+		
 		PresentationObjectContainer container = null;
 		Object o = null;
-		for (int i = 0; (i < pageChildren.size() && !foundRegion); i++) {
+		Object oo = null;
+		List regionChildren = null;
+		boolean foundComponent = false;
+		UIComponent component = null;
+		for (int i = 0; (i < pageChildren.size() && !foundComponent); i++) {
 			o = pageChildren.get(i);
 			if (o instanceof PresentationObjectContainer) {
 				container = (PresentationObjectContainer) o;
-				if (regionId.equals(container.getLabel())) {
-					foundRegion = true;
+				regionChildren = container.getChildren();
+				if (regionChildren != null) {
+					for (int j = 0; (j < regionChildren.size() && !foundComponent); j++) {
+						oo = regionChildren.get(j);
+						if (oo instanceof UIComponent) {
+							component = (UIComponent) oo;
+							if (instanceId.equals(component.getId())) {
+								foundComponent = true;
+							}
+						}
+					}
 				}
 			}
 		}
-		if (!foundRegion) {
-			return null;
-		}
-		
-		List regionChildren = container.getChildren();
-		if (regionChildren == null) {
-			return null;
-		}
-		boolean foundComponent = false;
-		UIComponent component = null;
-		for (int i = 0; (i < regionChildren.size() && !foundComponent); i++) {
-			o = regionChildren.get(i);
-			if (o instanceof UIComponent) {
-				component = (UIComponent) o;
-				if (instanceId.equals(component.getId())) {
-					foundComponent = true;
-				}
-			}
-		}
-		
+
 		if (!foundComponent) {
 			return null;
 		}
@@ -232,18 +226,20 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return component;
 	}
 	
-	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, String containerId, int index) {
+	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index) {
 		//	Getting IBObjectControl - 'container'
 		Page currentPage = builder.getPage(pageKey, iwc);
 		if (currentPage == null) {
 			return null;
 		}
-		IBObjectControl objectComponent = new IBObjectControl(component, currentPage, containerId, iwc, index);
+		/*IBObjectControl objectComponent = new IBObjectControl(component, currentPage, containerId, iwc, index);
 		if (objectComponent == null) {
 			return null;
-		}
+		}*/
 		
-		return builder.getRenderedComponent(iwc, objectComponent, false);
+		IBObjectControl transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, "-1", iwc);
+		
+		return builder.getRenderedComponent(iwc, transformed, false);
 	}
 	
 	private UIComponent getComponentInstance(String className, String uuid) {

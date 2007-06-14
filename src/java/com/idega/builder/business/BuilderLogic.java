@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.257 2007/06/12 17:27:21 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.258 2007/06/14 13:26:05 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -277,7 +277,7 @@ public class BuilderLogic implements Singleton {
 			while (iter.hasNext()) {
 				int index = iter.nextIndex();
 				UIComponent item = (UIComponent) iter.next();
-				transformObject(page,pageKey, item, index, parent, "-1", iwc);
+				getTransformedObject(page,pageKey, item, index, parent, "-1", iwc);
 			}
 		}
 		
@@ -477,7 +477,7 @@ public class BuilderLogic implements Singleton {
 		setProperty(pageKey, instanceId, "image_id", Integer.toString(imageID), iwma);
 	}
 
-	private void transformObject(Page currentPage,String pageKey, UIComponent obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
+	public IBObjectControl getTransformedObject(Page currentPage, String pageKey, UIComponent obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
 		IWResourceBundle iwrb = getBuilderBundle().getResourceBundle(iwc);
 		
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
@@ -505,7 +505,7 @@ public class BuilderLogic implements Singleton {
 						 * If parent is Table
 						 */
 						if (index == -1) {
-							transformObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, parentKey, iwc);
+							getTransformedObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, parentKey, iwc);
 						}
 						else {
 							String newParentKey = null;
@@ -522,7 +522,7 @@ public class BuilderLogic implements Singleton {
 								newParentKey = getInstanceId(obj);
 							}
 							
-							transformObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, newParentKey, iwc);
+							getTransformedObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, newParentKey, iwc);
 						}
 					}
 				}
@@ -597,14 +597,16 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 		}
+		IBObjectControl transformed = null;
 		if ( (isPresentationObject && ((PresentationObject) obj).getUseBuilderObjectControl()) || !isPresentationObject ) {
 			if (index != -1) {
 				//parent.remove(obj);
 				//parent.add(new IBObjectControl(obj,parent,parentKey,iwc,index));
-				parent.set(index, new IBObjectControl(obj, parent, parentKey, iwc, index));
+				transformed = new IBObjectControl(obj, parent, parentKey, iwc, index);
+				parent.set(index, transformed);
 			}
 		}
-	
+		return transformed;
 	}
 
 	/**
@@ -626,7 +628,7 @@ public class BuilderLogic implements Singleton {
 				PresentationObjectContainer moc = tab.containerAt(x, y);
 				String newParentKey = tab.getICObjectInstanceID() + "." + x + "." + y;
 				if (moc != null) {
-					transformObject(currentPage,pageKey, moc, -1, tab, newParentKey, iwc);
+					getTransformedObject(currentPage,pageKey, moc, -1, tab, newParentKey, iwc);
 				}
 				//Page currentPage = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
 				if (currentPage.getIsExtendingTemplate()) {
