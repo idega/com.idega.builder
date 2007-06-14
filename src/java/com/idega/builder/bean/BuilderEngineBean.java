@@ -204,14 +204,20 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			o = pageChildren.get(i);
 			if (o instanceof PresentationObjectContainer) {
 				container = (PresentationObjectContainer) o;
-				regionChildren = container.getChildren();
-				if (regionChildren != null) {
-					for (int j = 0; (j < regionChildren.size() && !foundComponent); j++) {
-						oo = regionChildren.get(j);
-						if (oo instanceof UIComponent) {
-							component = (UIComponent) oo;
-							if (instanceId.equals(component.getId())) {
-								foundComponent = true;
+				if (instanceId.equals(container.getId())) {
+					component = container;
+					foundComponent = true;
+				}
+				else {
+					regionChildren = container.getChildren();
+					if (regionChildren != null) {
+						for (int j = 0; (j < regionChildren.size() && !foundComponent); j++) {
+							oo = regionChildren.get(j);
+							if (oo instanceof UIComponent) {
+								component = (UIComponent) oo;
+								if (instanceId.equals(component.getId())) {
+									foundComponent = true;
+								}
 							}
 						}
 					}
