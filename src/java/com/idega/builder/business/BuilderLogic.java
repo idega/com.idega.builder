@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.258 2007/06/14 13:26:05 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.259 2007/06/14 18:46:26 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -8,6 +8,7 @@ package com.idega.builder.business;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +54,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.business.BuilderPageException;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
@@ -103,6 +105,7 @@ import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
+import com.idega.util.reflect.MethodFinder;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
@@ -1021,8 +1024,12 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
 		try {
-			IBXMLPage xml = getIBXMLPage(pageKey);
 			boolean allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwma);
+			if(!allowMultivalued)
+				propertyValues = modifyPropertyValuesRegardingParameterType(pageKey, instanceId, propertyName, propertyValues);
+			
+			IBXMLPage xml = getIBXMLPage(pageKey);
+			
 			if (getIBXMLWriter().setProperty(iwma, xml, instanceId, propertyName, propertyValues, allowMultivalued)) {
 				xml.store();
 				return (true);
@@ -1033,6 +1040,44 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace(System.err);
 			return (false);
 		}
+	}
+	
+	private String[] modifyPropertyValuesRegardingParameterType(String pageKey, String instanceId, String property_name, String[] property_values) {
+		
+		try {
+			Method method = getMethodFinder().getMethod(property_name, Class.forName(getModuleClassName(pageKey, instanceId)));
+			
+			Class[] types = method.getParameterTypes();
+			
+			if(types != null && types.length > 0) {
+				
+//				TODO: add ability to register specific types handlers (e.g. handler for List etc)
+				if(types[0].equals(List.class)) {
+					
+					if(property_values != null && property_values.length > 1) {
+						
+						StringBuilder value = new StringBuilder();
+						
+						for (int i = 0; i < property_values.length; i++) {
+							
+							value.append(property_values[i])
+							.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR);
+						}
+						
+						return new String[] {value.toString()};
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			// TODO: log
+			e.printStackTrace();
+		}
+		return property_values;
+	}
+	
+	private MethodFinder getMethodFinder() {
+		return MethodFinder.getInstance();
 	}
 	
 	/**
