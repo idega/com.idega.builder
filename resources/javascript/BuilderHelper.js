@@ -76,8 +76,9 @@ function registerBuilderActions() {
 				showComponentInfoImage(element);
 			},
 			element.onmouseout = function() {
-				hideOldLabels();
+				hideOldLabels(element);
 				hideComponentInfoImage(element);
+				element.removeAttribute('style');
 			}
     	}
     );
@@ -164,28 +165,6 @@ function addConcreteModule(element) {
 	}
 
 	addSelectedModule(objectId, objectClass);
-}
-
-function showAllComponentsLabels(element) {
-	if (element == null) {
-		return;
-	}
-	hideOldLabels();
-	
-	var children = getNeededElements(element, 'DnDAreaTable');
-	if (children == null) {
-		return;
-	}
-	var child = null;
-	var elementsToHighlight = null;
-	for (var i = 0; i < children.length; i++) {
-		child = children[i];
-		child.style.visibility = 'visible';
-		/*elementsToHighlight = getNeededElementsFromList(child.getElementsByTagName('div'), 'moduleName');
-		for (var j = 0; j < elementsToHighlight.length; j++) {
-			highlightElement(elementsToHighlight[j], 1000, '#FFFFFF');
-		}*/
-	}
 }
 
 function closeAddComponentContainer(id) {
@@ -373,18 +352,6 @@ function removeOldContainer(element, id) {
 			parentElement.removeChild(oldContainer);
 			return true;
 		}
-	}
-}
-
-function hideOldLabels() {
-	var children = document.getElementsByClassName('DnDAreaTable');
-	if (children == null) {
-		return;
-	}
-	var element = null;
-	for (var i = 0; i < children.length; i++) {
-		element = children[i];
-		element.style.visibility = 'hidden';
 	}
 }
 
