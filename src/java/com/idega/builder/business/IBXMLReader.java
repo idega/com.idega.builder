@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.2.2.3 2007/05/25 18:24:41 gimmi Exp $
+ * $Id: IBXMLReader.java,v 1.2.2.4 2007/06/15 14:57:57 sigtryggur Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -492,15 +492,17 @@ public class IBXMLReader {
 			if (className !=null) {
 				
 				if(componentId!=null){
+					String pageKey = null;
 					try{
-						String pageKey = ibxml.getPageKey();
+						pageKey = ibxml.getPageKey();
 						icObjectInstance = getICObjectInstanceFromComponentId(componentId,className,pageKey);
 						
 						Class objectClass = icObjectInstance.getObject().getObjectClass();
 						firstUICInstance = (UIComponent)objectClass.newInstance();
 					}
 					catch(Exception e){
-						e.printStackTrace();
+						System.err.println("RuntimeException: IBXMLReader.parseElement: PageID: "+ pageKey + ", Module: " + className + ", UniqueID: " + componentId);
+						System.err.println(e.getMessage());
 					}
 				}
 				
@@ -624,6 +626,9 @@ public class IBXMLReader {
 		catch (java.lang.InstantiationException e3) {
 			System.err.println("Unable to instanciate class: " + className);
 			e3.printStackTrace();
+		}
+		catch (RuntimeException re) {
+			System.err.println("RuntimeException: IBXMLReader.parseElement: " + re.getMessage());	
 		}
 		catch (Exception e4) {
 			System.err.println("Exception");
