@@ -5,6 +5,12 @@
 	</properties>
 	<body>
 
+		<release version="3.1.8" date="2007-06-15">
+			<action dev="sigtryggur" type="update">
+				Added better printouts when loading of modules fails when parsing page ibxml.
+			</action>
+		</release>
+
 		<release version="3.1.7" date="2007-06-04">
 			<action dev="civilis" type="update">
 				The basic ability to catch spambots added to FormEmailer.
