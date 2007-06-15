@@ -65,5 +65,9 @@ public class IBPageChooser extends AbstractChooser {
 	public void setSelectedPage(String pageId, String pageName) {
 		setChooserValue(pageName, pageId);
 	}
-
+	
+	@Override
+	protected String getChooserHelperVarName() {
+		 return "Page_chooser_helper";
+	}
 }

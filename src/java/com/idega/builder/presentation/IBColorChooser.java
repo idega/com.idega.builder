@@ -41,4 +41,9 @@ public class IBColorChooser extends AbstractChooser {
     super.setChooserValue(color,color);
     super.setParameterValue("color",TextSoap.findAndCut(color,"#"));
   }
+  
+  @Override
+  protected String getChooserHelperVarName() {
+	return "Color_chooser_helper";
+  }
 }

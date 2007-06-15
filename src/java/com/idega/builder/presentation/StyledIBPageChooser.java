@@ -83,5 +83,9 @@ public class StyledIBPageChooser extends AbstractChooser {
 	public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
+	
+	@Override
+	protected String getChooserHelperVarName() {
+		  return "styledpage_chooser_helper";
+	}
 }
-

@@ -40,5 +40,9 @@ public class IBStyleChooser extends AbstractChooser {
     super.setChooserValue(style,style);
     super.setParameterValue("style",style);
   }
-
+  
+  @Override
+  protected String getChooserHelperVarName() {
+	  return "style_chooser_helper";
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.17 2007/05/24 11:31:12 valdas Exp $
+ * $Id: IBTemplateChooser.java,v 1.18 2007/06/15 13:24:06 civilis Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,5 +70,10 @@ public class IBTemplateChooser extends AbstractChooser {
    */
   public void setSelectedPage(int id, String name) {
     super.setChooserValue(name,id);
+  }
+  
+  @Override
+  protected String getChooserHelperVarName() {
+	  return "template_chooser_helper";
   }
 }

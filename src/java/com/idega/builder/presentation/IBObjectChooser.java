@@ -76,4 +76,9 @@ public class IBObjectChooser extends AbstractChooser {
 			super.addParameterToChooserLink(USE_CLASS_VALUE,"true");
 		}
 	 }
+	 
+	 @Override
+	 protected String getChooserHelperVarName() {
+		 return "Object_chooser_helper";
+	 }
 }

@@ -41,4 +41,8 @@ public class PopupWindowChooser extends AbstractChooser {
     super.setParameterValue("style",style);
   }
 
+  @Override
+  protected String getChooserHelperVarName() {
+	  return "popupwindow_chooser_helper";
+  }
 }
