@@ -2,6 +2,7 @@ package com.idega.builder.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.faces.component.UIComponent;
 
@@ -88,16 +89,31 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (iwc == null) {
 			return null;
 		}
+
+		UIComponent component = getComponentInstance(className);
+		if (component == null) {
+			return null;
+		}
+		
+		/*boolean needSetId = false;
+		if (component instanceof PresentationObjectContainer) {	// Is it region?
+			if (containerId == null || BuilderConstants.EMPTY.equals(containerId)) {	// Has region id?
+				Random generator = new Random();
+				containerId = new StringBuffer(generator.nextInt(Integer.MAX_VALUE)).append("_region").toString();
+				needSetId = true;
+			}
+		}*/
 		
 		String uuid = addModule(iwc, pageKey, containerId, instanceId, objectId, true);
 		if (uuid == null) {
 			return null;
 		}
-
-		UIComponent component = getComponentInstance(className, uuid);
-		if (component == null) {
-			return null;
-		}
+		
+		/*if (needSetId) {
+			String[] prop = new String[1];
+			prop[0] = containerId;
+			builder.setModuleProperty(pageKey, uuid, ":method:1:implied:java.lang.String:setID:java.lang.String:", prop);
+		}*/
 		
 		Document transformedModule = getTransformedModule(pageKey, iwc, component, index);
 		IWSlideSession session = getSession(iwc);
@@ -248,7 +264,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return builder.getRenderedComponent(iwc, transformed, false);
 	}
 	
-	private UIComponent getComponentInstance(String className, String uuid) {
+	private UIComponent getComponentInstance(String className) {
 		//	Getting instance of selected component
 		Class objectClass = null;
 		try {
@@ -273,14 +289,17 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			log.error("Unknown object: " + o);
 			return null;
 		}
-		component.setId(uuid);
 		
 		return component;
 	}
 	
 	private String addModule(IWContext iwc, String pageKey, String containerId, String instanceId, int objectId, boolean useThread) {
-		//	Adding region (if region doesn't exist)
-		builder.addRegion(pageKey, containerId, instanceId, false);
+		if (containerId != null && instanceId != null) {
+			if (!BuilderConstants.EMPTY.equals(containerId) && !BuilderConstants.EMPTY.equals(instanceId)) {
+				//	Adding region (if region doesn't exist)
+				builder.addRegion(pageKey, containerId, instanceId, false);
+			}
+		}
 		
 		// Adding module
 		String uuid = null;

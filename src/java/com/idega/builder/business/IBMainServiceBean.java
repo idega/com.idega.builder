@@ -13,6 +13,7 @@ import javax.faces.component.UIComponent;
 
 import org.jdom.Document;
 
+import com.idega.bean.AdvancedProperty;
 import com.idega.builder.app.IBApplication;
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.business.IBOServiceBean;
@@ -429,5 +430,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public String getYearMonthPath() {
 		return getBuilderLogic().getYearMonthPath();
+	}
+	
+	public boolean setProperty(IWContext iwc, String pageKey, String instanceId, String propertyName, List<AdvancedProperty> properties) {
+		return getBuilderLogic().setProperty(iwc, pageKey, instanceId, propertyName, properties);
 	}
 }

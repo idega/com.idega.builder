@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.259 2007/06/14 18:46:26 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.260 2007/06/15 08:53:12 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -38,6 +38,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import com.idega.bean.AdvancedProperty;
+import com.idega.bean.PropertiesBean;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
@@ -1018,6 +1020,42 @@ public class BuilderLogic implements Singleton {
 		String[] values = {propertyValue};
 		return setProperty(pageKey, instanceId, propertyName, values, iwma);
 	}
+	
+	/**
+	 * Returns true if properties changed, or error, else false
+	 */
+	public boolean setProperty(IWContext iwc, String pageKey, String instanceId, String propertyName, List<AdvancedProperty> properties) {
+		if (iwc == null || pageKey == null || instanceId == null || propertyName == null || properties == null) {
+			return false;
+		}
+		
+		String[] propertyValues = null;
+		boolean allowMultivalued = false;
+		try {
+			allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwc.getIWMainApplication());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (allowMultivalued) {
+			propertyValues = new String[properties.size()];
+			for (int i = 0; i < properties.size(); i++) {
+				propertyValues[i] = properties.get(i).getValue();
+			}
+		}
+		else {
+			propertyValues = modifyPropertyValuesRegardingParameterType(pageKey, instanceId, propertyName, properties);
+		}
+		
+		if (propertyValues == null) {	//	Can not set value(s), removing old value(s) if exist such
+			String values[] = getPropertyValues(iwc.getIWMainApplication(),pageKey, instanceId, propertyName, null, true);
+			if (removeProperty(iwc.getIWMainApplication(), pageKey, instanceId, propertyName, values)) {
+				return removeAllBlockObjectsFromCache(iwc);
+			}
+		}
+		
+		return setProperty(pageKey, instanceId, propertyName, propertyValues, iwc.getIWMainApplication());
+	}
 
 	/**
 	 * Returns true if properties changed, or error, else false
@@ -1025,8 +1063,6 @@ public class BuilderLogic implements Singleton {
 	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
 		try {
 			boolean allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwma);
-			if(!allowMultivalued)
-				propertyValues = modifyPropertyValuesRegardingParameterType(pageKey, instanceId, propertyName, propertyValues);
 			
 			IBXMLPage xml = getIBXMLPage(pageKey);
 			
@@ -1042,38 +1078,111 @@ public class BuilderLogic implements Singleton {
 		}
 	}
 	
-	private String[] modifyPropertyValuesRegardingParameterType(String pageKey, String instanceId, String property_name, String[] property_values) {
+	private String[] modifyPropertyValuesRegardingParameterType(String pageKey, String instanceId, String propertyName, List<AdvancedProperty> values) {
+		if (pageKey == null || instanceId == null || propertyName == null || values == null) {
+			return null;
+		}
+		if (values.size() == 0) {
+			return null;
+		}
+		
+		String[] propertyValues = null;
 		
 		try {
-			Method method = getMethodFinder().getMethod(property_name, Class.forName(getModuleClassName(pageKey, instanceId)));
+			Method method = getMethodFinder().getMethod(propertyName, Class.forName(getModuleClassName(pageKey, instanceId)));
 			
 			Class[] types = method.getParameterTypes();
 			
-			if(types != null && types.length > 0) {
+			if (types != null && types.length > 0) {
+				//	TODO: add ability to register specific types handlers (e.g. handler for List etc)
 				
-//				TODO: add ability to register specific types handlers (e.g. handler for List etc)
+				//	List
 				if(types[0].equals(List.class)) {
-					
-					if(property_values != null && property_values.length > 1) {
-						
-						StringBuilder value = new StringBuilder();
-						
-						for (int i = 0; i < property_values.length; i++) {
-							
-							value.append(property_values[i])
-							.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR);
-						}
-						
-						return new String[] {value.toString()};
+					StringBuilder value = new StringBuilder();
+
+					for (int i = 0; i < values.size(); i++) {
+						value.append(values.get(i).getValue())
+						.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR);
 					}
+					
+					return new String[] {value.toString()};
+				}
+				
+				//	PropertiesBean
+				if (types[0].equals(PropertiesBean.class)) {
+					return getPropertyValueForGroupsChooser(values);
 				}
 			}
 			
 		} catch (Exception e) {
-			// TODO: log
 			e.printStackTrace();
 		}
-		return property_values;
+		
+		propertyValues = new String[values.size()];
+		for (int i = 0; i < values.size(); i++) {
+			propertyValues[i] = values.get(i).getValue();
+		}
+		return propertyValues;
+	}
+	
+	/**
+	 * Builds String for setGroup method
+	 * @param properties
+	 * @return
+	 */
+	private String[] getPropertyValueForGroupsChooser(List<AdvancedProperty> properties) {
+		String server = null;
+		String login = null;
+		String password = null;
+		String uniqueIds = null;
+		
+		String connection = findPropertyValue(properties, "connection");
+		if (connection == null) {
+			return null;
+		}
+		
+		if (connection.equals(ICBuilderConstants.GROUPS_CHOOSER_REMOTE_CONNECTION)) {
+			//	Settings for remote connection
+			server = findPropertyValue(properties, "server");
+			login = findPropertyValue(properties, "login");
+			password = CoreUtil.getEncodedValue(findPropertyValue(properties, "password"));
+		}
+		else {
+			//	Settings for local connection
+			server = connection;
+			login = connection;
+			password = connection;
+		}
+		uniqueIds = findPropertyValue(properties, "uniqueids");
+		
+		if (server == null || login == null || password == null || uniqueIds == null) {
+			return null;
+		}
+		StringBuffer value = new StringBuffer(server).append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR);
+		value.append(login).append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR).append(password);
+		value.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR).append(uniqueIds);
+		value.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR).append(connection);
+		return new String[] {value.toString()};
+	}
+	
+	/**
+	 * Finds value in list
+	 * @param properties
+	 * @param id
+	 * @return
+	 */
+	private String findPropertyValue(List<AdvancedProperty> properties, String id) {
+		String value = null;
+		boolean found = false;
+		AdvancedProperty property = null;
+		for (int i = 0; (i < properties.size() && !found); i++) {
+			property = properties.get(i);
+			if (id.equals(property.getId())) {
+				value = property.getValue();
+				found = true;
+			}
+		}
+		return value;
 	}
 	
 	private MethodFinder getMethodFinder() {
