@@ -5,6 +5,12 @@
 	</properties>
 	<body>
 
+		<release version="3.1.9" date="2007-06-16">
+	      <action dev="eiki" type="update">
+			Updated DWR to 2.0.1
+	      </action>
+	    </release>
+	    
 		<release version="3.1.8" date="2007-06-15">
 			<action dev="sigtryggur" type="update">
 				Added better printouts when loading of modules fails when parsing page ibxml.
