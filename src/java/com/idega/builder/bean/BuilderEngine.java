@@ -46,4 +46,11 @@ public interface BuilderEngine extends IBOService {
 	 * @see com.idega.builder.bean.BuilderEngineBean#reRenderObject
 	 */
 	public Document reRenderObject(String pageKey, String instanceId) throws RemoteException;
+	
+	/**
+	 * @see com.idega.builder.bean.BuilderEngineBean#copyModule
+	 */
+	public boolean copyModule(String pageKey, String instanceId);
+	
+	public Document pasteModule(String pageKey, String parentInstanceId);
 }

@@ -116,19 +116,7 @@ function registerBuilderActions() {
 		}
 	);
 	
-	$$('img.add_module_to_region_image').each(
-		function(element) {
-			initToolTipForElement(element);
-		}
-	);
-	
-	$$('img.module_properties_link').each(
-		function(element) {
-			initToolTipForElement(element);
-		}
-	);
-	
-	$$('img.delete_module_image').each(
+	$$('img.imageWithMootoolsTooltips').each(
 		function(element) {
 			initToolTipForElement(element);
 		}
@@ -766,4 +754,27 @@ function ReRenderObject(pageKey, regionId, moduleId, moduleContentId) {
 	this.regionId = regionId;
 	this.moduleId = moduleId;
 	this.moduleContentId = moduleContentId;
+}
+
+function copyThisModule(pageKey, instanceId) {
+	/*$$('div.pasteModuleIconContainer').each(
+		function(element) {
+			var slider = new Fx.Slide(element, {mode: 'horizontal'});
+			slider.slideIn();
+		}
+	);*/
+	BuilderEngine.copyModule(pageKey, instanceId, copyThisModuleCallback);
+}
+
+function copyThisModuleCallback(result) {
+}
+
+function pasteCopiedModule(pageKey, instanceId) {
+	BuilderEngine.pasteModule(pageKey, instanceId, pasteCopiedModuleCallback);
+}
+
+function pasteCopiedModuleCallback(component) {
+	if (component == null) {
+		return;
+	}
 }

@@ -34,5 +34,7 @@ public class BuilderConstants {
 	public static final String SET_MODULE_PROPERTY_CACHE_KEY = "set_existing_module_property_box";
 	
 	public static final String HANLDER_VALUE_OBJECTS_STYLE_CLASS = ICBuilderConstants.HANLDER_VALUE_OBJECTS_STYLE_CLASS;
+	
+	public static final String IMAGE_WITH_TOOLTIPS_STYLE_CLASS = "imageWithMootoolsTooltips";
 
 }

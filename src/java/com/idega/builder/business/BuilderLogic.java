@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.260 2007/06/15 08:53:12 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.261 2007/06/16 13:34:06 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -299,7 +299,7 @@ public class BuilderLogic implements Singleton {
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, null, iwrb));
+				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, "page", iwrb));
 				page.add(marker);
 							
 				if (!clipboardEmpty){
@@ -350,7 +350,7 @@ public class BuilderLogic implements Singleton {
 			
 			if(mayAddButtonsInPage){
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, null, iwrb));
+				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, "page", iwrb));
 
 				if ((!clipboardEmpty)){
 					marker.add(getPasteIcon(parentKey, null, iwc));
@@ -1054,7 +1054,12 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		
-		return setProperty(pageKey, instanceId, propertyName, propertyValues, iwc.getIWMainApplication());
+		if (setProperty(pageKey, instanceId, propertyName, propertyValues, iwc.getIWMainApplication())) {
+			removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
+			removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -1315,11 +1320,8 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *  	 *
 	 */
-	public boolean pasteModuleAbove(IWUserContext iwc,String pageKey, String parentID, String objectID) {
+	public boolean pasteModuleAbove(IWUserContext iwc, String pageKey, String parentID, String objectID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
-		System.out.println("pageKey = " + pageKey);
-		System.out.println("parentID = " + parentID);
-		System.out.println("objectID = " + objectID);
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		if (element == null) {
 			return (false);
@@ -2030,25 +2032,30 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	public PresentationObject getButtonsLayer(String uri, String label, IWResourceBundle iwrb) {
+	private PresentationObject getButtonsLayer(String uri, String label, IWResourceBundle iwrb) {
 		Layer buttons = new Layer();
 		
 		//	Add module button
+		Layer addModuleContainer = new Layer();
+		addModuleContainer.setStyleAttribute("float", "left");
 		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("create_simple_template.Region", "Region"));
 		if (label != null) {
 			title.append(": ").append(label);
 		}
 		title.append(" :: ").append(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));
 		Image addModule = getBuilderBundle().getImage("add_32.png", title.toString(), 24, 24);
-		addModule.setOnClick("setPropertiesForAddModule(this.parentNode.parentNode);");
-		addModule.setStyleClass("add_module_to_region_image");
+		addModule.setOnClick("setPropertiesForAddModule(this.parentNode.parentNode.parentNode);");
+		addModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		// Link for MOOdalBox
 		Link link = new Link(addModule);
 		link.setMarkupAttribute("rel", "moodalbox");
 		link.setURL(uri);
-		buttons.add(link);
+		addModuleContainer.add(link);
+		buttons.add(addModuleContainer);
 		
 		//	Add article button
+		Layer addArticleContainer = new Layer();
+		addArticleContainer.setStyleAttribute("float", "left");
 		title = new StringBuffer(iwrb.getLocalizedString("article_module", "Article")).append(" :: ");
 		title.append(iwrb.getLocalizedString("add_article_module", "Add article module"));
 		Image addArticle = getBuilderBundle().getImage("article_32.png", title.toString(), 24, 24);
@@ -2065,7 +2072,21 @@ public class BuilderLogic implements Singleton {
 			addArticle.setMarkupAttribute("icobjectclass", article.getClassName());
 		}
 		
-		buttons.add(addArticle);
+		addArticleContainer.add(addArticle);
+		buttons.add(addArticleContainer);
+		
+		//	Paste module button
+		/*Layer pasteButtonContainer = new Layer();
+		title = new StringBuffer(iwrb.getLocalizedString("paste", "Paste")).append(" :: ");
+		title.append(iwrb.getLocalizedString("paste_module", "Paste module"));
+		Image pasteImage = getBuilderBundle().getImage("paste_24.gif", title.toString(), 24, 24);
+		pasteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+		StringBuffer action = new StringBuffer("pasteCopiedModule('").append(pageKey).append("', '").append(instanceId).append("');");
+		pasteImage.setOnClick(action.toString());
+		pasteButtonContainer.add(pasteImage);
+		pasteButtonContainer.setStyleClass("pasteModuleIconContainer");
+		//pasteButtonContainer.setStyleAttribute("margin: 0px; overflow: hidden; width: 0px;");
+		buttons.add(pasteButtonContainer);*/
 		
 		return buttons;
 	}

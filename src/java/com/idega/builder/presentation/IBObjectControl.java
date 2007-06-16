@@ -190,14 +190,23 @@ public class IBObjectControl extends PresentationObjectContainer {
 			StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(paramsSeparator).append(pageKey);
 			action.append(paramsSeparator).append(this.parentKey).append(paramsSeparator).append(instanceId).append("');");
 			deleteImage.setOnClick(action.toString());
-			deleteImage.setStyleClass("delete_module_image");
+			deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 			this.buttonsLayer.add(deleteImage);
+			
+			//	Copy module
+			/*title = new StringBuffer(iwrb.getLocalizedString("copy", "Copy")).append(" :: ");
+			title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
+			Image copyModule = iwb.getImage("copy_24.gif", title.toString(), 24, 24);
+			copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+			action = new StringBuffer("copyThisModule('").append(pageKey).append(paramsSeparator).append(instanceId).append("');");
+			copyModule.setOnClick(action.toString());
+			this.buttonsLayer.add(copyModule);*/
 			
 			//	Module properties
 			title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
 			title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
 			Image propertiesImage = iwb.getImage("info_32.png", title.toString(), 24, 24);
-			propertiesImage.setStyleClass("module_properties_link");
+			propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 			Link link = new Link(propertiesImage);
 			link.setMarkupAttribute("rel", "moodalbox");
 			this.buttonsLayer.add(link);
@@ -268,7 +277,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		obj.setParentObject(this.parent);
 		obj.setLocation(this.parent.getLocation());
 		
-}
+	}
 
 	/**
 	 *

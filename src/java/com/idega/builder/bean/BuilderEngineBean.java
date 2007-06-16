@@ -2,7 +2,6 @@ package com.idega.builder.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.faces.component.UIComponent;
 
@@ -194,6 +193,32 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		return builder.getRenderedComponent(iwc, findComponentInPage(iwc, pageKey, instanceId), false);
+	}
+	
+	public boolean copyModule(String pageKey, String instanceId) {
+		if (pageKey == null || instanceId == null) {
+			return false;
+		}
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return false;
+		}
+		
+		return builder.copyModule(iwc, pageKey, instanceId);
+	}
+	
+	public Document pasteModule(String pageKey, String parentInstanceId) {
+		if (pageKey == null || parentInstanceId == null) {
+			return null;
+		}
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return null;
+		}
+		
+		//builder.pasteModuleBelow(iwc, pageKey, parentInstanceId);
+
+		return null;
 	}
 	
 	private UIComponent findComponentInPage(IWContext iwc, String pageKey, String instanceId) {

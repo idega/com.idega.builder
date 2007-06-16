@@ -97,3 +97,7 @@ add_article_module=Add article module
 delete=Delete
 delete_module=Delete module
 formemailer.spambotdetected=Sorry, you're most likely to be a spambot. If that's not the case, please press back and refill the form.
+copy=Copy
+copy_module=Copy module
+paste=Paste
+paste_module=Paste module

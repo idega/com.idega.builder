@@ -426,3 +426,11 @@ div#simple_properties_box {
 .add_article_module_to_region_image:hover {
 	cursor: pointer;
 }
+
+.imageWithMootoolsTooltips:hover {
+	cursor: pointer;
+}
+
+.pasteModuleIconContainer {
+	float: left;
+}
