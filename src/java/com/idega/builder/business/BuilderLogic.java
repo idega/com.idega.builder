@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.261 2007/06/16 13:34:06 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.262 2007/06/16 13:54:30 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -608,7 +608,13 @@ public class BuilderLogic implements Singleton {
 				//parent.remove(obj);
 				//parent.add(new IBObjectControl(obj,parent,parentKey,iwc,index));
 				transformed = new IBObjectControl(obj, parent, parentKey, iwc, index);
-				parent.set(index, transformed);
+				
+				if(index < parent.getChildCount())
+					parent.set(index, transformed);
+				else {
+					parent.add(transformed);
+					index++;
+				}
 			}
 		}
 		return transformed;
