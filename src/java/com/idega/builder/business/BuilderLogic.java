@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.262 2007/06/16 13:54:30 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.263 2007/06/17 17:58:46 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -255,8 +255,9 @@ public class BuilderLogic implements Singleton {
 		CoreUtil.addJavaSciptForChooser(iwc);
 		
 		try {
-			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToMootoolsLib());		//	Mootools
-			page.addJavascriptURL(getWeb2Business(iwc).getMoodalboxScriptFilePath(false));	//	MOOdalBox
+			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToMootoolsLib());				//	Mootools
+			page.addJavascriptURL(getWeb2Business(iwc).getMoodalboxScriptFilePath(false));			//	MOOdalBox
+			page.addJavascriptURL(getWeb2Business(iwc).getReflectionForMootoolsScriptFilePath());	//	Reflection
 			
 			page.addStyleSheetURL(getWeb2Business(iwc).getMoodalboxStyleFilePath());
 		} catch (RemoteException e) {
