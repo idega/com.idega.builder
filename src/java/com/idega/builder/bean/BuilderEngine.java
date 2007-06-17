@@ -20,7 +20,7 @@ public interface BuilderEngine extends IBOService {
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#addSelectedModule
 	 */
-	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index) throws RemoteException;
+	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index, boolean useThread) throws RemoteException;
 
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#getRenderedModule

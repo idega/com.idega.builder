@@ -32,7 +32,8 @@ var HANLDER_VALUE_OBJECTS_STYLE_CLASS = 'handlerValueObjects';
 var PROPERTIES_SHOWN = new Array();
 var PROPERTY_BOX_SHOWN = new Array();
 var OBJECTS_TO_RERENDER = new Array();
-var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer', 'com.idega.user.presentation.group.GroupUsersViewer'];
+var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer',
+	 'com.idega.user.presentation.group.GroupUsersViewer', 'com.idega.block.media.presentation.VideoViewer'];
 
 function getBuilderInitInfo() {
 	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
@@ -373,7 +374,7 @@ function addSelectedModule(newObjectId, className) {
 		return;
 	}
 
-	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, {
+	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, true, {
 		callback: function(component) {
 			addSelectedModuleCallback(component, PARENT_ID);
 		}

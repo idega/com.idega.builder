@@ -79,7 +79,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return addModule(iwc, pageKey, containerId, instanceId, objectId, useThread);
 	}
 	
-	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index) {
+	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index, boolean useThread) {
 		if (pageKey == null || instanceId == null || objectId < 0 || className == null) {
 			return null;
 		}
@@ -103,7 +103,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			}
 		}*/
 		
-		String uuid = addModule(iwc, pageKey, containerId, instanceId, objectId, true);
+		String uuid = addModule(iwc, pageKey, containerId, instanceId, objectId, useThread);
 		if (uuid == null) {
 			return null;
 		}
