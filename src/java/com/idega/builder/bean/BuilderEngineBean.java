@@ -107,6 +107,9 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (uuid == null) {
 			return null;
 		}
+		if (useThread) {
+			component.setId(uuid);
+		}
 		
 		/*if (needSetId) {
 			String[] prop = new String[1];
