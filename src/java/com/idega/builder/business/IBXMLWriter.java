@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.9 2007/06/13 12:57:14 alexis Exp $
+ * $Id: IBXMLWriter.java,v 1.10 2007/06/18 15:08:05 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -696,6 +696,8 @@ public class IBXMLWriter {
 			String propertyValue = getBuilderLogic().generateResourcePath(base, CoreConstants.ARTICLE_FILENAME_SCOPE, CoreConstants.ARTICLE_FILENAME_SCOPE);
 			
 			setProperty(iwma, xml, newInstanceId, propertyName, propertyValue);
+			setProperty(iwma, xml, newInstanceId, "showAuthor", "false");
+			setProperty(iwma, xml, newInstanceId, "showCreationDate", "false");
 		}
 		if(obj.getClassName().indexOf("VideoViewer")!=-1){
 //			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
