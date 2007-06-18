@@ -32,6 +32,7 @@ var HANLDER_VALUE_OBJECTS_STYLE_CLASS = 'handlerValueObjects';
 var PROPERTIES_SHOWN = new Array();
 var PROPERTY_BOX_SHOWN = new Array();
 var OBJECTS_TO_RERENDER = new Array();
+var ELEMENTS_WITH_TOOLTIP = new Array();
 var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer',
 	 'com.idega.user.presentation.group.GroupUsersViewer', 'com.idega.block.media.presentation.VideoViewer'];
 
@@ -119,16 +120,22 @@ function registerBuilderActions() {
 	
 	$$('img.imageWithMootoolsTooltips').each(
 		function(element) {
-			initToolTipForElement(element);
+			if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
+				ELEMENTS_WITH_TOOLTIP.push(element);
+				initToolTipForElement(element);
+			}
 		}
 	);
 	
 	$$('img.add_article_module_to_region_image').each(
 		function(element) {
-			initToolTipForElement(element);
+			if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
+				ELEMENTS_WITH_TOOLTIP.push(element);
+				initToolTipForElement(element);
+			}
 			element.onclick = function() {
 				addConcreteModule(element);
-			}
+			}	
 		}
 	);
 }
