@@ -72,15 +72,15 @@ function getBuilderInitInfoCallback(list) {
 function registerBuilderActions() {
 	$$('div.moduleContainer').each(
 		function(element) {
-			element.onmouseover = function() {
+			element.addEvent('mouseover', function() {
 				showAllComponentsLabels(element);
 				showComponentInfoImage(element);
-			},
-			element.onmouseout = function() {
+			});
+			element.addEvent('mouseout', function() {
 				hideOldLabels(element);
 				hideComponentInfoImage(element);
 				element.removeAttribute('style');
-			}
+			});
     	}
     );
 
