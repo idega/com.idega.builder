@@ -14,7 +14,6 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBXMLReader;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.EditModuleBlock;
-import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.SetModulePropertyBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
@@ -287,7 +286,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}*/
 		
-		IBObjectControl transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, "-1", iwc);
+		PresentationObject transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, "-1", iwc);
 		
 		return builder.getRenderedComponent(iwc, transformed, false);
 	}

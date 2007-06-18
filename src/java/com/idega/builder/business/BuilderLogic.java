@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.263 2007/06/17 17:58:46 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.264 2007/06/18 13:47:58 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -483,7 +483,7 @@ public class BuilderLogic implements Singleton {
 		setProperty(pageKey, instanceId, "image_id", Integer.toString(imageID), iwma);
 	}
 
-	public IBObjectControl getTransformedObject(Page currentPage, String pageKey, UIComponent obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
+	public PresentationObject getTransformedObject(Page currentPage, String pageKey, UIComponent obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
 		IWResourceBundle iwrb = getBuilderBundle().getResourceBundle(iwc);
 		
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
@@ -603,7 +603,7 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 		}
-		IBObjectControl transformed = null;
+		PresentationObject transformed = null;
 		if ( (isPresentationObject && ((PresentationObject) obj).getUseBuilderObjectControl()) || !isPresentationObject ) {
 			if (index != -1) {
 				//parent.remove(obj);
@@ -617,8 +617,12 @@ public class BuilderLogic implements Singleton {
 					index++;
 				}
 			}
+			return transformed;
 		}
-		return transformed;
+		if (isPresentationObject) {
+			return (PresentationObject) obj;
+		}
+		return null;
 	}
 
 	/**
