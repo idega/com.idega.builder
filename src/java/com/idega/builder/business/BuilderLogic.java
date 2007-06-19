@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.264 2007/06/18 13:47:58 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.265 2007/06/19 09:54:22 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -27,6 +27,8 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.render.RenderKitFactory;
 
+import org.apache.myfaces.renderkit.html.util.AddResource;
+import org.apache.myfaces.renderkit.html.util.AddResourceFactory;
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
 import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
@@ -250,27 +252,40 @@ public class BuilderLogic implements Singleton {
 
 		IWBundle iwb = getBuilderBundle();
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
-		page.addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
 		
 		CoreUtil.addJavaSciptForChooser(iwc);
 		
+		AddResource adder = AddResourceFactory.getInstance(iwc);
+		
+		Web2Business web2 = getWeb2Business(iwc);
+		
+		//	JavaScript
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		try {
-			page.addJavascriptURL(getWeb2Business(iwc).getBundleURIToMootoolsLib());				//	Mootools
-			page.addJavascriptURL(getWeb2Business(iwc).getMoodalboxScriptFilePath(false));			//	MOOdalBox
-			page.addJavascriptURL(getWeb2Business(iwc).getReflectionForMootoolsScriptFilePath());	//	Reflection
-			
-			page.addStyleSheetURL(getWeb2Business(iwc).getMoodalboxStyleFilePath());
+			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	Mootools
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-
-		page.addJavascriptURL("/dwr/interface/BuilderEngine.js");
+		try {
+			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxScriptFilePath(false));		//	MOOdalBox
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getReflectionForMootoolsScriptFilePath());	//	Reflection
 		
-		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
-		page.addJavascriptURL(iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
+		//	JavaScript actions
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderActions);");
 		
-		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', getBuilderInitInfo);");
-		page.getAssociatedScript().addScriptLine("registerEvent(window, 'load', registerBuilderActions);");
+		//	CSS
+		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("style/builder.css"));
+		try {
+			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
