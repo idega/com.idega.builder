@@ -74,18 +74,20 @@ function registerBuilderActions() {
 	$$('div.moduleContainer').each(
 		function(element) {
 			element.addEvent('mouseover', function() {
-				showAllComponentsLabels(element);
-				showComponentInfoImage(element);
+				try {
+					showAllComponentsLabels(element);
+					showComponentInfoImage(element);
+				} catch(err) {}
 			});
 			element.addEvent('mouseout', function() {
-				hideOldLabels(element);
-				hideComponentInfoImage(element);
-				element.removeAttribute('style');
+				try {
+					hideOldLabels(element);
+					hideComponentInfoImage(element);
+					element.removeAttribute('style');
+				} catch(err) {}
 			});
     	}
     );
-
-	//setActionsForRegion();
     
     $$('div.regionInfoImageContainer').each(
     	function(element) {
