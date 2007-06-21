@@ -9,8 +9,7 @@ import org.apache.myfaces.component.html.ext.HtmlInputTextarea;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.HtmlTemplateGrabber;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
+import com.idega.business.SpringBeanLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -45,12 +44,8 @@ public class IBSourceView extends Window {
 	public void main(IWContext iwc) {
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
 		
-		try {
-			Web2Business web2 = (Web2Business) IBOLookup.getServiceInstance(iwc, Web2Business.class);
-			this.getParentPage().addJavascriptURL(web2.getCodePressScriptFilePath());
-		} catch (IBOLookupException e1) {
-			e1.printStackTrace();
-		}
+		Web2Business web2 = (Web2Business) SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
+		this.getParentPage().addJavascriptURL(web2.getCodePressScriptFilePath());
 				
 		String action = iwc.getParameter(IB_SOURCE_ACTION);
 		if (action != null) {

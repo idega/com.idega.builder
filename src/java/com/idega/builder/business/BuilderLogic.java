@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.265 2007/06/19 09:54:22 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.266 2007/06/21 18:56:45 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -55,6 +55,7 @@ import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.business.SpringBeanLookup;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.business.BuilderPageException;
@@ -2925,14 +2926,10 @@ public class BuilderLogic implements Singleton {
 	private Web2Business getWeb2Business(IWContext iwc) {
 		if (web2 == null) {
 			synchronized (BuilderLogic.class) {
-				try {
-					if (iwc == null) {
-						iwc = IWContext.getInstance();
-					}
-					web2 = (Web2Business) IBOLookup.getServiceInstance(iwc, Web2Business.class);
-				} catch (IBOLookupException e) {
-					e.printStackTrace();
+				if (iwc == null) {
+					iwc = IWContext.getInstance();
 				}
+				web2 = (Web2Business) SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
 			}
 		}
 		return web2;
