@@ -189,6 +189,10 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return builder.setModuleProperty(pageKey, moduleId, propertyName, new String[] {propertyValue});
 	}
 	
+	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] values) {
+		return builder.setModuleProperty(pageKey, moduleId, propertyName, values);
+	}
+	
 	public Document reRenderObject(String pageKey, String instanceId) {
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {

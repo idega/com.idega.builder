@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.68 2007/06/08 08:46:44 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.69 2007/06/22 07:14:48 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import com.idega.builder.bean.PropertyHandlerBean;
 import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
 import com.idega.builder.handler.SpecifiedChoiceProvider;
 import com.idega.builder.handler.TableColumnsHandler;
@@ -483,16 +485,26 @@ public class IBPropertyHandler implements Singleton{
 	/**
 	 * New generation setter
 	 */
-	public PresentationObject getPropertySetterComponent(IWContext iwc, String presentationObjectInstanceId, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue, String className, boolean needReload) {
+	public PresentationObject getPropertySetterComponent(IWContext iwc, PropertyHandlerBean properties/*String presentationObjectInstanceId, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue, String className, boolean needReload*/) {
 		boolean attributesSet = false;
+		
+		String propertyName = properties.getPropertyName();
+		String name = properties.getName();
+		String stringValue = properties.getValue();
+		String className = properties.getStyleClass();
+		Class parameterClass = properties.getParameterClass();
+		int parameterIndex = properties.getParameterIndex();
+		boolean needReload = properties.isNeedsReload();
+		boolean isMultivalue = properties.isMultivalue();
+		
 		PresentationObject obj = null;
 		try {
-			obj = getHandlerInstance(iwc, presentationObjectInstanceId, propertyName, parameterIndex, name, stringValue, false);
+			obj = getHandlerInstance(iwc, properties.getObjectInstanceId(), propertyName, parameterIndex, name, stringValue, false);
 		}
 		catch (Exception e) {
 		}
 		if (obj != null) {
-			setMarkupAttributes(obj, propertyName, presentationObjectInstanceId, needReload, className);
+			setMarkupAttributes(obj, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
 			return obj;
 		}
 		if (parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)) {
@@ -523,12 +535,12 @@ public class IBPropertyHandler implements Singleton{
 			Span yesOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).append(":").toString()));
 			RadioButton yes = new RadioButton(name);
 			yes.setValue("Y");
-			setMarkupAttributes(yes, propertyName, presentationObjectInstanceId, needReload, className);
+			setMarkupAttributes(yes, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
 			
 			Span noOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("no", "No")).append(":").toString()));
 			RadioButton no = new RadioButton(name);
 			no.setValue("N");
-			setMarkupAttributes(no, propertyName, presentationObjectInstanceId, needReload, className);
+			setMarkupAttributes(no, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
 			
 			if (stringValue.equalsIgnoreCase("Y") || stringValue.equalsIgnoreCase("T")) {
 				yes.setSelected();
@@ -604,7 +616,7 @@ public class IBPropertyHandler implements Singleton{
 			obj = (PresentationObject) fileChooser;
 		}
 		else if (parameterClass.equals(com.idega.core.builder.data.ICPage.class)) {
-			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, false, presentationObjectInstanceId, propertyName);
+			com.idega.builder.presentation.IBPageChooser chooser = new com.idega.builder.presentation.IBPageChooser(name, false, properties.getObjectInstanceId(), propertyName);
 			try {
 				ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
 				chooser.setSelectedPage(page.getId(), page.getName());
@@ -621,12 +633,12 @@ public class IBPropertyHandler implements Singleton{
 			}
 		}
 		if (!attributesSet) {
-			setMarkupAttributes(obj, propertyName, presentationObjectInstanceId, needReload, className);
+			setMarkupAttributes(obj, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
 		}
 		return obj;
 	}
 	
-	private void setMarkupAttributes(PresentationObject object, String propertyName, String instanceId, boolean needReload, String className) {
+	private void setMarkupAttributes(PresentationObject object, String propertyName, String instanceId, boolean needReload, boolean isMultivalue, String className) {
 		if (object == null) {
 			return;
 		}
@@ -645,7 +657,7 @@ public class IBPropertyHandler implements Singleton{
 						List children = cell.getChildren();
 						if (children != null) {
 							for (int k = 0; k < children.size(); k++) {
-								setMarkupAttributesToObject(children.get(k), propertyName, instanceId, needReload, className);
+								setMarkupAttributesToObject(children.get(k), propertyName, instanceId, needReload, isMultivalue, className);
 							}
 						}
 					}
@@ -653,11 +665,11 @@ public class IBPropertyHandler implements Singleton{
 			}
 		}
 		else {
-			setMarkupAttributesToObject(object, propertyName, instanceId, needReload, className);
+			setMarkupAttributesToObject(object, propertyName, instanceId, needReload, isMultivalue, className);
 		}
 	}
 	
-	private boolean setMarkupAttributesToObject(Object object, String propertyName, String instanceId, boolean needReload, String className) {
+	private boolean setMarkupAttributesToObject(Object object, String propertyName, String instanceId, boolean needReload, boolean isMultivalue, String className) {
 		if (!(object instanceof PresentationObject)) {
 			return false;
 		}
@@ -665,6 +677,7 @@ public class IBPropertyHandler implements Singleton{
 		po.setMarkupAttribute("propname", propertyName);
 		po.setMarkupAttribute("moduleid", instanceId);
 		po.setMarkupAttribute("needsreload", needReload);
+		po.setMarkupAttribute("multivalue", isMultivalue);
 		po.setStyleClass(className);
 		
 		return true;

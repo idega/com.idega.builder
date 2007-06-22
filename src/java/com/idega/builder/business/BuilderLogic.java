@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.266 2007/06/21 18:56:45 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.267 2007/06/22 07:14:48 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1059,7 +1059,7 @@ public class BuilderLogic implements Singleton {
 		String[] propertyValues = null;
 		boolean allowMultivalued = false;
 		try {
-			allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwc.getIWMainApplication());
+			allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwc.getIWMainApplication(), pageKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1094,7 +1094,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
 		try {
-			boolean allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwma);
+			boolean allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwma, pageKey);
 			
 			IBXMLPage xml = getIBXMLPage(pageKey);
 			
@@ -1641,7 +1641,16 @@ public class BuilderLogic implements Singleton {
 		return null;
 	}
 
-	private boolean isPropertyMultivalued(String propertyName, String instanceId, IWMainApplication iwma) throws Exception {
+	private boolean isPropertyMultivalued(String propertyName, String instanceId, IWMainApplication iwma, String pageKey) throws Exception {
+		int objectId = -1;
+		try {
+			objectId = Integer.valueOf(instanceId).intValue();
+		} catch (NumberFormatException e) {
+			objectId = getIBXMLReader().getICObjectInstanceIdFromComponentId(instanceId, null, pageKey);
+		}
+		if (objectId == -1) {
+			return false;
+		}
 		try {
 			Class c = null;
 			IWBundle iwb = null;
@@ -1650,7 +1659,7 @@ public class BuilderLogic implements Singleton {
 				iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
 			}
 			else {
-				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(Integer.parseInt(instanceId));
+				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(objectId);
 				c = instance.getObject().getObjectClass();
 				iwb = instance.getObject().getBundle(iwma);
 			}

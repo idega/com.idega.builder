@@ -645,13 +645,82 @@ function saveModuleProperty(event, element) {
 	if (attr.getNamedItem('needsreload') != null) {
 		needsReload = attr.getNamedItem('needsreload').value;
 	}
+	var isMultivalue = 'false';
+	if (attr.getNamedItem('multivalue') != null) {
+		isMultivalue = attr.getNamedItem('multivalue').value;
+	}
+	
+	var values = null;
+	if (isMultivalue == 'true') {
+		if (element.tagName == 'input' || element.tagName == 'INPUT') {
+			var container = element.parentNode.parentNode.parentNode;
+			if (container == null) {
+				return false;
+			}
+			var elements = container.getElementsByTagName(element.tagName);
+			if (elements == null) {
+				return false;
+			}
+						
+			if (element.type) {
+				if (element.type == 'radio') {
+					values = new Array();
+					
+					var groupedElements = new Array();
+					for (var i = 0; i < elements.length; i++) {
+						var sameNameElements = getAllElementsByName(elements, 'ib_property_' + i);
+						if (sameNameElements.length > 0) {
+							groupedElements.push(sameNameElements);
+						}
+					}
+					
+					for (var i = 0; i < groupedElements.length; i++) {
+						var sameNameElements = groupedElements[i];
+						if (sameNameElements.length == 2) {
+							var positive = sameNameElements[0];
+							var negative = sameNameElements[1];
+							if (positive.checked) {
+								values.push(positive.value);
+							}
+							else  if (negative.checked) {
+								values.push(negative.value);
+							}
+							else {
+								values.push('N');	//	Nothing checked
+							}
+						}
+					}
+				}
+			}
+			
+		}
+	}
+	else {
+		values = new Array();
+		values.push(element.value);
+	}
 	
 	showLoadingMessage(SAVING_LABEL);
-	BuilderEngine.setSimpleModuleProperty(PAGE_KEY, moduleId, propertyName, element.value, {
+	BuilderEngine.setModuleProperty(PAGE_KEY, moduleId, propertyName, values, {
 		callback: function(result) {
 			saveModulePropertyCallback(result, moduleId, needsReload);
 		}
 	});
+}
+
+function getAllElementsByName(list, name) {
+	var sameNameElements = new Array();
+	if (list == null || name == null) {
+		return sameNameElements;
+	}
+	for (var i = 0; i < list.length; i++) {
+		if (list[i].name) {
+			if (list[i].name == name) {
+				sameNameElements.push(list[i]);
+			}
+		}
+	}
+	return sameNameElements;
 }
 
 function executeActionsBeforeReloading() {

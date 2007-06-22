@@ -53,4 +53,9 @@ public interface BuilderEngine extends IBOService {
 	public boolean copyModule(String pageKey, String instanceId);
 	
 	public Document pasteModule(String pageKey, String parentInstanceId);
+	
+	/**
+	 * @see com.idega.builder.bean.BuilderEngineBean#setModuleProperty
+	 */
+	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] values);
 }

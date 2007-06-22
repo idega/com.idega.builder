@@ -3,6 +3,7 @@ package com.idega.builder.presentation;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import com.idega.builder.bean.PropertyHandlerBean;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
@@ -93,7 +94,8 @@ public class SetModulePropertyBlock extends Block {
 			name = new StringBuffer(namePrefix).append(i).toString();
 			handlerClass = null;
 			if (isMethodIdentifier) {
-				handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc, instanceId, propertyName, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
+				handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc, instanceId, propertyName, i,
+						IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
 			}
 			
 			if (isMultiValue) {
@@ -105,7 +107,8 @@ public class SetModulePropertyBlock extends Block {
 				}
 			}
 			
-			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	instanceId, propertyName, i, parameterClass, name, value, "modulePropertySetter", needsReload);
+			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	new PropertyHandlerBean(instanceId,
+					propertyName, name, value, "modulePropertySetter", parameterClass, i, needsReload, isMultiValue));
 			container.add(handlerBox);
 			
 			ICPropertyHandler handler = null;
