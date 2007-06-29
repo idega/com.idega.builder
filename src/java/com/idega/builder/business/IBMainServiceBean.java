@@ -13,8 +13,8 @@ import javax.faces.component.UIComponent;
 
 import org.jdom.Document;
 
-import com.idega.bean.AdvancedProperty;
 import com.idega.builder.app.IBApplication;
+import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderPageWriterService;

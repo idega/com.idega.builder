@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.267 2007/06/22 07:14:48 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.268 2007/06/29 10:01:23 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -40,9 +40,8 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import com.idega.bean.AdvancedProperty;
-import com.idega.bean.PropertiesBean;
 import com.idega.block.web2.business.Web2Business;
+import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
@@ -105,6 +104,7 @@ import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
+import com.idega.user.bean.PropertiesBean;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
