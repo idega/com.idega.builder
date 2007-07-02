@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.268 2007/06/29 10:01:23 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.269 2007/07/02 14:35:57 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3284,6 +3284,76 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		return slideService;
+	}
+	
+	public UIComponent findComponentInPage(IWContext iwc, String pageKey, String instanceId) {
+		if (pageKey == null || instanceId == null || iwc == null) {
+			return null;
+		}
+		
+		Page page = getPage(pageKey, iwc);
+		if (page == null) {
+			return null;
+		}
+		List pageChildren = page.getChildren();
+		if (pageChildren == null) {
+			return null;
+		}
+		
+		PresentationObjectContainer container = null;
+		Object o = null;
+		Object oo = null;
+		List regionChildren = null;
+		boolean foundComponent = false;
+		UIComponent component = null;
+		for (int i = 0; (i < pageChildren.size() && !foundComponent); i++) {
+			o = pageChildren.get(i);
+			if (o instanceof PresentationObjectContainer) {
+				container = (PresentationObjectContainer) o;
+				if (instanceId.equals(container.getId())) {
+					component = container;
+					foundComponent = true;
+				}
+				else {
+					regionChildren = container.getChildren();
+					if (regionChildren != null) {
+						for (int j = 0; (j < regionChildren.size() && !foundComponent); j++) {
+							oo = regionChildren.get(j);
+							if (oo instanceof UIComponent) {
+								component = (UIComponent) oo;
+								if (instanceId.equals(component.getId())) {
+									foundComponent = true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (!foundComponent) {
+			return null;
+		}
+		
+		return component;
+	}
+	
+	public Document getRenderedModule(String pageKey, String componentId, boolean cleanHtml) {
+		if (pageKey == null || componentId == null) {
+			return null;
+		}
+		
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return null;
+		}
+		
+		UIComponent component = findComponentInPage(iwc, pageKey, componentId);
+		if (component == null) {
+			return null;
+		}
+		
+		return getRenderedComponent(iwc, component, cleanHtml);
 	}
 
 }

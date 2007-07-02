@@ -21,7 +21,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreUtil;
@@ -136,7 +135,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		UIComponent component = findComponentInPage(iwc, pageKey, uuid);
+		UIComponent component = builder.findComponentInPage(iwc, pageKey, uuid);
 		if (component == null) {
 			return null;
 		}
@@ -198,7 +197,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (iwc == null) {
 			return null;
 		}
-		return builder.getRenderedComponent(iwc, findComponentInPage(iwc, pageKey, instanceId), false);
+		return builder.getRenderedComponent(iwc, builder.findComponentInPage(iwc, pageKey, instanceId), false);
 	}
 	
 	public boolean copyModule(String pageKey, String instanceId) {
@@ -225,58 +224,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		//builder.pasteModuleBelow(iwc, pageKey, parentInstanceId);
 
 		return null;
-	}
-	
-	private UIComponent findComponentInPage(IWContext iwc, String pageKey, String instanceId) {
-		if (pageKey == null || instanceId == null || iwc == null) {
-			return null;
-		}
-		
-		Page page = builder.getPage(pageKey, iwc);
-		if (page == null) {
-			return null;
-		}
-		List pageChildren = page.getChildren();
-		if (pageChildren == null) {
-			return null;
-		}
-		
-		PresentationObjectContainer container = null;
-		Object o = null;
-		Object oo = null;
-		List regionChildren = null;
-		boolean foundComponent = false;
-		UIComponent component = null;
-		for (int i = 0; (i < pageChildren.size() && !foundComponent); i++) {
-			o = pageChildren.get(i);
-			if (o instanceof PresentationObjectContainer) {
-				container = (PresentationObjectContainer) o;
-				if (instanceId.equals(container.getId())) {
-					component = container;
-					foundComponent = true;
-				}
-				else {
-					regionChildren = container.getChildren();
-					if (regionChildren != null) {
-						for (int j = 0; (j < regionChildren.size() && !foundComponent); j++) {
-							oo = regionChildren.get(j);
-							if (oo instanceof UIComponent) {
-								component = (UIComponent) oo;
-								if (instanceId.equals(component.getId())) {
-									foundComponent = true;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if (!foundComponent) {
-			return null;
-		}
-		
-		return component;
 	}
 	
 	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index) {

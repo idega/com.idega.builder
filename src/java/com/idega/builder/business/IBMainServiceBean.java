@@ -435,4 +435,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean setProperty(IWContext iwc, String pageKey, String instanceId, String propertyName, List<AdvancedProperty> properties) {
 		return getBuilderLogic().setProperty(iwc, pageKey, instanceId, propertyName, properties);
 	}
+	
+	public Document getRenderedModule(String pageKey, String componentId, boolean cleanHtml) {
+		return getBuilderLogic().getRenderedModule(pageKey, componentId, cleanHtml);
+	}
 }
