@@ -5,7 +5,7 @@
   <pomVersion>3</pomVersion>
   <name>idegaWeb Builder</name>
   <artifactId>com.idega.builder</artifactId>
-  <currentVersion>3.1.10</currentVersion>
+  <currentVersion>3.1.11</currentVersion>
   <organization/>
   <inceptionYear>2000</inceptionYear>
   <shortDescription>idegaWeb Builder is a Webapplication RAD and CMS tool</shortDescription>
@@ -95,6 +95,11 @@
       <name>3.1.10</name>
       <tag>BUILDER_3_1_10</tag>
     </version>
+    <version>
+      <id>3.1.11</id>
+      <name>3.1.11</name>
+      <tag>BUILDER_3_1_11</tag>
+    </version>
   </versions>
   <branches/>
   <mailingLists>
@@ -152,6 +157,13 @@
       <name>Vytautas Civilis</name>
       <id>civilis</id>
       <email>civilis@idega.com</email>
+      <organization>idega software</organization>
+      <roles/>
+    </developer>
+    <developer>
+      <name>Valdas Zemaitis</name>
+      <id>valdas</id>
+      <email>valdas@idega.com</email>
       <organization>idega software</organization>
       <roles/>
     </developer>

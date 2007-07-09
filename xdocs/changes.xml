@@ -5,6 +5,12 @@
 	</properties>
 	<body>
 	
+		<release version="3.1.11" date="2007-07-05">
+	      <action dev="valdas" type="add">
+			Added methodto find UIComponent in a Page.
+	      </action>
+	    </release>
+	    
 		<release version="3.1.10" date="2007-07-04">
 	      <action dev="valdas" type="add">
 			Added methods to render single UIComponent based instance to String or Document (org.jdom.Document)
