@@ -1,10 +1,13 @@
 /*
- * $Id: BuilderLogic.java,v 1.207.2.5 2007/07/11 11:56:32 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.207.2.6 2007/07/11 15:46:17 palli Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,8 +15,17 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIViewRoot;
+import javax.faces.render.RenderKitFactory;
+
+import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
@@ -65,6 +77,7 @@ import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.util.FileUtil;
+import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
@@ -2098,4 +2111,134 @@ public class BuilderLogic implements Singleton {
 //		return null;
 //	}
 	
+	/**
+	 * Renders single UIComponent
+	 * @param iwc
+	 * @param component - object to render
+	 * @param cleanHtml
+	 * @return String of rendered object or null
+	 */
+	public String getRenderedComponent(UIComponent component, IWContext iwc) {
+		if (iwc == null || component == null) {
+			return null;
+		}
+		
+		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+		iwc.setResponseWriter(writer);
+		
+		if (iwc.getViewRoot() == null) {
+			UIViewRoot root = new UIViewRoot();
+			root.setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
+			iwc.setViewRoot(root);
+		}
+		
+		try {
+			RenderUtils.renderChild(iwc, component);			
+		} catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		
+		String rendered = writer.toString();
+//		System.out.println("Rendered object: \n" + rendered);
+		if (rendered == null) {
+			return null;
+		}
+		
+		return rendered;
+	}
+	
+	/**
+	 * Renders single UIComponent and creates JDOM Document of rendered object
+	 * @param iwc
+	 * @param component - object to render
+	 * @param cleanHtml
+	 * @return JDOM Document or null
+	 */
+	public Document getRenderedComponent(IWContext iwc, UIComponent component) {
+		String rendered = getRenderedComponent(component, iwc);
+		if (rendered == null) {
+			return null;
+		}
+		
+		// Building JDOM Document
+		InputStream stream = new ByteArrayInputStream(rendered.getBytes());
+		SAXBuilder sax = new SAXBuilder(false);
+		Document renderedObject = null;
+		try {
+			renderedObject = sax.build(stream);
+		} catch (JDOMException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			closeStream(stream);
+		}
+		
+		return renderedObject;
+	}
+	
+	private void closeStream(InputStream stream) {
+		if (stream == null) {
+			return;
+		}
+		try {
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public UIComponent findComponentInPage(IWContext iwc, String pageKey, String instanceId) {
+		if (pageKey == null || instanceId == null || iwc == null) {
+			return null;
+		}
+		
+		Page page = getPage(pageKey, iwc);
+		if (page == null) {
+			return null;
+		}
+		List pageChildren = page.getChildren();
+		if (pageChildren == null) {
+			return null;
+		}
+		
+		PresentationObjectContainer container = null;
+		Object o = null;
+		Object oo = null;
+		List regionChildren = null;
+		boolean foundComponent = false;
+		UIComponent component = null;
+		for (int i = 0; (i < pageChildren.size() && !foundComponent); i++) {
+			o = pageChildren.get(i);
+			if (o instanceof PresentationObjectContainer) {
+				container = (PresentationObjectContainer) o;
+				if (instanceId.equals(container.getId())) {
+					component = container;
+					foundComponent = true;
+				}
+				else {
+					regionChildren = container.getChildren();
+					if (regionChildren != null) {
+						for (int j = 0; (j < regionChildren.size() && !foundComponent); j++) {
+							oo = regionChildren.get(j);
+							if (oo instanceof UIComponent) {
+								component = (UIComponent) oo;
+								if (instanceId.equals(component.getId())) {
+									foundComponent = true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (!foundComponent) {
+			return null;
+		}
+		
+		return component;
+	}
+
 }
