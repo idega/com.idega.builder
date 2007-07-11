@@ -1,6 +1,7 @@
 package com.idega.builder.presentation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -51,6 +52,9 @@ public class EditModuleBlock extends Block {
 		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
 		
 		List properties = getPropertyListOrdered(iwc, instanceId);
+		if (properties == null) {
+			return;
+		}
 		
 		// Header
 		Layer header = new Layer();
@@ -86,7 +90,15 @@ public class EditModuleBlock extends Block {
 	@SuppressWarnings("unchecked")
 	private List getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
 		List properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale(), true);
-		java.util.Collections.sort(properties, ComponentPropertyComparator.getInstance());
+		if (properties == null) {
+			return null;
+		}
+		try {
+			Collections.sort(properties, ComponentPropertyComparator.getInstance());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		return properties;
 	}
 	
