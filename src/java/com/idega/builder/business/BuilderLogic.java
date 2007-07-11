@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.269 2007/07/02 14:35:57 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.270 2007/07/11 14:23:30 thomas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2861,6 +2861,12 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String getExistingPageKeyByURI(String requestURI,ICDomain domain) {
+		// if the request contains an anchor like http://hello/pages/mypage#foo the requestURI is without an slash at the end
+		// that is http://hello/pages/mypage
+		// The missing slash is needed for finding the page.
+		if (! requestURI.endsWith(StringHandler.SLASH)) {
+			requestURI = StringHandler.concat(requestURI, StringHandler.SLASH);
+		}
 		int indexOfPage = requestURI.indexOf(PAGES_PREFIX);
 		boolean requestingRoot = false;
 		if (indexOfPage == -1) {
