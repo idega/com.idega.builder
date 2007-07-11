@@ -91,6 +91,7 @@ public class EditModuleBlock extends Block {
 	private List getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
 		List properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale(), true);
 		if (properties == null) {
+System.out.println("getPropertyListOrdered properties == null");			
 			return null;
 		}
 		try {

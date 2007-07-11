@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.69 2007/06/22 07:14:48 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.70 2007/07/11 13:49:06 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -946,13 +946,16 @@ public class IBPropertyHandler implements Singleton{
 		}
 		
 		ComponentRegistry registry = ComponentRegistry.getInstance(iwma);
+System.out.println("componentClassName "+componentClassName);		
 		ComponentInfo component = registry.getComponentByClassName(componentClassName);
 		if (component == null) {
+System.out.println("getComponentProperties component == null");
 			return null;
 		}
 		
 		List properties = component.getProperties();
 		if (properties == null) {
+System.out.println("getComponentProperties properties == null");
 			return null;
 		}
 		
