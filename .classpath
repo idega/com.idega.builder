@@ -13,6 +13,8 @@
   </classpathentry>
   <classpathentry kind="src" path="/org.apache.slide">
   </classpathentry>
+  <classpathentry kind="var" path="MAVEN_REPO/htmlcleaner/jars/htmlcleaner-1.2.jar">
+  </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/slide/jars/slide-kernel-2.2pre1.iwbuild5.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/slide/jars/jakarta-slide-webdavlib-2.2pre1.iwbuild5.jar">
