@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.207.2.6 2007/07/11 15:46:17 palli Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.207.2.7 2007/07/12 13:52:48 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -8,6 +8,7 @@ package com.idega.builder.business;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,7 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.render.RenderKitFactory;
 
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
+import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -2118,7 +2120,7 @@ public class BuilderLogic implements Singleton {
 	 * @param cleanHtml
 	 * @return String of rendered object or null
 	 */
-	public String getRenderedComponent(UIComponent component, IWContext iwc) {
+	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml) {
 		if (iwc == null || component == null) {
 			return null;
 		}
@@ -2145,6 +2147,20 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
+		if (cleanHtml) {
+			HtmlCleaner cleaner = new HtmlCleaner(rendered);
+			cleaner.setOmitDoctypeDeclaration(true);
+			cleaner.setOmitHtmlEnvelope(true);
+			try {
+				cleaner.clean();
+				rendered = cleaner.getPrettyXmlAsString();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+//			System.out.println("Rendered & cleaned object: \n" + rendered);
+		}
+		
 		return rendered;
 	}
 	
@@ -2155,14 +2171,20 @@ public class BuilderLogic implements Singleton {
 	 * @param cleanHtml
 	 * @return JDOM Document or null
 	 */
-	public Document getRenderedComponent(IWContext iwc, UIComponent component) {
-		String rendered = getRenderedComponent(component, iwc);
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml) {
+		String rendered = getRenderedComponent(component, iwc, cleanHtml);
 		if (rendered == null) {
 			return null;
 		}
 		
 		// Building JDOM Document
-		InputStream stream = new ByteArrayInputStream(rendered.getBytes());
+		InputStream stream = null;
+		try {
+			stream = new ByteArrayInputStream(rendered.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
 		SAXBuilder sax = new SAXBuilder(false);
 		Document renderedObject = null;
 		try {
