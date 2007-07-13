@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.270 2007/07/11 14:23:30 thomas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.271 2007/07/13 07:29:10 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -8,6 +8,7 @@ package com.idega.builder.business;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ import org.apache.myfaces.renderkit.html.util.AddResourceFactory;
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
 import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
-import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -3051,44 +3051,6 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	/**
-	 * Renders single PresentationObject
-	 * @param iwc
-	 * @param object - object to render
-	 * @param cleanHtml
-	 * @return String of rendered object or null
-	 */
-	/*public String getRenderedPresentationObjectAsString(IWContext iwc, PresentationObject object, boolean cleanHtml) {
-		//	Writing (rendering) object to ResponseWriter
-		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
-		iwc.setResponseWriter(writer);		
-		try {
-			object.renderComponent(iwc);
-		} catch (Exception e){
-			e.printStackTrace();
-			return null;
-		}
-		
-		String renderedObject = writer.toString();
-//		System.out.println("Rendered object: \n" + renderedObject);
-		
-		if (cleanHtml) {
-			// Cleaning - need valid XML structure
-			HtmlCleaner cleaner = new HtmlCleaner(renderedObject);
-			cleaner.setOmitDoctypeDeclaration(true);
-			try {
-				cleaner.clean();
-				renderedObject = cleaner.getPrettyXmlAsString();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}
-//			System.out.println("Cleaned object: \n" + renderedObject);
-		}
-		
-		return renderedObject;
-	}*/
-	
-	/**
 	 * Renders single UIComponent
 	 * @param iwc
 	 * @param component - object to render
@@ -3126,6 +3088,7 @@ public class BuilderLogic implements Singleton {
 			// Cleaning - need valid XML structure
 			HtmlCleaner cleaner = new HtmlCleaner(rendered);
 			cleaner.setOmitDoctypeDeclaration(true);
+			cleaner.setOmitHtmlEnvelope(true);
 			try {
 				cleaner.clean();
 				rendered = cleaner.getPrettyXmlAsString();
@@ -3153,7 +3116,13 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		// Building JDOM Document
-		InputStream stream = new ByteArrayInputStream(rendered.getBytes());
+		InputStream stream = null;
+		try {
+			stream = new ByteArrayInputStream(rendered.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
 		SAXBuilder sax = new SAXBuilder(false);
 		Document renderedObject = null;
 		try {
@@ -3166,51 +3135,7 @@ public class BuilderLogic implements Singleton {
 			closeStream(stream);
 		}
 		
-		if (cleanHtml) {
-			// After clean up, the whole <html> document is created, but our real component is in html > body > real component
-			Document realComponentContent = getRealComponentContent(renderedObject);
-			if (realComponentContent != null) {
-				return realComponentContent;
-			}
-		}
-		
 		return renderedObject;
-	}
-	
-	private Document getRealComponentContent(Document renderedObject) {
-		if (renderedObject == null) {
-			return null;
-		}
-		Element root = renderedObject.getRootElement();
-		if (root == null) {
-			return null;
-		}
-		Element body = root.getChild("body");
-		if (body == null) {
-			return null;
-		}
-		List oldContent = body.getContent();
-		if (oldContent == null) {
-			return null;
-		}
-		List<Content> needless = new ArrayList<Content>();
-		Content c = null;
-		for (int i = 0; i < oldContent.size(); i++) {
-			c = (Content) oldContent.get(i);
-			if (!(c instanceof Element)) {
-				needless.add(c);
-			}
-		}
-		for (int i = 0; i < needless.size(); i++) {
-			needless.get(i).detach();
-		}
-		
-		try {
-			return new Document(body.cloneContent());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 	
 	private void closeStream(InputStream stream) {
