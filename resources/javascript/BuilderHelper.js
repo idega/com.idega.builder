@@ -857,3 +857,7 @@ function pasteCopiedModuleCallback(component) {
 		return;
 	}
 }
+
+function showMessageForUnloadingPage() {
+	showLoadingMessage(LOADING_LABEL);
+}

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.271 2007/07/13 07:29:10 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.272 2007/07/14 11:33:28 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -279,6 +279,7 @@ public class BuilderLogic implements Singleton {
 		//	JavaScript actions
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderActions);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('beforeunload', showMessageForUnloadingPage);");
 		
 		//	CSS
 		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("style/builder.css"));
