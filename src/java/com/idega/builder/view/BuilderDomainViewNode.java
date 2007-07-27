@@ -1,5 +1,5 @@
 /**
- * $Id: BuilderDomainViewNode.java,v 1.1 2007/04/09 22:17:55 tryggvil Exp $
+ * $Id: BuilderDomainViewNode.java,v 1.2 2007/07/27 15:42:50 civilis Exp $
  * Created in 2007 by tryggvil
  *
  * Copyright (C) 2000-2007 Idega Software hf. All Rights Reserved.
@@ -23,6 +23,7 @@ import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewNode;
+import com.idega.core.view.ViewNodeBase;
 import com.idega.presentation.IWContext;
 import com.idega.util.StringHandler;
 
@@ -30,10 +31,10 @@ import com.idega.util.StringHandler;
  * <p>
  * Root node for builder pages for each domain
  * </p>
- *  Last modified: $Date: 2007/04/09 22:17:55 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/07/27 15:42:50 $ by $Author: civilis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BuilderDomainViewNode extends DefaultViewNode {
 
@@ -113,10 +114,11 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 		return defaultChild.isComponentBased();
 	}
 	
-	public boolean isResourceBased(){
+	@Override
+	public ViewNodeBase getViewNodeBase() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		ViewNode defaultChild = getDefaultNode(context);
-		return defaultChild.isResourceBased();
+		return defaultChild.getViewNodeBase();
 	}
 	
 	public String getResourceURI(){

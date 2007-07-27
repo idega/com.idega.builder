@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderRootViewNode.java,v 1.7 2007/04/09 22:17:54 tryggvil Exp $
+ * $Id: BuilderRootViewNode.java,v 1.8 2007/07/27 15:42:50 civilis Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import javax.faces.context.FacesContext;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewNode;
+import com.idega.core.view.ViewNodeBase;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 
@@ -28,10 +29,10 @@ import com.idega.presentation.IWContext;
  * default mapped under '/pages/'. The instance of this class is the one that handles precicely this url, i.e. the 
  * one on the root for pages.
  * </p>
- *  Last modified: $Date: 2007/04/09 22:17:54 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/07/27 15:42:50 $ by $Author: civilis $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class BuilderRootViewNode extends DefaultViewNode {
 	private Map domainNodeMap;
@@ -89,14 +90,15 @@ public class BuilderRootViewNode extends DefaultViewNode {
 	
 	public boolean isComponentBased(){
 		FacesContext context = FacesContext.getCurrentInstance();
-		ViewNode defaultChild = getDomainNode(context);
-		return defaultChild.isComponentBased();
+		ViewNode domainChild = getDomainNode(context);
+		return domainChild.isComponentBased();
 	}
 	
-	public boolean isResourceBased(){
+	@Override
+	public ViewNodeBase getViewNodeBase() {
 		FacesContext context = FacesContext.getCurrentInstance();
-		ViewNode defaultChild = getDomainNode(context);
-		return defaultChild.isResourceBased();
+		ViewNode domainChild = getDomainNode(context);
+		return domainChild.getViewNodeBase();
 	}
 	
 	public String getResourceURI(){
