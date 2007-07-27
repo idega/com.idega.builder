@@ -58,4 +58,9 @@ public interface BuilderEngine extends IBOService {
 	 * @see com.idega.builder.bean.BuilderEngineBean#setModuleProperty
 	 */
 	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] values);
+	
+	/**
+	 * @see com.idega.builder.bean.BuilderEngineBean#moveModule
+	 */
+	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove);
 }

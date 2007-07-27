@@ -60,6 +60,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		info.add(BuilderConstants.IB_PAGE_PARAMETER);																		// 16
 		info.add(BuilderConstants.HANLDER_VALUE_OBJECTS_STYLE_CLASS);														// 17
 		info.add(iwrb.getLocalizedString("reloading", "Reloading..."));														// 18
+		info.add(iwrb.getLocalizedString("moving", "Moving..."));															// 19
 		
 		return info;
 	}
@@ -92,15 +93,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		/*boolean needSetId = false;
-		if (component instanceof PresentationObjectContainer) {	// Is it region?
-			if (containerId == null || BuilderConstants.EMPTY.equals(containerId)) {	// Has region id?
-				Random generator = new Random();
-				containerId = new StringBuffer(generator.nextInt(Integer.MAX_VALUE)).append("_region").toString();
-				needSetId = true;
-			}
-		}*/
-		
 		String uuid = addModule(iwc, pageKey, containerId, instanceId, objectId, useThread);
 		if (uuid == null) {
 			return null;
@@ -108,12 +100,6 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		if (useThread) {
 			component.setId(uuid);
 		}
-		
-		/*if (needSetId) {
-			String[] prop = new String[1];
-			prop[0] = containerId;
-			builder.setModuleProperty(pageKey, uuid, ":method:1:implied:java.lang.String:setID:java.lang.String:", prop);
-		}*/
 		
 		Document transformedModule = getTransformedModule(pageKey, iwc, component, index);
 		IWSlideSession session = getSession(iwc);
@@ -226,16 +212,25 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return null;
 	}
 	
+	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove) {
+		if (instanceId == null || pageKey == null || formerParentId == null || newParentId == null || neighbourInstanceId == null) {
+			return false;
+		}
+		
+		try {
+			return builder.moveModule(instanceId, pageKey, formerParentId, newParentId, neighbourInstanceId, insertAbove);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index) {
 		//	Getting IBObjectControl - 'container'
 		Page currentPage = builder.getPage(pageKey, iwc);
 		if (currentPage == null) {
 			return null;
 		}
-		/*IBObjectControl objectComponent = new IBObjectControl(component, currentPage, containerId, iwc, index);
-		if (objectComponent == null) {
-			return null;
-		}*/
 		
 		PresentationObject transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, "-1", iwc);
 		

@@ -18,7 +18,6 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.HiddenInput;
@@ -27,30 +26,28 @@ import com.idega.presentation.ui.HiddenInput;
  * @author tryggvil
  */
 public class IBObjectControl extends PresentationObjectContainer {
-
-	private Layer containerLayer;
-	private Layer handleAndMenuLayer;
-	private Layer contentLayer;
-	private Layer buttonsLayer;
-	private Layer nameLayer;
-	private Layer dropAreaLayer;
+	
+	private Layer contentLayer = null;
+	private Layer containerLayer = null;
 	
 	private PresentationObjectContainer parent;
 	private String parentKey;
 	private UIComponent object;
 	private boolean isPresentationObject = false;
 	private int number = 0;
+	private boolean lastModuleInRegion = false;
 
 	public String getBundleIdentifier(){
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 	
-	public IBObjectControl(UIComponent obj, PresentationObjectContainer parent, String parentKey, IWContext iwc, int index) {
+	public IBObjectControl(UIComponent obj, PresentationObjectContainer parent, String parentKey, IWContext iwc, int index, boolean lastModuleInRegion) {
 		this.parent = parent;
 		this.object = obj;
 		this.parentKey = parentKey;
 		this.number = index;
 		this.isPresentationObject = this.object instanceof PresentationObject;
+		this.lastModuleInRegion = lastModuleInRegion;
 		
 		init(iwc);
 		add(obj);
@@ -61,175 +58,144 @@ public class IBObjectControl extends PresentationObjectContainer {
 		IWBundle iwb = getBundle(iwc);
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		
-		//details for divs and layout are changed in the stylesheet
-		//initilize stuff
+		//	Details for divs and layout are changed in the stylesheet
+		//	Initialize stuff
 	
 		super.add(new Text("<!-- idegaweb-module starts -->"));
 		
+		//	Main container
 		this.containerLayer = new Layer(Layer.DIV);
 		this.containerLayer.setZIndex(this.number);
 		this.containerLayer.setStyleClass("moduleContainer");
-
-		//must have a parent before getId
 		super.add(this.containerLayer);
 		
-		String containerId = this.containerLayer.getID();
+		//	Drop area at the begining
+		this.containerLayer.add(getDropAreaLayer(true, iwc));
 		
-		this.handleAndMenuLayer = new Layer(Layer.DIV);
-		this.handleAndMenuLayer.setStyleClass("moduleHandle");
-		this.handleAndMenuLayer.setID("handle_"+containerId);
+		String containerId = this.containerLayer.getId();
 		
+		//	Content
 		this.contentLayer = new Layer(Layer.DIV);
 		this.contentLayer.setStyleClass("moduleContent");
 		String moduleContentId = new StringBuffer("content_").append(containerId).toString();
 		this.contentLayer.setID(moduleContentId);
 		
-		this.buttonsLayer = new Layer(Layer.DIV);
-		this.buttonsLayer.setStyleClass("regionInfoImageContainer");
+		//	Name
+		Layer nameLayer = new Layer(Layer.DIV);
+		nameLayer.setStyleClass("moduleName");
+		nameLayer.setID("moduleName_"+containerId);
 		
-		this.dropAreaLayer = new Layer(Layer.DIV);
-		this.dropAreaLayer.setStyleClass("moduleDropArea");
-		this.dropAreaLayer.setID("dropArea_"+containerId);
-				
-		this.nameLayer = new Layer(Layer.DIV);
-		this.nameLayer.setStyleClass("moduleName");
-		this.nameLayer.setID("moduleName_"+containerId);
+		//	Buttons
+		Layer buttonsLayer = new Layer(Layer.DIV);
+		buttonsLayer.setStyleClass("regionInfoImageContainer");
 		
-		//temporary table solution
-		//because I cannot figure out how do the css so the drop area extends under the button layer but not the name layer
-		Table tempDragDropContainer = new Table(2,1);
-		tempDragDropContainer.setStyleClass("DnDAreaTable");
-		tempDragDropContainer.setColumnWidth(1,"60");
-		tempDragDropContainer.setColumnWidth(2,"100%");
-		tempDragDropContainer.setCellpaddingAndCellspacing(0);
-			
-		/*Script drag = new Script();
-		drag.addFunction("", getBuilderLogic().getDraggableScript(containerId,this.nameLayer.getID()));
-		Script drop = new Script();
-		drop.addFunction("", getBuilderLogic().getModuleToModuleDroppableScript(containerId, this.dropAreaLayer.getID(),"moduleContainer","moduleDropAreaHover",iwb.getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-		
-		//add scripts
-		super.add(drag);
-		super.add(drop);*/		
+		// Upper part container
+		Layer upperPartContainer = new Layer();
+		upperPartContainer.add(nameLayer);
+		upperPartContainer.add(buttonsLayer);
+		upperPartContainer.add(new CSSSpacer());
+		this.containerLayer.add(upperPartContainer);
 		
 		super.add(new Text("<!-- idegaweb-module ends -->"));
 		
-		//finally add the object to the contentlayer
-		if (this.object != null) {
-			Text text = null; 
-			
-			if(this.isPresentationObject){
-				text = new Text(((PresentationObject)this.object).getBuilderName(iwc));
+		if (this.object == null) {
+			return;
+		}
+		
+		//	Finally add the object to the contentlayer
+		Text text = null; 
+		if (this.isPresentationObject) {
+			text = new Text(((PresentationObject)this.object).getBuilderName(iwc));
+		}
+		else {
+			//TODO make this localizable and remove getBuilderName from PO
+			String className = this.object.getClass().getName();
+			int indexOfDot = className.lastIndexOf(".");
+			String objectName = null;
+			if(indexOfDot!=-1){
+				objectName = className.substring(indexOfDot+1,className.length());
 			}
 			else{
-				//TODO make this localizable and remove getBuilderName from PO
-				String className = this.object.getClass().getName();
-				int indexOfDot = className.lastIndexOf(".");
-				String objectName = null;
-				if(indexOfDot!=-1){
-					objectName = className.substring(indexOfDot+1,className.length());
-				}
-				else{
-					objectName = className;
-				}
-				
-				text = new Text(objectName);
-			}
-			this.nameLayer.add(text);
-			
-			String instanceId = BuilderLogic.getInstance().getInstanceId(this.object);
-			if (instanceId == null) {
-				instanceId = object.getId();
+				objectName = className;
 			}
 			
-			HiddenInput instanceIdHidden = new HiddenInput("instanceId_"+containerId,instanceId);
-			instanceIdHidden.setID("instanceId_"+containerId);
-			
-			HiddenInput parentIdHidden = new HiddenInput("parentId_"+containerId,this.parentKey);
-			parentIdHidden.setID("parentId_"+containerId);
-			
-			String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
-			HiddenInput pageIdHidden = new HiddenInput("pageId_"+containerId,pageKey);
-			pageIdHidden.setID("pageId_"+containerId);
-			
-			this.containerLayer.add(instanceIdHidden);
-			this.containerLayer.add(parentIdHidden);
-			this.containerLayer.add(pageIdHidden);
-			
-//			XMLElement pasted = (XMLElement) iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
-//			if (pasted == null) {
-//				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
-//				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
-//				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
-//				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-//				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
-//			}
-//			else {
-//				this.buttonsLayer.add(getCutIcon(instanceId, this._parentKey, iwc));
-//				this.buttonsLayer.add(getCopyIcon(instanceId, this._parentKey, iwc));
-//				this.buttonsLayer.add(getPasteAboveIcon(instanceId, this._parentKey, iwc));
-//				this.buttonsLayer.add(getDeleteIcon(instanceId, this._parentKey, iwc));
-//				this.buttonsLayer.add(getPermissionIcon(instanceId, iwc));
-//				this.buttonsLayer.add(getEditIcon(instanceId, iwc));
-//			}
-			
-			
-			this.dropAreaLayer.add(this.buttonsLayer);
-			
-			tempDragDropContainer.add(this.nameLayer,1,1);
-			tempDragDropContainer.add(this.dropAreaLayer,2,1);
-
-			this.containerLayer.add(tempDragDropContainer);
-			this.containerLayer.add(this.contentLayer);
-			
-			//	Delete module
-			StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
-			title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
-			Image deleteImage = iwb.getImage("delete_32.png", title.toString(), 24, 24);
-			String paramsSeparator = "', '";
-			StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(paramsSeparator).append(pageKey);
-			action.append(paramsSeparator).append(this.parentKey).append(paramsSeparator).append(instanceId).append("');");
-			deleteImage.setOnClick(action.toString());
-			deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-			this.buttonsLayer.add(deleteImage);
-			
-			//	Copy module
-			/*title = new StringBuffer(iwrb.getLocalizedString("copy", "Copy")).append(" :: ");
-			title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
-			Image copyModule = iwb.getImage("copy_24.gif", title.toString(), 24, 24);
-			copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-			action = new StringBuffer("copyThisModule('").append(pageKey).append(paramsSeparator).append(instanceId).append("');");
-			copyModule.setOnClick(action.toString());
-			this.buttonsLayer.add(copyModule);*/
-			
-			//	Module properties
-			title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
-			title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
-			Image propertiesImage = iwb.getImage("info_32.png", title.toString(), 24, 24);
-			propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-			Link link = new Link(propertiesImage);
-			link.setMarkupAttribute("rel", "moodalbox");
-			this.buttonsLayer.add(link);
-			
-			HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);
-			this.buttonsLayer.add(regionIdHidden);
-			HiddenInput moduleContentIdHidden = new HiddenInput("moduleContentId", moduleContentId);
-			this.buttonsLayer.add(moduleContentIdHidden);
-			
-			//experimental so the box always is around everything
-			this.containerLayer.add(new CSSSpacer());
-			
-//			handleAndMenuLayer.add(nameLayer);
-			handleAndMenuLayer.add(this.buttonsLayer);
+			text = new Text(objectName);
 		}
-		else {//object being added is null for some reason!
-			//setup layout
-			this.containerLayer.add(this.handleAndMenuLayer);
-			this.containerLayer.add(this.contentLayer);
-			
-			this.handleAndMenuLayer.add(getDeleteIcon("0", this.parentKey, iwc));
-			this.handleAndMenuLayer.add(getEditIcon("0", iwc));
+		nameLayer.add(text);
+		
+		String instanceId = BuilderLogic.getInstance().getInstanceId(this.object);
+		if (instanceId == null) {
+			instanceId = this.object.getId();
 		}
+		
+		HiddenInput instanceIdHidden = new HiddenInput("instanceId_"+containerId,instanceId);
+		instanceIdHidden.setID("instanceId_"+containerId);
+		
+		HiddenInput parentIdHidden = new HiddenInput("parentId_"+containerId,this.parentKey);
+		parentIdHidden.setID("parentId_"+containerId);
+		
+		String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+		HiddenInput pageIdHidden = new HiddenInput("pageId_"+containerId,pageKey);
+		pageIdHidden.setID("pageId_"+containerId);
+		
+		this.containerLayer.setMarkupAttribute("instanceid", instanceId);
+		this.containerLayer.setMarkupAttribute("parentid", parentKey);
+		this.containerLayer.setMarkupAttribute("pageid", pageKey);
+		
+		this.containerLayer.add(instanceIdHidden);
+		this.containerLayer.add(parentIdHidden);
+		this.containerLayer.add(pageIdHidden);
+		
+		this.containerLayer.add(this.contentLayer);
+		
+		//	Delete module
+		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
+		title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
+		Image deleteImage = iwb.getImage("delete_32.png", title.toString(), 24, 24);
+		String paramsSeparator = "', '";
+		StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(paramsSeparator).append(pageKey);
+		action.append(paramsSeparator).append(this.parentKey).append(paramsSeparator).append(instanceId).append("');");
+		deleteImage.setOnClick(action.toString());
+		deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+		buttonsLayer.add(deleteImage);
+		
+		//	Copy module
+		title = new StringBuffer(iwrb.getLocalizedString("copy", "Copy")).append(" :: ");
+		title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
+		Image copyModule = iwb.getImage("copy_24.gif", title.toString(), 24, 24);
+		copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+		action = new StringBuffer("copyThisModule('").append(pageKey).append(paramsSeparator).append(instanceId).append("');");
+		copyModule.setOnClick(action.toString());
+		buttonsLayer.add(copyModule);
+		
+		//	Module properties
+		title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
+		title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
+		Image propertiesImage = iwb.getImage("info_32.png", title.toString(), 24, 24);
+		propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+		Link link = new Link(propertiesImage);
+		link.setMarkupAttribute("rel", "moodalbox");
+		buttonsLayer.add(link);
+		
+		HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);
+		buttonsLayer.add(regionIdHidden);
+		HiddenInput moduleContentIdHidden = new HiddenInput("moduleContentId", moduleContentId);
+		buttonsLayer.add(moduleContentIdHidden);
+		
+		if (lastModuleInRegion) {
+			this.containerLayer.add(getDropAreaLayer(false, iwc));	//	The last module in region
+		}
+		
+		//	The box always is around everything
+		this.containerLayer.add(new CSSSpacer());
+	}
+	
+	private Layer getDropAreaLayer(boolean topArea, IWContext iwc) {
+		Layer dropArea = new Layer();
+		dropArea.setStyleClass("moduleDropArea");
+		dropArea.setMarkupAttribute("insertbefore", topArea);
+		dropArea.add(new Text(getBundle(iwc).getResourceBundle(iwc).getLocalizedString("drop_area", "You can drop module here")));
+		return dropArea;
 	}
 		
 	public void add(UIComponent obj) {
@@ -244,13 +210,10 @@ public class IBObjectControl extends PresentationObjectContainer {
 		
 		if (objWidth!=null) {
 			this.containerLayer.setWidth(objWidth);
-			//handleAndContentTable.setWidth(objWidth);
-			//handleAndMenuLayer.setWidth(objWidth);
 		}
 		
 		if (objHeight!=null) {
 			this.containerLayer.setHeight(objHeight);
-			//handleAndContentTable.setHeight(objHeight);
 		}
 		
 		if (obj.getHorizontalAlignment()!=null) {

@@ -101,3 +101,5 @@ copy=Copy
 copy_module=Copy module
 paste=Paste
 paste_module=Paste module
+drop_area=You can drop module here
+moving=Moving...

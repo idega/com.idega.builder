@@ -14,6 +14,7 @@ var ARE_YOU_SURE_MESSAGE = 'Are You sure?';
 var SAVING_LABEL = 'Saving...';
 var LOADING_LABEL = 'Loading...';
 var RELOADING_LABEL = 'Reloading...';
+var MOVING_LABEL = 'Moving...';
 
 var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
@@ -44,7 +45,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return;
 	}
-	if (list.length != 19) {
+	if (list.length != 20) {
 		return;
 	}
 	
@@ -67,6 +68,7 @@ function getBuilderInitInfoCallback(list) {
 	IB_PAGE_PARAMETER = list[16];
 	HANLDER_VALUE_OBJECTS_STYLE_CLASS = list[17];
 	RELOADING_LABEL = list[18];
+	MOVING_LABEL = list[19];
 	
 }
 
@@ -149,15 +151,9 @@ function addConcreteModule(element) {
 	
 	setPropertiesForAddModule(element.parentNode);
 	
-	var attr = element.attributes;	
-	var objectId = null;
-	if (attr.getNamedItem('icobjectid') != null) {
-		objectId = attr.getNamedItem('icobjectid').value;
-	}
-	var objectClass = null;
-	if (attr.getNamedItem('icobjectclass') != null) {
-		objectClass = attr.getNamedItem('icobjectclass').value;
-	}
+	var objectId = getMarkupAttributeValue(element, 'icobjectid');
+	var objectClass = getMarkupAttributeValue(element, 'icobjectclass');
+
 	if (objectId == null || objectClass == null) {
 		return;
 	}
@@ -466,6 +462,7 @@ function addSelectedModuleCallback(component, id) {
 	}
 	
 	registerBuilderActions();	// Need to re-register actions
+	registerBuilderDragDropActions();
 	
 	MOOdalBox.close();
 	if (elementToHighlight != null) {
@@ -619,6 +616,13 @@ function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 	registerBuilderActions();	// Need to re-register actions
 }
 
+function getMarkupAttributeValue(element, attrName) {
+	if (element == null || attrName == null) {
+		return null;
+	}
+	return element.getProperty(attrName);
+}
+
 function saveModuleProperty(event, element) {
 	if (element == null) {
 		return;
@@ -632,22 +636,13 @@ function saveModuleProperty(event, element) {
 		}
 	}
 	
-	var attr = element.attributes;	
-	var moduleId = null;
-	if (attr.getNamedItem('moduleid') != null) {
-		moduleId = attr.getNamedItem('moduleid').value;
-	}
-	var propertyName = null;
-	if (attr.getNamedItem('propname') != null) {
-		propertyName = attr.getNamedItem('propname').value;
-	}
-	var needsReload = null;
-	if (attr.getNamedItem('needsreload') != null) {
-		needsReload = attr.getNamedItem('needsreload').value;
-	}
+	var moduleId = getMarkupAttributeValue(element, 'moduleid');
+	var propertyName = getMarkupAttributeValue(element, 'propname');
+	var needsReload = getMarkupAttributeValue(element, 'needsreload');
+	var multivalue = getMarkupAttributeValue(element, 'multivalue');
 	var isMultivalue = 'false';
-	if (attr.getNamedItem('multivalue') != null) {
-		isMultivalue = attr.getNamedItem('multivalue').value;
+	if (multivalue != null) {
+		isMultivalue = multivalue;
 	}
 	
 	var values = null;

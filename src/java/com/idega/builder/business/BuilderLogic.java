@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.272 2007/07/14 11:33:28 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.273 2007/07/27 09:53:01 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -41,6 +41,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import com.idega.block.web2.business.Web2Business;
+import com.idega.block.web2.business.Web2BusinessBean;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
@@ -264,8 +265,9 @@ public class BuilderLogic implements Singleton {
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
 		try {
-			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	Mootools
+			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib(Web2BusinessBean.MOOTOOLS_LATEST_VERSION, true));			//	Mootools
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -279,6 +281,7 @@ public class BuilderLogic implements Singleton {
 		//	JavaScript actions
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderActions);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderDragDropActions);");
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('beforeunload', showMessageForUnloadingPage);");
 		
 		//	CSS
@@ -623,12 +626,18 @@ public class BuilderLogic implements Singleton {
 		PresentationObject transformed = null;
 		if ( (isPresentationObject && ((PresentationObject) obj).getUseBuilderObjectControl()) || !isPresentationObject ) {
 			if (index != -1) {
-				//parent.remove(obj);
-				//parent.add(new IBObjectControl(obj,parent,parentKey,iwc,index));
-				transformed = new IBObjectControl(obj, parent, parentKey, iwc, index);
+				boolean lastModuleInRegion = false;
+				if (index >= parent.getChildCount()) {
+					lastModuleInRegion = true;
+				} else if (index == (parent.getChildCount() - 1)) {
+					lastModuleInRegion = true;
+				}
 				
-				if(index < parent.getChildCount())
+				transformed = new IBObjectControl(obj, parent, parentKey, iwc, index, lastModuleInRegion);
+				
+				if (index < parent.getChildCount()) {	
 					parent.set(index, transformed);
+				}
 				else {
 					parent.add(transformed);
 					index++;
@@ -1435,53 +1444,63 @@ public class BuilderLogic implements Singleton {
 	 * @throws Exception 
 	 */
 	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String instanceIdToPasteBelow) throws Exception{
-
-//		System.out.println("pageKey = " + pageKey);
-//		System.out.println("parentID = " + formerParentId);
-//		System.out.println("instanceId = " + instanceId);
-//		System.out.println("newparentID = " + 	newParentId);
-//		System.out.println("instanceIdToPasteBelow = " +objectIdToPasteBelow);
-		
-		boolean returner = false;
-		
-		//find the XMLElement
-		//remove it from the page
-		//insert it after the object we dropped on
-		IBXMLPage page = getIBXMLPage(pageKey);
-		//find
-		XMLElement moduleXML =  getIBXMLWriter().findModule(page,instanceId);
-		XMLElement parentXML =  getIBXMLWriter().findModule(page,formerParentId);
-		
-		XMLElement moduleXMLCopy = (XMLElement)moduleXML.clone();
-		
-		if(moduleXML!=null && parentXML!=null){
-			//remove	
-			try {
-				returner = getIBXMLWriter().removeElement(parentXML,moduleXML,false);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				throw new Exception(e.getMessage());
-			}
-			
-			if(!returner) {
-				return false;
-				//insert
-			}
-
-			returner = getIBXMLWriter().insertElementBelow(page,newParentId,moduleXMLCopy,instanceIdToPasteBelow);
-			if(!returner){
-				return false;
-			}
-			
-			return page.store();
-		}
-		
-		return false;
+		return moveModule(instanceId, pageKey, formerParentId, newParentId, instanceIdToPasteBelow, false);
 	}
 	
-	
+	/**
+	 * Copies, cuts and then pastes the module above or below another module
+	 * @param instanceId
+	 * @param pageKey
+	 * @param formerParentId
+	 * @param newParentId
+	 * @param neighbourInstanceId
+	 * @param insertAbove
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove) throws Exception {
+		boolean result = false;
+		
+		//	Page
+		IBXMLPage page = getIBXMLPage(pageKey);
+		//	Current XMLElement
+		XMLElement moduleXML =  getIBXMLWriter().findModule(page, instanceId);
+		//	Parent container
+		XMLElement parentXML =  getIBXMLWriter().findModule(page, formerParentId);
+		//	Copy of current element
+		XMLElement moduleXMLCopy = (XMLElement) moduleXML.clone();
+		
+		if (moduleXML == null || parentXML == null) {
+			return false;
+		}
+		
+		//	Removes element from current region	
+		try {
+			result = getIBXMLWriter().removeElement(parentXML, moduleXML, false);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(e.getMessage());
+		}
+		if (!result) {
+			return false;
+		}
 
+		//	Inserts to the needed position
+		if (insertAbove) {
+			result = getIBXMLWriter().insertElementAbove(page, newParentId, moduleXMLCopy, neighbourInstanceId);
+		}
+		else {
+			result = getIBXMLWriter().insertElementBelow(page, newParentId, moduleXMLCopy, neighbourInstanceId);
+		}
+		
+		if (!result) {
+			return false;
+		}
+		
+		return page.store();
+	}
+	
 	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		if (getIBXMLWriter().lockRegion(xml, parentObjectInstanceID)) {
