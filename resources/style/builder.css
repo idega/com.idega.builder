@@ -38,6 +38,21 @@
 	font-weight: normal !important;
 	float: left;
 	visibility: hidden;
+	width: 50%;
+	overflow: hidden;
+	text-align: left;
+}
+
+.regionInfoImageContainer {
+	visibility: hidden;
+	float: right;
+}
+
+.modulePropertiesLinkStyleClass {
+	background: none !important;
+	border-bottom: none !important;
+	display: inline !important;
+	padding: 0px !important;
 }
 
 .moduleDropArea{
@@ -286,11 +301,6 @@ html>body .sourceviewButtonsLeft {
 
 .regionComponentImageContainer:hover {
 
-}
-
-.regionInfoImageContainer {
-	visibility: hidden;
-	float: right;
 }
 
 .regionInfoImageContainer:hover {

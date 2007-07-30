@@ -18,6 +18,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Span;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.HiddenInput;
@@ -103,9 +104,9 @@ public class IBObjectControl extends PresentationObjectContainer {
 		}
 		
 		//	Finally add the object to the contentlayer
-		Text text = null; 
+		Span text = null; 
 		if (this.isPresentationObject) {
-			text = new Text(((PresentationObject)this.object).getBuilderName(iwc));
+			text = new Span(new Text(((PresentationObject)this.object).getBuilderName(iwc)));
 		}
 		else {
 			//TODO make this localizable and remove getBuilderName from PO
@@ -119,8 +120,12 @@ public class IBObjectControl extends PresentationObjectContainer {
 				objectName = className;
 			}
 			
-			text = new Text(objectName);
+			text = new Span(new Text(objectName));
 		}
+		StringBuffer tooltip = new StringBuffer(iwrb.getLocalizedString("move", "Move")).append(" :: ");
+		tooltip.append(iwrb.getLocalizedString("move_to_other_location", "Move this module to other location"));
+		text.setMarkupAttribute("title", tooltip.toString());
+		text.setStyleClass("moduleNameTooltip");
 		nameLayer.add(text);
 		
 		String instanceId = BuilderLogic.getInstance().getInstanceId(this.object);
@@ -141,6 +146,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		this.containerLayer.setMarkupAttribute("instanceid", instanceId);
 		this.containerLayer.setMarkupAttribute("parentid", parentKey);
 		this.containerLayer.setMarkupAttribute("pageid", pageKey);
+		this.containerLayer.setMarkupAttribute("islastmodule", lastModuleInRegion);
 		
 		this.containerLayer.add(instanceIdHidden);
 		this.containerLayer.add(parentIdHidden);
@@ -175,6 +181,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		Link link = new Link(propertiesImage);
 		link.setMarkupAttribute("rel", "moodalbox");
+		link.setStyleClass("modulePropertiesLinkStyleClass");
 		buttonsLayer.add(link);
 		
 		HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);

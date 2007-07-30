@@ -61,6 +61,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		info.add(BuilderConstants.HANLDER_VALUE_OBJECTS_STYLE_CLASS);														// 17
 		info.add(iwrb.getLocalizedString("reloading", "Reloading..."));														// 18
 		info.add(iwrb.getLocalizedString("moving", "Moving..."));															// 19
+		info.add(iwrb.getLocalizedString("drop_area", "You can drop module here"));											// 20
 		
 		return info;
 	}

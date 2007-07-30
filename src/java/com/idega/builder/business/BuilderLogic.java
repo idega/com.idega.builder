@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.273 2007/07/27 09:53:01 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.274 2007/07/30 13:24:49 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -267,7 +267,7 @@ public class BuilderLogic implements Singleton {
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
 		try {
-			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib(Web2BusinessBean.MOOTOOLS_LATEST_VERSION, true));			//	Mootools
+			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	Mootools
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}

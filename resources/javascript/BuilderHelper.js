@@ -15,6 +15,7 @@ var SAVING_LABEL = 'Saving...';
 var LOADING_LABEL = 'Loading...';
 var RELOADING_LABEL = 'Reloading...';
 var MOVING_LABEL = 'Moving...';
+var DROP_MODULE_HERE_LABEL = 'You can drop module here';
 
 var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
@@ -45,7 +46,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return;
 	}
-	if (list.length != 20) {
+	if (list.length != 21) {
 		return;
 	}
 	
@@ -69,6 +70,7 @@ function getBuilderInitInfoCallback(list) {
 	HANLDER_VALUE_OBJECTS_STYLE_CLASS = list[17];
 	RELOADING_LABEL = list[18];
 	MOVING_LABEL = list[19];
+	DROP_MODULE_HERE_LABEL = list[20];
 	
 }
 

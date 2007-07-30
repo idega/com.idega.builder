@@ -103,3 +103,5 @@ paste=Paste
 paste_module=Paste module
 drop_area=You can drop module here
 moving=Moving...
+move=Move
+move_to_other_location=Move this module to other location
