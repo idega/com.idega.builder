@@ -7,7 +7,7 @@
 			<param name="class" value="com.idega.core.builder.business.BuilderService"/>
 		</create>
 	
-		<create creator="ibo" javascript="BuilderEngine" scope="application">
+		<create creator="ibo" javascript="BuilderEngine" scope="session">
 			<param name="class" value="com.idega.builder.bean.BuilderEngine"/>
 		</create>
 	</allow>
