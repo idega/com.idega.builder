@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.274 2007/07/30 13:24:49 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.275 2007/07/31 15:00:36 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -41,7 +41,6 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import com.idega.block.web2.business.Web2Business;
-import com.idega.block.web2.business.Web2BusinessBean;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
@@ -307,13 +306,6 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		
-
-		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
-		boolean clipboardEmpty = true;
-		if (pasted != null) {
-			clipboardEmpty = false;
-		}
-		
 		String addModuleUri = getUriToObject(AddModuleBlock.class);
 		
 		//"-1" is identified as the top page object (parent)
@@ -322,33 +314,14 @@ public class BuilderLogic implements Singleton {
 				String parentKey = Integer.toString(-1);
 				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, "page", iwrb));
 				page.add(marker);
-							
-				if (!clipboardEmpty){
-					marker.add(getPasteIcon(parentKey, null, iwc));
-				}
-				
-				/*Script drop = new Script();
-				drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),"-1","","moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
-				page.add(drop);*/
-				
-				
 			}
-			if(page instanceof HtmlPage){
+			if (page instanceof HtmlPage) {
 				HtmlPage hPage = (HtmlPage)page;
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
 					Layer marker = getLabelMarker(regionKey, regionKey, getButtonsLayer(addModuleUri, regionKey, iwrb));
 					hPage.add(marker,regionKey);
-					
-					if (!clipboardEmpty){
-						marker.add(getPasteIcon(regionKey,regionKey, iwc));
-					}
-					
-					/*Script drop = new Script();
-					drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),regionKey,regionKey,"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));	
-					page.add(drop);*/
-					
 				}
 			}
 		}
@@ -373,9 +346,9 @@ public class BuilderLogic implements Singleton {
 				String parentKey = Integer.toString(-1);
 				Layer marker = getLabelMarker(parentKey, "page", getButtonsLayer(addModuleUri, "page", iwrb));
 
-				if ((!clipboardEmpty)){
+				/*if ((!clipboardEmpty)){
 					marker.add(getPasteIcon(parentKey, null, iwc));
-				}
+				}*/
 				page.add(marker);
 			}
 			
@@ -563,24 +536,11 @@ public class BuilderLogic implements Singleton {
 							if (!container.isLocked()) {
 								Layer marker = getLabelMarker(instanceId, container.getLabel(), getButtonsLayer(addModuleUri, container.getLabel(), iwrb));
 								container.add(marker);
-								
-								if (!clipboardEmpty){
-									marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
-								}
-								
-								/*Script drop = new Script();
-								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-								container.add(drop);*/
 							}
 						}
 						else {
 							Layer marker = getLabelMarker(instanceId, container.getLabel(), getButtonsLayer(addModuleUri, container.getLabel(), iwrb));
 							container.add(marker);
-														
-							if (!clipboardEmpty){
-								marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
-							}
-							
 							
 							if (curr.getIsTemplate()) {
 								marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
@@ -589,9 +549,6 @@ public class BuilderLogic implements Singleton {
 								}
 								else{
 									marker.add(getUnlockedIcon(instanceId, iwc));
-									/*Script drop = new Script();
-									drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-									container.add(drop);*/
 								}
 							}
 							
@@ -601,10 +558,6 @@ public class BuilderLogic implements Singleton {
 					else {
 						Layer marker = getLabelMarker(instanceId, container.getLabel(), getButtonsLayer(addModuleUri, container.getLabel(), iwrb));
 						container.add(marker);
-												
-						if (!clipboardEmpty){
-							marker.add(getPasteIcon(instanceId,container.getLabel(), iwc));
-						}
 						
 						if (curr.getIsTemplate()) {
 							marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
@@ -613,9 +566,6 @@ public class BuilderLogic implements Singleton {
 							}
 							else{
 								marker.add(getUnlockedIcon(instanceId, iwc));
-								/*Script drop = new Script();
-								drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),instanceId,container.getLabel(),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-								container.add(drop);*/
 							}
 						}
 						
@@ -678,23 +628,11 @@ public class BuilderLogic implements Singleton {
 						if (!tab.isLocked(x, y)) {
 							Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb));
 							tab.add(marker, x, y);
-							
-							if (!clipboardEmpty){
-								marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
-							}
-							
-							/*Script drop = new Script();
-							drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-							tab.add(drop,x,y);*/
 						}
 					}
 					else {
 						Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb));
 						tab.add(marker, x, y);
-						
-						if (!clipboardEmpty) {
-							marker.add(getPasteIcon(newParentKey,tab.getLabel(x, y), iwc));
-						}
 						if (currentPage.getIsTemplate()) {
 							marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
 							if (tab.isLocked(x, y)){
@@ -704,19 +642,11 @@ public class BuilderLogic implements Singleton {
 								marker.add(getUnlockedIcon(newParentKey, iwc));
 							}
 						}
-						//always add the drop area
-						/*Script drop = new Script();
-						drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-						tab.add(drop,x,y);*/
 					}
 				}
 				else {
 					Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb));
 					tab.add(marker, x, y);
-					
-					if (!clipboardEmpty) {
-						marker.add(getPasteIcon(newParentKey, tab.getLabel(x,y) ,iwc));
-					}
 					if (currentPage.getIsTemplate()) {
 						marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
 						if (tab.isLocked(x, y)){
@@ -725,9 +655,6 @@ public class BuilderLogic implements Singleton {
 						else{
 							marker.add(getUnlockedIcon(newParentKey, iwc));
 						}
-						/*Script drop = new Script();
-						drop.addFunction("",getModuleToRegionDroppableScript(marker.getID(),getCurrentIBPage(iwc),newParentKey,tab.getLabel(x,y),"moduleContainer","regionLabelHover",getBuilderBundle().getResourcesVirtualPath()+"/services/IWBuilderWS.jws"));
-						tab.add(drop,x,y);*/
 					}
 					
 				}
@@ -1334,24 +1261,62 @@ public class BuilderLogic implements Singleton {
 	}
 
 	/**
-	 *  	 *
+	 * 
 	 */
-	public boolean pasteModuleIntoRegion(IWUserContext iwc, String pageKey, String regionId, String regionLabel) {
+	public boolean pasteModuleIntoRegion(IWContext iwc, String pageKey, String regionId, String regionLabel) {
+		String instanceId = putModuleIntoRegion(iwc, pageKey, regionId, regionLabel, true);
+		return instanceId != null;
+	}
+	
+	public String putModuleIntoRegion(IWContext iwc, String pageKey, String regionId, String regionLabel, boolean changeInstanceId) {
 		IBXMLPage xml = getIBXMLPage(pageKey);
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		if (element == null) {
-			return (false);
+			return null;
 		}
 		XMLElement toPaste = (XMLElement) element.clone();
-		if (getIBXMLWriter().pasteElementLastIntoParentOrRegion(xml, pageKey, regionId, regionLabel,toPaste)) {
-			xml.store();
-			return (true);
+		String instanceId = getIBXMLWriter().insertElementLast(xml, pageKey, regionId, regionLabel, toPaste, changeInstanceId);
+		if (instanceId == null) {
+			return null;
 		}
-		return (false);
+		xml.store();
+		return instanceId;
 	}
 	
-	public boolean pasteModule(IWUserContext iwc, String pageKey, String parentID) {
-		return pasteModuleIntoRegion(iwc,pageKey,parentID,null);
+	public boolean pasteModule(IWContext iwc, String pageKey, String parentID) {
+		return pasteModuleIntoRegion(iwc, pageKey, parentID, null);
+	}
+	
+	public String pasteModule(String pageKey, String parentId, IWContext iwc) {
+		return putModuleIntoRegion(iwc, pageKey, parentId, null, true);
+	}
+	
+	public String moveModule(String pageKey, String formerParentId, String instanceId, String parentId, IWContext iwc) {
+		IBXMLPage page = getIBXMLPage(pageKey);
+		if (page == null) {
+			return null;
+		}
+		XMLElement moduleXML = getIBXMLWriter().findModule(page, instanceId);
+		if (moduleXML == null) {
+			return null;
+		}
+		XMLElement parentXML = getIBXMLWriter().findModule(page, formerParentId);
+		if (parentXML == null) {
+			return null;
+		}
+		
+		boolean success = false;
+		//	Removes element from current region	
+		try {
+			success = getIBXMLWriter().removeElement(parentXML, moduleXML, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (!success) {
+			return null;
+		}
+		
+		return putModuleIntoRegion(iwc, pageKey, parentId, null, false);
 	}
 
 	/**
@@ -1463,16 +1428,21 @@ public class BuilderLogic implements Singleton {
 		
 		//	Page
 		IBXMLPage page = getIBXMLPage(pageKey);
-		//	Current XMLElement
-		XMLElement moduleXML =  getIBXMLWriter().findModule(page, instanceId);
-		//	Parent container
-		XMLElement parentXML =  getIBXMLWriter().findModule(page, formerParentId);
-		//	Copy of current element
-		XMLElement moduleXMLCopy = (XMLElement) moduleXML.clone();
-		
-		if (moduleXML == null || parentXML == null) {
+		if (page == null) {
 			return false;
 		}
+		//	Current XMLElement
+		XMLElement moduleXML =  getIBXMLWriter().findModule(page, instanceId);
+		if (moduleXML == null) {
+			return false;
+		}
+		//	Parent container
+		XMLElement parentXML =  getIBXMLWriter().findModule(page, formerParentId);
+		if (parentXML == null) {
+			return false;
+		}
+		//	Copy of current element
+		XMLElement moduleXMLCopy = (XMLElement) moduleXML.clone();
 		
 		//	Removes element from current region	
 		try {
@@ -2132,17 +2102,17 @@ public class BuilderLogic implements Singleton {
 		buttons.add(addArticleContainer);
 		
 		//	Paste module button
-		/*Layer pasteButtonContainer = new Layer();
+		Layer pasteButtonContainer = new Layer();
 		title = new StringBuffer(iwrb.getLocalizedString("paste", "Paste")).append(" :: ");
 		title.append(iwrb.getLocalizedString("paste_module", "Paste module"));
 		Image pasteImage = getBuilderBundle().getImage("paste_24.gif", title.toString(), 24, 24);
 		pasteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-		StringBuffer action = new StringBuffer("pasteCopiedModule('").append(pageKey).append("', '").append(instanceId).append("');");
-		pasteImage.setOnClick(action.toString());
+		StringBuffer pasteAction = new StringBuffer("pasteCopiedModule('").append(pasteButtonContainer.getId()).append("');");
+		pasteImage.setOnClick(pasteAction.toString());
 		pasteButtonContainer.add(pasteImage);
 		pasteButtonContainer.setStyleClass("pasteModuleIconContainer");
-		//pasteButtonContainer.setStyleAttribute("margin: 0px; overflow: hidden; width: 0px;");
-		buttons.add(pasteButtonContainer);*/
+		pasteButtonContainer.setStyleAttribute("margin", "0px");
+		buttons.add(pasteButtonContainer);
 		
 		return buttons;
 	}

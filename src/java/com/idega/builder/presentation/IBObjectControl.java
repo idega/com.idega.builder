@@ -158,9 +158,9 @@ public class IBObjectControl extends PresentationObjectContainer {
 		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
 		title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
 		Image deleteImage = iwb.getImage("delete_32.png", title.toString(), 24, 24);
-		String paramsSeparator = "', '";
-		StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(paramsSeparator).append(pageKey);
-		action.append(paramsSeparator).append(this.parentKey).append(paramsSeparator).append(instanceId).append("');");
+		String separator = "', '";
+		StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(separator).append(pageKey);
+		action.append(separator).append(this.parentKey).append(separator).append(instanceId).append("');");
 		deleteImage.setOnClick(action.toString());
 		deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		buttonsLayer.add(deleteImage);
@@ -170,9 +170,20 @@ public class IBObjectControl extends PresentationObjectContainer {
 		title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
 		Image copyModule = iwb.getImage("copy_24.gif", title.toString(), 24, 24);
 		copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-		action = new StringBuffer("copyThisModule('").append(pageKey).append(paramsSeparator).append(instanceId).append("');");
+		action = new StringBuffer("copyThisModule('").append(containerId).append(separator).append(pageKey).append(separator);
+		action.append(instanceId).append("');");
 		copyModule.setOnClick(action.toString());
 		buttonsLayer.add(copyModule);
+		
+		//	Cut module
+		title = new StringBuffer(iwrb.getLocalizedString("cut", "Cut")).append(" :: ");
+		title.append(iwrb.getLocalizedString("cut_module", "Cut module"));
+		Image cutModule = iwb.getImage("cut_24.gif", title.toString(), 24, 24);
+		cutModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+		action = new StringBuffer("cutThisModule('").append(cutModule.getId()).append(separator).append(containerId).append(separator);
+		action.append(pageKey).append(separator).append(parentKey).append(separator).append(instanceId).append("');");
+		cutModule.setOnClick(action.toString());
+		buttonsLayer.add(cutModule);
 		
 		//	Module properties
 		title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");

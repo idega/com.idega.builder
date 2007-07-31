@@ -7,26 +7,7 @@ function registerBuilderDragDropActions() {
 	DROPPABLES = new Array();
 	$$('div.moduleName').each(
 		function(element) {
-			element.addEvent('mousedown', function(e) {
-				e = new Event(e).stop();
-
-				ORIGINAL = element.parentNode.parentNode;
-				PARENT_CONTAINER_ID = ORIGINAL.parentNode.clone().id;
-				CLONE = ORIGINAL.clone();
-				CLONE.setStyle('moduleContainer');
-				CLONE.setStyles(ORIGINAL.getCoordinates());
-				CLONE.setStyles({'opacity': 0.8, 'position': 'absolute', 'z-index': 9999});
-				CLONE.addEvent('emptydrop', function() {
-					this.remove();
-					manageDropAreas(false);
-				}).inject(document.body);
-		
-				manageDropAreas(true);
-				var drag = CLONE.makeDraggable({
-					droppables: DROPPABLES
-				});
-				drag.start(e);
-			});
+			registerDragAndDropActionsForModuleNameElement(element);
 		}
 	);
 	
@@ -41,6 +22,29 @@ function registerBuilderDragDropActions() {
 			initToolTipForElement(element);
 		}
 	);
+}
+
+function registerDragAndDropActionsForModuleNameElement(element) {
+	element.addEvent('mousedown', function(e) {
+		e = new Event(e).stop();
+
+		ORIGINAL = element.parentNode.parentNode;
+		PARENT_CONTAINER_ID = ORIGINAL.parentNode.clone().id;
+		CLONE = ORIGINAL.clone();
+		CLONE.setStyle('moduleContainer');
+		CLONE.setStyles(ORIGINAL.getCoordinates());
+		CLONE.setStyles({'opacity': 0.8, 'position': 'absolute', 'z-index': 9999});
+		CLONE.addEvent('emptydrop', function() {
+			this.remove();
+			manageDropAreas(false);
+		}).inject(document.body);
+		
+		manageDropAreas(true);
+		var drag = CLONE.makeDraggable({
+			droppables: DROPPABLES
+		});
+		drag.start(e);
+	});
 }
 
 function registerForDropSingleElement(element) {
@@ -58,7 +62,12 @@ function registerForDropSingleElement(element) {
 			var insertAbove = dropArea == 'true';
 			var neighbourInstanceId = moduleContainer.getProperty('instanceid');
 			
-			CLONE.remove();
+			if (CLONE != null) {
+				var parentNodeOfClone = CLONE.parentNode;
+				if (parentNodeOfClone != null) {
+					parentNodeOfClone.removeChild(CLONE);
+				}
+			}
 			showLoadingMessage(MOVING_LABEL);
 			BuilderEngine.moveModule(instanceId, pageKey, formerParentId, newParentId, neighbourInstanceId, insertAbove, {
 				callback: function(result) {
@@ -98,9 +107,7 @@ function moveModuleCallback(result, element, moduleContainer, dropFx, insertAbov
 	
 	//	Setting properties
 	if (wasContainerLastModule && !insertAbove) {
-		element.remove();										//	Old last drop area is removed
-		
-		moduleContainer.setProperty('islastmodule', 'false');	//	Now not the last module
+		markModuleContainerAsNotLast(moduleContainer, element);
 
 		addDropAreaToTheEnd(ORIGINAL);							//	Adding drop area to the end of the new last module
 	}
@@ -127,9 +134,6 @@ function moveModuleCallback(result, element, moduleContainer, dropFx, insertAbov
 	}
 	
 	manageDropAreas(false);
-	PARENT_CONTAINER_ID = null;
-	ORIGINAL = null;
-	CLONE = null;
 }
 
 function addDropAreaToTheLastModuleContainer(container) {
@@ -138,7 +142,7 @@ function addDropAreaToTheLastModuleContainer(container) {
 	}
 	
 	//	Adding 'below' drop area to the last module container
-	var modulesContainers = getElementsByClassName(container, 'div', 'moduleContainer');
+	var modulesContainers = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 	if (modulesContainers.length > 0) {
 		addDropAreaToTheEnd(modulesContainers[modulesContainers.length - 1]);
 	}
@@ -210,4 +214,13 @@ function getDropArea() {
 	drop.appendText(DROP_MODULE_HERE_LABEL);
 	registerForDropSingleElement(drop);
 	return drop;
+}
+
+function markModuleContainerAsNotLast(moduleContainer, dropArea) {
+	if (dropArea != null) {
+		dropArea.remove();										//	Old last drop area is removed
+	}
+	if (moduleContainer != null) {
+		moduleContainer.setProperty('islastmodule', 'false');	//	Now not the last module
+	}
 }

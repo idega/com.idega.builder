@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.11 2007/07/13 09:50:01 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.12 2007/07/31 15:00:36 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -1126,15 +1126,19 @@ public class IBXMLWriter {
 	}
 	
 	public boolean insertElementLastIntoParentOrRegion(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element, boolean changeInstanceId) {
-		
-		if(changeInstanceId){
+		String instanceId = insertElementLast(xml, pageKey, parentInstanceId, label, element, changeInstanceId);
+		return instanceId != null;
+	}
+	
+	public String insertElementLast(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element, boolean changeInstanceId) {
+		if (changeInstanceId) {
 			changeModuleIds(element, pageKey);
 		}
 		
 		XMLElement parent = findXMLElementWithId(xml, parentInstanceId, null);
 		if (parent != null) {
 			parent.addContent(element);
-			return true;
+			return getElementId(element);
 		}
 		else {
 			int index = parentInstanceId.indexOf(".");
@@ -1146,22 +1150,22 @@ public class IBXMLWriter {
 				String parentID = parentInstanceId.substring(0, index);
 				XMLElement regionParent = findModule(xml, parentID);
 				
-				if(label!=null){
+				if (label != null) {
 					XMLAttribute labelAttr = new XMLAttribute(IBXMLConstants.LABEL_STRING, label);
 					region.setAttribute(labelAttr);
 				}
 				
-				if (regionParent != null){
+				if (regionParent != null) {
 					regionParent.addContent(region);
 				}
-				else{
+				else {
 					xml.getPageRootElement().addContent(region);
 				}
 				
 				region.addContent(element);
-				return true;
+				return getElementId(element);
 			}
-			else{
+			else {
 				XMLElement region = findRegion(xml, label, parentInstanceId);
 				if (region == null) {
 					//add the region 
@@ -1170,9 +1174,20 @@ public class IBXMLWriter {
 					xml.getPageRootElement().addContent(region);
 				}
 				region.addContent(element);
-				return true;
+				return getElementId(element);
 			}
 		}
+	}
+	
+	private String getElementId(XMLElement element) {
+		if (element == null) {
+			return null;
+		}
+		XMLAttribute attribute = element.getAttribute(IBXMLConstants.ID_STRING);
+		if (attribute == null) {
+			return null;
+		}
+		return attribute.getValue();
 	}
 	
 	protected boolean addRegionToRootElement(IBXMLAble xml, String label, String parentId) {

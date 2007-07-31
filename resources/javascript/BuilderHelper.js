@@ -16,6 +16,7 @@ var LOADING_LABEL = 'Loading...';
 var RELOADING_LABEL = 'Reloading...';
 var MOVING_LABEL = 'Moving...';
 var DROP_MODULE_HERE_LABEL = 'You can drop module here';
+var COPYING_LABEL = 'Copying...';
 
 var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
@@ -23,6 +24,10 @@ var PARENT_ID = null;
 var PAGE_KEY = null;
 var REGION_ID = null;
 var MODULE_CONTENT_ID = null;
+var COPIED_MODULE_ID = null;
+var CUT_MODULE_ID = null;
+
+var VISIBLE_PASTE_ICON = false;
 
 var ACTIVE_PROPERTY_SETTER_BOX = null;
 
@@ -35,6 +40,7 @@ var PROPERTIES_SHOWN = new Array();
 var PROPERTY_BOX_SHOWN = new Array();
 var OBJECTS_TO_RERENDER = new Array();
 var ELEMENTS_WITH_TOOLTIP = new Array();
+var PASTE_ICONS_SLIDERS = new Array();
 var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer',
 	 'com.idega.user.presentation.group.GroupUsersViewer', 'com.idega.block.media.presentation.VideoViewer'];
 
@@ -46,7 +52,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return;
 	}
-	if (list.length != 21) {
+	if (list.length != 22) {
 		return;
 	}
 	
@@ -71,10 +77,32 @@ function getBuilderInitInfoCallback(list) {
 	RELOADING_LABEL = list[18];
 	MOVING_LABEL = list[19];
 	DROP_MODULE_HERE_LABEL = list[20];
+	COPYING_LABEL = list[21];
 	
 }
 
+function hidePasteIcons(useSlideOut) {
+	PASTE_ICONS_SLIDERS = new Array();
+	VISIBLE_PASTE_ICON = false;
+	COPIED_MODULE_ID = null;
+	CUT_MODULE_ID = null;
+	$$('div.pasteModuleIconContainer').each(
+		function(element) {
+			var slider = new Fx.Slide(element.id, {mode: 'horizontal'});
+			if (useSlideOut) {
+				slider.slideOut();
+			}
+			else {
+				slider.hide();
+			}
+			PASTE_ICONS_SLIDERS.push(slider);
+		}
+	);
+}
+
 function registerBuilderActions() {
+	hidePasteIcons(false);
+	
 	$$('div.moduleContainer').each(
 		function(element) {
 			element.addEvent('mouseover', function() {
@@ -297,12 +325,14 @@ function showComponentInfoImage(element) {
 	if (container.style.visibility == '') {	// If it is the first time
 		
 		var moduleName = 'Undefined';
-		var moduleNameContainerList = getElementsByClassName(element, '*', 'moduleName');
-		if (moduleNameContainerList != null) {
-			if (moduleNameContainerList.length > 0) {
-				if (moduleNameContainerList[0].childNodes != null) {
-					if (moduleNameContainerList[0].childNodes.length > 0) {
-						moduleName = moduleNameContainerList[0].childNodes[0].nodeValue;
+		var moduleNameSpans = getElementsByClassName(element, 'span', 'moduleNameTooltip');
+		if (moduleNameSpans.length > 0) {
+			var moduleNameSpan = moduleNameSpans[0];
+			if (moduleNameSpan != null) {
+				var spanChildren = moduleNameSpan.childNodes;
+				if (spanChildren != null) {
+					if (spanChildren.length > 0) {
+						moduleName = spanChildren[0].nodeValue;
 					}
 				}
 			}
@@ -394,7 +424,7 @@ function addConcreteModuleCallback(uuid, index, id) {
 		return false;
 	}
 	
-	BuilderEngine.getRenderedModule(PAGE_KEY, uuid, index, {
+	BuilderEngine.getRenderedModule(PAGE_KEY, uuid, index, id, {
 		callback: function(componentContainer) {
 			addSelectedModuleCallback(componentContainer, id);
 		}
@@ -433,11 +463,12 @@ function addSelectedModuleCallback(component, id) {
 		return;
 	}
 
+	var lastModule = null;
 	if (modules.length == 0) {
 		elementToInsertBefore = container.firstChild;
 	}
 	else {
-		var lastModule = modules[modules.length - 1];
+		lastModule = modules[modules.length - 1];
 		var elementAfterLastModule = lastModule.nextSibling;	// The proper place - after the last module container
 		if (elementAfterLastModule == null) {
 			elementToInsertBefore = container.lastChild;
@@ -446,6 +477,9 @@ function addSelectedModuleCallback(component, id) {
 			elementToInsertBefore = elementAfterLastModule;
 		}
 	}
+	
+	//	Removing old last drop area
+	markModuleContainerAsNotLast(lastModule, getDropAreaFromElement(lastModule));
 	
 	// Inserting nodes
 	var activeNode = null;
@@ -463,8 +497,26 @@ function addSelectedModuleCallback(component, id) {
 		elementToInsertBefore = realNode;
 	}
 	
-	registerBuilderActions();	// Need to re-register actions
-	registerBuilderDragDropActions();
+	addDropAreaToTheLastModuleContainer(container);
+	
+	// Need to re-register Builder actions
+	registerBuilderActions();
+	
+	//	Registering actions for Drag&Drop
+	modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
+	var newModule = modules[modules.length - 1];
+	var moduleNames = getElementsByClassName(newModule, 'div', 'moduleName');
+	for (var i = 0; i < moduleNames.length; i++) {
+		registerDragAndDropActionsForModuleNameElement(moduleNames[i]);
+	}
+	var moduleDropAreas = getElementsByClassName(newModule, 'div', 'moduleDropArea');
+	for (var i = 0; i < moduleDropAreas.length; i++) {
+		registerForDropSingleElement(moduleDropAreas[i]);
+	}
+	var moduleTitles = getElementsByClassName(newModule, 'span', 'moduleNameTooltip');
+	for (var i = 0; i < moduleTitles.length; i++) {
+		initToolTipForElement(moduleTitles[i]);
+	}
 	
 	MOOdalBox.close();
 	if (elementToHighlight != null) {
@@ -518,24 +570,31 @@ function deleteModule(id, pageKey, parentId, instanceId) {
 		showLoadingMessage(DELETING_LABEL);
 		BuilderEngine.deleteSelectedModule(pageKey, parentId, instanceId, {
   			callback: function(result) {
-    			deleteModuleCallback(result, id);
+    			deleteModuleCallback(result, id, instanceId);
   			}
 		});
 	}
 }
 
-function deleteModuleCallback(result, id) {
+function deleteModuleCallback(result, id, instanceId) {
 	closeLoadingMessage();
 	if (result) {
 		var deleted = document.getElementById(id);
 		if (deleted == null) {
 			return;
 		}
+
 		var parentDeleted = deleted.parentNode;
 		if (parentDeleted == null) {
 			return;
 		}
 		parentDeleted.removeChild(deleted);
+		
+		addDropAreaToTheLastModuleContainer(parentDeleted);
+		
+		if (COPIED_MODULE_ID == instanceId) {
+			hidePasteIcons(true);
+		}
 	}
 }
 
@@ -832,29 +891,90 @@ function ReRenderObject(pageKey, regionId, moduleId, moduleContentId) {
 	this.moduleContentId = moduleContentId;
 }
 
-function copyThisModule(pageKey, instanceId) {
-	/*$$('div.pasteModuleIconContainer').each(
-		function(element) {
-			var slider = new Fx.Slide(element, {mode: 'horizontal'});
-			slider.slideIn();
+function copyThisModule(containerId, pageKey, instanceId) {
+	COPIED_MODULE_ID = instanceId;
+	CUT_MODULE_ID = null;
+	copyModule(containerId, pageKey, null, instanceId);
+}
+
+function copyModule(containerId, pageKey, parentId, instanceId) {
+	showLoadingMessage(COPYING_LABEL);
+	BuilderEngine.copyModule(pageKey, parentId, instanceId, {
+		callback: function(result) {
+			copyModuleCallback(result, containerId);
 		}
-	);*/
-	BuilderEngine.copyModule(pageKey, instanceId, copyThisModuleCallback);
+	});
 }
 
-function copyThisModuleCallback(result) {
-}
-
-function pasteCopiedModule(pageKey, instanceId) {
-	BuilderEngine.pasteModule(pageKey, instanceId, pasteCopiedModuleCallback);
-}
-
-function pasteCopiedModuleCallback(component) {
-	if (component == null) {
-		return;
+function copyModuleCallback(result, containerId) {
+	closeAllLoadingMessages();
+	if (result) {
+		if (CUT_MODULE_ID != null) {
+			var element = $(containerId);
+			element.remove();
+		}
+	
+		if (!VISIBLE_PASTE_ICON) {
+			for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
+				PASTE_ICONS_SLIDERS[i].slideIn();
+			}
+			VISIBLE_PASTE_ICON = true;
+		}
 	}
+}
+
+function pasteCopiedModule(id) {
+	var pasteIconContainer = $(id);
+	if (pasteIconContainer == null) {
+		return false;
+	}
+	
+	//	Looking for region
+	var regionLabelContainer = null;
+	var containerParentNode = pasteIconContainer.parentNode;
+	while (regionLabelContainer == null && containerParentNode != null) {
+		if (containerParentNode.hasClass('regionLabel')) {
+			regionLabelContainer = containerParentNode;
+		}
+		else {
+			containerParentNode = containerParentNode.parentNode;
+		}
+	}
+	if (regionLabelContainer == null) {
+		return false;
+	}
+	var regionContainer = regionLabelContainer.parentNode;
+	if (regionContainer == null) {
+		return false;
+	}
+	
+	//	Modules count in current region
+	var allModules = getNeededElementsFromList(regionContainer.childNodes, 'moduleContainer');
+	
+	//	Looking for region's id
+	var parentId = getInputValue(regionLabelContainer.getElementsByTagName('INPUT'), 'parentKey');
+	if (parentId == null) {
+		return false;
+	}
+	
+	showLoadingMessage(LOADING_LABEL);
+	BuilderEngine.pasteModule(PAGE_KEY, parentId, allModules.length, COPIED_MODULE_ID != null, {
+		callback: function(module) {
+			addSelectedModuleCallback(module, regionContainer.id);
+		}
+	});
 }
 
 function showMessageForUnloadingPage() {
 	showLoadingMessage(LOADING_LABEL);
+}
+
+function cutThisModule(id, containerId, pageKey, parentId, instanceId) {
+	COPIED_MODULE_ID = null;
+	CUT_MODULE_ID = instanceId;
+	
+	var clickedElement = $(id);
+	clickedElement.removeEvents();
+	
+	copyModule(containerId, pageKey, parentId, instanceId);
 }

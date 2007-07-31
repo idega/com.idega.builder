@@ -16,7 +16,7 @@ import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.SetModulePropertyBlock;
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOServiceBean;
+import com.idega.business.IBOSessionBean;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -25,12 +25,14 @@ import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreUtil;
 
-public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
+public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	
 	private static final long serialVersionUID = -4806588458269035118L;
 	private static final Log log = LogFactory.getLog(BuilderEngineBean.class);
 	
 	private BuilderLogic builder = BuilderLogic.getInstance();
+	
+	private CutModuleBean cutModule = null;
 	
 	public List<String> getBuilderInitInfo() {
 		List<String> info = new ArrayList<String>();
@@ -62,6 +64,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		info.add(iwrb.getLocalizedString("reloading", "Reloading..."));														// 18
 		info.add(iwrb.getLocalizedString("moving", "Moving..."));															// 19
 		info.add(iwrb.getLocalizedString("drop_area", "You can drop module here"));											// 20
+		info.add(iwrb.getLocalizedString("copying", "Copying..."));															// 21
 		
 		return info;
 	}
@@ -102,7 +105,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			component.setId(uuid);
 		}
 		
-		Document transformedModule = getTransformedModule(pageKey, iwc, component, index);
+		Document transformedModule = getTransformedModule(pageKey, iwc, component, index, containerId);
 		IWSlideSession session = getSession(iwc);
 		// Returning result
 		if (transformedModule != null && session != null) {
@@ -112,7 +115,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return transformedModule;
 	}
 	
-	public Document getRenderedModule(String pageKey, String uuid, int index) {
+	public Document getRenderedModule(String pageKey, String uuid, int index, String parentId) {
 		if (pageKey == null || uuid == null) {
 			return null;
 		}
@@ -127,7 +130,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		return getTransformedModule(pageKey, iwc, component, index);
+		return getTransformedModule(pageKey, iwc, component, index, parentId);
 	}
 	
 	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId) {
@@ -187,7 +190,7 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return builder.getRenderedComponent(iwc, builder.findComponentInPage(iwc, pageKey, instanceId), false);
 	}
 	
-	public boolean copyModule(String pageKey, String instanceId) {
+	public boolean copyModule(String pageKey, String parentId, String instanceId) {
 		if (pageKey == null || instanceId == null) {
 			return false;
 		}
@@ -196,11 +199,13 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return false;
 		}
 		
+		cutModule = parentId == null ? null : new CutModuleBean(parentId, instanceId);
+		
 		return builder.copyModule(iwc, pageKey, instanceId);
 	}
 	
-	public Document pasteModule(String pageKey, String parentInstanceId) {
-		if (pageKey == null || parentInstanceId == null) {
+	public Document pasteModule(String pageKey, String parentId, int modulesCount, boolean paste) {
+		if (pageKey == null || parentId == null) {
 			return null;
 		}
 		IWContext iwc = CoreUtil.getIWContext();
@@ -208,9 +213,20 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 			return null;
 		}
 		
-		//builder.pasteModuleBelow(iwc, pageKey, parentInstanceId);
+		String instanceId = null;
+		if (paste) {
+			instanceId = builder.pasteModule(pageKey, parentId, iwc);
+		}
+		else if (cutModule != null) {
+			instanceId = builder.moveModule(pageKey, cutModule.getParentId(), cutModule.getInstanceId(), parentId, iwc);
+			cutModule = null;
+		}
+		
+		if (instanceId == null) {
+			return null;
+		}
 
-		return null;
+		return getTransformedModule(pageKey, iwc, builder.findComponentInPage(iwc, pageKey, instanceId), (modulesCount + 1), parentId);
 	}
 	
 	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove) {
@@ -226,20 +242,19 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		}
 	}
 	
-	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index) {
-		//	Getting IBObjectControl - 'container'
+	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index, String parentId) {
 		Page currentPage = builder.getPage(pageKey, iwc);
 		if (currentPage == null) {
 			return null;
 		}
 		
-		PresentationObject transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, "-1", iwc);
+		//	Getting IBObjectControl - 'container'
+		PresentationObject transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, parentId, iwc);
 		
 		return builder.getRenderedComponent(iwc, transformed, false);
 	}
 	
 	private UIComponent getComponentInstance(String className) {
-		//	Getting instance of selected component
 		Class objectClass = null;
 		try {
 			objectClass = RefactorClassRegistry.forName(className);
@@ -307,4 +322,22 @@ public class BuilderEngineBean extends IBOServiceBean implements BuilderEngine {
 		return session;
 	}
 
+	private class CutModuleBean {
+		
+		private String parentId = null;
+		private String instanceId = null;
+		
+		private  CutModuleBean(String parentId, String instanceId) {
+			this.parentId = parentId;
+			this.instanceId = instanceId;
+		}
+		
+		private String getParentId() {
+			return parentId;
+		}
+		
+		private String getInstanceId() {
+			return instanceId;
+		}
+	}
 }
