@@ -894,24 +894,29 @@ function ReRenderObject(pageKey, regionId, moduleId, moduleContentId) {
 function copyThisModule(containerId, pageKey, instanceId) {
 	COPIED_MODULE_ID = instanceId;
 	CUT_MODULE_ID = null;
-	copyModule(containerId, pageKey, null, instanceId);
+	copyModule(containerId, pageKey, null, instanceId, null);
 }
 
-function copyModule(containerId, pageKey, parentId, instanceId) {
+function copyModule(containerId, pageKey, parentId, instanceId, id) {
 	showLoadingMessage(COPYING_LABEL);
 	BuilderEngine.copyModule(pageKey, parentId, instanceId, {
 		callback: function(result) {
-			copyModuleCallback(result, containerId);
+			copyModuleCallback(result, containerId, id);
 		}
 	});
 }
 
-function copyModuleCallback(result, containerId) {
+function copyModuleCallback(result, containerId, id) {
 	closeAllLoadingMessages();
 	if (result) {
 		if (CUT_MODULE_ID != null) {
 			var element = $(containerId);
+			
+			var parentContainer = element.parentNode;
+			
 			element.remove();
+			
+			addDropAreaToTheLastModuleContainer(parentContainer);
 		}
 	
 		if (!VISIBLE_PASTE_ICON) {
@@ -973,8 +978,5 @@ function cutThisModule(id, containerId, pageKey, parentId, instanceId) {
 	COPIED_MODULE_ID = null;
 	CUT_MODULE_ID = instanceId;
 	
-	var clickedElement = $(id);
-	clickedElement.removeEvents();
-	
-	copyModule(containerId, pageKey, parentId, instanceId);
+	copyModule(containerId, pageKey, parentId, instanceId, id);
 }
