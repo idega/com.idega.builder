@@ -50,10 +50,10 @@ function getBuilderInitInfo() {
 
 function getBuilderInitInfoCallback(list) {
 	if (list == null) {
-		return;
+		return false;
 	}
 	if (list.length != 22) {
-		return;
+		return false;
 	}
 	
 	ADD_NEW_COMPONENT_WINDOW_LINK = list[0];
@@ -88,13 +88,15 @@ function hidePasteIcons(useSlideOut) {
 	CUT_MODULE_ID = null;
 	$$('div.pasteModuleIconContainer').each(
 		function(element) {
-			var slider = new Fx.Slide(element.id, {mode: 'horizontal'});
-			if (useSlideOut) {
-				slider.slideOut();
-			}
-			else {
-				slider.hide();
-			}
+			try {
+				var slider = new Fx.Slide(element.id, {mode: 'horizontal'});
+				if (useSlideOut) {
+					slider.slideOut();
+				}
+				else {
+					slider.hide();
+				}
+			} catch(e){}
 			PASTE_ICONS_SLIDERS.push(slider);
 		}
 	);
@@ -123,32 +125,40 @@ function registerBuilderActions() {
     
     $$('div.regionInfoImageContainer').each(
     	function(element) {
-			element.onclick = function() {
+			element.addEvent('click', function() {
 				setRegionAndModuleContentId(element);
-			}
+			});
 		}
 	);
 	
 	$$('input.modulePropertySetter').each(
 		function(element) {
-			element.onblur = function(event) {
-				if (element.type == 'text' || element.type == 'password') {
-					saveModuleProperty(null, element);
+			element.addEvents({
+				'blur': function(e) {
+					if (element.type == 'text' || element.type == 'password') {
+						saveModuleProperty(null, element);
+					}
+				},
+				'keyup': function(e) {
+					e = new Event(e);
+					saveModuleProperty(e, element);
+					e.stop();
+				},
+				'click': function(e) {
+					e = new Event(e);
+					saveModuleProperty(e, element);
+					e.stop();
 				}
-			},
-			element.onkeypress = function(event) {
-				saveModuleProperty(event, element);
-			},
-			element.onclick = function(event) {
-				saveModuleProperty(event, element);
-			}
+			});
 		}
 	);
 	$$('select.modulePropertySetter').each(
 		function(element) {
-			element.onchange = function(event) {
-				saveModuleProperty(event, element);
-			}
+			element.addEvent('change', function(e) {
+				e = new Event(e);
+				saveModuleProperty(e, element);
+				e.stop();
+			});
 		}
 	);
 	
@@ -167,34 +177,34 @@ function registerBuilderActions() {
 				ELEMENTS_WITH_TOOLTIP.push(element);
 				initToolTipForElement(element);
 			}
-			element.onclick = function() {
+			element.addEvent('click', function() {
 				addConcreteModule(element);
-			}	
+			});
 		}
 	);
 }
 
 function addConcreteModule(element) {
 	if (element == null) {
-		return;
+		return false;
 	}
 	
-	setPropertiesForAddModule(element.parentNode);
+	setPropertiesForAddModule($(element.parentNode));
 	
 	var objectId = getMarkupAttributeValue(element, 'icobjectid');
 	var objectClass = getMarkupAttributeValue(element, 'icobjectclass');
 
 	if (objectId == null || objectClass == null) {
-		return;
+		return false;
 	}
 
 	addSelectedModule(objectId, objectClass);
 }
 
 function closeAddComponentContainer(id) {
-	var container = document.getElementById(id);
+	var container = $(id);
 	if (container == null) {
-		return;
+		return false;
 	}
 	container.style.visibility = 'hidden';
 }
@@ -213,7 +223,7 @@ function existsValueInList(list, value) {
 
 function showAddComponentImage(parentElement, element, regionLabel) {
 	if (element == null) {
-		return;
+		return false;
 	}
 	
 	element.style.visibility = 'visible';	
@@ -223,21 +233,21 @@ function setPropertiesForAddModule(element) {
 	PARENT_ID = null;
 	INSTANCE_ID = null;
 	if (element == null) {	
-		return;
+		return false;
 	}
 	
-	var linkContainer = element.parentNode;
+	var linkContainer = $(element.parentNode);
 	if (linkContainer == null) {
 		return null;
 	}
-	var region = linkContainer.parentNode;
+	var region = $(linkContainer.parentNode);
 	if (region == null) {
-		return;
+		return false;
 	}
 	
 	var children = region.childNodes;
 	if (children == null) {
-		return;
+		return false;
 	}
 	
 	var child = null;
@@ -290,18 +300,18 @@ function getFirstElementFromList(elements) {
 	if (elements.length == 0) {
 		return null;
 	}
-	return elements[0];
+	return $(elements[0]);
 }
 
 function hideComponentInfoImage(element) {
 	if (element == null) {
-		return;
+		return false;
 	}
 	
 	var list = getElementsByClassName(element, '*', 'regionInfoImageContainer');
 	var container = getFirstElementFromList(list);
 	if (container == null) {
-		return;
+		return false;
 	}
 	
 	container.style.visibility = 'hidden';
@@ -309,18 +319,18 @@ function hideComponentInfoImage(element) {
 
 function showComponentInfoImage(element) {
 	if (element == null) {
-		return;
+		return false;
 	}
 	
 	var list = getElementsByClassName(element, '*', 'regionInfoImageContainer');
 	var container = getFirstElementFromList(list);
 	if (container == null) {
-		return;
+		return false;
 	}
 	
 	var link = getFirstElementFromList(container.getElementsByTagName('a'));
 	if (link == null) {
-		return;
+		return false;
 	}
 	if (container.style.visibility == '') {	// If it is the first time
 		
@@ -358,7 +368,7 @@ function showComponentInfoImage(element) {
 		
 		var uri = EDIT_COMPONENT_WINDOW_LINK + '&' + MODULE_NAME_PARAMETER + '=' + moduleName + '&' + IC_OBJECT_INSTANCE_ID_PARAMETER +
 		 '=' + instanceId + '&' + IB_PAGE_PARAMETER + '=' + PAGE_KEY;
-		link.setAttribute('href', uri);
+		link.setProperty('href', uri);
 		
 		//	Link will be registered to MOOdalBox (if needed)
 		MOOdalBox.register(link);
@@ -368,7 +378,7 @@ function showComponentInfoImage(element) {
 }
 
 function removeOldContainer(element, id) {
-	var oldContainer = document.getElementById(id);
+	var oldContainer = $(id);
 	if (oldContainer != null) {
 		var parentElement = oldContainer.parentNode;
 		if (parentElement != null) {
@@ -384,7 +394,7 @@ function removeOldContainer(element, id) {
 function addSelectedModule(newObjectId, className) {
 	if (PARENT_ID == null || PAGE_KEY == null) {
 		alert(NO_IDS_ERROR_MESSAGE);
-		return;
+		return false;
 	}
 	
 	if (INSTANCE_ID == null) {
@@ -392,7 +402,7 @@ function addSelectedModule(newObjectId, className) {
 	}
 	
 	var index = 0;
-	var container = document.getElementById(PARENT_ID);
+	var container = $(PARENT_ID);
 	if (container != null) {
 		var modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 		if (modules != null) {
@@ -408,7 +418,7 @@ function addSelectedModule(newObjectId, className) {
 				addConcreteModuleCallback(uuid, index, PARENT_ID);
 			}
 		});
-		return;
+		return true;
 	}
 
 	BuilderEngine.addSelectedModule(PAGE_KEY, INSTANCE_ID, newObjectId, PARENT_ID, className, index, true, {
@@ -435,21 +445,21 @@ function addSelectedModuleCallback(component, id) {
 	closeLoadingMessage();
 	if (component == null) {
 		executeActionsBeforeReloading();
-		return;
+		return false;
 	}
-	var container = document.getElementById(id);
+	var container = $(id);
 	if (container == null) {
 		executeActionsBeforeReloading();
-		return;
+		return false;
 	}
 	var children = component.childNodes;
 	if (children == null) {
 		executeActionsBeforeReloading();
-		return;
+		return false;
 	}
 	if (children.length == 0) {
 		executeActionsBeforeReloading();
-		return;
+		return false;
 	}
 
 	// Making copy
@@ -460,7 +470,7 @@ function addSelectedModuleCallback(component, id) {
 	var modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 	if (modules == null) {
 		executeActionsBeforeReloading();
-		return;
+		return false;
 	}
 
 	var lastModule = null;
@@ -497,25 +507,25 @@ function addSelectedModuleCallback(component, id) {
 		elementToInsertBefore = realNode;
 	}
 	
-	addDropAreaToTheLastModuleContainer(container);
+	addDropAreaToTheLastModuleContainer($(container));
 	
 	// Need to re-register Builder actions
 	registerBuilderActions();
 	
 	//	Registering actions for Drag&Drop
 	modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
-	var newModule = modules[modules.length - 1];
+	var newModule = $(modules[modules.length - 1]);
 	var moduleNames = getElementsByClassName(newModule, 'div', 'moduleName');
 	for (var i = 0; i < moduleNames.length; i++) {
-		registerDragAndDropActionsForModuleNameElement(moduleNames[i]);
+		registerDragAndDropActionsForModuleNameElement($(moduleNames[i]));
 	}
 	var moduleDropAreas = getElementsByClassName(newModule, 'div', 'moduleDropArea');
 	for (var i = 0; i < moduleDropAreas.length; i++) {
-		registerForDropSingleElement(moduleDropAreas[i]);
+		registerForDropSingleElement($(moduleDropAreas[i]));
 	}
 	var moduleTitles = getElementsByClassName(newModule, 'span', 'moduleNameTooltip');
 	for (var i = 0; i < moduleTitles.length; i++) {
-		initToolTipForElement(moduleTitles[i]);
+		initToolTipForElement($(moduleTitles[i]));
 	}
 	
 	MOOdalBox.close();
@@ -533,14 +543,14 @@ function manageComponentPropertiesList(id) {
 	else {
 		PROPERTIES_SHOWN.push(id);
 		
-		var el = document.getElementById(id);
+		var el = $(id);
 		el.style.display = 'block';	
 	}
 }
 
 function addPropertyIdAndClose(id) {
 	if (id == null) {
-		return;
+		return false;
 	}
 	PROPERTIES_SHOWN.push(id);
 	closeComponentPropertiesList(id);
@@ -548,10 +558,10 @@ function addPropertyIdAndClose(id) {
 
 function closeComponentPropertiesList(id) {
 	if (id == null) {
-		return;
+		return false;
 	}
 	
-	var el = document.getElementById(id);
+	var el = $(id);
 	el.style.display = 'none';
 }
 
@@ -564,35 +574,35 @@ function closeAddModuleWindow() {
 	valid.deactivate();
 }
 
-function deleteModule(id, pageKey, parentId, instanceId) {
+function deleteModule(id, pageKey, parentId, instanceId, imageId) {
 	var deleteConfirmed = window.confirm(ARE_YOU_SURE_MESSAGE);
 	if (deleteConfirmed) {
 		showLoadingMessage(DELETING_LABEL);
 		BuilderEngine.deleteSelectedModule(pageKey, parentId, instanceId, {
   			callback: function(result) {
-    			deleteModuleCallback(result, id, instanceId);
+    			deleteModuleCallback(result, id, instanceId, imageId);
   			}
 		});
 	}
 }
 
-function deleteModuleCallback(result, id, instanceId) {
+function deleteModuleCallback(result, id, instanceId, imageId) {
 	closeLoadingMessage();
 	if (result) {
-		var deleted = document.getElementById(id);
+		var deleted = $(id);
 		if (deleted == null) {
-			return;
+			return false;
 		}
 
-		var parentDeleted = deleted.parentNode;
+		var parentDeleted = $(deleted.parentNode);
 		if (parentDeleted == null) {
-			return;
+			return false;
 		}
-		parentDeleted.removeChild(deleted);
+		deleted.remove();
 		
 		addDropAreaToTheLastModuleContainer(parentDeleted);
 		
-		if (COPIED_MODULE_ID == instanceId) {
+		if (COPIED_MODULE_ID == instanceId || CUT_MODULE_ID == instanceId) {
 			hidePasteIcons(true);
 		}
 	}
@@ -600,7 +610,7 @@ function deleteModuleCallback(result, id, instanceId) {
 
 function closeOldPropertyBoxes(currentID) {
 	if (currentID == null || PROPERTY_BOX_SHOWN == null) {
-		return;
+		return false;
 	}
 	var box = null;
 	var id = null;
@@ -608,7 +618,7 @@ function closeOldPropertyBoxes(currentID) {
 	for (var i = 0; i < PROPERTY_BOX_SHOWN.length; i++) {
 		id = PROPERTY_BOX_SHOWN[i];
 		if (id != currentID) {
-			box = document.getElementById(id);
+			box = $(id);
 			if (box != null) {
 				box.style.display = 'none';
 				idsToRemove.push(id);
@@ -630,7 +640,7 @@ function getPropertyBox(id, propertyName, objectInstanceId) {
 	INSTANCE_ID = objectInstanceId;
 	var fullId = id + '_property_setter_box';
 	closeOldPropertyBoxes(fullId);
-	var propertySetterBox = document.getElementById(fullId) ;
+	var propertySetterBox = $(fullId) ;
 	if (propertySetterBox == null) {
 		showLoadingMessage(LOADING_LABEL);
 		BuilderEngine.getPropertyBox(PAGE_KEY, propertyName, objectInstanceId, {
@@ -655,20 +665,20 @@ function getPropertyBox(id, propertyName, objectInstanceId) {
 function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 	closeLoadingMessage();
 	if (id == null) {
-		return;
+		return false;
 	}
-	var container = document.getElementById(id);
+	var container = $(id);
 	if (container == null) {
-		return;
+		return false;
 	}
 	if (box == null) {
 		// TODO: add error
-		return;
+		return false;
 	}
 	
-	var propertySetterBox = document.createElement('div');
+	var propertySetterBox = new Element('div');
 	var fullId = id + '_property_setter_box';
-	propertySetterBox.setAttribute('id', fullId);
+	propertySetterBox.setProperty('id', fullId);
 	PROPERTY_BOX_SHOWN.push(fullId);
 	
 	insertNodesToContainer(box, propertySetterBox);	
@@ -686,13 +696,13 @@ function getMarkupAttributeValue(element, attrName) {
 
 function saveModuleProperty(event, element) {
 	if (element == null) {
-		return;
+		return false;
 	}
 	if (event != null) {
 		if (element.type == 'text' || element.type == 'password') {
 			//	Checking if 'Enter' was pressed
-			if (!isEnterEvent(event)) {
-				return;
+			if (!('enter' == event.key)) {
+				return false;
 			}
 		}
 	}
@@ -789,13 +799,13 @@ function executeActionsBeforeReloading() {
 function saveModulePropertyCallback(result, moduleId, needsReload) {
 	if (!result) {
 		closeLoadingMessage();
-		return;
+		return false;
 	}
 	
 	if (ACTIVE_PROPERTY_SETTER_BOX != null) {
-		var setterBox = document.getElementById(ACTIVE_PROPERTY_SETTER_BOX);
+		var setterBox = $(ACTIVE_PROPERTY_SETTER_BOX);
 		if (setterBox != null) {
-			setterBox.className = 'modulePropertyIsSet';
+			setterBox.addClass('modulePropertyIsSet');
 		}
 	}
 	
@@ -805,7 +815,7 @@ function saveModulePropertyCallback(result, moduleId, needsReload) {
 			executeActionsBeforeReloading();
 		};
 		addActionForMoodalBoxOnCloseEvent(actionOnClose);
-		return;
+		return false;
 	}
 	
 	closeLoadingMessage();
@@ -853,9 +863,9 @@ function renderModulesAgain() {
 function reRenderObjectCallback(component, moduleContentId) {
 	closeLoadingMessage();
 	
-	var container = document.getElementById(moduleContentId);
+	var container = $(moduleContentId);
 	if (container == null) {
-		return;
+		return false;
 	}
 	
 	removeChildren(container);
@@ -871,13 +881,13 @@ function setRegionAndModuleContentId(element) {
 	if (element == null) {
 		REGION_ID = null;
 		MODULE_CONTENT_ID = null;
-		return;
+		return false;
 	}
 	var inputs = element.getElementsByTagName('input');
 	if (inputs == null) {
 		REGION_ID = null;
 		MODULE_CONTENT_ID = null;
-		return;
+		return false;
 	}
 	
 	REGION_ID = getInputValue(inputs, 'regionId');
@@ -912,7 +922,7 @@ function copyModuleCallback(result, containerId, id) {
 		if (CUT_MODULE_ID != null) {
 			var element = $(containerId);
 			
-			var parentContainer = element.parentNode;
+			var parentContainer = $(element.parentNode);
 			
 			element.remove();
 			
@@ -921,7 +931,9 @@ function copyModuleCallback(result, containerId, id) {
 	
 		if (!VISIBLE_PASTE_ICON) {
 			for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
-				PASTE_ICONS_SLIDERS[i].slideIn();
+				try {
+					PASTE_ICONS_SLIDERS[i].slideIn();
+				} catch(e) {}
 			}
 			VISIBLE_PASTE_ICON = true;
 		}
@@ -936,19 +948,19 @@ function pasteCopiedModule(id) {
 	
 	//	Looking for region
 	var regionLabelContainer = null;
-	var containerParentNode = pasteIconContainer.parentNode;
+	var containerParentNode = $(pasteIconContainer.parentNode);
 	while (regionLabelContainer == null && containerParentNode != null) {
 		if (containerParentNode.hasClass('regionLabel')) {
 			regionLabelContainer = containerParentNode;
 		}
 		else {
-			containerParentNode = containerParentNode.parentNode;
+			containerParentNode = $(containerParentNode.parentNode);
 		}
 	}
 	if (regionLabelContainer == null) {
 		return false;
 	}
-	var regionContainer = regionLabelContainer.parentNode;
+	var regionContainer = $(regionLabelContainer.parentNode);
 	if (regionContainer == null) {
 		return false;
 	}

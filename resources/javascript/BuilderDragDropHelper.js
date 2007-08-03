@@ -1,10 +1,8 @@
 var ORIGINAL = null;
 var PARENT_CONTAINER_ID = null;
 var CLONE = null;
-var DROPPABLES = new Array();
 
 function registerBuilderDragDropActions() {
-	DROPPABLES = new Array();
 	$$('div.moduleName').each(
 		function(element) {
 			registerDragAndDropActionsForModuleNameElement(element);
@@ -28,10 +26,9 @@ function registerDragAndDropActionsForModuleNameElement(element) {
 	element.addEvent('mousedown', function(e) {
 		e = new Event(e).stop();
 
-		ORIGINAL = element.parentNode.parentNode;
-		PARENT_CONTAINER_ID = ORIGINAL.parentNode.clone().id;
+		ORIGINAL = element.getParent().getParent();
+		PARENT_CONTAINER_ID = ORIGINAL.getParent().clone().id;
 		CLONE = ORIGINAL.clone();
-		CLONE.setStyle('moduleContainer');
 		CLONE.setStyles(ORIGINAL.getCoordinates());
 		CLONE.setStyles({'opacity': 0.8, 'position': 'absolute', 'z-index': 9999});
 		CLONE.addEvent('emptydrop', function() {
@@ -40,19 +37,18 @@ function registerDragAndDropActionsForModuleNameElement(element) {
 		}).inject(document.body);
 		
 		manageDropAreas(true);
-		var drag = CLONE.makeDraggable({
-			droppables: DROPPABLES
+		var draggable = CLONE.makeDraggable({
+			droppables: $$('div.moduleDropArea')
 		});
-		drag.start(e);
+		draggable.start(e);
 	});
 }
 
 function registerForDropSingleElement(element) {
-	var dropFx = element.effect('background-color', {wait: false});
 	element.addEvents({
 		'drop': function() {
 			var dropArea = getMarkupAttributeValue(element, 'insertbefore');
-			var moduleContainer = element.parentNode;
+			var moduleContainer = element.getParent();
 			
 			var instanceId = ORIGINAL.getProperty('instanceid');
 			var pageKey = ORIGINAL.getProperty('pageid');
@@ -63,7 +59,7 @@ function registerForDropSingleElement(element) {
 			var neighbourInstanceId = moduleContainer.getProperty('instanceid');
 			
 			if (CLONE != null) {
-				var parentNodeOfClone = CLONE.parentNode;
+				var parentNodeOfClone = CLONE.getParent();
 				if (parentNodeOfClone != null) {
 					parentNodeOfClone.removeChild(CLONE);
 				}
@@ -71,26 +67,31 @@ function registerForDropSingleElement(element) {
 			showLoadingMessage(MOVING_LABEL);
 			BuilderEngine.moveModule(instanceId, pageKey, formerParentId, newParentId, neighbourInstanceId, insertAbove, {
 				callback: function(result) {
-					moveModuleCallback(result, element, moduleContainer, dropFx, insertAbove, changingRegions, newParentId);
+					moveModuleCallback(result, element, moduleContainer, insertAbove, changingRegions, newParentId);
 				}
 			});
 		},
 		'over': function() {
-			dropFx.start('98B5C1');
+			element.addClass('draggingOverDropArea');
 		},
 		'leave': function() {
-			dropFx.start('ffffff');
+			removeElementStyleAfterDrop(element);
 		}
 	});
-	DROPPABLES.push(element);
 }
 
-function moveModuleCallback(result, element, moduleContainer, dropFx, insertAbove, changingRegions, newParentId) {
+function removeElementStyleAfterDrop(element) {
+	element.removeClass('draggingOverDropArea');
+}
+
+function moveModuleCallback(result, element, moduleContainer, insertAbove, changingRegions, newParentId) {
 	closeAllLoadingMessages();
 	
 	if (!result) {
 		return false;
 	}
+	
+	removeElementStyleAfterDrop(element);
 	
 	//	Inserting
 	if (insertAbove) {
@@ -118,18 +119,14 @@ function moveModuleCallback(result, element, moduleContainer, dropFx, insertAbov
 			dropArea.remove();
 		}
 		
-		addDropAreaToTheLastModuleContainer(ORIGINAL.parentNode);
-		dropFx.start('7389AE').chain(dropFx.start.pass('ffffff', dropFx));
-	}
-	else {
-		dropFx.start('7389AE').chain(dropFx.start.pass('ffffff', dropFx));
+		addDropAreaToTheLastModuleContainer(ORIGINAL.getParent());
 	}
 	
 	if (changingRegions) {
 		ORIGINAL.setProperty('parentid', newParentId);
 		
 		if (wasLastOriginalModule) {
-			addDropAreaToTheLastModuleContainer(document.getElementById(PARENT_CONTAINER_ID));
+			addDropAreaToTheLastModuleContainer($(PARENT_CONTAINER_ID));
 		}
 	}
 	
@@ -144,7 +141,7 @@ function addDropAreaToTheLastModuleContainer(container) {
 	//	Adding 'below' drop area to the last module container
 	var modulesContainers = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 	if (modulesContainers.length > 0) {
-		addDropAreaToTheEnd(modulesContainers[modulesContainers.length - 1]);
+		addDropAreaToTheEnd($(modulesContainers[modulesContainers.length - 1]));
 	}
 }
 
@@ -191,7 +188,7 @@ function manageDropAreas(needToShow) {
 	$$('div.moduleDropArea').each(
 		function(element) {
 			var canSetStyle = true;
-			var parentNode = element.parentNode;
+			var parentNode = element.getParent();
 			canSetStyle = parentNode != null;
 			if (canSetStyle) {
 				if (ORIGINAL.id != parentNode.id) {

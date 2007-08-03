@@ -450,3 +450,7 @@ div#simple_properties_box {
 .pasteModuleIconContainer {
 	float: left;
 }
+
+.draggingOverDropArea {
+	background-color: #98B5C1;
+}

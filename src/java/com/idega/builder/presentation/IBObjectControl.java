@@ -160,7 +160,8 @@ public class IBObjectControl extends PresentationObjectContainer {
 		Image deleteImage = iwb.getImage("delete_32.png", title.toString(), 24, 24);
 		String separator = "', '";
 		StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(separator).append(pageKey);
-		action.append(separator).append(this.parentKey).append(separator).append(instanceId).append("');");
+		action.append(separator).append(this.parentKey).append(separator).append(instanceId).append(separator);
+		action.append(deleteImage.getId()).append("');");
 		deleteImage.setOnClick(action.toString());
 		deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		buttonsLayer.add(deleteImage);
