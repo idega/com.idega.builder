@@ -25,6 +25,7 @@ import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
@@ -257,6 +258,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public Map getTree(IWContext iwc) {
 		return PageTreeNode.getTree(iwc);
+	}
+	
+	public Map getTree(IWApplicationContext iwac) {
+		return PageTreeNode.getTree(iwac);
 	}
 	
 	public String getTopLevelTemplateId(Collection templates) {
