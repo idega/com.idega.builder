@@ -5,7 +5,7 @@
   <pomVersion>3</pomVersion>
   <name>idegaWeb Builder</name>
   <artifactId>com.idega.builder</artifactId>
-  <currentVersion>3.1.14</currentVersion>
+  <currentVersion>3.1.15</currentVersion>
   <organization/>
   <inceptionYear>2000</inceptionYear>
   <shortDescription>idegaWeb Builder is a Webapplication RAD and CMS tool</shortDescription>
@@ -115,6 +115,11 @@
       <name>3.1.14</name>
       <tag>BUILDER_3_1_14</tag>
     </version>
+    <version>
+      <id>3.1.15</id>
+      <name>3.1.15</name>
+      <tag>BUILDER_3_1_15</tag>
+    </version>
   </versions>
   <branches/>
   <mailingLists>
@@ -187,7 +192,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>com.idega.core</artifactId>
-      <version>3.1.54</version>
+      <version>3.1.60</version>
       <type>jar</type>
       <url>http://www.idega.com/</url>
       <properties>

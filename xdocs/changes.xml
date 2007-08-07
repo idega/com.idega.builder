@@ -4,6 +4,12 @@
 		<author email="tryggvi@idega.com">Tryggvi Larusson</author>
 	</properties>
 	<body>
+		<release version="3.1.15" date="2007-08-07">
+      		<action dev="valdas" type="update">
+				Made method (to get instanceId of UIComponent) accessible through BuilderService
+      		</action>
+    	</release>
+	
 		<release version="3.1.14" date="2007-07-12">
       		<action dev="valdas" type="update">
 				Added parameter to clean or not rendered UIComponent (in BuilderLogic)
