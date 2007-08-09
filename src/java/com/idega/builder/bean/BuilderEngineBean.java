@@ -282,14 +282,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		return component;
 	}
 	
-	private String addModule(IWContext iwc, String pageKey, String containerId, String instanceId, int objectId, boolean useThread) {
-		if (containerId != null && instanceId != null) {
-			if (!BuilderConstants.EMPTY.equals(containerId) && !BuilderConstants.EMPTY.equals(instanceId)) {
-				//	Adding region (if region doesn't exist)
-				builder.addRegion(pageKey, containerId, instanceId, false);
-			}
-		}
-		
+	private String addModule(IWContext iwc, String pageKey, String containerId, String parentInstanceId, int objectId, boolean useThread) {		
 		// Adding module
 		String uuid = null;
 		IWSlideSession session = null;
@@ -297,7 +290,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			session = getSession(iwc);
 		}
 		synchronized (BuilderEngineBean.class) {
-			uuid = builder.addNewModule(pageKey, instanceId, objectId, containerId, session);
+			uuid = builder.addNewModule(pageKey, parentInstanceId, objectId, containerId, session);
 		}
 		if (uuid == null) {
 			return null;

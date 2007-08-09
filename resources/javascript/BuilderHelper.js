@@ -189,7 +189,8 @@ function addConcreteModule(element) {
 		return false;
 	}
 	
-	setPropertiesForAddModule($(element.parentNode));
+	var regionContainerId = getMarkupAttributeValue(element, 'regioncontainerid');
+	setPropertiesForAddModule(regionContainerId);
 	
 	var objectId = getMarkupAttributeValue(element, 'icobjectid');
 	var objectClass = getMarkupAttributeValue(element, 'icobjectclass');
@@ -229,52 +230,39 @@ function showAddComponentImage(parentElement, element, regionLabel) {
 	element.style.visibility = 'visible';	
 }
 
-function setPropertiesForAddModule(element) {
+function setPropertiesForAddModule(id) {
 	PARENT_ID = null;
 	INSTANCE_ID = null;
+	
+	if (id == null) {
+		return false;
+	}
+	var element = $(id);
 	if (element == null) {	
 		return false;
 	}
 	
-	var linkContainer = $(element.parentNode);
-	if (linkContainer == null) {
-		return null;
-	}
-	var region = $(linkContainer.parentNode);
-	if (region == null) {
-		return false;
-	}
+	PARENT_ID = getInputValue(element.getElementsByTagName('input'), 'parentKey');
 	
-	var children = region.childNodes;
-	if (children == null) {
-		return false;
-	}
-	
-	var child = null;
-	var foundInstance = false;
-	var foundParent = false;
-	var inputs = null;
-	for (var i = 0; (i < children.length && !foundInstance && !foundParent); i++) {
-		child = children[i];
-		if (child.className) {
-			if (child.className == 'moduleContainer') {
-				inputs = child.getElementsByTagName('input');
-				INSTANCE_ID = getInputValue(inputs, 'instanceId');
-				if (INSTANCE_ID != null) {
-					foundInstance = true;
-				}
-				PARENT_ID = getInputValue(inputs, 'parentId');
-				if (PARENT_ID != null) {
-					foundParent = true;
-				}
-			}
+	var region = element.getParent();
+	var modules = getElementsByClassName(region, 'div', 'moduleContainer');
+	if (modules.length > 0) {
+		var lastModule = modules[modules.length - 1];
+		INSTANCE_ID = getMarkupAttributeValue(lastModule, 'instanceid');
+
+		if (PARENT_ID == null || PARENT_ID == '') {
+			PARENT_ID = getMarkupAttributeValue(lastModule, 'parentid');
 		}
 	}
 	
-	if (!foundParent) {
-		PARENT_ID = getInputValue(region.getElementsByTagName('input'), 'parentKey');
+	if (PARENT_ID == null || PARENT_ID == '') {
+		if (region.id == null || region.id == '') {
+			PARENT_ID = 'region_' + new Date().getTime();
+		}
+		else {
+			PARENT_ID = region.id;
+		}
 	}
-
 }
 
 function getInputValue(inputs, inputName) {
@@ -526,6 +514,12 @@ function addSelectedModuleCallback(component, id) {
 	var moduleTitles = getElementsByClassName(newModule, 'span', 'moduleNameTooltip');
 	for (var i = 0; i < moduleTitles.length; i++) {
 		initToolTipForElement($(moduleTitles[i]));
+	}
+	
+	//	Registering links with MOOdalBox
+	var linksForNewModuleWindow = getElementsByClassName(newModule, 'a', 'addModuleLinkStyleClass');
+	for (var i = 0; i < linksForNewModuleWindow.length; i++) {
+		MOOdalBox.register(linksForNewModuleWindow[i]);
 	}
 	
 	MOOdalBox.close();
