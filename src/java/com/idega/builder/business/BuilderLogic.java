@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.276 2007/08/09 15:23:53 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.277 2007/08/13 14:30:23 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -366,7 +366,7 @@ public class BuilderLogic implements Singleton {
 		return (page);
 	}
 
-	public Layer getLabelMarker(String label, String parentKey, PresentationObject buttons) {
+	public Layer getLabelMarker(String instanceId, String parentKey, PresentationObject buttons) {
 		Layer marker = new Layer(Layer.DIV);
 		marker.setStyleClass("regionLabel");
 		
@@ -375,25 +375,29 @@ public class BuilderLogic implements Singleton {
 			marker.add(buttons);
 		}
 		
-		if (label == null) {
+		if (instanceId == null) {
 			Random generator = new Random();
 			marker.setId(new StringBuffer("region_label").append(generator.nextInt(Integer.MAX_VALUE)).toString());
 		}
 		else {
+			marker.setMarkupAttribute("instanceid", instanceId);
+			
 			Layer labelContainer = new Layer();
 			marker.add(labelContainer);
-			HiddenInput regionLabel = new HiddenInput("region_label", label);
+			HiddenInput regionLabel = new HiddenInput("region_label", instanceId);
 			marker.add(regionLabel);
-			if (label.indexOf(BuilderConstants.DOT) != -1) {
+			if (instanceId.indexOf(BuilderConstants.DOT) != -1) {
 				Random generator = new Random();
 				marker.setId(new StringBuffer("region_label").append(generator.nextInt(Integer.MAX_VALUE)).toString());
 			}
 			else {
-				marker.setId(new StringBuffer("region_label").append(label).toString());
+				marker.setId(new StringBuffer("region_label").append(instanceId).toString());
 			}
 		}
 		
-		marker.add(new HiddenInput("parentKey", parentKey));
+		if (parentKey != null) {
+			marker.add(new HiddenInput("parentKey", parentKey));
+		}
 
 		return marker;
 	}
@@ -531,6 +535,9 @@ public class BuilderLogic implements Singleton {
 					Page curr = getPageCacher().getComponentBasedPage(getCurrentIBPage(iwc)).getNewPage(iwc);
 					PresentationObjectContainer container = ((PresentationObjectContainer) obj);
 					String instanceId = getInstanceId(obj);
+					if (instanceId == null) {
+						instanceId = obj.getId();
+					}
 					
 					if (curr.getIsExtendingTemplate()) {
 						if (container.getBelongsToParent()) {
@@ -1444,28 +1451,41 @@ public class BuilderLogic implements Singleton {
 		if (page == null) {
 			return false;
 		}
+		
 		//	Current XMLElement
 		XMLElement moduleXML =  getIBXMLWriter().findModule(page, instanceId);
 		if (moduleXML == null) {
 			return false;
 		}
+		
 		//	Parent container
 		XMLElement parentXML =  getIBXMLWriter().findModule(page, formerParentId);
 		if (parentXML == null) {
 			return false;
 		}
+		
 		//	Copy of current element
 		XMLElement moduleXMLCopy = (XMLElement) moduleXML.clone();
 		
 		//	Removes element from current region	
-		try {
-			result = getIBXMLWriter().removeElement(parentXML, moduleXML, false);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception(e.getMessage());
-		}
+		result = removeElement(parentXML, moduleXML, false);
 		if (!result) {
+			//	Module is in a region of some (parent) module
+			result = removeElement(getIBXMLWriter().findRegion(page, null,
+					new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(formerParentId).toString()), moduleXML, false);
+		}
+		
+		//	Finds real region
+		if (result) {
+			XMLElement newRegion = getIBXMLWriter().findRegion(page, newParentId, newParentId);
+			if (newRegion == null) {
+				newParentId = new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(newParentId).toString();
+			}
+			else if (!IBXMLConstants.REGION_STRING.equals(newRegion.getName())) {
+				newParentId = new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(newParentId).toString();
+			}
+		}
+		else {
 			return false;
 		}
 
@@ -1482,6 +1502,19 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return page.store();
+	}
+	
+	private boolean removeElement(XMLElement container, XMLElement elementToRemove, boolean removeInstanceId) {
+		if (container == null || elementToRemove == null) {
+			return false;
+		}
+		try {
+			return getIBXMLWriter().removeElement(container, elementToRemove, removeInstanceId);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
@@ -3231,46 +3264,37 @@ public class BuilderLogic implements Singleton {
 		if (page == null) {
 			return null;
 		}
-		List pageChildren = page.getChildren();
-		if (pageChildren == null) {
+		
+		return findComponentInList(page.getChildren(), instanceId);
+	}
+	
+	private UIComponent findComponentInList(List children, String instanceId) {
+		if (children == null || instanceId == null) {
 			return null;
 		}
-		
-		PresentationObjectContainer container = null;
-		Object o = null;
-		Object oo = null;
-		List regionChildren = null;
-		boolean foundComponent = false;
 		UIComponent component = null;
-		for (int i = 0; (i < pageChildren.size() && !foundComponent); i++) {
-			o = pageChildren.get(i);
-			if (o instanceof PresentationObjectContainer) {
-				container = (PresentationObjectContainer) o;
-				if (instanceId.equals(container.getId())) {
-					component = container;
+		
+		UIComponent componentFromCycle = null;
+		Object o = null;
+		boolean foundComponent = false;
+		for (int i = 0; (i < children.size() && !foundComponent); i++) {
+			o = children.get(i);
+			if (o instanceof UIComponent) {
+				component = (UIComponent) o;
+				if (instanceId.equals(getInstanceId(component))) {
 					foundComponent = true;
-				}
-				else {
-					regionChildren = container.getChildren();
-					if (regionChildren != null) {
-						for (int j = 0; (j < regionChildren.size() && !foundComponent); j++) {
-							oo = regionChildren.get(j);
-							if (oo instanceof UIComponent) {
-								component = (UIComponent) oo;
-								if (instanceId.equals(component.getId())) {
-									foundComponent = true;
-								}
-							}
-						}
+				} else {
+					componentFromCycle = findComponentInList(component.getChildren(), instanceId);
+					if (componentFromCycle != null) {
+						foundComponent = true;
+						component = componentFromCycle;
 					}
 				}
 			}
 		}
-
 		if (!foundComponent) {
 			return null;
 		}
-		
 		return component;
 	}
 	

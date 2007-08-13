@@ -21,6 +21,7 @@ var COPYING_LABEL = 'Copying...';
 var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
 var PARENT_ID = null;
+var EXTRA_PARENT_ID = null;
 var PAGE_KEY = null;
 var REGION_ID = null;
 var MODULE_CONTENT_ID = null;
@@ -233,6 +234,7 @@ function showAddComponentImage(parentElement, element, regionLabel) {
 function setPropertiesForAddModule(id) {
 	PARENT_ID = null;
 	INSTANCE_ID = null;
+	EXTRA_PARENT_ID = null;
 	
 	if (id == null) {
 		return false;
@@ -245,6 +247,7 @@ function setPropertiesForAddModule(id) {
 	PARENT_ID = getInputValue(element.getElementsByTagName('input'), 'parentKey');
 	
 	var region = element.getParent();
+	
 	var modules = getElementsByClassName(region, 'div', 'moduleContainer');
 	if (modules.length > 0) {
 		var lastModule = modules[modules.length - 1];
@@ -252,6 +255,26 @@ function setPropertiesForAddModule(id) {
 
 		if (PARENT_ID == null || PARENT_ID == '') {
 			PARENT_ID = getMarkupAttributeValue(lastModule, 'parentid');
+		}
+	}
+	
+	if (PARENT_ID == null || PARENT_ID == '') {
+		PARENT_ID = getMarkupAttributeValue(element, 'instanceid');
+		if (PARENT_ID != null && PARENT_ID != '') {
+			var modulesContainer = null;
+			var parentElement = element.getParent();
+			while (modulesContainer == null && parentElement != null) {
+				var modulesContainers = getElementsByClassName(parentElement, 'div', 'moduleContent');
+				if (modulesContainers.length > 0) {
+					modulesContainer = modulesContainers[0];
+				}
+				parentElement = parentElement.getParent();
+			}
+			if (modulesContainer != null) {
+				if (modulesContainer.id) {
+					EXTRA_PARENT_ID = modulesContainer.id;
+				}
+			}
 		}
 	}
 	
@@ -320,8 +343,8 @@ function showComponentInfoImage(element) {
 	if (link == null) {
 		return false;
 	}
-	if (container.style.visibility == '') {	// If it is the first time
-		
+	
+	if (container.style.visibility == '') {	// If it is the first time	
 		var moduleName = 'Undefined';
 		var moduleNameSpans = getElementsByClassName(element, 'span', 'moduleNameTooltip');
 		if (moduleNameSpans.length > 0) {
@@ -431,15 +454,24 @@ function addConcreteModuleCallback(uuid, index, id) {
 
 function addSelectedModuleCallback(component, id) {
 	closeLoadingMessage();
+	
 	if (component == null) {
 		executeActionsBeforeReloading();
 		return false;
 	}
+	
 	var container = $(id);
 	if (container == null) {
-		executeActionsBeforeReloading();
-		return false;
+		if (EXTRA_PARENT_ID != null && EXTRA_PARENT_ID != '') {
+			container = $(EXTRA_PARENT_ID);
+			EXTRA_PARENT_ID = null;
+		}
+		if (container == null) {
+			executeActionsBeforeReloading();
+			return false;
+		}
 	}
+	
 	var children = component.childNodes;
 	if (children == null) {
 		executeActionsBeforeReloading();
@@ -568,9 +600,16 @@ function closeAddModuleWindow() {
 	valid.deactivate();
 }
 
-function deleteModule(id, pageKey, parentId, instanceId, imageId) {
+function deleteModule(id, instanceId, imageId) {
 	var deleteConfirmed = window.confirm(ARE_YOU_SURE_MESSAGE);
 	if (deleteConfirmed) {
+		var moduleToDelete = $(id);
+		if (moduleToDelete == null) {
+			return false;
+		}
+		var pageKey = getMarkupAttributeValue(moduleToDelete, 'pageid');
+		var parentId = getMarkupAttributeValue(moduleToDelete, 'parentid');
+		
 		showLoadingMessage(DELETING_LABEL);
 		BuilderEngine.deleteSelectedModule(pageKey, parentId, instanceId, {
   			callback: function(result) {
@@ -895,9 +934,16 @@ function ReRenderObject(pageKey, regionId, moduleId, moduleContentId) {
 	this.moduleContentId = moduleContentId;
 }
 
-function copyThisModule(containerId, pageKey, instanceId) {
+function copyThisModule(containerId, instanceId) {
 	COPIED_MODULE_ID = instanceId;
 	CUT_MODULE_ID = null;
+	
+	var elementToCopy = $(containerId);
+	if (elementToCopy == null) {
+		return false;
+	}
+	var pageKey = getMarkupAttributeValue(elementToCopy, 'pageid');
+	
 	copyModule(containerId, pageKey, null, instanceId, null);
 }
 
@@ -965,6 +1011,9 @@ function pasteCopiedModule(id) {
 	//	Looking for region's id
 	var parentId = getInputValue(regionLabelContainer.getElementsByTagName('INPUT'), 'parentKey');
 	if (parentId == null) {
+		parentId = getMarkupAttributeValue(regionLabelContainer, 'instanceid');
+	}
+	if (parentId == null) {
 		return false;
 	}
 	
@@ -980,9 +1029,16 @@ function showMessageForUnloadingPage() {
 	showLoadingMessage(LOADING_LABEL);
 }
 
-function cutThisModule(id, containerId, pageKey, parentId, instanceId) {
+function cutThisModule(id, containerId, instanceId) {
 	COPIED_MODULE_ID = null;
 	CUT_MODULE_ID = instanceId;
+	
+	var moduleToCut = $(containerId);
+	if (moduleToCut == null) {
+		return false;
+	}
+	var pageKey = getMarkupAttributeValue(moduleToCut, 'pageid');
+	var parentId = getMarkupAttributeValue(moduleToCut, 'parentid');
 	
 	copyModule(containerId, pageKey, parentId, instanceId, id);
 }

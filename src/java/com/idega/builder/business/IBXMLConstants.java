@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLConstants.java,v 1.4 2007/05/25 18:30:22 gimmi Exp $
+ * $Id: IBXMLConstants.java,v 1.5 2007/08/13 14:30:23 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ public abstract class IBXMLConstants {
   public static final String TEMPLATE_STRING = "template";
   public static final String DPT_ROOTPAGE_STRING = "dpt_root_page";
   public static final String REGION_STRING = "region";
+  protected static final String REGION_OF_MODULE_STRING = "regionOf_";
   public static final String PROPERTY_STRING = "property";
   public static final String VALUE_STRING = "value";
   public static final String TYPE_STRING = "type";

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.12 2007/07/31 15:00:36 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.13 2007/08/13 14:30:23 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -814,11 +814,14 @@ public class IBXMLWriter {
 			}
 		}
 		else {
-			String parentId = parentObjectInstanceID;
-			if(parentObjectInstanceID.indexOf(".")>=0){
-				parentId = "-1";
+			String regionId = null;
+			if (parentObjectInstanceID.indexOf(".") >= 0) {
+				regionId = "-1";
 			}
-			return addNewModule(xml, pageKey, parentId, newICObjectID, parentObjectInstanceID, label);
+			else {
+				regionId = new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(parentObjectInstanceID).toString();
+			}
+			return addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, regionId, label);
 		}
 	}
 
@@ -854,34 +857,39 @@ public class IBXMLWriter {
 	 */
 	public boolean deleteModule(IBXMLAble xml, String parentObjectInstanceID, String instanceId) {
 		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
-		if (parent != null) {
-			try {
-				XMLElement module = findModule(xml, instanceId, parent);
-				if (module == null) {
-					//This is to handle the case when a duplicate empty region
-					// (with the same id)
-					//prevents the find operation above to find the correct
-					// module.
-					//This only seems to happen in table regions with e.g.
-					// parentObjectInstanceID=1.5.3
-					this.log.info("Found likely corrupt duplicate region with id:" + parentObjectInstanceID);
-					//Check if the module is empty for safetys sake
-					if (isElementEmpty(parent)) {
-						//First Delete the corrupt region
-						deleteModule(parent.getParent(), parent);
-						this.log.info("Deleted corrupt region with id:" + parentObjectInstanceID);
-						//Find the parent (region) again:
-						parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
-						//Find the module again:
-						module = findModule(xml, instanceId, parent);
-					}
+		if (parent == null) {
+			return false;
+		}
+		try {
+			XMLElement module = findModule(xml, instanceId, parent);
+			if (module == null) {
+				//This is to handle the case when a duplicate empty region
+				// (with the same id)
+				//prevents the find operation above to find the correct
+				// module.
+				//This only seems to happen in table regions with e.g.
+				// parentObjectInstanceID=1.5.3
+				this.log.info("Found likely corrupt duplicate region with id:" + parentObjectInstanceID);
+				//Check if the module is empty for safetys sake
+				if (isElementEmpty(parent)) {
+					//First Delete the corrupt region
+					deleteModule(parent.getParent(), parent);
+					this.log.info("Deleted corrupt region with id:" + parentObjectInstanceID);
+					//Find the parent (region) again:
+					parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+					//Find the module again:
+					module = findModule(xml, instanceId, parent);
 				}
-				return deleteModule(parent, module);
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return false;
+			boolean result = deleteModule(parent, module);
+			if (!result) {
+				String newId = new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(parentObjectInstanceID).toString();
+				result = deleteModule(findXMLElementWithId(xml, newId, null), module);
 			}
+			return result;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

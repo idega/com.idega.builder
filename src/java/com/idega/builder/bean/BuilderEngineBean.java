@@ -244,7 +244,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	
 	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index, String parentId) {
 		Page currentPage = builder.getPage(pageKey, iwc);
-		if (currentPage == null) {
+		if (currentPage == null || component == null) {
 			return null;
 		}
 		
@@ -282,7 +282,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		return component;
 	}
 	
-	private String addModule(IWContext iwc, String pageKey, String containerId, String parentInstanceId, int objectId, boolean useThread) {		
+	private String addModule(IWContext iwc, String pageKey, String containerId, String parentInstanceId, int objectId, boolean useThread) {
 		// Adding module
 		String uuid = null;
 		IWSlideSession session = null;
