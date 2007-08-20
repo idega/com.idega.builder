@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.277 2007/08/13 14:30:23 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.278 2007/08/20 14:43:55 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -105,6 +106,7 @@ import com.idega.repository.data.SingletonRepository;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.user.bean.PropertiesBean;
+import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
@@ -2693,6 +2695,63 @@ public class BuilderLogic implements Singleton {
 			page.setDefaultPageURI(pageUri);
 			page.store();
 		}
+		return true;
+	}
+	
+	public boolean setPageUri(ICPage page, String pageUri, int domainId) {
+		if (page == null || pageUri == null) {
+			return false;
+		}
+		
+		pageUri = StringHandler.removeMultipleSlashes(pageUri);
+		
+		List<String> uriParts = null;
+		if (pageUri.indexOf(CoreConstants.SLASH) != -1) {
+			uriParts = Arrays.asList(pageUri.split(CoreConstants.SLASH));
+			pageUri = "";
+			for (int i = 0; i < uriParts.size(); i++) {
+				pageUri = new StringBuilder(pageUri).append(StringHandler.convertToUrlFriendly(uriParts.get(i))).append(CoreConstants.SLASH).toString();
+			}
+		}
+		else {
+			pageUri = StringHandler.convertToUrlFriendly(pageUri);
+		}
+		
+		if (!pageUri.startsWith(CoreConstants.SLASH)) {
+			pageUri = new StringBuilder(CoreConstants.SLASH).append(pageUri).toString();
+		}
+		if (!pageUri.endsWith(CoreConstants.SLASH)) {
+			pageUri = new StringBuilder(pageUri).append(CoreConstants.SLASH).toString();
+		}
+		
+		String pageKey = page.getId();
+		ICPage pageWithSameUri = page;
+		String deleted = "deleted";
+		String uri = null;
+		int index = 1;
+		while (pageWithSameUri != null) {
+			if (!pageWithSameUri.getId().equals(pageKey)) {
+				if (pageWithSameUri.getDeleted()) {
+					uri = new StringBuilder(pageWithSameUri.getDefaultPageURI()).append(deleted).append(index).append(CoreConstants.SLASH).toString();
+					pageWithSameUri.setDefaultPageURI(uri);
+					pageWithSameUri.store();
+				}
+				else {
+					pageUri = new StringBuilder(pageUri.substring(0, pageUri.length() - 1)).append(index).append(CoreConstants.SLASH).toString();
+				}
+				index++;
+			}
+			
+			try {
+				pageWithSameUri = getICPageHome().findByUri(pageUri, domainId);
+			} catch (FinderException e) {
+				pageWithSameUri = null;
+			}
+		}
+
+		page.setDefaultPageURI(pageUri);
+		page.store();
+		
 		return true;
 	}
 	

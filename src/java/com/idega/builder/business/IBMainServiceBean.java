@@ -444,4 +444,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public Document getRenderedModule(String pageKey, String componentId, boolean cleanHtml) {
 		return getBuilderLogic().getRenderedModule(pageKey, componentId, cleanHtml);
 	}
+	
+	public boolean setPageUri(ICPage page, String pageUri, int domainId) {
+		return getBuilderLogic().setPageUri(page, pageUri, domainId);
+	}
 }
