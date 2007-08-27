@@ -66,4 +66,9 @@ public interface BuilderEngine extends IBOSession {
 	 * @see com.idega.builder.bean.BuilderEngineBean#moveModule
 	 */
 	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove) throws RemoteException;
+	
+	/**
+	 * @see com.idega.builder.bean.BuilderEngineBean#isModuleInClipboard
+	 */
+	public String[] isModuleInClipboard();
 }

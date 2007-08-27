@@ -11,6 +11,7 @@ import org.jdom.Document;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBXMLConstants;
 import com.idega.builder.business.IBXMLReader;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.EditModuleBlock;
@@ -24,6 +25,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreUtil;
+import com.idega.xml.XMLElement;
 
 public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	
@@ -199,9 +201,25 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			return false;
 		}
 		
-		cutModule = parentId == null ? null : new CutModuleBean(parentId, instanceId);
+		cutModule = parentId == null ? null : new CutModuleBean(pageKey, parentId, instanceId);
 		
 		return builder.copyModule(iwc, pageKey, instanceId);
+	}
+	
+	public String[] isModuleInClipboard() {
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return null;
+		}
+		String[] ids = new String[2];
+		Object o = iwc.getSessionAttribute(BuilderLogic.CLIPBOARD);
+		if (o instanceof XMLElement) {
+			ids[0] = ((XMLElement) o).getAttributeValue(IBXMLConstants.ID_STRING);
+		}
+		if (cutModule != null) {
+			ids[1] = cutModule.getInstanceId();
+		}
+		return ids;
 	}
 	
 	public Document pasteModule(String pageKey, String parentId, int modulesCount, boolean paste) {
@@ -218,13 +236,15 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			instanceId = builder.pasteModule(pageKey, parentId, iwc);
 		}
 		else if (cutModule != null) {
-			instanceId = builder.moveModule(pageKey, cutModule.getParentId(), cutModule.getInstanceId(), parentId, iwc);
+			instanceId = builder.moveModule(pageKey, cutModule.getPageKey(), cutModule.getParentId(), cutModule.getInstanceId(), parentId, iwc);
 			cutModule = null;
 		}
 		
 		if (instanceId == null) {
 			return null;
 		}
+		
+		iwc.removeSessionAttribute(BuilderLogic.CLIPBOARD);
 
 		return getTransformedModule(pageKey, iwc, builder.findComponentInPage(iwc, pageKey, instanceId), (modulesCount + 1), parentId);
 	}
@@ -254,6 +274,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		return builder.getRenderedComponent(iwc, transformed, false);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private UIComponent getComponentInstance(String className) {
 		Class objectClass = null;
 		try {
@@ -317,12 +338,18 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 
 	private class CutModuleBean {
 		
+		private String pageKey = null;
 		private String parentId = null;
 		private String instanceId = null;
 		
-		private  CutModuleBean(String parentId, String instanceId) {
+		private  CutModuleBean(String pageKey, String parentId, String instanceId) {
+			this.pageKey = pageKey;
 			this.parentId = parentId;
 			this.instanceId = instanceId;
+		}
+		
+		private String getPageKey() {
+			return pageKey;
 		}
 		
 		private String getParentId() {

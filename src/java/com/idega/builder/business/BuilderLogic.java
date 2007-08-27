@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.278 2007/08/20 14:43:55 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.279 2007/08/27 15:06:36 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -283,6 +283,7 @@ public class BuilderLogic implements Singleton {
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderActions);");
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderDragDropActions);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', showOrHideModulePasteIcons);");
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('beforeunload', showMessageForUnloadingPage);");
 		
 		//	CSS
@@ -1313,8 +1314,8 @@ public class BuilderLogic implements Singleton {
 		return putModuleIntoRegion(iwc, pageKey, parentId, null, true);
 	}
 	
-	public String moveModule(String pageKey, String formerParentId, String instanceId, String parentId, IWContext iwc) {
-		IBXMLPage page = getIBXMLPage(pageKey);
+	public String moveModule(String pageKey, String formerPageKey, String formerParentId, String instanceId, String parentId, IWContext iwc) {
+		IBXMLPage page = getIBXMLPage(formerPageKey);
 		if (page == null) {
 			return null;
 		}
@@ -1336,6 +1337,9 @@ public class BuilderLogic implements Singleton {
 		}
 		if (!success) {
 			return null;
+		}
+		if (!pageKey.equals(formerPageKey)) {
+			page.store();
 		}
 		
 		return putModuleIntoRegion(iwc, pageKey, parentId, null, false);
@@ -2133,6 +2137,7 @@ public class BuilderLogic implements Singleton {
 		addArticleContainer.setStyleAttribute("float", "left");
 		title = new StringBuffer(iwrb.getLocalizedString("article_module", "Article")).append(" :: ");
 		title.append(iwrb.getLocalizedString("add_article_module", "Add article module"));
+		title.append(getLabelToRegion(iwrb, label));
 		Image addArticle = getBuilderBundle().getImage("article_32.png", title.toString(), 24, 24);
 		addArticle.setStyleClass("add_article_module_to_region_image");
 		
@@ -2155,6 +2160,7 @@ public class BuilderLogic implements Singleton {
 		Layer pasteButtonContainer = new Layer();
 		title = new StringBuffer(iwrb.getLocalizedString("paste", "Paste")).append(" :: ");
 		title.append(iwrb.getLocalizedString("paste_module", "Paste module"));
+		title.append(getLabelToRegion(iwrb, label));
 		Image pasteImage = getBuilderBundle().getImage("paste_24.gif", title.toString(), 24, 24);
 		pasteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		StringBuffer pasteAction = new StringBuffer("pasteCopiedModule('").append(pasteButtonContainer.getId()).append("');");
@@ -2167,6 +2173,12 @@ public class BuilderLogic implements Singleton {
 		return buttons;
 	}
 	
+	private String getLabelToRegion(IWResourceBundle iwrb, String regionLabel) {
+		if (regionLabel == null) {
+			return CoreConstants.EMPTY;
+		}
+			return new StringBuilder(CoreConstants.SPACE).append(iwrb.getLocalizedString("to", "to")).append(CoreConstants.SPACE).append(regionLabel).toString();
+	}
 
 	/**
 	 *

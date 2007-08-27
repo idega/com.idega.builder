@@ -970,14 +970,18 @@ function copyModuleCallback(result, containerId, id) {
 		}
 	
 		if (!VISIBLE_PASTE_ICON) {
-			for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
-				try {
-					PASTE_ICONS_SLIDERS[i].slideIn();
-				} catch(e) {}
-			}
-			VISIBLE_PASTE_ICON = true;
+			slideInModulePasteIcons();
 		}
 	}
+}
+
+function slideInModulePasteIcons() {
+	for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
+		try {
+			PASTE_ICONS_SLIDERS[i].slideIn();
+		} catch(e) {}
+	}
+	VISIBLE_PASTE_ICON = true;
 }
 
 function pasteCopiedModule(id) {
@@ -1041,4 +1045,33 @@ function cutThisModule(id, containerId, instanceId) {
 	var parentId = getMarkupAttributeValue(moduleToCut, 'parentid');
 	
 	copyModule(containerId, pageKey, parentId, instanceId, id);
+}
+
+function showOrHideModulePasteIcons() {
+	BuilderEngine.isModuleInClipboard(isModuleInClipboardCallback);
+}
+
+function isModuleInClipboardCallback(ids) {
+	if (ids == null) {
+		COPIED_MODULE_ID = null;
+		return;
+	}
+	
+	if (ids[1] != null) {
+		COPIED_MODULE_ID = null;
+		CUT_MODULE_ID = ids[1];
+		if (!VISIBLE_PASTE_ICON) {
+			slideInModulePasteIcons();
+		}
+		return;
+	}
+	
+	if (ids[0] != null) {
+		COPIED_MODULE_ID = ids[0];
+		CUT_MODULE_ID = null;
+		if (!VISIBLE_PASTE_ICON) {
+			slideInModulePasteIcons();
+		}
+		return;
+	}
 }
