@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderInitialSetup.java,v 1.6 2007/04/09 22:17:55 tryggvil Exp $
+ * $Id: BuilderInitialSetup.java,v 1.7 2007/08/31 13:27:37 valdas Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -17,7 +17,6 @@ import com.idega.core.builder.data.ICDomainHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContextFactory;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWMainApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.IWWelcomeFilter;
 
@@ -26,10 +25,10 @@ import com.idega.servlet.filter.IWWelcomeFilter;
  * <p>
  * Managed bean to back-up the page jsp/initialSetup.jsp.
  * </p>
- *  Last modified: $Date: 2007/04/09 22:17:55 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/08/31 13:27:37 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class BuilderInitialSetup {
 

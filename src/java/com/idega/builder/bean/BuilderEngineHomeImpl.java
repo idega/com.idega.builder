@@ -8,7 +8,7 @@ public class BuilderEngineHomeImpl extends IBOHomeImpl implements BuilderEngineH
 
 	private static final long serialVersionUID = -4101446217150638727L;
 
-	public Class getBeanInterfaceClass() {
+	public Class<BuilderEngine> getBeanInterfaceClass() {
 		return BuilderEngine.class;
 	}
 
