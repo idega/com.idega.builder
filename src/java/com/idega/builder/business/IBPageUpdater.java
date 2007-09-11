@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageUpdater.java,v 1.6 2004/10/29 09:28:32 laddi Exp $
+ * $Id: IBPageUpdater.java,v 1.7 2007/09/11 13:10:13 justinas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import javax.ejb.FinderException;
 import com.idega.builder.data.IBPageName;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.data.IDOLookup;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -29,7 +30,8 @@ public class IBPageUpdater {
 	 */
 	public static void updatePageName(int pageId, String pageName) {
 		try {
-			ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(pageId);
+//			ICPage page = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(pageId);
+			ICPage page = ((ICPageHome) IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(pageId);
 
 			page.setName(pageName);
 			page.update();
