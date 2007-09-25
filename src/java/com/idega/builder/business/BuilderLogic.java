@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.279 2007/08/27 15:06:36 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.280 2007/09/25 11:54:19 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1202,6 +1202,16 @@ public class BuilderLogic implements Singleton {
 		}
 		values.append(propValue);
 		return setProperty(pageKey, moduleId, propName, values.toString(), iwc.getIWMainApplication());
+	}
+	
+	public boolean addPropertyToModules(String pageKey, List<String> moduleIds, String propName, String propValue) {
+		if (moduleIds == null) {
+			return false;
+		}
+		for (int i = 0; i < moduleIds.size(); i++) {
+			addPropertyToModule(pageKey, moduleIds.get(i), propName, propValue);
+		}
+		return true;
 	}
 
 	/**
@@ -2867,13 +2877,24 @@ public class BuilderLogic implements Singleton {
 		if (value == null) {
 			return false;
 		}
-		if (value.getValue() == null) {
+		
+		String realValue = value.getValue();
+		if (realValue == null) {
 			return false;
 		}
-		if (value.getValue().indexOf(propertyValue) == -1) {
-			return false;
+		if (realValue.indexOf(IBXMLConstants.COMMA_STRING) == -1) {	//	Not multivalue?
+			return propertyValue.equals(realValue);
 		}
-		return true;
+		else {
+			String[] values = realValue.split(IBXMLConstants.COMMA_STRING);
+			for (int i = 0; i < values.length; i++) {
+				if (propertyValue.equals(values[i])) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -2885,6 +2906,10 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove) {
+		return removeValueFromModuleProperty(pageKey, moduleId, propertyName, valueToRemove, true);
+	}
+	
+	private boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove, boolean storePage) {
 		if (pageKey == null || moduleId == null || propertyName == null || valueToRemove == null) {
 			return false;
 		}
@@ -2945,7 +2970,19 @@ public class BuilderLogic implements Singleton {
 			value.setValue(newValue.toString());
 		}
 		
-		xml.store();
+		if (storePage) {
+			xml.store();
+		}
+		return true;
+	}
+	
+	public boolean removeValueFromModuleProperty(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove) {
+		if (moduleIds == null) {
+			return false;
+		}
+		for (int i = 0; i < moduleIds.size(); i++) {
+			removeValueFromModuleProperty(pageKey, moduleIds.get(i), propertyName, valueToRemove, !(i + 1 < moduleIds.size()));
+		}
 		return true;
 	}
 

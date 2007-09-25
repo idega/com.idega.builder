@@ -348,6 +348,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().addPropertyToModule(pageKey, moduleId, propName, propValue);
 	}
 	
+	public boolean addPropertyToModules(String pageKey, List<String> moduleIds, String propName, String propValue) {
+		return getBuilderLogic().addPropertyToModules(pageKey, moduleIds, propName, propValue);
+	}
+	
 	public List<String> getModuleId(String pageKey, String moduleClass) {
 		return getBuilderLogic().getModuleId(pageKey, moduleClass);
 	}
@@ -362,6 +366,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove) {
 		return getBuilderLogic().removeValueFromModuleProperty(pageKey, moduleId, propertyName, valueToRemove);
+	}
+	
+	public boolean removeValueFromModuleProperty(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove) {
+		return getBuilderLogic().removeValueFromModuleProperty(pageKey, moduleIds, propertyName, valueToRemove);
 	}
 	
 	public void setTreeOrder(int id, int order){

@@ -246,6 +246,8 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 */
 	public boolean addPropertyToModule(String pageKey, String moduleId, String propName, String propValue);
 	
+	public boolean addPropertyToModules(String pageKey, List<String> moduleIds, String propName, String propValue);
+	
 	public List<String> getModuleId(String pageKey, String moduleClass);
 	
 	public boolean isPropertySet(String pageKey, String instanceId, String propertyName, IWMainApplication iwma);
@@ -253,6 +255,8 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	public boolean isPropertyValueSet(String pageKey, String moduleId, String propertyName, String propertyValue);
 	
 	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove);
+	
+	public boolean removeValueFromModuleProperty(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove);
 	
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey);
 	
