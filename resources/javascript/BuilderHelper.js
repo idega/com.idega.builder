@@ -15,8 +15,9 @@ var SAVING_LABEL = 'Saving...';
 var LOADING_LABEL = 'Loading...';
 var RELOADING_LABEL = 'Reloading...';
 var MOVING_LABEL = 'Moving...';
-var DROP_MODULE_HERE_LABEL = 'You can drop module here';
+var DROP_MODULE_HERE_LABEL = 'Drop module into';
 var COPYING_LABEL = 'Copying...';
+var SMALL_REGION_LABEL = 'region';
 
 var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
@@ -53,7 +54,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return false;
 	}
-	if (list.length != 22) {
+	if (list.length != 23) {
 		return false;
 	}
 	
@@ -79,6 +80,7 @@ function getBuilderInitInfoCallback(list) {
 	MOVING_LABEL = list[19];
 	DROP_MODULE_HERE_LABEL = list[20];
 	COPYING_LABEL = list[21];
+	SMALL_REGION_LABEL = list[22];
 	
 }
 

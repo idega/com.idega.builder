@@ -65,8 +65,9 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(BuilderConstants.HANLDER_VALUE_OBJECTS_STYLE_CLASS);														// 17
 		info.add(iwrb.getLocalizedString("reloading", "Reloading..."));														// 18
 		info.add(iwrb.getLocalizedString("moving", "Moving..."));															// 19
-		info.add(iwrb.getLocalizedString("drop_area", "You can drop module here"));											// 20
+		info.add(iwrb.getLocalizedString("drop_area", "Drop module into"));													// 20
 		info.add(iwrb.getLocalizedString("copying", "Copying..."));															// 21
+		info.add(iwrb.getLocalizedString("region", "region"));																// 22
 		
 		return info;
 	}

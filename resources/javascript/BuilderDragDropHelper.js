@@ -110,7 +110,7 @@ function moveModuleCallback(result, element, moduleContainer, insertAbove, chang
 	if (wasContainerLastModule && !insertAbove) {
 		markModuleContainerAsNotLast(moduleContainer, element);
 
-		addDropAreaToTheEnd(ORIGINAL);							//	Adding drop area to the end of the new last module
+		addDropAreaToTheEnd(ORIGINAL, newParentId);				//	Adding drop area to the end of the new last module
 	}
 	else if (wasLastOriginalModule && insertAbove) {
 		ORIGINAL.setProperty('islastmodule', 'false');			//	Now not the last module
@@ -119,21 +119,27 @@ function moveModuleCallback(result, element, moduleContainer, insertAbove, chang
 			dropArea.remove();
 		}
 		
-		addDropAreaToTheLastModuleContainer(ORIGINAL.getParent());
+		addDropAreaToTheLastModuleContainer(ORIGINAL.getParent(), newParentId);
 	}
 	
 	if (changingRegions) {
 		ORIGINAL.setProperty('parentid', newParentId);
+		var firstElement = ORIGINAL.getFirst();					// Renaming region to a new one
+		if (firstElement != null) {
+			if (firstElement.hasClass('moduleDropArea')) {
+				firstElement.setText(getTextForDropModuleContainer(newParentId));
+			}
+		}
 		
 		if (wasLastOriginalModule) {
-			addDropAreaToTheLastModuleContainer($(PARENT_CONTAINER_ID));
+			addDropAreaToTheLastModuleContainer($(PARENT_CONTAINER_ID), PARENT_CONTAINER_ID);
 		}
 	}
 	
 	manageDropAreas(false);
 }
 
-function addDropAreaToTheLastModuleContainer(container) {
+function addDropAreaToTheLastModuleContainer(container, regionName) {
 	if (container == null) {
 		return false;
 	}
@@ -141,7 +147,7 @@ function addDropAreaToTheLastModuleContainer(container) {
 	//	Adding 'below' drop area to the last module container
 	var modulesContainers = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 	if (modulesContainers.length > 0) {
-		addDropAreaToTheEnd($(modulesContainers[modulesContainers.length - 1]));
+		addDropAreaToTheEnd($(modulesContainers[modulesContainers.length - 1]), regionName);
 	}
 }
 
@@ -168,7 +174,7 @@ function getDropAreaFromElement(element) {
 	return null;
 }
 
-function addDropAreaToTheEnd(element) {
+function addDropAreaToTheEnd(element, regionName) {
 	if (element == null) {
 		return false;
 	}
@@ -180,7 +186,7 @@ function addDropAreaToTheEnd(element) {
 	var dropArea = getDropAreaFromElement(element);
 	if (dropArea == null) {
 		element.setProperty('islastmodule', 'true');	//	Now the last module
-		getDropArea().injectBefore(theLastElement);
+		getDropArea(regionName).injectBefore(theLastElement);
 	}
 }
 
@@ -204,13 +210,20 @@ function manageDropAreas(needToShow) {
 	);
 }
 
-function getDropArea() {
+function getDropArea(regionName) {
 	var drop = new Element('div');
 	drop.addClass('moduleDropArea');
 	drop.setProperty('insertbefore', 'false');
-	drop.appendText(DROP_MODULE_HERE_LABEL);
+	drop.appendText(getTextForDropModuleContainer(regionName));
 	registerForDropSingleElement(drop);
 	return drop;
+}
+
+function getTextForDropModuleContainer(regionName) {
+	if (regionName == null || regionName == '') {
+		regionName = 'this';
+	}
+	return DROP_MODULE_HERE_LABEL + ' ' + regionName + ' ' + SMALL_REGION_LABEL;
 }
 
 function markModuleContainerAsNotLast(moduleContainer, dropArea) {

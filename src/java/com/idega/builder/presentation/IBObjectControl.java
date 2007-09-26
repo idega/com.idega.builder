@@ -22,6 +22,7 @@ import com.idega.presentation.Span;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.util.CoreConstants;
 
 /**
  * @author tryggvil
@@ -208,10 +209,14 @@ public class IBObjectControl extends PresentationObjectContainer {
 	}
 	
 	private Layer getDropAreaLayer(boolean topArea, IWContext iwc) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
 		Layer dropArea = new Layer();
 		dropArea.setStyleClass("moduleDropArea");
 		dropArea.setMarkupAttribute("insertbefore", topArea);
-		dropArea.add(new Text(getBundle(iwc).getResourceBundle(iwc).getLocalizedString("drop_area", "You can drop module here")));
+		StringBuilder label = new StringBuilder(iwrb.getLocalizedString("drop_area", "Drop module into")).append(CoreConstants.SPACE).append(this.parentKey);
+		label.append(CoreConstants.SPACE).append(iwrb.getLocalizedString("region", "region"));
+		dropArea.add(new Text(label.toString()));
 		return dropArea;
 	}
 		
