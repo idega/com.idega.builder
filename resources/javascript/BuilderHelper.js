@@ -1,5 +1,5 @@
-var ADD_NEW_COMPONENT_WINDOW_LINK = '/workspase/window/';
-var EDIT_COMPONENT_WINDOW_LINK = '/workspase/window/';
+var ADD_NEW_COMPONENT_WINDOW_LINK = '/workspace/window/';
+var EDIT_COMPONENT_WINDOW_LINK = '/workspace/window/';
 
 var ADD_NEW_COMPONENT_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/add.png';
 var COMPONENT_INFORMATION_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/information.png';
@@ -10,7 +10,7 @@ var NO_IDS_ERROR_MESSAGE = 'Error occurred while inserting selected module!';
 var ADDING_MODULE_LABEL = 'Adding...';
 var REGION_LABEL = 'Region';
 var DELETING_LABEL = 'Deleting...';
-var ARE_YOU_SURE_MESSAGE = 'Are You sure?';
+var ARE_YOU_SURE_MESSAGE = 'Are you sure?';
 var SAVING_LABEL = 'Saving...';
 var LOADING_LABEL = 'Loading...';
 var RELOADING_LABEL = 'Reloading...';
