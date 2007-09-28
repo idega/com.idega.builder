@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.280 2007/09/25 11:54:19 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.281 2007/09/28 13:04:05 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -53,6 +53,7 @@ import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
+import com.idega.builder.presentation.IBSourceView;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.SpringBeanLookup;
@@ -3100,7 +3101,14 @@ public class BuilderLogic implements Singleton {
 		if (objectClass == null) {
 			return null;
 		}
-		String className = objectClass.getName();
+		
+		return getUriToObject(objectClass.getName());
+	}
+	
+	public String getUriToObject(String className) {
+		if (className == null) {
+			return null;
+		}
 		StringBuffer uri = new StringBuffer("/servlet/ObjectInstanciator?").append(IWMainApplication.classToInstanciateParameter);
 		uri.append("=").append(className);
 		return uri.toString();

@@ -16,6 +16,7 @@ import org.jdom.Document;
 import com.idega.builder.app.IBApplication;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.data.IBPageBMPBean;
+import com.idega.builder.presentation.IBSourceView;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderPageWriterService;
 import com.idega.core.builder.business.BuilderService;
@@ -455,5 +456,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public boolean setPageUri(ICPage page, String pageUri, int domainId) {
 		return getBuilderLogic().setPageUri(page, pageUri, domainId);
+	}
+	
+	public String getClassNameForSourceView() {
+		return IBSourceView.class.getName();
 	}
 }
