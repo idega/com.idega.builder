@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.71 2007/08/02 13:36:43 justinas Exp $
+ * $Id: IBPropertyHandler.java,v 1.72 2007/10/03 21:22:05 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -982,18 +982,19 @@ public class IBPropertyHandler implements Singleton{
 	 */
 	private void fillComponentProperties(String instanceId, IWMainApplication iwma,Locale currentLocale,ComponentInfo component,List properties,IWPropertyList methodList) {
 		//IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(instanceId, iwma);
-		for (Iterator iter = methodList.iterator(); iter.hasNext(); ) {
-			IWProperty methodProp = (IWProperty) iter.next();
-			String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
-			String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp, currentLocale);
-			DefaultComponentProperty desc = new DefaultComponentProperty(component);
-			desc.setDisplayName(methodDescr);
-			desc.setName(methodIdentifier);
-			desc.setSimpleProperty(methodProp.isPropertySimple());
-			desc.setNeedsReload(methodProp.isNeedsReload());
-			properties.add(desc);
+		if(methodList!=null){
+			for (Iterator iter = methodList.iterator(); iter.hasNext(); ) {
+				IWProperty methodProp = (IWProperty) iter.next();
+				String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
+				String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp, currentLocale);
+				DefaultComponentProperty desc = new DefaultComponentProperty(component);
+				desc.setDisplayName(methodDescr);
+				desc.setName(methodIdentifier);
+				desc.setSimpleProperty(methodProp.isPropertySimple());
+				desc.setNeedsReload(methodProp.isNeedsReload());
+				properties.add(desc);
+			}
 		}
-		
 	}
 	
 	public BuilderLogic getBuilderLogic(){
