@@ -42,7 +42,7 @@ public class AddModuleBlock extends Block {
 		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
 		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
 		
-		Collection allComoponents = getAllComponents();
+		Collection<ICObject> allComoponents = getAllComponents();
 		
 		Layer componentsContainer = new Layer();
 		Lists items = new Lists();
@@ -97,24 +97,21 @@ public class AddModuleBlock extends Block {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private List<ICObject> getConcreteComponents(IWContext iwc, Collection allComponents, boolean findWidgets, boolean findBlocks, boolean findBuilder) {
+	private List<ICObject> getConcreteComponents(IWContext iwc, Collection<ICObject> allComponents, boolean findWidgets, boolean findBlocks, boolean findBuilder) {
 		List<ICObject> components = new ArrayList<ICObject>();
+		List<String> namesList = new ArrayList<String>();
 
 		if (allComponents == null) {
 			return components;
 		}
 		
-		Object o = null;
 		ICObject object = null;
 		//	Find "widget" type modules
 		if (findWidgets) {
-			for (Iterator it = allComponents.iterator(); it.hasNext(); ) {
-				o = it.next();
-				if (o instanceof ICObject) {
-					object = (ICObject) o;
-					if (object.isWidget()) {
-						components.add(object);
-					}
+			for (Iterator<ICObject> it = allComponents.iterator(); it.hasNext(); ) {
+				object = it.next();
+				if (object.isWidget()) {
+					addComponent(components, object, namesList);
 				}
 			}
 			return components;
@@ -122,12 +119,11 @@ public class AddModuleBlock extends Block {
 		
 		//	Find "block" type modules
 		if (findBlocks) {
-			for (Iterator it = allComponents.iterator(); it.hasNext(); ) {
-				o = it.next();
-				if (o instanceof ICObject) {
-					object = (ICObject) o;
-					if (object.isBlock()) {
-						components.add(object);
+			for (Iterator<ICObject> it = allComponents.iterator(); it.hasNext(); ) {
+				object = it.next();
+				if (object.isBlock()) {
+					if (!components.contains(object)) {
+						addComponent(components, object, namesList);
 					}
 				}
 			}
@@ -135,20 +131,17 @@ public class AddModuleBlock extends Block {
 		}
 		
 		//	Find all other Builder/Development modules
-		for (Iterator it = allComponents.iterator(); it.hasNext(); ) {
-			o = it.next();
-			if (o instanceof ICObject) {
-				object = (ICObject) o;
-				if (!object.isBlock() && !object.isWidget()) {
-					if (ICObjectBMPBean.COMPONENT_TYPE_ELEMENT.equals(object.getObjectType())) {
-						components.add(object);
-					}
-					if (ICObjectBMPBean.COMPONENT_TYPE_BLOCK.equals(object.getObjectType())) {
-						components.add(object);
-					}
-					if (ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT.equals(object.getObjectType())) {
-						components.add(object);
-					}
+		for (Iterator<ICObject> it = allComponents.iterator(); it.hasNext(); ) {
+			object = it.next();
+			if (!object.isBlock() && !object.isWidget()) {
+				if (ICObjectBMPBean.COMPONENT_TYPE_ELEMENT.equals(object.getObjectType())) {
+					addComponent(components, object, namesList);
+				}
+				if (ICObjectBMPBean.COMPONENT_TYPE_BLOCK.equals(object.getObjectType())) {
+					addComponent(components, object, namesList);
+				}
+				if (ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT.equals(object.getObjectType())) {
+					addComponent(components, object, namesList);
 				}
 			}
 		}
@@ -159,7 +152,21 @@ public class AddModuleBlock extends Block {
 		return components;
 	}
 	
-	private Collection getAllComponents() {
+	private void addComponent(List<ICObject> components, ICObject component, List<String> namesList) {
+		if (component == null || components == null || namesList == null) {
+			return;
+		}
+		
+		if (namesList.contains(component.getClassName())) {
+			return;
+		}
+		
+		namesList.add(component.getClassName());
+		components.add(component);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Collection<ICObject> getAllComponents() {
 		ICObjectHome icoHome = null;
 		try {
 			icoHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
