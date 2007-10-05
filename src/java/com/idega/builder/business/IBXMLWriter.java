@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.13 2007/08/13 14:30:23 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.14 2007/10/05 08:36:36 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -686,16 +686,15 @@ public class IBXMLWriter {
 	 * @param obj
 	 */
 	private void onObjectAdd(XMLElement parent, XMLElement newElement, String pageKey, String newInstanceId, ICObject obj) {
-		if(obj.getClassName().indexOf(CoreConstants.ARTICLE_ITEM_VIEWER_NAME)!=-1) {
+		if (obj.getClassName().equals(CoreConstants.getArticleItemViewerClass().getName())) {
 			
 			IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageKey);
 			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			
-			String propertyName = "resourcePath";
 			String base = new StringBuffer(CoreConstants.CONTENT_PATH).append(CoreConstants.ARTICLE_CONTENT_PATH).toString();
 			String propertyValue = getBuilderLogic().generateResourcePath(base, CoreConstants.ARTICLE_FILENAME_SCOPE, CoreConstants.ARTICLE_FILENAME_SCOPE);
 			
-			setProperty(iwma, xml, newInstanceId, propertyName, propertyValue);
+			setProperty(iwma, xml, newInstanceId, CoreConstants.ARTICLE_RESOURCE_PATH_PROPERTY_NAME, propertyValue);
 			setProperty(iwma, xml, newInstanceId, "showAuthor", "false");
 			setProperty(iwma, xml, newInstanceId, "showCreationDate", "false");
 		}
