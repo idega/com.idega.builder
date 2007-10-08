@@ -37,6 +37,17 @@ public class IBPageChooser extends AbstractChooser {
 		this(chooserName, useOldLogic, null, null);
 		setInputStyle(style);
 	}
+	
+	public IBPageChooser(String chooserName) {
+	    addForm(false);
+	    //setChooseButtonImage(new Image("/common/pics/arachnea/open.gif","Choose"));
+	    setChooserParameter(chooserName);
+	  }
+
+	  public IBPageChooser(String chooserName,String style) {
+	    this(chooserName);
+	    setInputStyle(style);
+	  }
 
 	public void main(IWContext iwc){
 		this.empty();
