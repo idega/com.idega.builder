@@ -487,7 +487,13 @@ function addConcreteModuleCallback(uuid, index, id) {
 
 function addSelectedModuleCallback(component, id) {
 	closeAllLoadingMessages();
+	
 	if (id == null) {
+		executeActionsBeforeReloading();
+		return false;
+	}
+	
+	if (component == null) {
 		executeActionsBeforeReloading();
 		return false;
 	}
@@ -501,11 +507,6 @@ function addSelectedModuleCallback(component, id) {
 				id += '_';
 			}
 		}
-	}
-	
-	if (component == null) {
-		executeActionsBeforeReloading();
-		return false;
 	}
 	
 	var container = $(id);
@@ -1110,7 +1111,7 @@ function showOrHideModulePasteIcons() {
 function isModuleInClipboardCallback(ids) {
 	if (ids == null) {
 		COPIED_MODULE_ID = null;
-		return;
+		return false;
 	}
 	
 	if (ids[1] != null) {
@@ -1119,7 +1120,7 @@ function isModuleInClipboardCallback(ids) {
 		if (!VISIBLE_PASTE_ICON) {
 			slideInModulePasteIcons();
 		}
-		return;
+		return false;
 	}
 	
 	if (ids[0] != null) {
@@ -1128,6 +1129,6 @@ function isModuleInClipboardCallback(ids) {
 		if (!VISIBLE_PASTE_ICON) {
 			slideInModulePasteIcons();
 		}
-		return;
+		return false;
 	}
 }

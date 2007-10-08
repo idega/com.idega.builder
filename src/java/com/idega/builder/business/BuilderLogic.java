@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.282 2007/10/08 09:05:30 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.283 2007/10/08 10:19:44 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3387,27 +3387,40 @@ public class BuilderLogic implements Singleton {
 		return findComponentInList(page.getChildren(), instanceId);
 	}
 	
-	private UIComponent findComponentInList(List children, String instanceId) {
+	@SuppressWarnings("unchecked")
+	private UIComponent findComponentInList(List<UIComponent> children, String instanceId) {
 		if (children == null || instanceId == null) {
 			return null;
 		}
-		UIComponent component = null;
 		
+		UIComponent component = null;
 		UIComponent componentFromCycle = null;
-		Object o = null;
+		Map facets = null;
+		List<UIComponent> cFromMap = null;
 		boolean foundComponent = false;
 		for (int i = 0; (i < children.size() && !foundComponent); i++) {
-			o = children.get(i);
-			if (o instanceof UIComponent) {
-				component = (UIComponent) o;
-				if (instanceId.equals(getInstanceId(component))) {
-					foundComponent = true;
-				} else {
-					componentFromCycle = findComponentInList(component.getChildren(), instanceId);
-					if (componentFromCycle != null) {
-						foundComponent = true;
-						component = componentFromCycle;
+			component = children.get(i);
+
+			if (instanceId.equals(getInstanceId(component))) {
+				foundComponent = true;
+			} else {
+				componentFromCycle = findComponentInList(component.getChildren(), instanceId);
+				
+				if (componentFromCycle == null) {
+					//	Didn't find in children's list, will check facets map
+					facets = component.getFacets();
+					if (facets != null) {
+						cFromMap = new ArrayList<UIComponent>();
+						for (Iterator it = facets.values().iterator(); it.hasNext();) {
+							cFromMap.add((UIComponent) it.next());
+						}
+						componentFromCycle = findComponentInList(cFromMap, instanceId);
 					}
+				}
+				
+				if (componentFromCycle != null) {
+					foundComponent = true;
+					component = componentFromCycle;
 				}
 			}
 		}
