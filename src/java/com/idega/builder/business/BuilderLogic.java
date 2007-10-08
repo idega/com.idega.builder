@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.281 2007/09/28 13:04:05 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.282 2007/10/08 09:05:30 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -53,7 +53,6 @@ import com.idega.builder.presentation.IBObjectControl;
 import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
-import com.idega.builder.presentation.IBSourceView;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.SpringBeanLookup;
@@ -499,7 +498,7 @@ public class BuilderLogic implements Singleton {
 		}
 		else if ( isPresentationObject && ((PresentationObject)obj).isContainer()) {
 			if (obj instanceof Table) {
-				transformTable(currentPage, pageKey, obj, iwc, clipboardEmpty);
+				getTransformedTable(currentPage, pageKey, obj, iwc, clipboardEmpty);
 			}
 			else {
 				String addModuleUri = getUriToObject(AddModuleBlock.class);
@@ -626,7 +625,7 @@ public class BuilderLogic implements Singleton {
 	 * @param iwc
 	 * @param clipboardEmpty
 	 */
-	protected void transformTable(Page currentPage, String pageKey, UIComponent obj, IWContext iwc, boolean clipboardEmpty) {
+	public PresentationObject getTransformedTable(Page currentPage, String pageKey, UIComponent obj, IWContext iwc, boolean clipboardEmpty) {
 		IWResourceBundle iwrb = getBuilderBundle().getResourceBundle(iwc);
 		
 		Table tab = (Table) obj;
@@ -636,11 +635,14 @@ public class BuilderLogic implements Singleton {
 		for (int x = 1; x <= cols; x++) {
 			for (int y = 1; y <= rows; y++) {
 				PresentationObjectContainer moc = tab.containerAt(x, y);
-				String newParentKey = tab.getICObjectInstanceID() + "." + x + "." + y;
+				String newParentKey = tab.getICObjectInstanceID() + CoreConstants.DOT + x + CoreConstants.DOT + y;
 				if (moc != null) {
-					getTransformedObject(currentPage,pageKey, moc, -1, tab, newParentKey, iwc);
+					String id = newParentKey;
+					getTransformedObject(currentPage, pageKey, moc, -1, tab, newParentKey, iwc);
+					id = id.replace(CoreConstants.DOT, CoreConstants.UNDER);
+					moc.setId(id);
 				}
-				//Page currentPage = PageCacher.getPage(getCurrentIBPage(iwc), iwc);
+				
 				if (currentPage.getIsExtendingTemplate()) {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
@@ -684,6 +686,7 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 		}
+		return tab;
 	}
 
 	/**
