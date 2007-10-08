@@ -84,39 +84,63 @@ function getBuilderInitInfoCallback(list) {
 	
 }
 
+function existsSliderForElement(id) {
+	for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
+		if (id == PASTE_ICONS_SLIDERS[i].element.id) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function hidePasteIcons(useSlideOut) {
 	PASTE_ICONS_SLIDERS = new Array();
+	hideNewestPasteIcons(useSlideOut);
+}
+
+function hideNewestPasteIcons(useSlideOut) {
 	VISIBLE_PASTE_ICON = false;
 	COPIED_MODULE_ID = null;
 	CUT_MODULE_ID = null;
 	$$('div.pasteModuleIconContainer').each(
 		function(element) {
-			try {
-				var slider = new Fx.Slide(element.id, {mode: 'horizontal'});
-				if (useSlideOut) {
-					slider.slideOut();
-				}
-				else {
-					slider.hide();
-				}
-			} catch(e){}
-			PASTE_ICONS_SLIDERS.push(slider);
+			if (!existsSliderForElement(element.id)) {
+				try {
+					var slider = new Fx.Slide(element.id, {mode: 'horizontal'});
+					if (useSlideOut) {
+						slider.slideOut();
+					}
+					else {
+						slider.hide();
+					}
+				} catch(e){}
+				PASTE_ICONS_SLIDERS.push(slider);
+			}
 		}
 	);
 }
 
 function registerBuilderActions() {
+	var errorHanlder = function() {
+		reloadPage();
+	}
+	DWREngine.setErrorHandler(errorHanlder);
+	
 	hidePasteIcons(false);
 	
+	addEventsToBuilderElements();
+}
+
+function addEventsToBuilderElements() {
 	$$('div.moduleContainer').each(
 		function(element) {
-			element.addEvent('mouseover', function() {
+			element.addEvent('mouseenter', function() {
 				try {
 					showAllComponentsLabels(element);
 					showComponentInfoImage(element);
 				} catch(err) {}
 			});
-			element.addEvent('mouseout', function() {
+			element.addEvent('mouseleave', function() {
 				try {
 					hideOldLabels(element);
 					hideComponentInfoImage(element);
@@ -176,15 +200,22 @@ function registerBuilderActions() {
 	
 	$$('img.add_article_module_to_region_image').each(
 		function(element) {
-			if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
-				ELEMENTS_WITH_TOOLTIP.push(element);
-				initToolTipForElement(element);
-			}
-			element.addEvent('click', function() {
-				addConcreteModule(element);
-			});
+			addActionsForArticleButton(element);
 		}
 	);
+}
+
+function addActionsForArticleButton(element) {
+	if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
+		ELEMENTS_WITH_TOOLTIP.push(element);
+		initToolTipForElement(element);
+	}
+	
+	element.removeEvents('click');	//	Do not want to duplicate events
+	
+	element.addEvent('click', function() {
+		addConcreteModule(element);
+	});
 }
 
 function addConcreteModule(element) {
@@ -455,7 +486,22 @@ function addConcreteModuleCallback(uuid, index, id) {
 }
 
 function addSelectedModuleCallback(component, id) {
-	closeLoadingMessage();
+	closeAllLoadingMessages();
+	if (id == null) {
+		executeActionsBeforeReloading();
+		return false;
+	}
+	
+	if (id.indexOf('.') != -1) {
+		var idParts = id.split('.');
+		id = 'id';
+		for (var i = 0; i < idParts.length; i++) {
+			id += idParts[i];
+			if ((i + 1) < idParts.length) {
+				id += '_';
+			}
+		}
+	}
 	
 	if (component == null) {
 		executeActionsBeforeReloading();
@@ -707,7 +753,6 @@ function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 		return false;
 	}
 	if (box == null) {
-		// TODO: add error
 		return false;
 	}
 	
@@ -910,6 +955,13 @@ function reRenderObjectCallback(component, moduleContentId) {
 	insertNodesToContainer(component, container);
 	
 	closeLoadingMessage();
+	
+	registerBuilderActions();
+	//	Registering 'addModule' links with MOOdalBox
+	var linksForNewModuleWindow = getElementsByClassName(container, 'a', 'addModuleLinkStyleClass');
+	for (var i = 0; i < linksForNewModuleWindow.length; i++) {
+		MOOdalBox.register(linksForNewModuleWindow[i]);
+	}
 }
 
 function setRegionAndModuleContentId(element) {
@@ -978,9 +1030,11 @@ function copyModuleCallback(result, containerId, id) {
 }
 
 function slideInModulePasteIcons() {
+	var slider = null;
 	for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
 		try {
-			PASTE_ICONS_SLIDERS[i].slideIn();
+			slider = PASTE_ICONS_SLIDERS[i];
+			slider.slideIn();
 		} catch(e) {}
 	}
 	VISIBLE_PASTE_ICON = true;

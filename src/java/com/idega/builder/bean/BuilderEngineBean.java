@@ -18,12 +18,15 @@ import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.SetModulePropertyBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
+import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.xml.XMLElement;
 
@@ -106,6 +109,12 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		}
 		if (useThread) {
 			component.setId(uuid);
+		}
+		if (component instanceof PresentationObject) {
+			ICObjectInstance oi = builder.getIBXMLReader().getICObjectInstanceFromComponentId(uuid, className, pageKey);
+			if (oi != null) {
+				((PresentationObject) component).setICObjectInstanceID(oi.getID());
+			}
 		}
 		
 		Document transformedModule = getTransformedModule(pageKey, iwc, component, index, containerId);
@@ -190,7 +199,14 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		if (iwc == null) {
 			return null;
 		}
-		return builder.getRenderedComponent(iwc, builder.findComponentInPage(iwc, pageKey, instanceId), false);
+		
+		UIComponent object = builder.findComponentInPage(iwc, pageKey, instanceId);
+		if (object instanceof Table) {
+			Page page = builder.getPage(pageKey, iwc);
+			object = builder.getTransformedTable(page, pageKey, object, iwc, iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null);
+		}
+		
+		return builder.getRenderedComponent(iwc, object, false);
 	}
 	
 	public boolean copyModule(String pageKey, String parentId, String instanceId) {
@@ -269,7 +285,6 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			return null;
 		}
 		
-		//	Getting IBObjectControl - 'container'
 		PresentationObject transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, parentId, iwc);
 		
 		return builder.getRenderedComponent(iwc, transformed, false);
@@ -311,6 +326,11 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		if (useThread) {
 			session = getSession(iwc);
 		}
+		
+		if (parentInstanceId.indexOf(CoreConstants.DOT) != -1) {
+			containerId = null;
+		}
+		
 		synchronized (BuilderEngineBean.class) {
 			uuid = builder.addNewModule(pageKey, parentInstanceId, objectId, containerId, session);
 		}
