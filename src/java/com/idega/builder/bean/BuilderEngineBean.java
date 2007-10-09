@@ -61,7 +61,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);															// 10
 		info.add(BuilderConstants.MODULE_NAME);																				// 11
 		info.add(iwrb.getLocalizedString("deleting", "Deleting..."));														// 12
-		info.add(iwrb.getLocalizedString("are_you_sure", "Are You sure?"));													// 13
+		info.add(iwrb.getLocalizedString("are_you_sure", "Are you sure?"));													// 13
 		info.add(iwrb.getLocalizedString("saving", "Saving..."));															// 14
 		info.add(iwrb.getLocalizedString("loading", "Loading..."));															// 15
 		info.add(BuilderConstants.IB_PAGE_PARAMETER);																		// 16
