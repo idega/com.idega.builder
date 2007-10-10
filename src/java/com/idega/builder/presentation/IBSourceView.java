@@ -55,7 +55,6 @@ public class IBSourceView extends Window {
 					if (stringRep != null) {
 						String format = iwc.getParameter(IB_PAGE_FORMAT);
 						doPageSourceUpdate(stringRep, format, iwc);
-						this.setParentToReload();
 					}
 				}
 				catch (Exception e) {
