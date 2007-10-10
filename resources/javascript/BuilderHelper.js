@@ -160,18 +160,28 @@ function addEventsToBuilderElements() {
 	
 	$$('input.modulePropertySetter').each(
 		function(element) {
+			element.removeEvents('blur');
+			element.removeEvents('keyup');
+			element.removeEvents('click');
+			
 			element.addEvents({
 				'blur': function(e) {
 					if (element.type == 'text' || element.type == 'password') {
-						saveModuleProperty(null, element);
+						e = new Event(e);
+						saveModuleProperty(e, element);
+						e.stop();
 					}
 				},
 				'keyup': function(e) {
+					element.setProperty('valuechanged', true);
 					e = new Event(e);
 					saveModuleProperty(e, element);
 					e.stop();
 				},
 				'click': function(e) {
+					if (element.type == 'radio' || element.type == 'checkbox') {
+						element.setProperty('valuechanged', true);
+					}
 					e = new Event(e);
 					saveModuleProperty(e, element);
 					e.stop();
@@ -182,6 +192,7 @@ function addEventsToBuilderElements() {
 	$$('select.modulePropertySetter').each(
 		function(element) {
 			element.addEvent('change', function(e) {
+				element.setProperty('valuechanged', true);
 				e = new Event(e);
 				saveModuleProperty(e, element);
 				e.stop();
@@ -779,13 +790,22 @@ function saveModuleProperty(event, element) {
 	if (element == null) {
 		return false;
 	}
+	
 	if (event != null) {
-		if (element.type == 'text' || element.type == 'password') {
+		if (event.type == 'keyup' && (element.type == 'text' || element.type == 'password')) {
 			//	Checking if 'Enter' was pressed
 			if (!('enter' == event.key)) {
 				return false;
 			}
 		}
+	}
+	
+	var isValueChanged = element.getProperty('valuechanged');
+	if (isValueChanged == 'true') {
+		element.setProperty('valuechanged', false);
+	}
+	else {
+		return false;
 	}
 	
 	var moduleId = getMarkupAttributeValue(element, 'moduleid');
