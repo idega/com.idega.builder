@@ -964,7 +964,11 @@ function renderModulesAgain() {
 function reRenderObjectCallback(component, moduleContentId) {	
 	var container = $(moduleContentId);
 	if (container == null || component == null) {
-		reloadPage();
+		closeLoadingMessage();
+		var actionOnClose = function() {
+			executeActionsBeforeReloading();
+		};
+		addActionForMoodalBoxOnCloseEvent(actionOnClose);
 		return false;
 	}
 	closeLoadingMessage();
@@ -973,7 +977,16 @@ function reRenderObjectCallback(component, moduleContentId) {
 	
 	showLoadingMessage(LOADING_LABEL);
 	
-	insertNodesToContainer(component, container);
+	try {
+		insertNodesToContainer(component, container);
+	} catch(e) {
+		closeLoadingMessage();
+		var actionOnClose = function() {
+			executeActionsBeforeReloading();
+		};
+		addActionForMoodalBoxOnCloseEvent(actionOnClose);
+		return false;
+	}
 	
 	closeLoadingMessage();
 	
