@@ -11,6 +11,7 @@ import org.jdom.Document;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.IBXMLConstants;
 import com.idega.builder.business.IBXMLReader;
 import com.idega.builder.presentation.AddModuleBlock;
@@ -18,6 +19,7 @@ import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.SetModulePropertyBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -119,7 +121,6 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		
 		Document transformedModule = getTransformedModule(pageKey, iwc, component, index, containerId);
 		IWSlideSession session = getSession(iwc);
-		// Returning result
 		if (transformedModule != null && session != null) {
 			builder.clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache
 		}
@@ -187,11 +188,19 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	}
 	
 	public boolean setSimpleModuleProperty(String pageKey, String moduleId, String propertyName, String propertyValue) {
-		return builder.setModuleProperty(pageKey, moduleId, propertyName, new String[] {propertyValue});
+		if (builder.setModuleProperty(pageKey, moduleId, propertyName, new String[] {propertyValue})) {
+			clearCacheIfNeeded(pageKey, moduleId);
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] values) {
-		return builder.setModuleProperty(pageKey, moduleId, propertyName, values);
+		if (builder.setModuleProperty(pageKey, moduleId, propertyName, values)) {
+			clearCacheIfNeeded(pageKey, moduleId);
+			return true;
+		}
+		return false;
 	}
 	
 	public Document reRenderObject(String pageKey, String instanceId) {
@@ -290,9 +299,8 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		return builder.getRenderedComponent(iwc, transformed, false);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private UIComponent getComponentInstance(String className) {
-		Class objectClass = null;
+		Class<?> objectClass = null;
 		try {
 			objectClass = RefactorClassRegistry.forName(className);
 		} catch (ClassNotFoundException e) {
@@ -320,7 +328,6 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	}
 	
 	private String addModule(IWContext iwc, String pageKey, String containerId, String parentInstanceId, int objectId, boolean useThread) {
-		// Adding module
 		String uuid = null;
 		IWSlideSession session = null;
 		if (useThread) {
@@ -379,6 +386,22 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		
 		private String getInstanceId() {
 			return instanceId;
+		}
+	}
+	
+	private boolean isModuleJsfType(String pageKey, String instanceId) {
+		String className = builder.getModuleClassName(pageKey, instanceId);
+		IWContext iwc = CoreUtil.getIWContext();
+		return IBPropertyHandler.getInstance().isJsfComponent(iwc, className);
+	}
+	
+	private void clearCacheIfNeeded(String pageKey, String instanceId) {
+		if (isModuleJsfType(pageKey, instanceId)) {
+			IWContext iwc = CoreUtil.getIWContext();
+			if (iwc != null) {
+				IWCacheManager2 cache = IWCacheManager2.getInstance(iwc.getIWMainApplication());
+				cache.reset();
+			}
 		}
 	}
 }

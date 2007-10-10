@@ -47,22 +47,22 @@ public class SetModulePropertyBlock extends Block {
 		
 		IBPropertiesWindowSetter setter = new IBPropertiesWindowSetter();
 		
-		Class ICObjectClass = null;
+		Class<?> presObjClass = null;
 		int icObjectInstanceIDint = BuilderLogic.getInstance().getIBXMLReader().getICObjectInstanceIdFromComponentId(instanceId, null, pageKey);
 		if (icObjectInstanceIDint == -1) {
-			ICObjectClass = com.idega.presentation.Page.class;
+			presObjClass = com.idega.presentation.Page.class;
 		}
 		else {
-			ICObjectClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
+			presObjClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
 		}
 		String namePrefix = "ib_property_";
 	
 		MethodFinder methodFinder = MethodFinder.getInstance();
-		Class parameters[] = null;
+		Class<?> parameters[] = null;
 		boolean isMethodIdentifier = false;
 		boolean needsReload = doesPropertyNeedReload(instanceId, propertyName, iwc);
 		if (methodFinder.isMethodIdentifier(propertyName)) {
-			Method method = MethodFinder.getInstance().getMethod(propertyName, ICObjectClass);
+			Method method = MethodFinder.getInstance().getMethod(propertyName, presObjClass);
 			parameters = method.getParameterTypes();
 			isMethodIdentifier = true;
 		}
@@ -78,7 +78,7 @@ public class SetModulePropertyBlock extends Block {
 		String name = null;
 		String paramDescription = null;
 		String handlerClass = null;
-		Class parameterClass = null;
+		Class<?> parameterClass = null;
 		Text description = null;
 		for (int i = 0; i < parameters.length; i++) {
 			parameterClass = parameters[i];
@@ -109,6 +109,8 @@ public class SetModulePropertyBlock extends Block {
 			
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	new PropertyHandlerBean(instanceId,
 					propertyName, name, value, "modulePropertySetter", parameterClass, i, needsReload, isMultiValue));
+			
+			handlerBox.setMarkupAttribute("jsfcomponent", IBPropertyHandler.getInstance().isJsfComponent(iwc, presObjClass.getName()));
 			container.add(handlerBox);
 			
 			ICPropertyHandler handler = null;

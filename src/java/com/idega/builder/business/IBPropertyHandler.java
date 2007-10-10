@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.73 2007/10/10 05:23:19 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.74 2007/10/10 07:40:46 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -995,6 +995,19 @@ public class IBPropertyHandler implements Singleton{
 	
 	public BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
+	}
+	
+	public boolean isJsfComponent(IWContext iwc, String className) {
+		if (iwc == null || className == null) {
+			return false;
+		}
+		
+		ComponentRegistry registry = ComponentRegistry.getInstance(iwc.getIWMainApplication());
+		ComponentInfo component = registry.getComponentByClassName(className);
+		if (component == null) {
+			return false;
+		}
+		return component.getObjectType().equals(ComponentRegistry.COMPONENT_TYPE_JSF_UICOMPONENT);
 	}
 	
 }
