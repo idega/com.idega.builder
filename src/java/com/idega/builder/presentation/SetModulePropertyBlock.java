@@ -142,20 +142,16 @@ public class SetModulePropertyBlock extends Block {
 			return false;
 		}
 		
-		List properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale(), true);
+		List<ComponentProperty> properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale());
 		if (properties == null) {
 			return false;
 		}
 		
-		Object o = null;
 		ComponentProperty property = null;
 		for (int i = 0; i < properties.size(); i++) {
-			o = properties.get(i);
-			if (o instanceof ComponentProperty) {
-				property = (ComponentProperty) o;
-				if (propertyName.equals(property.getName())) {
-					return property.isNeedsReload();
-				}
+			property = properties.get(i);
+			if (propertyName.equals(property.getName())) {
+				return property.isNeedsReload();
 			}
 		}
 		

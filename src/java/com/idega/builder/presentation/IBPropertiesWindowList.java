@@ -1,5 +1,6 @@
 package com.idega.builder.presentation;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,11 +82,11 @@ public class IBPropertiesWindowList extends Page {
 		// List methodList =
 		// IBPropertyHandler.getInstance().getMethodsListOrdered(icObjectInstanceID,iwc);
 		try {
-			List propertyList = this.getPropertyListOrdered(iwc, instanceId);
-			Iterator iter = propertyList.iterator();
+			List<ComponentProperty> propertyList = this.getPropertyListOrdered(iwc, instanceId);
+			Iterator<ComponentProperty> iter = propertyList.iterator();
 			int counter = 1;
 			while (iter.hasNext()) {
-				ComponentProperty desc = (ComponentProperty) iter.next();
+				ComponentProperty desc = iter.next();
 				String propertyName = desc.getName();
 				String methodDescr = desc.getDisplayName();
 				Link link = new Link(methodDescr);
@@ -114,7 +115,7 @@ public class IBPropertiesWindowList extends Page {
 	/**
 	 * Returns a list of IBPropertyDescription objects
 	 */
-	private List getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
+	private List<ComponentProperty> getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
 		/*List theReturn = new Vector();
 		IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(instanceId, iwc.getIWMainApplication());
 		Iterator iter = methodList.iterator();
@@ -126,8 +127,8 @@ public class IBPropertiesWindowList extends Page {
 			desc.setDisplayName(methodDescr);
 			theReturn.add(desc);
 		}*/
-		List theReturn = IBPropertyHandler.getInstance().getComponentProperties(instanceId,iwc.getIWMainApplication(),iwc.getCurrentLocale(), false);
-		java.util.Collections.sort(theReturn, ComponentPropertyComparator.getInstance());
+		List<ComponentProperty> theReturn = IBPropertyHandler.getInstance().getComponentProperties(instanceId,iwc.getIWMainApplication(),iwc.getCurrentLocale());
+		Collections.sort(theReturn, ComponentPropertyComparator.getInstance());
 		return theReturn;
 	}
 

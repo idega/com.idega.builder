@@ -51,7 +51,7 @@ public class EditModuleBlock extends Block {
 		
 		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
 		
-		List properties = getPropertyListOrdered(iwc, instanceId);
+		List<ComponentProperty> properties = getPropertyListOrdered(iwc, instanceId);
 		if (properties == null) {
 			return;
 		}
@@ -87,13 +87,12 @@ public class EditModuleBlock extends Block {
 		this.add(propertiesContainer);
 	}
 	
-	@SuppressWarnings("unchecked")
-	private List getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
-		List properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale(), true);
+	private List<ComponentProperty> getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
+		List<ComponentProperty> properties = IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale());
 		if (properties == null) {
-System.out.println("getPropertyListOrdered properties == null");			
 			return null;
 		}
+		
 		try {
 			Collections.sort(properties, ComponentPropertyComparator.getInstance());
 		} catch (Exception e) {
@@ -103,24 +102,21 @@ System.out.println("getPropertyListOrdered properties == null");
 		return properties;
 	}
 	
-	private void addProperties(List properties, Layer container, IWResourceBundle iwrb, IWContext iwc, String instanceId, String pageKey) {
+	private void addProperties(List<ComponentProperty> properties, Layer container, IWResourceBundle iwrb, IWContext iwc, String instanceId, String pageKey) {
 		if (properties == null) {
 			return;
 		}
-		Object o = null;
+		
 		ComponentProperty property = null;
 		List<ComponentProperty> simpleProperties = new ArrayList<ComponentProperty>();
 		List<ComponentProperty> advancedProperties = new ArrayList<ComponentProperty>();
 		for (int i = 0; i < properties.size(); i++) {
-			o = properties.get(i);
-			if (o instanceof ComponentProperty) {
-				property = (ComponentProperty) o;
-				if (property.isSimpleProperty()) {
-					simpleProperties.add(property);
-				}
-				else {
-					advancedProperties.add(property);
-				}
+			property = properties.get(i);
+			if (property.isSimpleProperty()) {
+				simpleProperties.add(property);
+			}
+			else {
+				advancedProperties.add(property);
 			}
 		}
 		addPropertiesToContainer(simpleProperties, container, iwrb.getLocalizedString("simple_properties", "Simple Properties"), "simple_properties_box", null, false, instanceId, iwc, pageKey);		

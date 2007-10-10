@@ -1,5 +1,7 @@
 package com.idega.builder.business;
 
+import java.util.Comparator;
+
 import com.idega.core.component.business.ComponentProperty;
 
 /**
@@ -11,17 +13,9 @@ import com.idega.core.component.business.ComponentProperty;
  * @version 1.0
  */
 
-public class ComponentPropertyComparator implements java.util.Comparator{
+public class ComponentPropertyComparator implements Comparator<ComponentProperty>{
 
-    public ComponentPropertyComparator(){
-    	// empty
-    }
-
-    public int compare(Object o1,Object o2){
-      return compare((ComponentProperty)o1,(ComponentProperty)o2);
-    }
-
-    public int compare(ComponentProperty p1,ComponentProperty p2){
+    public int compare(ComponentProperty p1, ComponentProperty p2){
       String s1 = p1.getDisplayName();
       String s2 = p2.getDisplayName();
       return s1.compareTo(s2);
