@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.72 2007/10/03 21:22:05 eiki Exp $
+ * $Id: IBPropertyHandler.java,v 1.73 2007/10/10 05:23:19 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
+import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Span;
 import com.idega.presentation.Table;
@@ -721,9 +722,9 @@ public class IBPropertyHandler implements Singleton{
 				return (getMethodDescription(methodProperty, iwc.getCurrentLocale()));
 			}*/
 			Locale locale = iwc.getCurrentLocale();
-			List properties = getComponentProperties(instanceId, iwc.getIWMainApplication(),locale, false);
-			for (Iterator iter = properties.iterator(); iter.hasNext();) {
-				ComponentProperty property = (ComponentProperty) iter.next();
+			List<ComponentProperty> properties = getComponentProperties(instanceId, iwc.getIWMainApplication(), locale);
+			for (Iterator<ComponentProperty> iter = properties.iterator(); iter.hasNext();) {
+				ComponentProperty property = iter.next();
 				if(property.getName().equals(methodPropertyKey)){
 					return property.getDisplayName(locale);
 				}
@@ -926,20 +927,17 @@ public class IBPropertyHandler implements Singleton{
 	 * @param mainApplication
 	 * @return
 	 */
-	public List getComponentProperties(String instanceId, IWMainApplication iwma, Locale currentLocale, boolean refillProperties) {
-		//List theReturn = new Vector();
-		
-
+	public List<ComponentProperty> getComponentProperties(String instanceId, IWMainApplication iwma, Locale currentLocale) {
 		String componentClassName = null;
 		
 		IWBundle iwb = null;
 		//Hardcoded -1 for the top page
 		if ("-1".equals(instanceId) ) {
-			componentClassName = "com.idega.presentation.Page";
+			componentClassName = Page.class.getName();
 			iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
 		}
 		else {
-			ICObjectInstance icoi = getBuilderLogic().getIBXMLReader().getICObjectInstanceFromComponentId(instanceId,null,null);
+			ICObjectInstance icoi = getBuilderLogic().getIBXMLReader().getICObjectInstanceFromComponentId(instanceId, null, null);
 			ICObject obj = icoi.getObject();
 			iwb = obj.getBundle(iwma);
 			componentClassName = obj.getClassName();
@@ -951,24 +949,21 @@ public class IBPropertyHandler implements Singleton{
 			return null;
 		}
 		
-		List properties = component.getProperties();
+		List<ComponentProperty> properties = component.getProperties();
 		if (properties == null) {
 			return null;
 		}
 		
+		boolean refillProperties = !(component.getObjectType().equals(ComponentRegistry.COMPONENT_TYPE_JSF_UICOMPONENT));
 		if (refillProperties) {
-			properties = new ArrayList();
+			properties = new ArrayList<ComponentProperty>();
 			fillProperties(iwb, componentClassName, properties, iwma, currentLocale, component);
-		}
-		else {
-			if (properties.size() == 0) {
-			}
 		}
 
 		return properties;
 	}
 	
-	private void fillProperties(IWBundle iwb, String className, List properties, IWMainApplication iwma, Locale locale, ComponentInfo component) {
+	private void fillProperties(IWBundle iwb, String className, List<ComponentProperty> properties, IWMainApplication iwma, Locale locale, ComponentInfo component) {
 		//	Try to populate the ComponentProperties from the IWPropertyList from bundle.pxml
 		IWPropertyList pList = getMethods(iwb, className);
 		fillComponentProperties(className, iwma, locale, component, properties, pList);
@@ -980,20 +975,21 @@ public class IBPropertyHandler implements Singleton{
 	 * </p>
 	 * @param properties
 	 */
-	private void fillComponentProperties(String instanceId, IWMainApplication iwma,Locale currentLocale,ComponentInfo component,List properties,IWPropertyList methodList) {
-		//IWPropertyList methodList = IBPropertyHandler.getInstance().getMethods(instanceId, iwma);
-		if(methodList!=null){
-			for (Iterator iter = methodList.iterator(); iter.hasNext(); ) {
-				IWProperty methodProp = (IWProperty) iter.next();
-				String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
-				String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp, currentLocale);
-				DefaultComponentProperty desc = new DefaultComponentProperty(component);
-				desc.setDisplayName(methodDescr);
-				desc.setName(methodIdentifier);
-				desc.setSimpleProperty(methodProp.isPropertySimple());
-				desc.setNeedsReload(methodProp.isNeedsReload());
-				properties.add(desc);
-			}
+	private void fillComponentProperties(String instanceId, IWMainApplication iwma, Locale currentLocale, ComponentInfo component, List<ComponentProperty> properties,
+			IWPropertyList methodList) {
+		if (methodList == null) {
+			return;
+		}
+		for (Iterator iter = methodList.iterator(); iter.hasNext(); ) {
+			IWProperty methodProp = (IWProperty) iter.next();
+			String methodIdentifier = IBPropertyHandler.getInstance().getMethodIdentifier(methodProp);
+			String methodDescr = IBPropertyHandler.getInstance().getMethodDescription(methodProp, currentLocale);
+			DefaultComponentProperty desc = new DefaultComponentProperty(component);
+			desc.setDisplayName(methodDescr);
+			desc.setName(methodIdentifier);
+			desc.setSimpleProperty(methodProp.isPropertySimple());
+			desc.setNeedsReload(methodProp.isNeedsReload());
+			properties.add(desc);
 		}
 	}
 	
