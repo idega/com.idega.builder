@@ -961,13 +961,13 @@ function renderModulesAgain() {
 	OBJECTS_TO_RERENDER = new Array();
 }
 
-function reRenderObjectCallback(component, moduleContentId) {
-	closeLoadingMessage();
-	
+function reRenderObjectCallback(component, moduleContentId) {	
 	var container = $(moduleContentId);
-	if (container == null) {
+	if (container == null || component == null) {
+		reloadPage();
 		return false;
 	}
+	closeLoadingMessage();
 	
 	removeChildren(container);
 	
