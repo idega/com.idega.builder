@@ -215,7 +215,8 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			object = builder.getTransformedTable(page, pageKey, object, iwc, iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null);
 		}
 		
-		return builder.getRenderedComponent(iwc, object, false);
+		boolean isJsfComponent = isModuleJsfType(pageKey, instanceId);
+		return builder.getRenderedComponent(iwc, object, isJsfComponent);
 	}
 	
 	public boolean copyModule(String pageKey, String parentId, String instanceId) {
@@ -296,7 +297,8 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		
 		PresentationObject transformed = builder.getTransformedObject(currentPage, pageKey, component, index, currentPage, parentId, iwc);
 		
-		return builder.getRenderedComponent(iwc, transformed, false);
+		boolean isJsfComponent = IBPropertyHandler.getInstance().isJsfComponent(iwc, component.getClass().getName());
+		return builder.getRenderedComponent(iwc, transformed, isJsfComponent);
 	}
 	
 	private UIComponent getComponentInstance(String className) {
