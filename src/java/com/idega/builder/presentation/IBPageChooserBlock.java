@@ -31,7 +31,7 @@ public class IBPageChooserBlock extends AbstractChooserBlock {
 		
 		Link link = new Link();
 		link = new Link();
-		link.setURL(new StringBuffer("#").append(container.getId()).toString());
+		link.setURL("javascript:void(0)");
 		link.setNoTextObject(true);
 		viewer.setLinkOpenClosePrototype(link);
 		

@@ -78,7 +78,7 @@ public class IBPageChooser extends AbstractChooser {
 	}
 	
 	@Override
-	protected String getChooserHelperVarName() {
-		 return "Page_chooser_helper";
+	public String getChooserHelperVarName() {
+		 return "page_chooser_helper";
 	}
 }

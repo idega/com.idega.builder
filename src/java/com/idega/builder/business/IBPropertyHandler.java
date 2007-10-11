@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.74 2007/10/10 07:40:46 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.75 2007/10/11 11:28:20 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -49,6 +49,7 @@ import com.idega.presentation.Span;
 import com.idega.presentation.Table;
 import com.idega.presentation.TableCell;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.AbstractChooser;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
@@ -61,6 +62,7 @@ import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
+import com.idega.util.CoreConstants;
 import com.idega.util.ListUtil;
 import com.idega.util.caching.Cache;
 import com.idega.util.reflect.MethodFinder;
@@ -291,13 +293,20 @@ public class IBPropertyHandler implements Singleton{
 	 *
 	
 	 */
-	public PresentationObject getHandlerInstance(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String name, String stringValue, boolean newGenerationChooser) throws Exception {
+	public PresentationObject getHandlerInstance(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String name, String stringValue, boolean oldGenerationChooser) throws Exception {
 		String handlerClass = getMethodParameterProperty(iwc, ICObjectInstanceID, methodIdentifier, parameterIndex, METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
-		if (handlerClass.equals("")) {
+		if (handlerClass.equals(CoreConstants.EMPTY)) {
 			return (null);
 		}
 		ICPropertyHandler handler = getPropertyHandler(handlerClass);
-		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc, newGenerationChooser, ICObjectInstanceID, methodIdentifier);
+		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc, oldGenerationChooser, ICObjectInstanceID, methodIdentifier);
+		
+		if (!oldGenerationChooser && handlerPresentation instanceof AbstractChooser) {
+			AbstractChooser chooser = (AbstractChooser) handlerPresentation;
+			if (chooser.getChooserHelperVarName() != null) {
+				chooser.add(new StringBuffer("<script type=\"text/javascript\">var ").append(chooser.getChooserHelperVarName()).append(" = new ChooserHelper();</script>").toString());
+			}
+		}
 
     /* 
      * special treatment for a drop down menu that gets the choice 
@@ -508,6 +517,7 @@ public class IBPropertyHandler implements Singleton{
 			setMarkupAttributes(obj, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
 			return obj;
 		}
+		
 		if (parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)) {
 			obj = new IntegerInput(name);
 			((IntegerInput) obj).setMaxlength(9);

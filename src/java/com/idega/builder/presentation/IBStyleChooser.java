@@ -42,7 +42,7 @@ public class IBStyleChooser extends AbstractChooser {
   }
   
   @Override
-  protected String getChooserHelperVarName() {
+  public String getChooserHelperVarName() {
 	  return "style_chooser_helper";
   }
 }

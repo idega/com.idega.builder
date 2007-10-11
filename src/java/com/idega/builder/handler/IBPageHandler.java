@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHandler.java,v 1.12 2007/05/24 11:31:12 valdas Exp $
+ * $Id: IBPageHandler.java,v 1.13 2007/10/11 11:28:20 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import com.idega.builder.presentation.IBPageChooser;
 import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -34,7 +35,7 @@ public class IBPageHandler implements ICPropertyHandler {
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
 		IBPageChooser chooser = new IBPageChooser(name, oldGenerationHandler, instanceId, method);
 		try {
-			if (value != null && !value.equals("")) {
+			if (value != null && !value.equals(CoreConstants.EMPTY)) {
 				Map tree = PageTreeNode.getTree(iwc);
 				if (tree != null) {
 					PageTreeNode node = (PageTreeNode) tree.get(Integer.valueOf(value));

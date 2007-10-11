@@ -78,7 +78,7 @@ public class IBObjectChooser extends AbstractChooser {
 	 }
 	 
 	 @Override
-	 protected String getChooserHelperVarName() {
+	 public String getChooserHelperVarName() {
 		 return "Object_chooser_helper";
 	 }
 }

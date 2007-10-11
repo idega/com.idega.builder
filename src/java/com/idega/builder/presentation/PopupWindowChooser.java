@@ -42,7 +42,7 @@ public class PopupWindowChooser extends AbstractChooser {
   }
 
   @Override
-  protected String getChooserHelperVarName() {
+  public String getChooserHelperVarName() {
 	  return "popupwindow_chooser_helper";
   }
 }
