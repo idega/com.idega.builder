@@ -485,7 +485,7 @@ function addSelectedModule(newObjectId, className) {
 
 function addConcreteModuleCallback(uuid, index, id) {
 	if (uuid == null) {
-		closeLoadingMessage();
+		closeAllLoadingMessages();
 		return false;
 	}
 	
@@ -680,7 +680,7 @@ function deleteModule(id, instanceId, imageId) {
 }
 
 function deleteModuleCallback(result, id, instanceId, imageId) {
-	closeLoadingMessage();
+	closeAllLoadingMessages();
 	if (result) {
 		var deleted = $(id);
 		if (deleted == null) {
@@ -756,7 +756,7 @@ function getPropertyBox(id, propertyName, objectInstanceId) {
 }
 
 function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
-	closeLoadingMessage();
+	closeAllLoadingMessages();
 	if (id == null) {
 		return false;
 	}
@@ -776,7 +776,9 @@ function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 	insertNodesToContainer(box, propertySetterBox);	
 	container.appendChild(propertySetterBox);
 	
-	registerBuilderActions();	// Need to re-register actions
+	try {
+		registerBuilderActions();	// Need to re-register actions
+	} catch(e) {}
 }
 
 function getMarkupAttributeValue(element, attrName) {
@@ -891,7 +893,7 @@ function getAllElementsByName(list, name) {
 }
 
 function executeActionsBeforeReloading() {
-	closeLoadingMessage();
+	closeAllLoadingMessages();
 	showLoadingMessage(RELOADING_LABEL);
 		
 	reloadPage();
@@ -899,7 +901,7 @@ function executeActionsBeforeReloading() {
 
 function saveModulePropertyCallback(result, moduleId, needsReload) {
 	if (!result) {
-		closeLoadingMessage();
+		closeAllLoadingMessages();
 		return false;
 	}
 	
@@ -911,7 +913,7 @@ function saveModulePropertyCallback(result, moduleId, needsReload) {
 	}
 	
 	if (needsReload == 'true') {
-		closeLoadingMessage();
+		closeAllLoadingMessages();
 		var actionOnClose = function() {
 			executeActionsBeforeReloading();
 		};
@@ -919,7 +921,7 @@ function saveModulePropertyCallback(result, moduleId, needsReload) {
 		return false;
 	}
 	
-	closeLoadingMessage();
+	closeAllLoadingMessages();
 	
 	// Re-rendering module
 	renderModuleAgain(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
@@ -964,14 +966,14 @@ function renderModulesAgain() {
 function reRenderObjectCallback(component, moduleContentId) {	
 	var container = $(moduleContentId);
 	if (container == null || component == null) {
-		closeLoadingMessage();
+		closeAllLoadingMessages();
 		var actionOnClose = function() {
 			executeActionsBeforeReloading();
 		};
 		addActionForMoodalBoxOnCloseEvent(actionOnClose);
 		return false;
 	}
-	closeLoadingMessage();
+	closeAllLoadingMessages();
 	
 	removeChildren(container);
 	
@@ -980,7 +982,7 @@ function reRenderObjectCallback(component, moduleContentId) {
 	try {
 		insertNodesToContainer(component, container);
 	} catch(e) {
-		closeLoadingMessage();
+		closeAllLoadingMessages();
 		var actionOnClose = function() {
 			executeActionsBeforeReloading();
 		};
@@ -988,7 +990,7 @@ function reRenderObjectCallback(component, moduleContentId) {
 		return false;
 	}
 	
-	closeLoadingMessage();
+	closeAllLoadingMessages();
 	
 	registerBuilderActions();
 	//	Registering 'addModule' links with MOOdalBox
