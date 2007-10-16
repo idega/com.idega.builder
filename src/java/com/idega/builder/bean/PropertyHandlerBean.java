@@ -8,15 +8,16 @@ public class PropertyHandlerBean {
 	private String value = null;
 	private String styleClass = null;
 	
-	private Class parameterClass = null;
+	private Class<?> parameterClass = null;
 	
 	private int parameterIndex = -1;
+	private int parametersCount = 0;
 	
 	private boolean needsReload = false;
 	private boolean isMultivalue = false;
 
-	public PropertyHandlerBean(String objectInstanceId, String propertyName, String name, String value, String styleClass, Class parameterClass,
-			int parameterIndex, boolean needsReload, boolean isMultivalue) {
+	public PropertyHandlerBean(String objectInstanceId, String propertyName, String name, String value, String styleClass, Class<?> parameterClass,
+			int parameterIndex, boolean needsReload, boolean isMultivalue, int parametersCount) {
 		
 		this.objectInstanceId = objectInstanceId;
 		this.propertyName = propertyName;
@@ -27,6 +28,8 @@ public class PropertyHandlerBean {
 		this.parameterIndex = parameterIndex;
 		this.needsReload = needsReload;
 		this.isMultivalue = isMultivalue;
+		this.parametersCount = parametersCount;
+		
 	}
 
 	public boolean isMultivalue() {
@@ -61,11 +64,11 @@ public class PropertyHandlerBean {
 		this.objectInstanceId = objectInstanceId;
 	}
 
-	public Class getParameterClass() {
+	public Class<?> getParameterClass() {
 		return parameterClass;
 	}
 
-	public void setParameterClass(Class parameterClass) {
+	public void setParameterClass(Class<?> parameterClass) {
 		this.parameterClass = parameterClass;
 	}
 
@@ -99,6 +102,14 @@ public class PropertyHandlerBean {
 
 	public void setStyleClass(String styleClass) {
 		this.styleClass = styleClass;
+	}
+
+	public int getParametersCount() {
+		return parametersCount;
+	}
+
+	public void setParametersCount(int parametersCount) {
+		this.parametersCount = parametersCount;
 	}
 
 }
