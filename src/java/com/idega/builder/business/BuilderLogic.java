@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.283 2007/10/08 10:19:44 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.284 2007/10/16 07:42:41 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -263,6 +263,7 @@ public class BuilderLogic implements Singleton {
 		Web2Business web2 = getWeb2Business(iwc);
 		
 		//	JavaScript
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/util.js");
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
