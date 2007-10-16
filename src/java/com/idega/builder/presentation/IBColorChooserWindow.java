@@ -107,73 +107,68 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		webPalette.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
 		Table table = new Table();
-		if (this.fromEditor || iwc.getApplicationAttribute("color_palette_table") == null) {
-			table.setRows(12);
-			table.setColumns(18);
-			table.setCellpadding(0);
-			table.setCellspacing(1);
-			table.setColor(color.getHexColorString());
+		table.setRows(12);
+		table.setColumns(18);
+		table.setCellpadding(0);
+		table.setCellspacing(1);
+		table.setColor(color.getHexColorString());
 
-			Link link = null;
+		Link link = null;
 
-			int R = 0;
-			int G = 0;
-			int B = 0;
+		int R = 0;
+		int G = 0;
+		int B = 0;
 
-			for (int a = 1; a <= 12; a++) {
-				for (int b = 1; b <= 18; b++) {
-					if (a <= 6 && b <= 6) {
-						R = 0;
-					}
-					else if (a <= 6 && b > 6 && b <= 12) {
-						R = 51;
-					}
-					else if (a <= 6 && b > 12) {
-						R = 102;
-					}
-					else if (a > 6 && b <= 6) {
-						R = 153;
-					}
-					else if (a > 6 && b > 6 && b <= 12) {
-						R = 204;
-					}
-					else if (a > 6 && b > 12) {
-						R = 255;
-					}
-
-					color = new IWColor(R, G, B);
-
-					link = new Link(image);
-					table.add(link, b, a);
-					if (this.fromEditor) {
-						link.setURL("#");
-						link.setOnClick("save('" + color.getHexColorString() + "')");
-					}
-					else {
-						link.addParameter("color", color.getHexColorString());
-					}
-					table.setColor(b, a, color.getHexColorString());
-
-					G += 51;
-					if (G > 255) {
-						G = 0;
-					}
+		for (int a = 1; a <= 12; a++) {
+			for (int b = 1; b <= 18; b++) {
+				if (a <= 6 && b <= 6) {
+					R = 0;
 				}
-				B += 51;
-				if (B > 255) {
-					B = 0;
+				else if (a <= 6 && b > 6 && b <= 12) {
+					R = 51;
+				}
+				else if (a <= 6 && b > 12) {
+					R = 102;
+				}
+				else if (a > 6 && b <= 6) {
+					R = 153;
+				}
+				else if (a > 6 && b > 6 && b <= 12) {
+					R = 204;
+				}
+				else if (a > 6 && b > 12) {
+					R = 255;
+				}
+				color = new IWColor(R, G, B);
+				link = new Link(image);
+				table.add(link, b, a);
+				if (this.fromEditor) {
+					link.setURL("#");
+					link.setOnClick("save('" + color.getHexColorString() + "')");
+				}
+				else {
+					link.addParameter("color", color.getHexColorString());
+					link.maintainParameter(FORM_ID_PARAMETER, iwc);
+					link.maintainParameter(SCRIPT_SUFFIX_PARAMETER, iwc);
+					link.maintainParameter(DISPLAYSTRING_PARAMETER_NAME, iwc);
+					link.maintainParameter(VALUE_PARAMETER_NAME, iwc);
+				}
+				table.setColor(b, a, color.getHexColorString());
+
+				G += 51;
+				if (G > 255) {
+					G = 0;
 				}
 			}
-			iwc.setApplicationAttribute("color_palette_table", table);
+			B += 51;
+			if (B > 255) {
+				B = 0;
+			}
 		}
-		else {
-			table = (Table) iwc.getApplicationAttribute("color_palette_table");
-		}
-
+		
 		if (!this.fromEditor) {
 			Block block = new Block();
 			block.add(table);
-			block.setCacheable("web_color_palette", 0);
 
 			formTable.add(webPalette, column, row);
 			formTable.add(Text.getBreak(), column, row);
@@ -291,17 +286,21 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			formTable.add(new SubmitButton(iwrb.getLocalizedImageButton("preview", "Preview"), "preview"), column, row);
 			formTable.add(Text.getNonBrakingSpace(), column, row);
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("submit", "Submit"), "submit");
+			String id = iwc.getParameter(DISPLAYSTRING_PARAMETER_NAME);
+			String suffix = iwc.getParameter(SCRIPT_SUFFIX_PARAMETER);
+			if (id != null && suffix != null) {
+				submit.setOnClick("window.opener.document.getElementById('"+id+"')."+suffix+"='"+this._colorString+"'; window.opener.saveModuleProperties(window); return false;");
+			}
 			if (iwc.isParameterSet("from_editor")) {
 				submit.setOnClick("javascript:save()");
 			}
 			formTable.add(submit, column, row);
 
 			form.add(formTable);
-			return (form);
+			return form;
 		}
-		else {
-			return table;
-		}
+		
+		return table;
 	}
 
 	private Table getColorPalette(IWContext iwc) {
