@@ -43,6 +43,7 @@ var PROPERTY_BOX_SHOWN = new Array();
 var OBJECTS_TO_RERENDER = new Array();
 var ELEMENTS_WITH_TOOLTIP = new Array();
 var PASTE_ICONS_SLIDERS = new Array();
+var EXTRACTED_VALUES = new Array();
 var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer',
 	 'com.idega.user.presentation.group.GroupUsersViewer', 'com.idega.block.media.presentation.VideoViewer'];
 
@@ -728,6 +729,7 @@ function getActivePropertyBoxId() {
 }
 
 function getPropertyBox(id, propertyName, objectInstanceId) {
+	EXTRACTED_VALUES = new Array();
 	ACTIVE_PROPERTY_SETTER_BOX = id;
 	PROPERTY_NAME = propertyName;
 	INSTANCE_ID = objectInstanceId;
@@ -788,6 +790,25 @@ function getMarkupAttributeValue(element, attrName) {
 	return element.getProperty(attrName);
 }
 
+function saveModuleProperties(openedWindow) {
+	if (ACTIVE_PROPERTY_SETTER_BOX == null) {
+		return false;
+	}
+	var setters = getElementsByClassName($(ACTIVE_PROPERTY_SETTER_BOX), '*', 'modulePropertySetter');
+	if (setters == null || setters.length == 0) {
+		return false;
+	}
+	
+	var element = setters[0];
+	var moduleId = getMarkupAttributeValue(element, 'moduleid');
+	var propertyName = getMarkupAttributeValue(element, 'propname');
+	var needsReload = getMarkupAttributeValue(element, 'needsreload');
+	var parametersCount = getMarkupAttributeValue(element, 'parameterscount');
+	var values = getMultivaluesForModule(setters);
+	
+	saveValuesForModule(values, moduleId, propertyName, needsReload, openedWindow, parametersCount);
+}
+
 function saveModuleProperty(event, element) {
 	if (element == null) {
 		return false;
@@ -814,6 +835,7 @@ function saveModuleProperty(event, element) {
 	var propertyName = getMarkupAttributeValue(element, 'propname');
 	var needsReload = getMarkupAttributeValue(element, 'needsreload');
 	var multivalue = getMarkupAttributeValue(element, 'multivalue');
+	var parametersCount = getMarkupAttributeValue(element, 'parameterscount');
 	var isMultivalue = 'false';
 	if (multivalue != null) {
 		isMultivalue = multivalue;
@@ -821,60 +843,118 @@ function saveModuleProperty(event, element) {
 	
 	var values = null;
 	if (isMultivalue == 'true') {
-		if (element.tagName == 'input' || element.tagName == 'INPUT') {
-			var container = element.parentNode.parentNode.parentNode;
-			if (container == null) {
-				return false;
-			}
-			var elements = container.getElementsByTagName(element.tagName);
-			if (elements == null) {
-				return false;
-			}
-						
-			if (element.type) {
-				if (element.type == 'radio') {
-					values = new Array();
-					
-					var groupedElements = new Array();
-					for (var i = 0; i < elements.length; i++) {
-						var sameNameElements = getAllElementsByName(elements, 'ib_property_' + i);
-						if (sameNameElements.length > 0) {
-							groupedElements.push(sameNameElements);
-						}
-					}
-					
-					for (var i = 0; i < groupedElements.length; i++) {
-						var sameNameElements = groupedElements[i];
-						if (sameNameElements.length == 2) {
-							var positive = sameNameElements[0];
-							var negative = sameNameElements[1];
-							if (positive.checked) {
-								values.push(positive.value);
-							}
-							else  if (negative.checked) {
-								values.push(negative.value);
-							}
-							else {
-								values.push('N');	//	Nothing checked
-							}
-						}
-					}
-				}
-			}
-			
-		}
+		var elements = getElementsByClassName($(ACTIVE_PROPERTY_SETTER_BOX), '*', 'modulePropertySetter');	// Values setters
+		values = getMultivaluesForModule(elements);
 	}
 	else {
 		values = new Array();
-		values.push(element.value);
+		values.push(DWRUtil.getValue(element));
+	}
+	
+	saveValuesForModule(values, moduleId, propertyName, needsReload, null, parametersCount);
+}
+
+function saveValuesForModule(values, moduleId, propertyName, needsReload, openedWindow, parametersCount) {
+	EXTRACTED_VALUES = new Array();
+	if (values == null || values.length == 0) {
+		return false;
+	}
+	if (values.length != parametersCount) {
+		return false;	//	Too less or to much values
 	}
 	
 	showLoadingMessage(SAVING_LABEL);
 	BuilderEngine.setModuleProperty(PAGE_KEY, moduleId, propertyName, values, {
 		callback: function(result) {
+			if (openedWindow) {
+				openedWindow.close();
+			}
+			
+			closeAllLoadingMessages();
 			saveModulePropertyCallback(result, moduleId, needsReload);
 		}
 	});
+}
+
+function getMultivaluesForModule(elements) {
+	if (elements == null || elements.length == 0) {
+		return false;
+	}
+	
+	var values = new Array();
+	var value = null;
+	for (var i = 0; i < elements.length; i++) {
+		value = getModulePropertyFromElement(elements[i]);
+		if (value != null) {
+			values.push(value);
+		}
+	}
+	return values;
+}
+
+function getModulePropertyFromElement(element) {
+	var value = null;
+	
+	//	Input
+	if (element.tagName == 'input' || element.tagName == 'INPUT') {
+		if (element.type) {
+			if (element.type == 'radio') {
+				var elements = getElementsByClassName($(ACTIVE_PROPERTY_SETTER_BOX), '*', 'modulePropertySetter');
+				
+				var groupedElements = new Array();
+				for (var i = 0; i < elements.length; i++) {
+					var sameNameElements = getAllElementsByName(elements, 'ib_property_' + i);
+					if (sameNameElements.length > 0) {
+						groupedElements.push(sameNameElements);
+					}
+				}
+				
+				for (var i = 0; i < groupedElements.length; i++) {
+					var sameNameElements = groupedElements[i];
+					if (sameNameElements.length == 2) {
+						var positive = sameNameElements[0];
+						var negative = sameNameElements[1];
+						if (positive.checked) {
+							value = positive.value;
+						}
+						else if (negative.checked) {
+							value = negative.value;
+						}
+						else {
+							value = 'N';	//	Nothing checked
+						}
+						EXTRACTED_VALUES.push(positive.name);
+					}
+				}
+			}
+			else {
+				value = DWRUtil.getValue(element);
+			}
+		}
+	}
+	
+	//	Select
+	if (element.tagName == 'select' || element.tagName == 'SELECT') {
+		value = DWRUtil.getValue(element);
+	}
+	
+	if (value == '') {
+		value = null;
+	}
+	return value;
+}
+
+function getSameNameElements(elements) {
+	var groupedElements = new Array();
+	for (var i = 0; i < elements.length; i++) {
+		var sameNameElements = getAllElementsByName(elements, 'ib_property_' + i);
+		if (sameNameElements.length > 0) {
+			for (var j = 0; j < sameNameElements.length; j++) {
+				groupedElements.push(sameNameElements[j]);
+			}
+		}
+	}
+	return groupedElements;
 }
 
 function getAllElementsByName(list, name) {
@@ -884,7 +964,7 @@ function getAllElementsByName(list, name) {
 	}
 	for (var i = 0; i < list.length; i++) {
 		if (list[i].name) {
-			if (list[i].name == name) {
+			if (list[i].name == name && !(existsElementInArray(EXTRACTED_VALUES, name))) {
 				sameNameElements.push(list[i]);
 			}
 		}
