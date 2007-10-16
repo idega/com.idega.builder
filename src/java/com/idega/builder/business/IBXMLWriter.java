@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.14 2007/10/05 08:36:36 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.15 2007/10/16 07:43:34 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -461,7 +461,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 * Checks if the propertyValue array is correctly formcatted (Not with empty
+	 * Checks if the propertyValue array is correctly formatted (Not with empty
 	 * strings or null values)
 	 */
 	private boolean isPropertyValueArrayValid(String[] propertyValues) {
