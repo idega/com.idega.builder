@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.75 2007/10/11 11:28:20 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.76 2007/10/16 07:43:10 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -495,17 +495,14 @@ public class IBPropertyHandler implements Singleton{
 	/**
 	 * New generation setter
 	 */
-	public PresentationObject getPropertySetterComponent(IWContext iwc, PropertyHandlerBean properties/*String presentationObjectInstanceId, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue, String className, boolean needReload*/) {
+	public PresentationObject getPropertySetterComponent(IWContext iwc, PropertyHandlerBean properties) {
 		boolean attributesSet = false;
 		
 		String propertyName = properties.getPropertyName();
 		String name = properties.getName();
 		String stringValue = properties.getValue();
-		String className = properties.getStyleClass();
-		Class parameterClass = properties.getParameterClass();
+		Class<?> parameterClass = properties.getParameterClass();
 		int parameterIndex = properties.getParameterIndex();
-		boolean needReload = properties.isNeedsReload();
-		boolean isMultivalue = properties.isMultivalue();
 		
 		PresentationObject obj = null;
 		try {
@@ -514,7 +511,7 @@ public class IBPropertyHandler implements Singleton{
 		catch (Exception e) {
 		}
 		if (obj != null) {
-			setMarkupAttributes(obj, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
+			setMarkupAttributes(obj, properties);
 			return obj;
 		}
 		
@@ -546,12 +543,12 @@ public class IBPropertyHandler implements Singleton{
 			Span yesOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).append(":").toString()));
 			RadioButton yes = new RadioButton(name);
 			yes.setValue("Y");
-			setMarkupAttributes(yes, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
+			setMarkupAttributes(yes, properties);
 			
 			Span noOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("no", "No")).append(":").toString()));
 			RadioButton no = new RadioButton(name);
 			no.setValue("N");
-			setMarkupAttributes(no, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
+			setMarkupAttributes(no, properties);
 			
 			if (stringValue.equalsIgnoreCase("Y") || stringValue.equalsIgnoreCase("T")) {
 				yes.setSelected();
@@ -644,12 +641,12 @@ public class IBPropertyHandler implements Singleton{
 			}
 		}
 		if (!attributesSet) {
-			setMarkupAttributes(obj, propertyName, properties.getObjectInstanceId(), needReload, isMultivalue, className);
+			setMarkupAttributes(obj, properties);
 		}
 		return obj;
 	}
 	
-	private void setMarkupAttributes(PresentationObject object, String propertyName, String instanceId, boolean needReload, boolean isMultivalue, String className) {
+	private void setMarkupAttributes(PresentationObject object, PropertyHandlerBean properties) {
 		if (object == null) {
 			return;
 		}
@@ -668,28 +665,43 @@ public class IBPropertyHandler implements Singleton{
 						List children = cell.getChildren();
 						if (children != null) {
 							for (int k = 0; k < children.size(); k++) {
-								setMarkupAttributesToObject(children.get(k), propertyName, instanceId, needReload, isMultivalue, className);
+								setMarkupAttributesToObject(children.get(k), properties);
 							}
 						}
 					}
 				}
 			}
 		}
-		else {
-			setMarkupAttributesToObject(object, propertyName, instanceId, needReload, isMultivalue, className);
+		
+		if (object.getChildren() != null) {
+			List children = object.getChildren();
+			for (int i = 0; i < children.size(); i++) {
+				setMarkupAttributesToObject(children.get(i), properties);
+			}
 		}
+		
+		if (object.getFacets() != null) {
+			Map children = object.getFacets();
+			for (Iterator it = children.values().iterator(); it.hasNext();) {
+				setMarkupAttributesToObject(it.next(), properties);
+			}
+		}
+		
+		setMarkupAttributesToObject(object, properties);
 	}
 	
-	private boolean setMarkupAttributesToObject(Object object, String propertyName, String instanceId, boolean needReload, boolean isMultivalue, String className) {
+	private boolean setMarkupAttributesToObject(Object object, PropertyHandlerBean properties) {
 		if (!(object instanceof PresentationObject)) {
 			return false;
 		}
+
 		PresentationObject po = (PresentationObject) object;
-		po.setMarkupAttribute("propname", propertyName);
-		po.setMarkupAttribute("moduleid", instanceId);
-		po.setMarkupAttribute("needsreload", needReload);
-		po.setMarkupAttribute("multivalue", isMultivalue);
-		po.setStyleClass(className);
+		po.setMarkupAttribute("propname", properties.getPropertyName());
+		po.setMarkupAttribute("moduleid", properties.getObjectInstanceId());
+		po.setMarkupAttribute("needsreload", properties.isNeedsReload());
+		po.setMarkupAttribute("multivalue", properties.isMultivalue());
+		po.setMarkupAttribute("parameterscount", properties.getParametersCount());
+		po.setStyleClass(properties.getStyleClass());
 		
 		return true;
 	}
@@ -919,7 +931,7 @@ public class IBPropertyHandler implements Singleton{
 	}
 
 	public void setDropdownToChangeValue(DropdownMenu drop) {
-		drop.setOnChange(com.idega.builder.presentation.IBPropertiesWindowSetter.MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME + "()");
+		//drop.setOnChange(com.idega.builder.presentation.IBPropertiesWindowSetter.MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME + "()");
 	}
 	
 	private IBClassesFactory getBuilderClassesFactory() {

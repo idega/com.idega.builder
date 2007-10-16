@@ -19,6 +19,8 @@ import com.idega.util.reflect.MethodFinder;
 
 public class SetModulePropertyBlock extends Block {
 	
+	private boolean isMultiValue = false;
+	
 	public SetModulePropertyBlock() {
 		setCacheable(getCacheKey());
 	}
@@ -69,7 +71,7 @@ public class SetModulePropertyBlock extends Block {
 		else{
 			parameters = new Class[]{String.class};
 		}
-		boolean isMultiValue = parameters.length == 1 ? false : true;
+		isMultiValue = parameters.length == 1 ? false : true;
 		boolean isChangingProperty = setter.isChangingProperty(iwc);
 		String selectedValues[] = setter.parseValues(iwc);
 		String paramDescriptions[] = IBPropertyHandler.getInstance().getPropertyDescriptions(iwc, instanceId, propertyName);
@@ -108,7 +110,7 @@ public class SetModulePropertyBlock extends Block {
 			}
 			
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	new PropertyHandlerBean(instanceId,
-					propertyName, name, value, "modulePropertySetter", parameterClass, i, needsReload, isMultiValue));
+					propertyName, name, value, CoreConstants.BUILDER_PORPERTY_SETTER_STYLE_CLASS, parameterClass, i, needsReload, isMultiValue, parameters.length));
 			
 			handlerBox.setMarkupAttribute("jsfcomponent", IBPropertyHandler.getInstance().isJsfComponent(iwc, presObjClass.getName()));
 			container.add(handlerBox);
@@ -123,20 +125,17 @@ public class SetModulePropertyBlock extends Block {
 			if (handler == null) {
 				iwc.removeSessionAttribute(CoreConstants.HANDLER_PARAMETER);
 			}
-			
-//			Parameter param = new Parameter(BuilderConstants.VALUE_PARAMETER, sName);
-//			container.add(param);
-//			table.add(param, 2, ypos);
-			// if
-			// (handlerClass.equals("com.idega.builder.handler.LocalizedPageNameHandler"))
-			// {
-			// Parameter param2 = new Parameter(VALUE_PARAMETER, sName+"a");
-			// table.add(param2, 2, ypos);
-			// }
-//			table.add(handlerBox, 2, ypos);
 		}
 		
 		this.add(container);
+	}
+	
+	public boolean isMultiValue() {
+		return isMultiValue;
+	}
+	
+	public String getBundleIdentifier() {
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 	
 	private boolean doesPropertyNeedReload(String instanceId, String propertyName, IWContext iwc) {
