@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.102 2007/05/09 17:43:18 valdas Exp $
+ *  $Id: IBApplication.java,v 1.103 2007/10/17 15:04:42 valdas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.FrameSet;
 import com.idega.presentation.IWContext;
@@ -51,6 +52,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.IFrame;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.util.CoreConstants;
 /**
  *@author     <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  *@created    11. mars 2002
@@ -145,6 +147,11 @@ public class IBApplication extends IWApplication {
 	 *@param  iwc  Description of the Parameter
 	 */
 	public static void startIBApplication(IWContext iwc) {
+		IWMainApplicationSettings settings = iwc.getIWMainApplication().getSettings();
+		if (!settings.isSetDefaultCharacterEncoding()) {
+			settings.setDefaultCharacterEncoding(CoreConstants.ENCODING_UTF8);
+		}
+		
 		BuilderLogic.getInstance().startBuilderSession(iwc);
 		//To prevent constant realoding when many frames are loaded at the same time
 		List l = (List) iwc.getSessionAttribute("ib_startup_class_list");
@@ -153,6 +160,8 @@ public class IBApplication extends IWApplication {
 			iwc.setSessionAttribute("ib_startup_class_list", l);
 		}
 		l.add(IBToolBar.class);
+		
+		//	Setting default encoding
 	}
 	/**
 	 *  Description of the Method
