@@ -21,6 +21,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -48,13 +49,14 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			return info;
 		}
 		
-		IWResourceBundle iwrb = builder.getBuilderBundle().getResourceBundle(iwc);
+		IWBundle bundle = builder.getBuilderBundle();
+		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 		
 		info.add(builder.getUriToObject(AddModuleBlock.class));																// 0
 		info.add(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));										// 1
 		info.add(iwrb.getLocalizedString("set_module_properties", "Set module properties"));								// 2
-		info.add(new StringBuffer(builder.getBuilderBundle().getResourcesPath()).append("/add.png").toString());			// 3
-		info.add(new StringBuffer(builder.getBuilderBundle().getResourcesPath()).append("/information.png").toString());	// 4
+		info.add(new StringBuffer(bundle.getResourcesPath()).append("/add.png").toString());								// 3
+		info.add(new StringBuffer(bundle.getResourcesPath()).append("/information.png").toString());						// 4
 		info.add(iwrb.getLocalizedString("no_ids_inserting_module", "Error occurred while inserting selected module!"));	// 5
 		info.add(String.valueOf(iwc.getCurrentIBPageID()));																	// 6
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
@@ -73,6 +75,8 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(iwrb.getLocalizedString("drop_area", "Drop module into"));													// 20
 		info.add(iwrb.getLocalizedString("copying", "Copying..."));															// 21
 		info.add(iwrb.getLocalizedString("region", "region"));																// 22
+		info.add(bundle.getVirtualPathWithFileNameString("remove.png"));													// 23
+		info.add(iwrb.getLocalizedString("remove", "Remove"));																// 24
 		
 		return info;
 	}
@@ -287,6 +291,10 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	public boolean removeProperty(String pageKey, String moduleId, String propertyName) {
+		return builder.removeModuleProperty(pageKey, moduleId, propertyName);
 	}
 	
 	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index, String parentId) {

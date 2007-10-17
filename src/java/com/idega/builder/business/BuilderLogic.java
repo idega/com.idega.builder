@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.284 2007/10/16 07:42:41 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.285 2007/10/17 08:51:44 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -995,6 +995,37 @@ public class BuilderLogic implements Singleton {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean removeModuleProperty(String pageKey, String moduleId, String propertyName) {
+		if (pageKey == null || moduleId == null || propertyName == null) {
+			return false;
+		}
+		
+		IWMainApplication iwma = null;
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			iwma = IWMainApplication.getDefaultIWMainApplication();
+		}
+		else {
+			iwma = iwc.getIWMainApplication();
+		}
+		if (iwma == null) {
+			return false;
+		}
+		
+		String[] values = getPropertyValues(iwma, pageKey, moduleId, propertyName, null, true);
+		if (values == null) {
+			return false;
+		}
+		boolean result = removeProperty(iwma, pageKey, moduleId, propertyName, values);
+		
+		if (result) {
+			removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
+			removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
+		}
+		
+		return result;
 	}
 
 	/**

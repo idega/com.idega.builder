@@ -71,4 +71,9 @@ public interface BuilderEngine extends IBOSession {
 	 * @see com.idega.builder.bean.BuilderEngineBean#isModuleInClipboard
 	 */
 	public String[] isModuleInClipboard();
+	
+	/**
+	 * @see com.idega.builder.bean.BuilderEngineBean#removeProperty
+	 */
+	public boolean removeProperty(String pageKey, String moduleId, String propertyName);
 }

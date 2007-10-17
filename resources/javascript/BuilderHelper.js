@@ -3,6 +3,7 @@ var EDIT_COMPONENT_WINDOW_LINK = '/workspace/window/';
 
 var ADD_NEW_COMPONENT_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/add.png';
 var COMPONENT_INFORMATION_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/information.png';
+var REMOVE_BUILDER_PROPERTY_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/remove.png';
 
 var ADD_NEW_COMPONENT_LABEL = 'Add a new Module';
 var COMPONENT_INFORMATION_LABEL = 'Set module properties';
@@ -18,6 +19,7 @@ var MOVING_LABEL = 'Moving...';
 var DROP_MODULE_HERE_LABEL = 'Drop module into';
 var COPYING_LABEL = 'Copying...';
 var SMALL_REGION_LABEL = 'region';
+var REMOVE_LABEL = 'Remove';
 
 var PROPERTY_NAME = null;
 var INSTANCE_ID = null;
@@ -55,7 +57,7 @@ function getBuilderInitInfoCallback(list) {
 	if (list == null) {
 		return false;
 	}
-	if (list.length != 23) {
+	if (list.length != 25) {
 		return false;
 	}
 	
@@ -82,6 +84,8 @@ function getBuilderInitInfoCallback(list) {
 	DROP_MODULE_HERE_LABEL = list[20];
 	COPYING_LABEL = list[21];
 	SMALL_REGION_LABEL = list[22];
+	REMOVE_BUILDER_PROPERTY_IMAGE = list[23];
+	REMOVE_LABEL = list[24];
 	
 }
 
@@ -127,9 +131,9 @@ function registerBuilderActions() {
 	}
 	DWREngine.setErrorHandler(errorHanlder);
 	
-	hidePasteIcons(false);
-	
 	addEventsToBuilderElements();
+	
+	hidePasteIcons(false);
 }
 
 function addEventsToBuilderElements() {
@@ -192,6 +196,8 @@ function addEventsToBuilderElements() {
 	);
 	$$('select.modulePropertySetter').each(
 		function(element) {
+			element.removeEvents('change');
+			
 			element.addEvent('change', function(e) {
 				element.setProperty('valuechanged', true);
 				e = new Event(e);
@@ -733,14 +739,29 @@ function getPropertyBox(id, propertyName, objectInstanceId) {
 	ACTIVE_PROPERTY_SETTER_BOX = id;
 	PROPERTY_NAME = propertyName;
 	INSTANCE_ID = objectInstanceId;
+	getBuilderModulePropertyBox(id, propertyName, objectInstanceId, false);
+}
+
+function getBuilderModulePropertyBox(id, propertyName, objectInstanceId, reloadBox) {
 	var fullId = id + '_property_setter_box';
 	closeOldPropertyBoxes(fullId);
-	var propertySetterBox = $(fullId) ;
+	var propertySetterBox = $(fullId);
+	
+	var openPropertyBox = true;
+	if (reloadBox) {
+		openPropertyBox = false;
+		if (propertySetterBox != null) {
+			openPropertyBox = !(propertySetterBox.style.display == 'none');
+			propertySetterBox.remove();
+			propertySetterBox = null;
+		}
+	}
+	
 	if (propertySetterBox == null) {
 		showLoadingMessage(LOADING_LABEL);
 		BuilderEngine.getPropertyBox(PAGE_KEY, propertyName, objectInstanceId, {
 			callback: function(box) {
-				getPropertyBoxCallback(id, propertyName, objectInstanceId, box);
+				getPropertyBoxCallback(id, propertyName, objectInstanceId, box, openPropertyBox);
 			}
 		});
 	}
@@ -757,7 +778,7 @@ function getPropertyBox(id, propertyName, objectInstanceId) {
 	}
 }
 
-function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
+function getPropertyBoxCallback(id, propertyName, objectInstanceId, box, openPropertyBox) {
 	closeAllLoadingMessages();
 	if (id == null) {
 		return false;
@@ -775,12 +796,13 @@ function getPropertyBoxCallback(id, propertyName, objectInstanceId, box) {
 	propertySetterBox.setProperty('id', fullId);
 	PROPERTY_BOX_SHOWN.push(fullId);
 	
-	insertNodesToContainer(box, propertySetterBox);	
+	insertNodesToContainer(box, propertySetterBox);
+	if (!openPropertyBox) {
+		propertySetterBox.style.display = 'none';
+	}
 	container.appendChild(propertySetterBox);
 	
-	try {
-		registerBuilderActions();	// Need to re-register actions
-	} catch(e) {}
+	addEventsToBuilderElements();	// Need to re-register actions
 }
 
 function getMarkupAttributeValue(element, attrName) {
@@ -824,6 +846,10 @@ function saveModuleProperty(event, element) {
 	}
 	
 	var isValueChanged = element.getProperty('valuechanged');
+	if (isValueChanged == null) {
+		return false;
+	}
+	isValueChanged += '';
 	if (isValueChanged == 'true') {
 		element.setProperty('valuechanged', false);
 	}
@@ -856,7 +882,7 @@ function saveModuleProperty(event, element) {
 
 function saveValuesForModule(values, moduleId, propertyName, needsReload, openedWindow, parametersCount) {
 	EXTRACTED_VALUES = new Array();
-	if (values == null || values.length == 0) {
+	if (values == null) {
 		return false;
 	}
 	if (values.length != parametersCount) {
@@ -871,7 +897,7 @@ function saveValuesForModule(values, moduleId, propertyName, needsReload, opened
 			}
 			
 			closeAllLoadingMessages();
-			saveModulePropertyCallback(result, moduleId, needsReload);
+			saveModulePropertyCallback(result, moduleId, needsReload, propertyName);
 		}
 	});
 }
@@ -979,7 +1005,7 @@ function executeActionsBeforeReloading() {
 	reloadPage();
 }
 
-function saveModulePropertyCallback(result, moduleId, needsReload) {
+function saveModulePropertyCallback(result, moduleId, needsReload, propertyName) {
 	if (!result) {
 		closeAllLoadingMessages();
 		return false;
@@ -988,8 +1014,11 @@ function saveModulePropertyCallback(result, moduleId, needsReload) {
 	if (ACTIVE_PROPERTY_SETTER_BOX != null) {
 		var setterBox = $(ACTIVE_PROPERTY_SETTER_BOX);
 		if (setterBox != null) {
+			setterBox.removeClass('moduleProperty');
 			setterBox.addClass('modulePropertyIsSet');
 		}
+		
+		getRemoveBuilderPropertyImage(moduleId, propertyName);
 	}
 	
 	if (needsReload == 'true') {
@@ -1246,4 +1275,50 @@ function isModuleInClipboardCallback(ids) {
 		}
 		return false;
 	}
+}
+
+function removeBuilderModuleProperty(id, boxId, moduleId, propertyName) {
+	var confirmed = window.confirm(ARE_YOU_SURE_MESSAGE);
+	if (!confirmed) {
+		return false;
+	}
+	
+	showLoadingMessage(SAVING_LABEL);
+	BuilderEngine.removeProperty(PAGE_KEY, moduleId, propertyName, {
+		callback: function(result) {
+			closeAllLoadingMessages();
+			if (!result) {
+				return false;
+			}
+			
+			var image = $(id);
+			image.remove();
+			
+			var container = $(boxId);
+			container.removeClass('modulePropertyIsSet');
+			container.addClass('moduleProperty');
+			
+			getBuilderModulePropertyBox(boxId, propertyName, moduleId, true);
+			renderModuleAgain(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
+		}
+	});
+}
+
+function getRemoveBuilderPropertyImage(moduleId, propertyName) {
+	var image = new Element('img');
+	var id = 'id' + new Date().getTime();
+	image.setProperty('id', id);
+	image.setProperty('src', REMOVE_BUILDER_PROPERTY_IMAGE);
+	image.setProperty('alt', REMOVE_LABEL);
+	image.setProperty('title', REMOVE_LABEL);
+	image.setProperty('height', 16);
+	image.setProperty('width', 16);
+	
+	var boxId = ACTIVE_PROPERTY_SETTER_BOX;
+	image.addEvent('click', function() {
+		removeBuilderModuleProperty(id, boxId, moduleId, propertyName);
+	});
+	
+	var container = $(boxId);
+	image.injectAfter(container.getFirst());
 }

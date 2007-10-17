@@ -10,9 +10,11 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.component.business.ComponentProperty;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Span;
 import com.idega.presentation.text.Break;
@@ -170,12 +172,18 @@ public class EditModuleBlock extends Block {
 		String itemStyleSetProperty = "modulePropertyIsSet";
 		String propertyId = null;
 		Span propertyName = null;
+		IWBundle bundle = getBundle(iwc);
+		String imageUri = bundle.getVirtualPathWithFileNameString("remove.png");
+		String imageName = bundle.getResourceBundle(iwc).getLocalizedString("remove", "Remove");
+		Image remove = null;
+		boolean isPropertySet = false;
 		for (int i = 0; i < properties.size(); i++) {
 			propertyId = new StringBuffer("property").append(generator.nextInt(Integer.MAX_VALUE)).toString();
 			property = properties.get(i);
 			item = new ListItem();
 			item.setId(propertyId);
-			if (BuilderLogic.getInstance().isPropertySet(pageKey, instanceId, property.getName(), iwc.getIWMainApplication())) {
+			isPropertySet = BuilderLogic.getInstance().isPropertySet(pageKey, instanceId, property.getName(), iwc.getIWMainApplication());
+			if (isPropertySet) {
 				item.setStyleClass(itemStyleSetProperty);
 			}
 			else {
@@ -184,6 +192,13 @@ public class EditModuleBlock extends Block {
 			propertyName = new Span(new Text(property.getDisplayName(iwc.getCurrentLocale())));
 			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(property.getName()).append("', '").append(instanceId).append("');").toString());
 			item.add(propertyName);
+			
+			if (isPropertySet) {
+				remove = new Image(imageUri, imageName, 16, 16);
+				remove.setOnClick(new StringBuffer("removeBuilderModuleProperty('").append(remove.getId()).append("', '").append(propertyId).append("', '").append(instanceId).append("', '").append(property.getName()).append("');").toString());
+				item.add(remove);
+			}
+			
 			list.add(item);
 		}
 		
@@ -192,6 +207,10 @@ public class EditModuleBlock extends Block {
 		propertiesWrapper.setId(new StringBuffer(propertiesContainer.getId()).append("Wrapper").toString());
 		container.add(propertiesWrapper);
 		parent.add(container);
+	}
+	
+	public String getBundleIdentifier() {
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 
 }
