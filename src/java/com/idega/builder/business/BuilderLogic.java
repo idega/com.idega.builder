@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.285 2007/10/17 08:51:44 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.286 2007/10/17 15:09:25 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3307,7 +3307,7 @@ public class BuilderLogic implements Singleton {
 		// Building JDOM Document
 		InputStream stream = null;
 		try {
-			stream = new ByteArrayInputStream(rendered.getBytes("UTF-8"));
+			stream = new ByteArrayInputStream(rendered.getBytes(CoreConstants.ENCODING_UTF8));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return null;

@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.76 2007/05/16 14:15:14 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.77 2007/10/17 15:09:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,8 +20,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
@@ -51,6 +53,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TreeViewer;
 import com.idega.repository.data.Singleton;
 import com.idega.servlet.filter.IWWelcomeFilter;
+import com.idega.util.CoreConstants;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
 
@@ -494,11 +497,11 @@ public class IBPageHelper implements Singleton  {
 		try {
 				//convert the string to utf-8
 				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
-				//String theString = new String(this.toString().getBytes(),"UTF-8");
+				//String theString = new String(this.toString().getBytes(),CoreConstants.ENCODING_UTF8);
 
 				StringReader sr = new StringReader(fileSource);
 				
-				OutputStreamWriter out = new OutputStreamWriter(stream,"UTF-8");
+				OutputStreamWriter out = new OutputStreamWriter(stream,CoreConstants.ENCODING_UTF8);
 				
 				
 				int bufferlength=1000;

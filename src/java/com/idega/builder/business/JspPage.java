@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.11 2006/06/02 10:27:56 tryggvil Exp $
+ * $Id: JspPage.java,v 1.12 2007/10/17 15:09:25 valdas Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,7 +15,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
+
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.CoreConstants;
 import com.idega.util.StringHandler;
 
 
@@ -25,10 +27,10 @@ import com.idega.util.StringHandler;
  * This means that the page is based on a JSP page and the rendering is dispatched to the 
  * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
  * </p>
- *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/10/17 15:09:25 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class JspPage extends CachedBuilderPage {
 	
@@ -142,7 +144,7 @@ public class JspPage extends CachedBuilderPage {
 				
 				log.finer("Streaming builder page with uri: "+getURIWithContextPath()+" to disk in file: "+jspFile.toURL().toString());
 				
-				InputStreamReader reader = new InputStreamReader(pageStream,"UTF-8");//,encoding);
+				InputStreamReader reader = new InputStreamReader(pageStream,CoreConstants.ENCODING_UTF8);//,encoding);
 				int bufferlength=1000;
 				char[] buf = new char[bufferlength];
 				StringBuffer sbuffer = new StringBuffer();			

@@ -1,5 +1,5 @@
 /*
- * $Id: HtmlTemplateGrabber.java,v 1.2 2006/04/09 11:43:34 laddi Exp $ Created on
+ * $Id: HtmlTemplateGrabber.java,v 1.3 2007/10/17 15:09:24 valdas Exp $ Created on
  * 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -19,8 +19,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
+
 import javax.ejb.FinderException;
+
 import com.idega.core.builder.data.ICPage;
+import com.idega.util.CoreConstants;
 import com.idega.util.HtmlReferenceRewriter;
 
 /**
@@ -28,10 +31,10 @@ import com.idega.util.HtmlReferenceRewriter;
  * Class that "grabs" a temlpate from a URL, parses it (re-writes all relative hrefs) and updates a BuilderPage
  * to include the parsed html code.
  * </p>
- * Last modified: $Date: 2006/04/09 11:43:34 $ by $Author: laddi $
+ * Last modified: $Date: 2007/10/17 15:09:24 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class HtmlTemplateGrabber {
 
@@ -76,7 +79,7 @@ public class HtmlTemplateGrabber {
 		ibpage.setFormat(BuilderLogic.getInstance().PAGE_FORMAT_HTML);
 		OutputStream outStream = ibpage.getPageValueForWrite();
 		Reader input = new BufferedReader(iReader);
-		Writer output = new OutputStreamWriter(outStream, "UTF-8");
+		Writer output = new OutputStreamWriter(outStream, CoreConstants.ENCODING_UTF8);
 		instance.setInput(input);
 		instance.setOutput(output);
 		instance.setUrlPrefix(urlPrefix);

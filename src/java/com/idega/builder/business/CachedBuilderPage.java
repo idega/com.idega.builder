@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.16 2007/05/10 15:23:30 thomas Exp $
+ * $Id: CachedBuilderPage.java,v 1.17 2007/10/17 15:09:25 valdas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.IWContext;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
+import com.idega.util.CoreConstants;
 
 /**
  * An abstract class that represents a cached instance of a Builder page.
@@ -417,11 +418,11 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		try {
 				//convert the string to utf-8
 				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
-				//String theString = new String(this.toString().getBytes(),"UTF-8");
+				//String theString = new String(this.toString().getBytes(),CoreConstants.ENCODING_UTF8);
 				String theString = this.toString();
 				StringReader sr = new StringReader(theString);
 				
-				OutputStreamWriter out = new OutputStreamWriter(stream,"UTF-8");
+				OutputStreamWriter out = new OutputStreamWriter(stream,CoreConstants.ENCODING_UTF8);
 				
 				
 				int bufferlength=1000;

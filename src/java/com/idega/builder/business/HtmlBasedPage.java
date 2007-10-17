@@ -1,5 +1,5 @@
 /*
- * $Id: HtmlBasedPage.java,v 1.15 2006/06/02 10:27:56 tryggvil Exp $
+ * $Id: HtmlBasedPage.java,v 1.16 2007/10/17 15:09:25 valdas Exp $
  * Created on Created on 1.6.2004 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,24 +13,27 @@ package com.idega.builder.business;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import javax.ejb.EJBException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+
 import com.idega.core.builder.data.ICPage;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.HtmlPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.util.CoreConstants;
 
 /**
  * This class is handles a Builder Page of format HTML.
  * This class is responsible for reading the HTML page stream but the parsing of the 
  * Html code and Region tags is handled by the class com.idega.presentation.HtmlPage.
  * 
- *  Last modified: $Date: 2006/06/02 10:27:56 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2007/10/17 15:09:25 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPage{
 
@@ -57,7 +60,7 @@ public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPa
 
 		try {
 			
-			InputStreamReader reader = new InputStreamReader(stream,"UTF-8");//,encoding);
+			InputStreamReader reader = new InputStreamReader(stream,CoreConstants.ENCODING_UTF8);//,encoding);
 			int bufferlength=1000;
 			char[] buf = new char[bufferlength];
 			StringBuffer sbuffer = new StringBuffer();			

@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleTemplateCreationManagedBean.java,v 1.5 2006/05/10 08:27:08 laddi Exp $
+ * $Id: SimpleTemplateCreationManagedBean.java,v 1.6 2007/10/17 15:09:26 valdas Exp $
  * Created on 4.5.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.faces.component.UICommand;
@@ -22,6 +23,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
 import javax.faces.model.SelectItem;
+
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
@@ -35,16 +37,17 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.presentation.IWContext;
+import com.idega.util.CoreConstants;
 import com.idega.xml.XMLNamespace;
 import com.idega.xml.XMLOutput;
 
 
 /**
  * 
- *  Last modified: $Date: 2006/05/10 08:27:08 $ by $Author: laddi $
+ *  Last modified: $Date: 2007/10/17 15:09:26 $ by $Author: valdas $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SimpleTemplateCreationManagedBean implements ActionListener {
 
@@ -175,7 +178,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 		XMLOutput output = new XMLOutput();
 		output.setLineSeparator(System.getProperty("line.separator"));
 		output.setTextNormalize(true);
-		output.setEncoding("UTF-8");
+		output.setEncoding(CoreConstants.ENCODING_UTF8);
 		return output.outputString(jspDoc);
 	}
 	

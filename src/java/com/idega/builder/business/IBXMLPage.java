@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.68 2007/03/08 12:51:31 valdas Exp $
+ * $Id: IBXMLPage.java,v 1.69 2007/10/17 15:09:25 valdas Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -31,6 +31,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.util.CoreConstants;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -42,10 +43,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2007/03/08 12:51:31 $ by $Author: valdas $
+ *  Last modified: $Date: 2007/10/17 15:09:25 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.68 $
+ * @version $Revision: 1.69 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -228,7 +229,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 					XMLOutput output = new XMLOutput("  ", true);
 					output.setLineSeparator(System.getProperty("line.separator"));
 					output.setTextNormalize(true);
-					output.setEncoding("UTF-8");
+					output.setEncoding(CoreConstants.ENCODING_UTF8);
 					output.output(doc, stream);
 					stream.close();
 			}
@@ -320,7 +321,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			if(stream==null){
 				throw new PageDoesNotExist("Page contains no data");
 			}
-			new InputStreamReader(stream,"UTF-8");
+			new InputStreamReader(stream,CoreConstants.ENCODING_UTF8);
 			this.setXMLDocument(getParser().parse(stream));
 			//_xmlDocument = _parser.parse(stream);
 			stream.close();
