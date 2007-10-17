@@ -90,10 +90,14 @@ function getBuilderInitInfoCallback(list) {
 }
 
 function existsSliderForElement(id) {
-	for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
-		if (id == PASTE_ICONS_SLIDERS[i].element.id) {
-			return true;
+	try {
+		for (var i = 0; i < PASTE_ICONS_SLIDERS.length; i++) {
+			if (id == PASTE_ICONS_SLIDERS[i].element.id) {
+				return true;
+			}
 		}
+	} catch(e) {
+		return false;
 	}
 	return false;
 }
