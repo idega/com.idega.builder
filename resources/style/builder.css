@@ -454,3 +454,10 @@ div#simple_properties_box {
 .draggingOverDropArea {
 	background-color: #98B5C1;
 }
+
+.removeBuilderModulePropertyStyle {
+}
+
+.removeBuilderModulePropertyStyle:HOVER {
+	cursor: pointer;
+}
