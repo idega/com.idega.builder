@@ -170,6 +170,7 @@ public class EditModuleBlock extends Block {
 		ListItem item = null;
 		String itemStyle = "moduleProperty";
 		String itemStyleSetProperty = "modulePropertyIsSet";
+		String removeStyleClass = "removeBuilderModulePropertyStyle";
 		String propertyId = null;
 		Span propertyName = null;
 		IWBundle bundle = getBundle(iwc);
@@ -195,6 +196,7 @@ public class EditModuleBlock extends Block {
 			
 			if (isPropertySet) {
 				remove = new Image(imageUri, imageName, 16, 16);
+				remove.setStyleClass(removeStyleClass);
 				remove.setOnClick(new StringBuffer("removeBuilderModuleProperty('").append(remove.getId()).append("', '").append(propertyId).append("', '").append(instanceId).append("', '").append(property.getName()).append("');").toString());
 				item.add(remove);
 			}
