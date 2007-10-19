@@ -461,4 +461,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public String getClassNameForSourceView() {
 		return IBSourceView.class.getName();
 	}
+	public String getInstanceId(UIComponent component) {
+		return getBuilderLogic().getInstanceId(component);
+	}
+	
+	public UIComponent findComponentInPage(IWContext iwc, String pageKey, String instanceId) {
+		return getBuilderLogic().findComponentInPage(iwc, pageKey, instanceId);
+	}
 }
