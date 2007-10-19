@@ -1309,6 +1309,21 @@ function removeBuilderModuleProperty(id, boxId, moduleId, propertyName) {
 }
 
 function getRemoveBuilderPropertyImage(moduleId, propertyName) {
+	var needImage = false;
+	var boxId = ACTIVE_PROPERTY_SETTER_BOX;
+	var container = $(boxId);
+	var removeImagesInContainer = getElementsByClassName(container, 'img', 'removeBuilderModulePropertyStyle');
+	if (removeImagesInContainer == null) {
+		needImage = true;
+	}
+	if (removeImagesInContainer.length == 0) {
+		needImage = true;
+	}
+	
+	if (!needImage) {
+		return false;
+	}
+	
 	var image = new Element('img');
 	var id = 'id' + new Date().getTime();
 	image.setProperty('id', id);
@@ -1317,12 +1332,12 @@ function getRemoveBuilderPropertyImage(moduleId, propertyName) {
 	image.setProperty('title', REMOVE_LABEL);
 	image.setProperty('height', 16);
 	image.setProperty('width', 16);
+	image.addClass('removeBuilderModulePropertyStyle');
 	
-	var boxId = ACTIVE_PROPERTY_SETTER_BOX;
+	
 	image.addEvent('click', function() {
 		removeBuilderModuleProperty(id, boxId, moduleId, propertyName);
 	});
 	
-	var container = $(boxId);
 	image.injectAfter(container.getFirst());
 }
