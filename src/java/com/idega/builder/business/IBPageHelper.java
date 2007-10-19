@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.77 2007/10/17 15:09:25 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.78 2007/10/19 14:59:33 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -362,12 +362,14 @@ public class IBPageHelper implements Singleton  {
 //		}
 		
 		int tid = -1;
-		try {
-			tid = Integer.parseInt(templateId);
-			ibPage.setTemplateId(tid);
-		}
-		catch (java.lang.NumberFormatException e) {
-//			e.printStackTrace();
+		if (templateId != null) {
+			try {
+				tid = Integer.parseInt(templateId);
+				ibPage.setTemplateId(tid);
+			}
+			catch (java.lang.NumberFormatException e) {
+				e.printStackTrace();
+			}
 		}
 		if (subType != null) {
 			ibPage.setSubType(subType);
