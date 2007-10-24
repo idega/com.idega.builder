@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.286 2007/10/17 15:09:25 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.287 2007/10/24 16:22:20 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3285,7 +3285,7 @@ public class BuilderLogic implements Singleton {
 				e.printStackTrace();
 				return null;
 			}
-//			System.out.println("Cleaned object: \n" + renderedObject);
+//			System.out.println("Cleaned object: \n" + rendered);
 		}
 		
 		return rendered;
