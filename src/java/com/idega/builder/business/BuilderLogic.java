@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.287 2007/10/24 16:22:20 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.288 2007/10/25 18:29:13 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1815,16 +1815,22 @@ public class BuilderLogic implements Singleton {
 	 */
 	public String getIBPageURL(IWApplicationContext iwc, int ib_page_id) {
 		String pageKey = Integer.toString(ib_page_id);
-		return getIBPageURL(iwc,pageKey);
+		return getIBPageURL(iwc, pageKey, false);
 	}
-		
-		
-		
-	public String getIBPageURL(IWApplicationContext iwc, String pageKey) {
-		if(IWMainApplication.useNewURLScheme){
-			//String pageKey = Integer.toString(ib_page_id);
-			String pageUri = getPageCacher().getCachedBuilderPage(pageKey).getPageUri();
-			if(pageUri!=null){
+	
+	public String getIBPageURL(IWApplicationContext iwc, String pageKey, boolean checkIfDeleted) {
+		if (IWMainApplication.useNewURLScheme) {
+			CachedBuilderPage page = getPageCacher().getCachedBuilderPage(pageKey);
+			if (page == null) {
+				return null;
+			}
+			
+			if (checkIfDeleted && page.getICPage().getDeleted()) {
+				return null;
+			}
+			
+			String pageUri = page.getPageUri();
+			if (pageUri != null) {
 				String returnUrl = iwc.getIWMainApplication().getBuilderPagePrefixURI()+pageUri;
 				//clean out the potential double slash:
 				return StringHandler.removeMultipleSlashes(returnUrl);
@@ -3261,7 +3267,7 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		try {
-			RenderUtils.renderChild(iwc, component);			
+			RenderUtils.renderChild(iwc, component);
 		} catch (Exception e){
 			e.printStackTrace();
 			return null;

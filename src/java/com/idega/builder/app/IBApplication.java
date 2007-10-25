@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.103 2007/10/17 15:04:42 valdas Exp $
+ *  $Id: IBApplication.java,v 1.104 2007/10/25 18:29:13 valdas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1007,7 +1007,7 @@ public class IBApplication extends IWApplication {
 				//TODO FIX STYLES
 				Link uriLink = null;
 				if(pageUri!=null){
-					String pageUrl = BuilderLogic.getInstance().getIBPageURL(iwc,currentPageKey);
+					String pageUrl = BuilderLogic.getInstance().getIBPageURL(iwc, currentPageKey, false);
 					String linkText = pageUri;
 					uriLink = new Link(linkText,pageUrl);
 					uriLink.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_LARGE);
