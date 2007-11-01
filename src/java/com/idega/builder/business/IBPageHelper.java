@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.78 2007/10/19 14:59:33 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.79 2007/11/01 14:03:16 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -473,10 +473,10 @@ public class IBPageHelper implements Singleton  {
 		}
 		if ((templateId != null) && (!templateId.equals(""))) {
 			try{
-				IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(templateId);
-				xml.addPageUsingThisTemplate(Integer.toString(id));
-				Page templateParent = xml.getPopulatedPage();
-				if (!templateParent.isLocked()) {
+				IBXMLPage page = BuilderLogic.getInstance().getPageCacher().getIBXML(templateId);
+				page.addPageUsingThisTemplate(Integer.toString(id));
+				Page templateParent = page.getPopulatedPage();
+				if (templateParent != null && !templateParent.isLocked()) {
 					BuilderLogic.getInstance().unlockRegion(Integer.toString(id), "-1", null);
 				}
 			}

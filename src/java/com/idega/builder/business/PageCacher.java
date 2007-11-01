@@ -1,5 +1,5 @@
 /*
- * $Id: PageCacher.java,v 1.24 2007/11/01 11:12:12 valdas Exp $
+ * $Id: PageCacher.java,v 1.25 2007/11/01 14:03:16 valdas Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,10 +13,10 @@ package com.idega.builder.business;
  *  The instance of this class holds an manages a cache of Builder pages that are instances
  * of CachedBuilderPage.<br>
  * 
- *  Last modified: $Date: 2007/11/01 11:12:12 $ by $Author: valdas $
+ *  Last modified: $Date: 2007/11/01 14:03:16 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 import java.util.Map;
 
@@ -122,15 +122,8 @@ public class PageCacher
 		return (ComponentBasedPage)getCachedBuilderPage(key);
 	}
 
-	public IBXMLPage getIBXML(String key)
-	{
-		try {
-			return (IBXMLPage) getCachedBuilderPage(key);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+	public IBXMLPage getIBXML(String key) {
+		return (IBXMLPage) getCachedBuilderPage(key);
 	}
 	
 	public CachedBuilderPage getCachedBuilderPage(String key)
