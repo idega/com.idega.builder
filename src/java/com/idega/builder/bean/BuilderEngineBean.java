@@ -314,7 +314,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		try {
 			objectClass = RefactorClassRegistry.forName(className);
 		} catch (ClassNotFoundException e) {
-			log.error(e);
+			e.printStackTrace();
 			return null;
 		}
 
@@ -368,7 +368,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		try {
 			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
 		} catch (Exception e) {
-			log.error(e);
+			e.printStackTrace();
 			return null;
 		}
 		return session;
