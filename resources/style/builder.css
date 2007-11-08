@@ -461,3 +461,11 @@ div#simple_properties_box {
 .removeBuilderModulePropertyStyle:HOVER {
 	cursor: pointer;
 }
+
+.groupsChooserConnectionHiddenTable {
+	display: none;
+}
+
+.groupsChooserConnectionTableTextCellStyle {
+	width: 20%;
+}
