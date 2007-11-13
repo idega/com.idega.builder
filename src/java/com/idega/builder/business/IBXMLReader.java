@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.7 2007/05/25 18:30:22 gimmi Exp $
+ * $Id: IBXMLReader.java,v 1.8 2007/11/13 09:31:00 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,6 @@ package com.idega.builder.business;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;

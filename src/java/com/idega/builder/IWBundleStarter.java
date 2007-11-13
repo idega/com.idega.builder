@@ -14,7 +14,6 @@ import com.idega.builder.business.ComponentPropertyHandler;
 import com.idega.builder.business.IBMainServiceBean;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.PageUrl;
-import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
 import com.idega.builder.presentation.InvisibleInBuilder;
 import com.idega.builder.view.BuilderApplicationViewNode;
