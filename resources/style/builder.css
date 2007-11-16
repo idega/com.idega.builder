@@ -469,3 +469,7 @@ div#simple_properties_box {
 .groupsChooserConnectionTableTextCellStyle {
 	width: 20%;
 }
+
+.tree_drag_drop li {
+	list-style-type: none;
+}
