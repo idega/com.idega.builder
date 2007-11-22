@@ -145,12 +145,14 @@ function addEventsToBuilderElements() {
 		function(element) {
 			element.addEvent('mouseenter', function() {
 				try {
+					showModuleContainerTop(element);
 					showAllComponentsLabels(element);
 					showComponentInfoImage(element);
 				} catch(err) {}
 			});
 			element.addEvent('mouseleave', function() {
 				try {
+					hideModuleContainerTop(element);
 					hideOldLabels(element);
 					hideComponentInfoImage(element);
 					element.removeAttribute('style');
@@ -375,6 +377,26 @@ function hideComponentInfoImage(element) {
 	}
 	
 	var list = getElementsByClassName(element, '*', 'regionInfoImageContainer');
+	var container = getFirstElementFromList(list);
+	if (container == null) {
+		return false;
+	}
+	
+	container.style.visibility = 'hidden';
+}
+
+function showModuleContainerTop(element) {
+	var list = getElementsByClassName(element, '*', 'moduleContainerTop');
+	var container = getFirstElementFromList(list);
+	if (container == null) {
+		return false;
+	}
+	
+	container.style.visibility = 'visible';
+}
+
+function hideModuleContainerTop(element) {
+	var list = getElementsByClassName(element, '*', 'moduleContainerTop');
 	var container = getFirstElementFromList(list);
 	if (container == null) {
 		return false;

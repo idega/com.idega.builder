@@ -39,6 +39,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 	private int number = 0;
 	private boolean lastModuleInRegion = false;
 
+	@Override
 	public String getBundleIdentifier(){
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
@@ -93,9 +94,9 @@ public class IBObjectControl extends PresentationObjectContainer {
 		
 		// Upper part container
 		Layer upperPartContainer = new Layer();
+		upperPartContainer.setStyleClass("moduleContainerTop");
 		upperPartContainer.add(nameLayer);
 		upperPartContainer.add(buttonsLayer);
-		upperPartContainer.add(new CSSSpacer());
 		this.containerLayer.add(upperPartContainer);
 		
 		super.add(new Text("<!-- idegaweb-module ends -->"));
@@ -158,7 +159,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		//	Delete module
 		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
 		title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
-		Image deleteImage = iwb.getImage("delete_32.png", title.toString(), 24, 24);
+		Image deleteImage = iwb.getImage("del_16.png", title.toString(), 16, 16);
 		String separator = "', '";
 		StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(separator).append(instanceId);
 		action.append(separator).append(deleteImage.getId()).append("');");
@@ -169,7 +170,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		//	Copy module
 		title = new StringBuffer(iwrb.getLocalizedString("copy", "Copy")).append(" :: ");
 		title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
-		Image copyModule = iwb.getImage("copy_24.gif", title.toString(), 24, 24);
+		Image copyModule = iwb.getImage("copy_16.png", title.toString(), 16, 16);
 		copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		action = new StringBuffer("copyThisModule('").append(containerId).append(separator).append(instanceId).append("');");
 		copyModule.setOnClick(action.toString());
@@ -178,7 +179,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		//	Cut module
 		title = new StringBuffer(iwrb.getLocalizedString("cut", "Cut")).append(" :: ");
 		title.append(iwrb.getLocalizedString("cut_module", "Cut module"));
-		Image cutModule = iwb.getImage("cut_24.gif", title.toString(), 24, 24);
+		Image cutModule = iwb.getImage("cut_16.png", title.toString(), 16, 16);
 		cutModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		action = new StringBuffer("cutThisModule('").append(cutModule.getId()).append(separator).append(containerId).append(separator);
 		action.append(instanceId).append("');");
@@ -188,7 +189,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		//	Module properties
 		title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
 		title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
-		Image propertiesImage = iwb.getImage("info_32.png", title.toString(), 24, 24);
+		Image propertiesImage = iwb.getImage("prefs_16.png", title.toString(), 16, 16);
 		propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		Link link = new Link(propertiesImage);
 		link.setMarkupAttribute("rel", "moodalbox");
@@ -220,11 +221,13 @@ public class IBObjectControl extends PresentationObjectContainer {
 		return dropArea;
 	}
 		
+	@Override
 	public void add(UIComponent obj) {
 		this.contentLayer.add(obj);
 		obj.setParent(this.parent);
 	}
 	
+	@Override
 	public void add(PresentationObject obj) {
 		
 		String objWidth = obj.getWidth();

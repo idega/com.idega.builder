@@ -199,10 +199,10 @@ function manageDropAreas(needToShow) {
 			if (canSetStyle) {
 				if (ORIGINAL.id != parentNode.id) {
 					if (needToShow) {
-						element.setStyle('visibility', 'visible');
+						element.setStyle('display', 'block');
 					}
 					else {
-						element.setStyle('visibility', 'hidden');
+						element.setStyle('display', 'none');
 					}
 				}
 			}

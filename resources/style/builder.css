@@ -1,16 +1,24 @@
 /* The edit view*/
 .moduleContainer {	
 	cursor: default;	
-	border: 0px solid;
-	margin: 1px;
-	clear: both;
+	border: 1px #fff solid;
+	margin: 0px;
+	position: relative;
 }
 
 .moduleContainer:hover {	
-	/*cursor: default;	
+	/*cursor: default;*/	
 	border: 1px #000000 dotted;
-	margin: 1px;*/
+	/*margin: 1px;*/
 	background-color: #FFFF99;
+}
+
+.moduleContainerTop {
+	overflow: hidden;	
+	margin: 0 !important;
+	visibility: hidden;
+	border-bottom: 1px #fff solid;
+	background: url(images/top_background.gif) center center repeat-x;
 }
 
 .moduleHandle {
@@ -18,7 +26,6 @@
 	border-bottom: 1px #000000 solid;	
 	cursor: default;
 	height: 16px;
-	clear: both;
 	padding:0px;
 }
 
@@ -28,40 +35,50 @@
 
 .moduleName{
 	font-size: 12px !important;
-	font-family: Arial !important;
-	height: 16px !important;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
+	line-height: 24px !important;
 	cursor: move;
+	display: block;
 	white-space: nowrap !important;
-	padding-left: 2px !important;
-	padding-top:3px !important;
+	padding-left: 6px !important;
 	text-transform: none !important;
-	font-weight: normal !important;
+	font-weight: bold !important;
 	float: left;
 	visibility: hidden;
-	width: 50%;
 	overflow: hidden;
 	text-align: left;
+	margin: 0 !important;
+	color: #fff;
 }
 
 .regionInfoImageContainer {
 	visibility: hidden;
 	float: right;
+	margin: 0 !important;
+	width: auto;
+	overflow: hidden;
+}
+
+.regionInfoImageContainer img {
+	margin-top: 4px;
+	margin-right: 4px;
+	display: block;
+	float: left;
 }
 
 .modulePropertiesLinkStyleClass {
 	background: none !important;
 	border-bottom: none !important;
-	display: inline !important;
 	padding: 0px !important;
 }
 
 .moduleDropArea{
 	cursor: default;
-	height: 18px;
 	width: 100%;
-	visibility: hidden;
+	display: none;
 	text-align: center;
 	font-weight: bold;
+	border: 1px #d7d7d7 solid;
 }
 
 .moduleDropAreaHover{
@@ -97,8 +114,8 @@ div.moduleButtons a {
 .moduleContainer .moduleDropArea .moduleButtons .moduleButton img {
 	margin: 0px;
 	border: none;
-	width: 16px !important;
-	height: 16px !important;
+	//width: 16px !important;
+	//height: 16px !important;
 }
 
 .toolbarButton{
