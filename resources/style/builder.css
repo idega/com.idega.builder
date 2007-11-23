@@ -1,7 +1,7 @@
 /* The edit view*/
 .moduleContainer {	
 	cursor: default;	
-	border: 1px #fff solid;
+	border: 1px transparent solid;
 	margin: 0px;
 	position: relative;
 }
