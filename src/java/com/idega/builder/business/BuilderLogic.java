@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.288 2007/10/25 18:29:13 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.289 2007/11/26 14:35:05 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -256,7 +256,7 @@ public class BuilderLogic implements Singleton {
 		IWBundle iwb = getBuilderBundle();
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		
-		CoreUtil.addJavaSciptForChooser(iwc);
+		CoreUtil.addJavaScriptForChooser(iwc);
 		
 		AddResource adder = AddResourceFactory.getInstance(iwc);
 		

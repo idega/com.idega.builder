@@ -47,7 +47,7 @@ public class IBMovePageWindow extends IBPageWindow {
 	public void main(IWContext iwc) throws Exception {
 		BuilderLogic instance = BuilderLogic.getInstance();
 		
-		CoreUtil.addJavaSciptForChooser(iwc);
+		CoreUtil.addJavaScriptForChooser(iwc);
 		
 		boolean okToMove = false;
 		boolean submit = false;

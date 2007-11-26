@@ -1,5 +1,5 @@
 /*
- * $Id: IBCreatePageWindow.java,v 1.49 2007/05/24 11:31:12 valdas Exp $
+ * $Id: IBCreatePageWindow.java,v 1.50 2007/11/26 14:35:05 valdas Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		CoreUtil.addJavaSciptForChooser(iwc);
+		CoreUtil.addJavaScriptForChooser(iwc);
 		
 		Layer container = new Layer();
 		container.setStyleAttribute("overflow: auto");

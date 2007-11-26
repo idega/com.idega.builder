@@ -69,7 +69,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   }
 
   public void main(IWContext iwc) throws Exception {
-	  CoreUtil.addJavaSciptForChooser(iwc);
+	  CoreUtil.addJavaScriptForChooser(iwc);
 	  
   	setTitle("PageImporter");
   	String action = parseAction(iwc);
