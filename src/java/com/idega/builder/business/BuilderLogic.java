@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.289 2007/11/26 14:35:05 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.290 2007/11/28 16:21:58 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -162,6 +164,8 @@ public class BuilderLogic implements Singleton {
 	private static final String IB_APPLICATION_RUNNING_SESSION = "ib_application_running";
 	//private static final String DEFAULT_PAGE = "1";
 	public static final String CLIPBOARD = "user_clipboard";
+	
+	private Pattern doctypeReplacementPattern;
 	
 	private static Instantiator instantiator = new Instantiator() { public Object getInstance() { return new BuilderLogic();}};
 
@@ -3309,6 +3313,10 @@ public class BuilderLogic implements Singleton {
 		if (rendered == null) {
 			return null;
 		}
+
+//		removing <!DOCTYPE .. >
+		Matcher matcher = getDoctypeReplacementPattern().matcher(rendered);
+		rendered = matcher.replaceAll(CoreConstants.EMPTY);
 		
 		// Building JDOM Document
 		InputStream stream = null;
@@ -3331,6 +3339,14 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return renderedObject;
+	}
+	
+	private Pattern getDoctypeReplacementPattern() {
+		
+		if(doctypeReplacementPattern == null)
+			doctypeReplacementPattern = Pattern.compile("<!DOCTYPE[^>]*>");
+		
+		return doctypeReplacementPattern;
 	}
 	
 	private void closeStream(InputStream stream) {
@@ -3485,5 +3501,4 @@ public class BuilderLogic implements Singleton {
 		
 		return getRenderedComponent(iwc, component, cleanHtml);
 	}
-
 }
