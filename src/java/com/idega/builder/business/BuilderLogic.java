@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.290 2007/11/28 16:21:58 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.291 2007/12/07 12:02:58 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -58,6 +58,7 @@ import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.SpringBeanLookup;
+import com.idega.cal.bean.CalendarPropertiesBean;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.business.BuilderPageException;
@@ -1123,7 +1124,7 @@ public class BuilderLogic implements Singleton {
 		try {
 			Method method = getMethodFinder().getMethod(propertyName, Class.forName(getModuleClassName(pageKey, instanceId)));
 			
-			Class[] types = method.getParameterTypes();
+			Class<?>[] types = method.getParameterTypes();
 			
 			if (types != null && types.length > 0) {
 				//	TODO: add ability to register specific types handlers (e.g. handler for List etc)
@@ -1143,6 +1144,13 @@ public class BuilderLogic implements Singleton {
 				//	PropertiesBean
 				if (types[0].equals(PropertiesBean.class)) {
 					return getPropertyValueForGroupsChooser(values);
+				}
+				
+				//	CalendarPropertiesBean
+				if (types[0].equals(CalendarPropertiesBean.class)) {
+					String[] basicValues = getPropertyValueForGroupsChooser(values);
+					System.out.println(basicValues);
+					return basicValues;
 				}
 			}
 			
