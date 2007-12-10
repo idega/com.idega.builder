@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.79 2007/11/01 14:03:16 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.80 2007/12/10 21:00:03 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -485,8 +485,10 @@ public class IBPageHelper implements Singleton  {
 				// of other formats than IBXML
 			}
 		}
-		//This r	esets the IWWelcomeFilter if a new page is created (and resets the redirect to /pages or /workspace)
-		IWWelcomeFilter.unload();
+		
+		//This resets the redirect to /pages or /workspace
+		IWWelcomeFilter.reInitializeCachedDomainOnNextRequest();
+
 		return (id);
 	}
 	
@@ -911,6 +913,10 @@ public class IBPageHelper implements Singleton  {
 				return false;
 			}
 		}
+		
+		//if this was the last page we need to check the redirect to pages or workspace again
+		IWWelcomeFilter.reInitializeCachedDomainOnNextRequest();
+		
 		return true;
 	}
 	/**
