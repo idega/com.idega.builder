@@ -44,7 +44,7 @@ public class IBSourceView extends Window {
 	public void main(IWContext iwc) {
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
 		
-		Web2Business web2 = (Web2Business) SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
+		Web2Business web2 = SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
 		this.getParentPage().addJavascriptURL(web2.getCodePressScriptFilePath());
 				
 		String action = iwc.getParameter(IB_SOURCE_ACTION);
