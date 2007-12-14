@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.292 2007/12/12 10:43:30 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.293 2007/12/14 12:52:52 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -58,6 +58,8 @@ import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.SpringBeanLookup;
+import com.idega.business.chooser.helper.CalendarsChooserHelper;
+import com.idega.business.chooser.helper.GroupsChooserHelper;
 import com.idega.cal.bean.CalendarPropertiesBean;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
@@ -1143,14 +1145,14 @@ public class BuilderLogic implements Singleton {
 				
 				//	PropertiesBean
 				if (types[0].equals(PropertiesBean.class)) {
-					return getPropertyValueForGroupsChooser(values);
+					GroupsChooserHelper helper = new GroupsChooserHelper();
+					return helper.getPropertyValue(values);
 				}
 				
 				//	CalendarPropertiesBean
 				if (types[0].equals(CalendarPropertiesBean.class)) {
-					String[] basicValues = getPropertyValueForGroupsChooser(values);
-					System.out.println(basicValues);
-					return basicValues;
+					CalendarsChooserHelper helper = new CalendarsChooserHelper();
+					return helper.getPropertyValue(values);
 				}
 			}
 			
@@ -1163,66 +1165,6 @@ public class BuilderLogic implements Singleton {
 			propertyValues[i] = values.get(i).getValue();
 		}
 		return propertyValues;
-	}
-	
-	/**
-	 * Builds String for setGroup method
-	 * @param properties
-	 * @return
-	 */
-	private String[] getPropertyValueForGroupsChooser(List<AdvancedProperty> properties) {
-		String server = null;
-		String login = null;
-		String password = null;
-		String uniqueIds = null;
-		
-		String connection = findPropertyValue(properties, "connection");
-		if (connection == null) {
-			return null;
-		}
-		
-		if (connection.equals(ICBuilderConstants.GROUPS_CHOOSER_REMOTE_CONNECTION)) {
-			//	Settings for remote connection
-			server = findPropertyValue(properties, "server");
-			login = findPropertyValue(properties, "login");
-			password = CoreUtil.getEncodedValue(findPropertyValue(properties, "password"));
-		}
-		else {
-			//	Settings for local connection
-			server = connection;
-			login = connection;
-			password = connection;
-		}
-		uniqueIds = findPropertyValue(properties, "uniqueids");
-		
-		if (server == null || login == null || password == null || uniqueIds == null) {
-			return null;
-		}
-		StringBuffer value = new StringBuffer(server).append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR);
-		value.append(login).append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR).append(password);
-		value.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR).append(uniqueIds);
-		value.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR).append(connection);
-		return new String[] {value.toString()};
-	}
-	
-	/**
-	 * Finds value in list
-	 * @param properties
-	 * @param id
-	 * @return
-	 */
-	private String findPropertyValue(List<AdvancedProperty> properties, String id) {
-		String value = null;
-		boolean found = false;
-		AdvancedProperty property = null;
-		for (int i = 0; (i < properties.size() && !found); i++) {
-			property = properties.get(i);
-			if (id.equals(property.getId())) {
-				value = property.getValue();
-				found = true;
-			}
-		}
-		return value;
 	}
 	
 	private MethodFinder getMethodFinder() {
@@ -3150,7 +3092,7 @@ public class BuilderLogic implements Singleton {
 		return web2;
 	}
 	
-	public String getUriToObject(Class objectClass) {
+	public String getUriToObject(Class<?> objectClass) {
 		if (objectClass == null) {
 			return null;
 		}

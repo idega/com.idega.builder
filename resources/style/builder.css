@@ -490,3 +490,7 @@ div#simple_properties_box {
 .tree_drag_drop li {
 	list-style-type: none;
 }
+
+.calendarViewerEventOrLedgerPropertyNameStyleClass {
+	font-weight: normal;
+}
