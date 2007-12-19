@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.293 2007/12/14 12:52:52 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.294 2007/12/19 17:15:41 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -286,6 +286,7 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 		}
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getReflectionForMootoolsScriptFilePath());	//	Reflection
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsScript());				//	Mootabs
 		
 		//	JavaScript actions
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
@@ -295,12 +296,13 @@ public class BuilderLogic implements Singleton {
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('beforeunload', showMessageForUnloadingPage);");
 		
 		//	CSS
-		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("style/builder.css"));
+		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("style/builder.css"));	//	Builder
 		try {
-			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());
+			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());						//	Moodalbox
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsStyle());							//	Mootabs
 		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");

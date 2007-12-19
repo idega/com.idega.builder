@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
-import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
 import com.idega.core.accesscontrol.business.StandardRoles;
@@ -26,7 +25,7 @@ import com.idega.presentation.text.Lists;
 
 public class AddModuleBlock extends Block {
 	
-	public AddModuleBlock() {
+	/*public AddModuleBlock() {
 		setCacheable(getCacheKey());
 	}
 	
@@ -36,7 +35,9 @@ public class AddModuleBlock extends Block {
 	
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		return cacheStatePrefix;
-	}
+	}*/
+	
+	private List<String> addedTabs = new ArrayList<String>();
 	
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
@@ -45,32 +46,56 @@ public class AddModuleBlock extends Block {
 		Collection<ICObject> allComoponents = getAllComponents();
 		
 		Layer componentsContainer = new Layer();
-		Lists items = new Lists();
-		items.setID("modules_lists");
+		Lists titles = new Lists();
+		titles.setStyleClass("mootabs_title");
 		
-		ListItem widgetsList = new ListItem();
-		widgetsList.setId("widget_modules");
 		List<ICObject> widgets = getConcreteComponents(iwc, allComoponents, true, false, false);
-		addListToWindow(widgets, iwrb.getLocalizedString("widget_modules", "Widgets"), "widgets_list", widgetsList);
-		items.add(widgetsList);
-		
-		ListItem blocksList = new ListItem();
-		blocksList.setId("block_modules");
+		String widgetsTabText = "widgetsTab";
+		addComponentsTitles(titles, widgets, widgetsTabText, iwrb.getLocalizedString("widget_modules", "Widgets"));
+
 		List<ICObject> blocks = getConcreteComponents(iwc, allComoponents, false, true, false);
-		addListToWindow(blocks, iwrb.getLocalizedString("blocks_header", "Blocks"), "blocks_list", blocksList);
-		items.add(blocksList);
-		
-		ListItem builderList = new ListItem();
-		builderList.setId("builder_modules");
+		String blocksTabText = "blocksTab";
+		addComponentsTitles(titles, blocks, blocksTabText, iwrb.getLocalizedString("blocks_header", "Blocks"));
+
 		List<ICObject> builder = null;
 		if (isBuilderUser) {
 			builder = getConcreteComponents(iwc, allComoponents, false, false, true);
+			String builderTabText = "builderTab";
+			addComponentsTitles(titles, builder, builderTabText, iwrb.getLocalizedString("builder_modules", "Builder"));
 		}
-		addListToWindow(builder, iwrb.getLocalizedString("builder_modules", "Builder"), "builder_list", builderList);
 		
-		items.add(builderList);
-		componentsContainer.add(items);
+		if (addedTabs.size() == 0) {
+			componentsContainer.add(new Heading3(iwrb.getLocalizedString("no_components_available", "Sorry, there are no components available.")));
+			return;
+		}
+		
+		componentsContainer.add(titles);
+		for (int i = 0; i < addedTabs.size(); i++) {
+			Layer componentsListContainer = new Layer();
+			componentsListContainer.setStyleClass("mootabs_panel");
+			componentsListContainer.setId(addedTabs.get(i));
+			componentsListContainer.add(addedTabs.get(i));		//	TODO
+			componentsContainer.add(componentsListContainer);
+		}
+		
+		Layer script = new Layer();
+		script.add(new StringBuffer("<script type=\"text/javascript\">createTabsWithMootabs('").append(componentsContainer.getId()).append("');</script>").toString());
+		componentsContainer.add(script);
+		
 		this.add(componentsContainer);
+	}
+	
+	private void addComponentsTitles(Lists titles, List<ICObject> components, String tabText, String text) {
+		if (components.size() == 0) {
+			return;
+		}
+		
+		ListItem tab = new ListItem();
+		tab.setMarkupAttribute("title", tabText);
+		tab.addText(text);
+		titles.add(tab);
+		
+		addedTabs.add(tabText);
 	}
 	
 	@SuppressWarnings("unchecked")

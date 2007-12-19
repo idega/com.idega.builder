@@ -138,6 +138,8 @@ function registerBuilderActions() {
 	addEventsToBuilderElements();
 	
 	hidePasteIcons(false);
+	
+	MOOdalBox.init({evalScripts: true});
 }
 
 function addEventsToBuilderElements() {
@@ -1362,4 +1364,8 @@ function getRemoveBuilderPropertyImage(moduleId, propertyName) {
 	});
 	
 	image.injectAfter(container.getFirst());
+}
+
+function createTabsWithMootabs(id) {
+	var tabs = new mootabs(id);
 }
