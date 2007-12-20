@@ -48,6 +48,9 @@ var PASTE_ICONS_SLIDERS = new Array();
 var EXTRACTED_VALUES = new Array();
 var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer',
 	 'com.idega.user.presentation.group.GroupUsersViewer', 'com.idega.block.media.presentation.VideoViewer'];
+	 
+var MOODALBOX_WINDOW_WIDTH = 650;
+var MOODALBOX_WINDOW_HEIGHT = 500;
 
 function getBuilderInitInfo() {
 	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
@@ -138,8 +141,10 @@ function registerBuilderActions() {
 	addEventsToBuilderElements();
 	
 	hidePasteIcons(false);
-	
-	MOOdalBox.init({evalScripts: true});
+}
+
+function intializeMoodalboxInBuilder() {
+	MOOdalBox.init({resizeDuration: 50, evalScripts: true, defContentsWidth: MOODALBOX_WINDOW_WIDTH, defContentsHeight: MOODALBOX_WINDOW_HEIGHT});
 }
 
 function addEventsToBuilderElements() {
@@ -1367,5 +1372,5 @@ function getRemoveBuilderPropertyImage(moduleId, propertyName) {
 }
 
 function createTabsWithMootabs(id) {
-	var tabs = new mootabs(id);
+	var tabs = new mootabs(id, {width: MOODALBOX_WINDOW_WIDTH + 'px', height: (MOODALBOX_WINDOW_HEIGHT - 50) + 'px'});	//	http://www.silverscripting.com/mootabs/
 }

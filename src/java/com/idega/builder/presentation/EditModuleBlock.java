@@ -2,13 +2,19 @@ package com.idega.builder.presentation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import javax.faces.component.UIComponent;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
+import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.component.business.ComponentProperty;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -16,18 +22,17 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Span;
-import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Heading3;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 
 public class EditModuleBlock extends Block {
 	
-	public EditModuleBlock() {
+	/*public EditModuleBlock() {
 		setCacheable(getCacheKey(), 0);
 	}
 	
@@ -41,7 +46,10 @@ public class EditModuleBlock extends Block {
 		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
 
 		return new StringBuffer(cacheStatePrefix).append(name).append(instanceId).append(pageKey).toString();
-	}
+	}*/
+	
+	private String localizedText = "Sorry, there are no properties for this module.";
+	private Map<String, List<ComponentProperty>> addedProperties = new HashMap<String, List<ComponentProperty>>();
 	
 	public void main(IWContext iwc) throws Exception {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
@@ -50,43 +58,36 @@ public class EditModuleBlock extends Block {
 		if (name == null || instanceId == null || pageKey == null) {
 			return;
 		}
+		UIComponent component = BuilderLogic.getInstance().findComponentInPage(iwc, pageKey, instanceId);
+		if (component instanceof PresentationObject) {
+			name = ((PresentationObject) component).getBuilderName(iwc);
+		}
 		
-		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		localizedText = iwrb.getLocalizedString("no_properties_for_this_module", localizedText);
 		
 		List<ComponentProperty> properties = getPropertyListOrdered(iwc, instanceId);
 		if (properties == null) {
 			return;
 		}
 		
+		Layer container = new Layer();
+		add(container);
+		
 		// Header
 		Layer header = new Layer();
 		header.add(new Heading1(name));
 		header.setId("editModuleHeader");
-		this.add(header);
+		container.add(header);
 		
-		// Menu
-		Layer menu = new Layer();
-		menu.setId("editModuleMenu");
-		Lists navigation = new Lists();
-		navigation.setId("editModuleMenuNavigation");
-		
-		ListItem settings = new ListItem();
-		Link settingsLink = new Link(iwrb.getLocalizedString("settings", "Settings"), "#");
-		settings.add(settingsLink);
-		navigation.add(settings);
-		
-		/*ListItem settings2 = new ListItem();
-		Link settings2Link = new Link(iwrb.getLocalizedString("settings2", "Settings2"), "#");
-		settings2.add(settings2Link);
-		navigation.add(settings2);*/
-		menu.add(navigation);
-		this.add(menu);
-		
-		this.add(new Break());
-		
+		//	Properties
 		Layer propertiesContainer = new Layer();
 		addProperties(properties, propertiesContainer, iwrb, iwc, instanceId, pageKey);
-		this.add(propertiesContainer);
+		container.add(propertiesContainer);
+		
+		Layer script = new Layer();
+		script.add(new StringBuffer("<script type=\"text/javascript\">createTabsWithMootabs('").append(propertiesContainer.getId()).append("');</script>").toString());
+		container.add(script);
 	}
 	
 	private List<ComponentProperty> getPropertyListOrdered(IWContext iwc, String instanceId) throws Exception {
@@ -121,29 +122,68 @@ public class EditModuleBlock extends Block {
 				advancedProperties.add(property);
 			}
 		}
-		addPropertiesToContainer(simpleProperties, container, iwrb.getLocalizedString("simple_properties", "Simple Properties"), "simple_properties_box", null, false, instanceId, iwc, pageKey);		
-		addPropertiesToContainer(advancedProperties, container, iwrb.getLocalizedString("advanced_properties", "Advanced Properties"), "advanced_properties_box", null, true, instanceId, iwc, pageKey);	
+	
+		Lists tabs = new Lists();
+		tabs.setStyleClass("mootabs_title");
+		container.add(tabs);
+		if (simpleProperties.size() == 0 && advancedProperties.size() == 0) {
+			List<ComponentProperty> jointList = new ArrayList<ComponentProperty>(simpleProperties);
+			jointList.addAll(advancedProperties);
+			String propertiesText = "module_properties";
+			addTab(tabs, propertiesText, iwrb.getLocalizedString(propertiesText, "Properties"), jointList);
+		}
+		else {
+			String simplePropertiesTabKey = "simple_properties";
+			addTab(tabs, simplePropertiesTabKey, iwrb.getLocalizedString(simplePropertiesTabKey, "Simple Properties"), simpleProperties);
+			
+			String advancedPropertiesTabKey = "advanced_properties";
+			addTab(tabs, advancedPropertiesTabKey, iwrb.getLocalizedString(advancedPropertiesTabKey, "Advanced Properties"), advancedProperties);
+		}
+		
+		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
+		if (isBuilderUser) {
+			String groupPermissionsText = "group_permissions";
+			addTab(tabs, groupPermissionsText, iwrb.getLocalizedString(groupPermissionsText, "Group permissions"), null);	//	TODO
+			
+			String rolePermissionsText = "role_permissions";
+			addTab(tabs, rolePermissionsText, iwrb.getLocalizedString(rolePermissionsText, "Role permissions"), null);		//	TODO
+		}
+		
+		String key = null;
+		Layer tabContentContainer = null;
+		for (Iterator<String> keys = addedProperties.keySet().iterator(); keys.hasNext();) {
+			key = keys.next();
+			
+			tabContentContainer = new Layer();
+			container.add(tabContentContainer);
+			tabContentContainer.setId(key);
+			tabContentContainer.setStyleClass("mootabs_panel");
+			addPropertiesToContainer(addedProperties.get(key), tabContentContainer, instanceId, iwc, pageKey);
+		}
 	}
 	
-	private void addPropertiesToContainer(List<ComponentProperty> properties, Layer parent, String name, String id, String className, boolean hidePropertiesList, String instanceId, IWContext iwc, String pageKey) {
-		if (properties == null || parent == null || name == null) {
-			return;
-		}
+	private void addTab(Lists tabs, String key, String text, List<ComponentProperty> properties) {
+		ListItem tab = new ListItem();
+		tab.addText(text);
+		tab.setMarkupAttribute("title", key);
+		tabs.add(tab);
+		
+		addedProperties.put(key, properties);
+	}
+	
+	private void addPropertiesToContainer(List<ComponentProperty> properties, Layer main, String instanceId, IWContext iwc, String pageKey) {		
 		// Main container
 		Layer container = new Layer();
+		main.add(container);
+		
+		if (properties == null || properties.size() == 0) {
+			container.add(new Heading3(localizedText));
+			return;
+		}
 		
 		// Header
 		Span header = new Span();
-		header.add(new Heading3(name));
 		container.add(header);
-		container.setToolTip(name);
-		
-		if (id != null) {
-			container.setId(id);
-		}
-		if (className != null) {
-			container.setStyleClass(className);
-		}
 		
 		//	Properties wrapper
 		Layer propertiesWrapper = new Layer();
@@ -156,12 +196,6 @@ public class EditModuleBlock extends Block {
 		propertiesContainer.setId(propertiesContainerId);
 		header.setStyleClass("componentPropertiesListHeader");
 		header.setOnClick(new StringBuffer("manageComponentPropertiesList('").append(propertiesContainerId).append("');").toString());
-		if (hidePropertiesList) {
-			propertiesContainer.setStyleAttribute("display: none;");
-//			Script hide = new Script();
-//			hide.addScriptLine(new StringBuffer("addPropertyIdAndClose('").append(propertiesContainerId).append("');").toString());
-//			header.add(hide);
-		}
 		
 		// Properties
 		ComponentProperty property = null;
@@ -208,7 +242,6 @@ public class EditModuleBlock extends Block {
 		propertiesWrapper.add(propertiesContainer);
 		propertiesWrapper.setId(new StringBuffer(propertiesContainer.getId()).append("Wrapper").toString());
 		container.add(propertiesWrapper);
-		parent.add(container);
 	}
 	
 	public String getBundleIdentifier() {
