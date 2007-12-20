@@ -2,8 +2,10 @@ package com.idega.builder.presentation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.FinderException;
 
@@ -37,73 +39,75 @@ public class AddModuleBlock extends Block {
 		return cacheStatePrefix;
 	}*/
 	
-	private List<String> addedTabs = new ArrayList<String>();
+	private Map<String, List<ICObject>> addedTabs = new HashMap<String, List<ICObject>>();
+	private String localizedText = "Sorry, there are no components available.";
 	
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
 		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
 		
+		localizedText = iwrb.getLocalizedString("no_components_available", localizedText);
+		
 		Collection<ICObject> allComoponents = getAllComponents();
 		
-		Layer componentsContainer = new Layer();
+		Layer container = new Layer();
+		add(container);
+		
 		Lists titles = new Lists();
 		titles.setStyleClass("mootabs_title");
 		
 		List<ICObject> widgets = getConcreteComponents(iwc, allComoponents, true, false, false);
-		String widgetsTabText = "widgetsTab";
-		addComponentsTitles(titles, widgets, widgetsTabText, iwrb.getLocalizedString("widget_modules", "Widgets"));
+		addComponentsTitles(titles, widgets, "widgetsTab", iwrb.getLocalizedString("widget_modules", "Widgets"));
 
 		List<ICObject> blocks = getConcreteComponents(iwc, allComoponents, false, true, false);
-		String blocksTabText = "blocksTab";
-		addComponentsTitles(titles, blocks, blocksTabText, iwrb.getLocalizedString("blocks_header", "Blocks"));
+		addComponentsTitles(titles, blocks, "blocksTab", iwrb.getLocalizedString("blocks_header", "Blocks"));
 
 		List<ICObject> builder = null;
 		if (isBuilderUser) {
 			builder = getConcreteComponents(iwc, allComoponents, false, false, true);
-			String builderTabText = "builderTab";
-			addComponentsTitles(titles, builder, builderTabText, iwrb.getLocalizedString("builder_modules", "Builder"));
+			addComponentsTitles(titles, builder, "builderTab", iwrb.getLocalizedString("builder_modules", "Builder"));
 		}
 		
 		if (addedTabs.size() == 0) {
-			componentsContainer.add(new Heading3(iwrb.getLocalizedString("no_components_available", "Sorry, there are no components available.")));
+			container.add(new Heading3(localizedText));
 			return;
 		}
 		
-		componentsContainer.add(titles);
-		for (int i = 0; i < addedTabs.size(); i++) {
+		container.add(titles);
+		String key = null;
+		for (Iterator<String> keys = addedTabs.keySet().iterator(); keys.hasNext();) {
+			key = keys.next();
+			
 			Layer componentsListContainer = new Layer();
 			componentsListContainer.setStyleClass("mootabs_panel");
-			componentsListContainer.setId(addedTabs.get(i));
-			componentsListContainer.add(addedTabs.get(i));		//	TODO
-			componentsContainer.add(componentsListContainer);
+			componentsListContainer.setId(key);
+			addListToWindow(addedTabs.get(key), componentsListContainer);
+			container.add(componentsListContainer);
 		}
 		
 		Layer script = new Layer();
-		script.add(new StringBuffer("<script type=\"text/javascript\">createTabsWithMootabs('").append(componentsContainer.getId()).append("');</script>").toString());
-		componentsContainer.add(script);
-		
-		this.add(componentsContainer);
+		script.add(new StringBuffer("<script type=\"text/javascript\">createTabsWithMootabs('").append(container.getId()).append("');</script>").toString());
+		container.add(script);
 	}
 	
 	private void addComponentsTitles(Lists titles, List<ICObject> components, String tabText, String text) {
-		if (components.size() == 0) {
-			return;
-		}
-		
 		ListItem tab = new ListItem();
 		tab.setMarkupAttribute("title", tabText);
 		tab.addText(text);
 		titles.add(tab);
 		
-		addedTabs.add(tabText);
+		addedTabs.put(tabText, components);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void addListToWindow(List<ICObject> objects, String name, String id, ListItem container) {
-		Heading3 header = new Heading3(name);
-		container.add(header);
-		
+	private void addListToWindow(List<ICObject> objects, Layer container) {
 		Layer content = new Layer();
+		container.add(content);
+		if (objects == null || objects.size() == 0) {
+			content.add(localizedText);
+			return;
+		}
+		
 		Lists items = new Lists();
 		String itemStyleClass = "modulesListItemStyle";
 		ListItem item = new ListItem();
@@ -118,7 +122,6 @@ public class AddModuleBlock extends Block {
 			items.add(item);
 		}
 		content.add(items);
-		container.add(content);
 	}
 	
 	@SuppressWarnings("unchecked")
