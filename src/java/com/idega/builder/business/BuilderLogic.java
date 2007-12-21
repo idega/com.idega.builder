@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.295 2007/12/20 15:02:25 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.296 2007/12/21 11:43:09 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1080,7 +1080,8 @@ public class BuilderLogic implements Singleton {
 			propertyValues = modifyPropertyValuesRegardingParameterType(pageKey, instanceId, propertyName, properties);
 		}
 		
-		if (propertyValues == null) {	//	Can not set value(s), removing old value(s) if exist such
+		if (propertyValues == null) {
+			//	Can not set value(s), removing old value(s) if exist such
 			String values[] = getPropertyValues(iwc.getIWMainApplication(),pageKey, instanceId, propertyName, null, true);
 			if (removeProperty(iwc.getIWMainApplication(), pageKey, instanceId, propertyName, values)) {
 				return removeAllBlockObjectsFromCache(iwc);
@@ -1127,7 +1128,8 @@ public class BuilderLogic implements Singleton {
 		String[] propertyValues = null;
 		
 		try {
-			Method method = getMethodFinder().getMethod(propertyName, Class.forName(getModuleClassName(pageKey, instanceId)));
+			Class<?> clazz = Class.forName(getModuleClassName(pageKey, instanceId));
+			Method method = getMethodFinder().getMethod(propertyName, clazz);
 			
 			Class<?>[] types = method.getParameterTypes();
 			
