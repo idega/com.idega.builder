@@ -483,6 +483,10 @@ div#simple_properties_box {
 	display: none;
 }
 
+.groupsChooserConnectionVisibleTable {
+	display: block;
+}
+
 .groupsChooserConnectionTableTextCellStyle {
 	width: 20%;
 }
