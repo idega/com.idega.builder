@@ -521,3 +521,13 @@ div#simple_properties_box {
 .calendarViewerEventOrLedgerPropertyNameStyleClass {
 	font-weight: normal;
 }
+
+/* Button layer */
+div.builderButtons div.builderButton {
+	float: left;
+	border: 1px #d0d0d0 solid;
+	padding: 4px 4px 0 4px;
+	background: #fff;
+	margin-right: 2px;
+	height: 20px;
+}

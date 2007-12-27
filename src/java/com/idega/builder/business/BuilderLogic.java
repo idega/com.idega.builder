@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.297 2007/12/27 14:53:15 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.298 2007/12/27 15:13:54 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -170,7 +170,8 @@ public class BuilderLogic implements Singleton {
 	
 	private Pattern doctypeReplacementPattern;
 	
-	private static Instantiator instantiator = new Instantiator() { public Object getInstance() { return new BuilderLogic();}};
+	private static Instantiator instantiator = new Instantiator() { @Override
+	public Object getInstance() { return new BuilderLogic();}};
 
 	public String PAGE_FORMAT_IBXML="IBXML";
 	public String PAGE_FORMAT_HTML="HTML";
@@ -2128,9 +2129,11 @@ public class BuilderLogic implements Singleton {
 	 */
 	private PresentationObject getButtonsLayer(String uri, String label, IWResourceBundle iwrb, String labelMarkerContainerId) {
 		Layer buttons = new Layer();
+		buttons.setStyleClass("builderButtons");
 		
 		//	Add module button
 		Layer addModuleContainer = new Layer();
+		addModuleContainer.setStyleClass("builderButton");
 		addModuleContainer.setStyleAttribute("float", "left");
 		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("create_simple_template.Region", "Region"));
 		if (label != null) {
@@ -2138,7 +2141,7 @@ public class BuilderLogic implements Singleton {
 		}
 		title.append(" :: ").append(iwrb.getLocalizedString(BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_KEY,
 				BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_VALUE));
-		Image addModule = getBuilderBundle().getImage("add_32.png", title.toString(), 24, 24);
+		Image addModule = getBuilderBundle().getImage("add_16.png", title.toString(), 16, 16);
 		addModule.setOnClick(new StringBuffer("setPropertiesForAddModule('").append(labelMarkerContainerId).append("');").toString());
 		addModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		// Link for MOOdalBox
@@ -2150,11 +2153,12 @@ public class BuilderLogic implements Singleton {
 		
 		//	Add article button
 		Layer addArticleContainer = new Layer();
+		addArticleContainer.setStyleClass("builderButton");
 		addArticleContainer.setStyleAttribute("float", "left");
 		title = new StringBuffer(iwrb.getLocalizedString("article_module", "Article")).append(" :: ");
 		title.append(iwrb.getLocalizedString("add_article_module", "Add article module"));
 		title.append(getLabelToRegion(iwrb, label));
-		Image addArticle = getBuilderBundle().getImage("article_32.png", title.toString(), 24, 24);
+		Image addArticle = getBuilderBundle().getImage("add_article.png", title.toString(), 16, 16);
 		addArticle.setStyleClass("add_article_module_to_region_image");
 		
 		ICObject article = null;
@@ -2174,10 +2178,12 @@ public class BuilderLogic implements Singleton {
 		
 		//	Paste module button
 		Layer pasteButtonContainer = new Layer();
+		pasteButtonContainer.setStyleClass("builderButton");
+		pasteButtonContainer.setStyleAttribute("float", "left");
 		title = new StringBuffer(iwrb.getLocalizedString("paste", "Paste")).append(" :: ");
 		title.append(iwrb.getLocalizedString("paste_module", "Paste module"));
 		title.append(getLabelToRegion(iwrb, label));
-		Image pasteImage = getBuilderBundle().getImage("paste_24.gif", title.toString(), 24, 24);
+		Image pasteImage = getBuilderBundle().getImage("paste_16.png", title.toString(), 16, 16);
 		pasteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		StringBuffer pasteAction = new StringBuffer("pasteCopiedModule('").append(pasteButtonContainer.getId()).append("');");
 		pasteImage.setOnClick(pasteAction.toString());
