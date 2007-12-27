@@ -392,6 +392,11 @@ div#editModuleHeader, div.addModuleToBuilderPage {
 
 div#editModuleHeader h1, div.addModuleToBuilderPage h1 {
 	text-align: center;
+	line-height: 54px;
+	font-family: "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+	color: #1f1f1f;
+	margin: 0;
+	padding: 0;
 }
 
 div#editModuleMenu {
@@ -530,8 +535,16 @@ div#simple_properties_box {
 div.builderButtons div.builderButton {
 	float: left;
 	border: 1px #d0d0d0 solid;
-	padding: 4px 4px 0 4px;
+	padding: 2px 4px;
 	background: #fff;
 	margin-right: 2px;
 	height: 20px;
+}
+
+div.builderButtons div.builderButton a {
+	border: 0;
+}
+
+div.builderButtons div.builderButton img {
+	vertical-align: bottom;
 }
