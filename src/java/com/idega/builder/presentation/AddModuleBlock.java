@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.ejb.FinderException;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
 import com.idega.core.accesscontrol.business.StandardRoles;
@@ -21,9 +22,11 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
+import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
+import com.idega.util.CoreConstants;
 
 public class AddModuleBlock extends Block {
 	
@@ -52,6 +55,19 @@ public class AddModuleBlock extends Block {
 		
 		Layer container = new Layer();
 		add(container);
+		
+		// Header
+		Layer header = new Layer();
+		String regionName = iwc.getParameter(BuilderConstants.REGION_NAME);
+		StringBuffer label = new StringBuffer(iwrb.getLocalizedString(BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_KEY,
+				BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_VALUE));
+		if (regionName != null && !(CoreConstants.EMPTY.equals(regionName))) {
+			label.append(CoreConstants.SPACE).append(iwrb.getLocalizedString("to", "to")).append(CoreConstants.SPACE).append(iwrb.getLocalizedString("region", "region"));
+			label.append(CoreConstants.SPACE).append(regionName);
+		}
+		header.add(new Heading1(label.toString()));
+		header.setStyleClass("addModuleToBuilderPage");
+		container.add(header);
 		
 		Lists titles = new Lists();
 		titles.setStyleClass("mootabs_title");

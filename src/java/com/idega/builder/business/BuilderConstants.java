@@ -18,12 +18,13 @@ public class BuilderConstants {
 	
 	public static final String STANDARD_IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = "ic_object_instance_id_par";
-	public static final String IB_PAGE_PARAMETER = ICBuilderConstants.IB_PAGE_PARAMETER;  //"ib_page";
-	public static final String PRM_HISTORY_ID = ICBuilderConstants.PRM_HISTORY_ID;  // "ib_history";
-	public static final String SESSION_OBJECT_STATE = ICBuilderConstants.SESSION_OBJECT_STATE; // "obj_inst_state";
+	public static final String IB_PAGE_PARAMETER = ICBuilderConstants.IB_PAGE_PARAMETER;		//"ib_page";
+	public static final String PRM_HISTORY_ID = ICBuilderConstants.PRM_HISTORY_ID;  			// "ib_history";
+	public static final String SESSION_OBJECT_STATE = ICBuilderConstants.SESSION_OBJECT_STATE;	// "obj_inst_state";
 	public static final String MODULE_NAME = "moduleName";
 	public static final String METHOD_ID_PARAMETER = "iw_method_identifier";
 	public static final String VALUE_PARAMETER = "ib_method_value";
+	public static final String REGION_NAME = "builderRegionName";
 	
 	public static final String EMPTY = "";
 	public static final String SLASH = "/";
@@ -36,5 +37,8 @@ public class BuilderConstants {
 	public static final String HANLDER_VALUE_OBJECTS_STYLE_CLASS = ICBuilderConstants.HANLDER_VALUE_OBJECTS_STYLE_CLASS;
 	
 	public static final String IMAGE_WITH_TOOLTIPS_STYLE_CLASS = "imageWithMootoolsTooltips";
+	
+	public static final String ADD_MODULE_TO_REGION_LOCALIZATION_KEY = "ib_addmodule_window";
+	public static final String ADD_MODULE_TO_REGION_LOCALIZATION_VALUE = "Add a new module";
 
 }

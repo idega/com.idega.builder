@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.296 2007/12/21 11:43:09 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.297 2007/12/27 14:53:15 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -320,14 +320,15 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		
-		String addModuleUri = getUriToObject(AddModuleBlock.class);
-		
+		String addModuleUri = null;
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate()) {
 			if (!page.isLocked()) {
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", null);
-				marker.addAtBeginning(getButtonsLayer(addModuleUri, "page", iwrb, marker.getId()));
+				String regionKey = "page";
+				addModuleUri = getUriToAddModuleWindow(regionKey);
+				Layer marker = getLabelMarker(parentKey, regionKey, null);
+				marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId()));
 				marker.addAtBeginning(new CSSSpacer());
 				page.add(marker);
 			}
@@ -336,6 +337,7 @@ public class BuilderLogic implements Singleton {
 				Set regions = hPage.getRegionIds();
 				for (Iterator iter = regions.iterator(); iter.hasNext();) {
 					String regionKey = (String) iter.next();
+					addModuleUri = getUriToAddModuleWindow(regionKey);
 					Layer marker = getLabelMarker(regionKey, regionKey, null);
 					marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId()));
 					marker.addAtBeginning(new CSSSpacer());
@@ -362,8 +364,10 @@ public class BuilderLogic implements Singleton {
 			
 			if(mayAddButtonsInPage){
 				String parentKey = Integer.toString(-1);
-				Layer marker = getLabelMarker(parentKey, "page", null);
-				marker.addAtBeginning(getButtonsLayer(addModuleUri, "page", iwrb, marker.getId()));
+				String regionKey = "page";
+				addModuleUri = getUriToAddModuleWindow(regionKey);
+				Layer marker = getLabelMarker(parentKey, regionKey, null);
+				marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId()));
 				marker.addAtBeginning(new CSSSpacer());
 				page.add(marker);
 			}
@@ -512,7 +516,6 @@ public class BuilderLogic implements Singleton {
 				getTransformedTable(currentPage, pageKey, obj, iwc, clipboardEmpty);
 			}
 			else {
-				String addModuleUri = getUriToObject(AddModuleBlock.class);
 				List list = obj.getChildren();
 				if (list != null && !list.isEmpty()) {
 					ListIterator iter = list.listIterator();
@@ -545,7 +548,6 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 				if (index != -1) {
-					//Page curr = getPageCacher().getPage(getCurrentIBPage(iwc), iwc);
 					Page curr = getPageCacher().getComponentBasedPage(getCurrentIBPage(iwc)).getNewPage(iwc);
 					PresentationObjectContainer container = ((PresentationObjectContainer) obj);
 					String instanceId = getInstanceId(obj);
@@ -553,25 +555,27 @@ public class BuilderLogic implements Singleton {
 						instanceId = obj.getId();
 					}
 					
+					String regionLabel = container.getLabel();
+					String addModuleUri = getUriToAddModuleWindow(regionLabel);
 					if (curr.getIsExtendingTemplate()) {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
-								Layer marker = getLabelMarker(instanceId, container.getLabel(), null);
-								marker.addAtBeginning(getButtonsLayer(addModuleUri, container.getLabel(), iwrb, marker.getId()));
+								Layer marker = getLabelMarker(instanceId, regionLabel, null);
+								marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
 								marker.addAtBeginning(new CSSSpacer());
 								container.add(marker);
 							}
 						}
 						else {
-							Layer marker = getLabelMarker(instanceId, container.getLabel(), null);
-							marker.addAtBeginning(getButtonsLayer(addModuleUri, container.getLabel(), iwrb, marker.getId()));
+							Layer marker = getLabelMarker(instanceId, regionLabel, null);
+							marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
 							marker.addAtBeginning(new CSSSpacer());
 							container.add(marker);
 							
 							if (curr.getIsTemplate()) {
-								marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
+								marker.add(getLabelIcon(instanceId, iwc, regionLabel));
 								if (container.isLocked()){
-									marker.add(getLockedIcon(instanceId, iwc, container.getLabel()));
+									marker.add(getLockedIcon(instanceId, iwc, regionLabel));
 								}
 								else{
 									marker.add(getUnlockedIcon(instanceId, iwc));
@@ -582,15 +586,15 @@ public class BuilderLogic implements Singleton {
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(instanceId, container.getLabel(), null);
-						marker.addAtBeginning(getButtonsLayer(addModuleUri, container.getLabel(), iwrb, marker.getId()));
+						Layer marker = getLabelMarker(instanceId, regionLabel, null);
+						marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
 						marker.addAtBeginning(new CSSSpacer());
 						container.add(marker);
 						
 						if (curr.getIsTemplate()) {
-							marker.add(getLabelIcon(instanceId, iwc, container.getLabel()));
+							marker.add(getLabelIcon(instanceId, iwc, regionLabel));
 							if (container.isLocked()){
-								marker.add(getLockedIcon(instanceId, iwc, container.getLabel()));
+								marker.add(getLockedIcon(instanceId, iwc, regionLabel));
 							}
 							else{
 								marker.add(getUnlockedIcon(instanceId, iwc));
@@ -642,7 +646,6 @@ public class BuilderLogic implements Singleton {
 		Table tab = (Table) obj;
 		int cols = tab.getColumns();
 		int rows = tab.getRows();
-		String addModuleUri = getUriToObject(AddModuleBlock.class);
 		for (int x = 1; x <= cols; x++) {
 			for (int y = 1; y <= rows; y++) {
 				PresentationObjectContainer moc = tab.containerAt(x, y);
@@ -654,24 +657,26 @@ public class BuilderLogic implements Singleton {
 					moc.setId(id);
 				}
 				
+				String regionLabel = tab.getLabel(x, y);
+				String addModuleUri = getUriToAddModuleWindow(regionLabel);
 				if (currentPage.getIsExtendingTemplate()) {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
-							Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), null);
-							marker.addAtBeginning(getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb, marker.getId()));
+							Layer marker = getLabelMarker(newParentKey, regionLabel, null);
+							marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
 							marker.addAtBeginning(new CSSSpacer());
 							tab.add(marker, x, y);
 						}
 					}
 					else {
-						Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), null);
-						marker.addAtBeginning(getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb, marker.getId()));
+						Layer marker = getLabelMarker(newParentKey, regionLabel, null);
+						marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
 						marker.addAtBeginning(new CSSSpacer());
 						tab.add(marker, x, y);
 						if (currentPage.getIsTemplate()) {
-							marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
+							marker.add(getLabelIcon(newParentKey, iwc, regionLabel));
 							if (tab.isLocked(x, y)){
-								marker.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)));
+								marker.add(getLockedIcon(newParentKey, iwc, regionLabel));
 							}
 							else{
 								marker.add(getUnlockedIcon(newParentKey, iwc));
@@ -680,14 +685,14 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 				else {
-					Layer marker = getLabelMarker(newParentKey, tab.getLabel(x, y), null);
-					marker.addAtBeginning(getButtonsLayer(addModuleUri, tab.getLabel(x, y), iwrb, marker.getId()));
+					Layer marker = getLabelMarker(newParentKey, regionLabel, null);
+					marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
 					marker.addAtBeginning(new CSSSpacer());
 					tab.add(marker, x, y);
 					if (currentPage.getIsTemplate()) {
-						marker.add(getLabelIcon(newParentKey, iwc, tab.getLabel(x, y)));
+						marker.add(getLabelIcon(newParentKey, iwc, regionLabel));
 						if (tab.isLocked(x, y)){
-							marker.add(getLockedIcon(newParentKey, iwc, tab.getLabel(x, y)));
+							marker.add(getLockedIcon(newParentKey, iwc, regionLabel));
 						}
 						else{
 							marker.add(getUnlockedIcon(newParentKey, iwc));
@@ -2131,14 +2136,14 @@ public class BuilderLogic implements Singleton {
 		if (label != null) {
 			title.append(": ").append(label);
 		}
-		title.append(" :: ").append(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));
+		title.append(" :: ").append(iwrb.getLocalizedString(BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_KEY,
+				BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_VALUE));
 		Image addModule = getBuilderBundle().getImage("add_32.png", title.toString(), 24, 24);
 		addModule.setOnClick(new StringBuffer("setPropertiesForAddModule('").append(labelMarkerContainerId).append("');").toString());
 		addModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
 		// Link for MOOdalBox
-		Link link = new Link(addModule);
+		Link link = new Link(addModule, uri);
 		link.setMarkupAttribute("rel", "moodalbox");
-		link.setURL(uri);
 		link.setStyleClass("addModuleLinkStyleClass");
 		addModuleContainer.add(link);
 		buttons.add(addModuleContainer);
@@ -2154,7 +2159,7 @@ public class BuilderLogic implements Singleton {
 		
 		ICObject article = null;
 		try {
-			article = getICObjectHome().findByClassName("com.idega.block.article.component.ArticleItemViewer");	//	TODO
+			article = getICObjectHome().findByClassName(CoreConstants.getArticleItemViewerClass().getName());	//	TODO
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -3097,12 +3102,40 @@ public class BuilderLogic implements Singleton {
 		return web2;
 	}
 	
+	private String getUriToAddModuleWindow(String regionName) {
+		Class<AddModuleBlock> addModuleClass = AddModuleBlock.class;
+		
+		if (regionName == null || CoreConstants.EMPTY.equals(regionName)) {
+			return getUriToObject(addModuleClass);
+		}
+		
+		List<AdvancedProperty> parameters = new ArrayList<AdvancedProperty>();
+		parameters.add(new AdvancedProperty(BuilderConstants.REGION_NAME, regionName));
+		return getUriToObject(addModuleClass, parameters);
+	}
+	
 	public String getUriToObject(Class<?> objectClass) {
 		if (objectClass == null) {
 			return null;
 		}
 		
 		return getUriToObject(objectClass.getName());
+	}
+	
+	public String getUriToObject(Class<?> objectClass, List<AdvancedProperty> parameters) {
+		String baseUri = getUriToObject(objectClass);
+		if (baseUri == null) {
+			return null;
+		}
+		
+		StringBuffer params = new StringBuffer();
+		AdvancedProperty prop = null;
+		for (int i = 0; i < parameters.size(); i++) {
+			prop = parameters.get(i);
+			params.append(CoreConstants.AMP).append(prop.getId()).append(CoreConstants.EQ).append(prop.getValue());
+		}
+		
+		return new StringBuffer(baseUri).append(params.toString()).toString();
 	}
 	
 	public String getUriToObject(String className) {
