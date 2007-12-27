@@ -361,32 +361,36 @@ ul#modules_lists li {
 	width:150px;
 	margin:0 10px 10px 0;
 }
+
 ul#modules_lists h3 {
     margin:0px;
     padding: 5px 0 0;
     text-align:center;
     color: #000;
 }
+
 ul#modules_lists p {
 	margin:0;
 	padding:1px 1px 5px;
 }
+
 ul#modules_lists p:hover {
 	font-weight: bold;
 	cursor: pointer;
 }
+
 ul#modules_lists div {
 	background: #FFC;
 }
 
-div#editModuleHeader {
+div#editModuleHeader, div.addModuleToBuilderPage {
 	padding: 1px;
 	margin:0 auto;
-    background:#E6E6E6;
-    color:#000;
+	background:#E6E6E6;
+	color:#000;
 }
 
-div#editModuleHeader h1 {
+div#editModuleHeader h1, div.addModuleToBuilderPage h1 {
 	text-align: center;
 }
 
