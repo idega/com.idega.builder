@@ -161,7 +161,7 @@ div.moduleButtons a {
 	font-weight: normal !important;*/
 }
 
-div#region_labelpageHeader, div#region_labelsite_title, div#region_labelsite_slogan, div#region_labellogo, div#region_labelsidebar_title, div#region_labelbreadcrumb, div#region_labelcontentContainer, div#region_labelsidebarContainer {
+div#region_labelpageHeader, div#region_labelsite_title, div#region_labelsite_slogan, div#region_labellogo, div#region_labelsidebar_title, div#region_labelbreadcrumb, div#region_labelcontentContainer, div#region_labelsidebarContainer, div#plugin_sidebar {
 	display: none;
 }
 
