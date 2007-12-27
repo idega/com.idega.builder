@@ -13,7 +13,6 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Label;
 import com.idega.util.CoreConstants;
 import com.idega.util.reflect.MethodFinder;
@@ -86,7 +85,6 @@ public class SetModulePropertyBlock extends Block {
 		String paramDescription = null;
 		String handlerClass = null;
 		Class<?> parameterClass = null;
-		Text description = null;
 		for (int i = 0; i < parameters.length; i++) {
 			parameterClass = parameters[i];
 			value = BuilderConstants.EMPTY;

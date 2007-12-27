@@ -55,7 +55,7 @@ public class EditModuleBlock extends Block {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
 		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
 		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
-		if (name == null || instanceId == null || pageKey == null) {
+		if (instanceId == null || pageKey == null) {
 			return;
 		}
 		UIComponent component = BuilderLogic.getInstance().findComponentInPage(iwc, pageKey, instanceId);
