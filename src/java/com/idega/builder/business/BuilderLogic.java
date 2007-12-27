@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.298 2007/12/27 15:13:54 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.299 2007/12/27 15:59:04 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -329,7 +329,7 @@ public class BuilderLogic implements Singleton {
 				String regionKey = "page";
 				addModuleUri = getUriToAddModuleWindow(regionKey);
 				Layer marker = getLabelMarker(parentKey, regionKey, null);
-				marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId()));
+				marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId(), iwc));
 				marker.addAtBeginning(new CSSSpacer());
 				page.add(marker);
 			}
@@ -340,7 +340,7 @@ public class BuilderLogic implements Singleton {
 					String regionKey = (String) iter.next();
 					addModuleUri = getUriToAddModuleWindow(regionKey);
 					Layer marker = getLabelMarker(regionKey, regionKey, null);
-					marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId()));
+					marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId(), iwc));
 					marker.addAtBeginning(new CSSSpacer());
 					hPage.add(marker,regionKey);
 				}
@@ -368,7 +368,7 @@ public class BuilderLogic implements Singleton {
 				String regionKey = "page";
 				addModuleUri = getUriToAddModuleWindow(regionKey);
 				Layer marker = getLabelMarker(parentKey, regionKey, null);
-				marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId()));
+				marker.addAtBeginning(getButtonsLayer(addModuleUri, regionKey, iwrb, marker.getId(), iwc));
 				marker.addAtBeginning(new CSSSpacer());
 				page.add(marker);
 			}
@@ -562,14 +562,14 @@ public class BuilderLogic implements Singleton {
 						if (container.getBelongsToParent()) {
 							if (!container.isLocked()) {
 								Layer marker = getLabelMarker(instanceId, regionLabel, null);
-								marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
+								marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId(), iwc));
 								marker.addAtBeginning(new CSSSpacer());
 								container.add(marker);
 							}
 						}
 						else {
 							Layer marker = getLabelMarker(instanceId, regionLabel, null);
-							marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
+							marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId(), iwc));
 							marker.addAtBeginning(new CSSSpacer());
 							container.add(marker);
 							
@@ -588,7 +588,7 @@ public class BuilderLogic implements Singleton {
 					}
 					else {
 						Layer marker = getLabelMarker(instanceId, regionLabel, null);
-						marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
+						marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId(), iwc));
 						marker.addAtBeginning(new CSSSpacer());
 						container.add(marker);
 						
@@ -664,14 +664,14 @@ public class BuilderLogic implements Singleton {
 					if (tab.getBelongsToParent()) {
 						if (!tab.isLocked(x, y)) {
 							Layer marker = getLabelMarker(newParentKey, regionLabel, null);
-							marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
+							marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId(), iwc));
 							marker.addAtBeginning(new CSSSpacer());
 							tab.add(marker, x, y);
 						}
 					}
 					else {
 						Layer marker = getLabelMarker(newParentKey, regionLabel, null);
-						marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
+						marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId(), iwc));
 						marker.addAtBeginning(new CSSSpacer());
 						tab.add(marker, x, y);
 						if (currentPage.getIsTemplate()) {
@@ -687,7 +687,7 @@ public class BuilderLogic implements Singleton {
 				}
 				else {
 					Layer marker = getLabelMarker(newParentKey, regionLabel, null);
-					marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId()));
+					marker.addAtBeginning(getButtonsLayer(addModuleUri, regionLabel, iwrb, marker.getId(), iwc));
 					marker.addAtBeginning(new CSSSpacer());
 					tab.add(marker, x, y);
 					if (currentPage.getIsTemplate()) {
@@ -2127,9 +2127,15 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	private PresentationObject getButtonsLayer(String uri, String label, IWResourceBundle iwrb, String labelMarkerContainerId) {
+	private PresentationObject getButtonsLayer(String uri, String label, IWResourceBundle iwrb, String labelMarkerContainerId, IWContext iwc) {
 		Layer buttons = new Layer();
 		buttons.setStyleClass("builderButtons");
+		
+		BuilderTransformer transformer = SpringBeanLookup.getInstance().getSpringBean(iwc, BuilderTransformer.class);
+		if (transformer.isRegionTransformed(label)) {
+			return buttons;
+		}
+		transformer.markRegionAsTranformed(label);
 		
 		//	Add module button
 		Layer addModuleContainer = new Layer();
