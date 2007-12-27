@@ -1372,5 +1372,5 @@ function getRemoveBuilderPropertyImage(moduleId, propertyName) {
 }
 
 function createTabsWithMootabs(id) {
-	var tabs = new mootabs(id, {width: MOODALBOX_WINDOW_WIDTH + 'px', height: (MOODALBOX_WINDOW_HEIGHT - 50) + 'px'});	//	http://www.silverscripting.com/mootabs/
+	var tabs = new mootabs(id, {width: MOODALBOX_WINDOW_WIDTH + 'px', height: (MOODALBOX_WINDOW_HEIGHT - 50) + 'px', changeTransition: 'none'});	//	http://www.silverscripting.com/mootabs/
 }
