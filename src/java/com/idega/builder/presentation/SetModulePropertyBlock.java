@@ -14,6 +14,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Label;
 import com.idega.util.CoreConstants;
 import com.idega.util.reflect.MethodFinder;
 
@@ -25,10 +26,12 @@ public class SetModulePropertyBlock extends Block {
 		setCacheable(getCacheKey());
 	}
 	
+	@Override
 	public String getCacheKey() {
 		return BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY;
 	}
 	
+	@Override
 	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
 		String pageKey = iwc.getApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER).toString();
 		String propertyName = iwc.getApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER).toString();
@@ -37,6 +40,7 @@ public class SetModulePropertyBlock extends Block {
 		return new StringBuffer(cacheStatePrefix).append(pageKey).append(propertyName).append(instanceId).toString();
 	}
 	
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		String pageKey = iwc.getApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER).toString();
 		String propertyName = iwc.getApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER).toString();
@@ -46,6 +50,7 @@ public class SetModulePropertyBlock extends Block {
 		}
 		
 		Layer container = new Layer();
+		container.setStyleClass("modulePropertyContainer");
 		
 		IBPropertiesWindowSetter setter = new IBPropertiesWindowSetter();
 		
@@ -93,6 +98,9 @@ public class SetModulePropertyBlock extends Block {
 			catch (NullPointerException npe) {
 			}
 			
+			Layer item = new Layer();
+			item.setStyleClass("moduleProperyItem");
+			
 			name = new StringBuffer(namePrefix).append(i).toString();
 			handlerClass = null;
 			if (isMethodIdentifier) {
@@ -100,20 +108,26 @@ public class SetModulePropertyBlock extends Block {
 						IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
 			}
 			
+			Label label = new Label();
 			if (isMultiValue) {
 				paramDescription = paramDescriptions[i];
 				if (paramDescription != null) {
-					description = setter.formatDescription(new StringBuffer(paramDescription).append(":").toString());
-					description.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;");
-					container.add(description);
+					label.setLabel(paramDescription);
+					//description = setter.formatDescription(new StringBuffer(paramDescription).append(":").toString());
+					//description.setFontStyle("font-family:Arial,Helvetica,sans-serif;font-size:8pt;");
 				}
 			}
+			else {
+				label.setLabel("Value");
+			}
+			item.add(label);
 			
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	new PropertyHandlerBean(instanceId,
 					propertyName, name, value, CoreConstants.BUILDER_PORPERTY_SETTER_STYLE_CLASS, parameterClass, i, needsReload, isMultiValue, parameters.length));
 			
 			handlerBox.setMarkupAttribute("jsfcomponent", IBPropertyHandler.getInstance().isJsfComponent(iwc, presObjClass.getName()));
-			container.add(handlerBox);
+			item.add(handlerBox);
+			container.add(item);
 			
 			ICPropertyHandler handler = null;
 			if (handlerClass != null && !handlerClass.equals(BuilderConstants.EMPTY)) {
@@ -134,6 +148,7 @@ public class SetModulePropertyBlock extends Block {
 		return isMultiValue;
 	}
 	
+	@Override
 	public String getBundleIdentifier() {
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}

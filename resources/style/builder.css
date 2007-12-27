@@ -392,18 +392,22 @@ div#editModuleHeader h1 {
 
 div#editModuleMenu {
 }
+
 ul#editModuleMenuNavigation,ul#editModuleMenuNavigation li {
 	list-style-type:none;
 	margin:0;
 	padding:0;
 }
+
 ul#editModuleMenuNavigation {
 }
+
 ul#editModuleMenuNavigation li {
 	float:left;
 	margin-right: 3px;
 	text-align: center;
 }
+
 ul#editModuleMenuNavigation a {
 	float:left;
 	width: 7em;
@@ -412,24 +416,26 @@ ul#editModuleMenuNavigation a {
 	text-decoration:none;
 	color: #FFF;
 }
+
 ul#editModuleMenuNavigation a:hover {
 	background: #FFA826;
 	color: #FFF;
 }
+
 ul#editModuleMenuNavigation li.activelink a,ul#editModuleMenuNavigation li.activelink a:hover {
 	background: #FFF;
 	color: #003;
 }
 
 div#advanced_properties_box {
-    text-align:left;
-    background-color: #FF9966;
+	text-align:left;
+	background-color: #FF9966;
 }
 
 div#simple_properties_box {
 	margin-top: 10px;
-    text-align:left;
-    background-color: #9CC0FF;
+	text-align:left;
+	background-color: #9CC0FF;
 }
 
 .componentPropertiesListHeader {
@@ -441,7 +447,11 @@ div#simple_properties_box {
 	float: right;
 }
 
-.moduleProperty:HOVER {
+.moduleProperty, .modulePropertyIsSet {
+	margin-bottom: 6px;
+}
+
+.moduleProperty:hover span, .modulePropertyIsSet:hover span {
 	cursor: pointer;
 }
 
@@ -449,11 +459,24 @@ div#simple_properties_box {
 	font-weight: bold;
 }
 
-.modulePropertyIsSet:HOVER span{
-	cursor: pointer;
+.modulePropertySetter {
+	border: 1px #a0a0a0 solid;
+	float: left;
 }
 
-.modulePropertySetter {
+.modulePropertyContainer {
+	padding: 6px 12px 0 12px;
+}
+
+.modulePropertyContainer div {
+	margin-bottom: 6px;
+	overflow: hidden;
+}
+
+.modulePropertyContainer label {
+	float: left;
+	width: 100px;
+	line-height: 22px;
 }
 
 .add_article_module_to_region_image:hover {
