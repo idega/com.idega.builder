@@ -1363,7 +1363,6 @@ function getRemoveBuilderPropertyImage(moduleId, propertyName) {
 	image.setProperty('width', 16);
 	image.addClass('removeBuilderModulePropertyStyle');
 	
-	
 	image.addEvent('click', function() {
 		removeBuilderModuleProperty(id, boxId, moduleId, propertyName);
 	});
@@ -1372,5 +1371,6 @@ function getRemoveBuilderPropertyImage(moduleId, propertyName) {
 }
 
 function createTabsWithMootabs(id) {
-	var tabs = new mootabs(id, {width: MOODALBOX_WINDOW_WIDTH + 'px', height: (MOODALBOX_WINDOW_HEIGHT - 50) + 'px', changeTransition: 'none'});	//	http://www.silverscripting.com/mootabs/
+	//	http://www.silverscripting.com/mootabs
+	var tabs = new mootabs(id, {width: MOODALBOX_WINDOW_WIDTH + 'px', height: (MOODALBOX_WINDOW_HEIGHT - 50) + 'px', changeTransition: 'none'});
 }
