@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.36 2007/04/27 16:05:16 eiki Exp $
+ * $Id: PageTreeNode.java,v 1.37 2008/01/07 15:17:42 valdas Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -220,7 +220,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 		localizedNames.put(localizedKey.toString(),nameEntry.getPageName());
 	}
 
-	protected static Map getTreeFromDatabase() {
+	protected static Map<Integer, PageTreeNode> getTreeFromDatabase() {
 		List page = null;
 		List template = null;
 		List rel = null;
@@ -237,7 +237,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 			e.printStackTrace();
 		}
 
-		Map tree = new Hashtable();
+		Map<Integer, PageTreeNode> tree = new Hashtable<Integer, PageTreeNode>();
 
 		Iterator it = null;
 		if (page != null) {
@@ -594,32 +594,49 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	/**
 	 * Gets the tree and preloads it and stores in cache
 	 */
-	public static Map getTree(IWApplicationContext iwc) {
+	public static Map<Integer, PageTreeNode> getTree(IWApplicationContext iwc) {
 		return getTree(iwc,true);
 	}
 	
 	/**
 	 * Gets the tree and preloads it if you set the boolean loadIfEmpty to true
 	 */
-	public static Map getTree(IWApplicationContext iwc, boolean loadIfEmpty) {
-		//Map tree = (Map) iwc.getApplicationAttribute(PageTreeNode.PAGE_TREE);
-		Map tree = getCacheManager(iwc).getCache(getCacheName(),10000,true,true);
-		if (tree.isEmpty() && loadIfEmpty) {
-			synchronized(iwc.getIWMainApplication()){
-				if(tree.isEmpty()){
-					Map newTree = getTreeFromDatabase();
-					for (Iterator iter = newTree.keySet().iterator(); iter.hasNext();) {
-						Object key = iter.next();
-						Object value = newTree.get(key);
-						tree.put(key, value);
-					}
-				}
-			}
-			//iwc.setApplicationAttribute(PageTreeNode.PAGE_TREE, tree);
-			//Map names = getNamesFromDatabase();
-			//iwc.setApplicationAttribute(PageTreeNode.NAME_TREE, names);
+	@SuppressWarnings("unchecked")
+	public static Map<Integer, PageTreeNode> getTree(IWApplicationContext iwc, boolean loadIfEmpty) {
+		Map<Integer, PageTreeNode> tree = null;
+		try {
+			tree = getCacheManager(iwc).getCache(getCacheName(),10000,true,true);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		if (tree == null) {
+			getTreeFromDatabase(tree, iwc);
+		}
+		else if (tree.isEmpty() && loadIfEmpty) {
+			getTreeFromDatabase(tree, iwc);
 		}
 
+		return tree;
+	}
+	
+	private static Map<Integer, PageTreeNode> getTreeFromDatabase(Map<Integer, PageTreeNode> tree, IWApplicationContext iwac) {
+		synchronized(iwac.getIWMainApplication()) {
+			Map<Integer, PageTreeNode> dbTree = getTreeFromDatabase();
+			if (dbTree == null) {
+				return tree;
+			}
+			
+			if (tree == null) {
+				tree = new Hashtable<Integer, PageTreeNode>();
+			}
+			
+			Map.Entry<Integer, PageTreeNode> entry = null;
+			for (Iterator<Map.Entry<Integer, PageTreeNode>> it = dbTree.entrySet().iterator(); it.hasNext();) {
+				entry = it.next();
+				tree.put(entry.getKey(), entry.getValue());
+			}
+		}
+		
 		return tree;
 	}
 
