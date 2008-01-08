@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.300 2007/12/29 09:52:10 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.301 2008/01/08 16:32:29 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2539,6 +2539,15 @@ public class BuilderLogic implements Singleton {
 		}
 	}
 	
+	public int getICObjectId(String objectClass) {
+		try {
+			return getICObjectHome().findByClassName(objectClass).getID();
+		} catch(Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
 //	protected Web2Business getWeb2Business(){
 //		
 //		try {
@@ -3481,5 +3490,21 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return getRenderedComponent(iwc, component, cleanHtml);
+	}
+	
+	public boolean existsRegion(String pageKey, String label, String regionId) {
+		if (pageKey == null) {
+			return false;
+		}
+		
+		XMLElement region = null;
+		try {
+			region = getIBXMLWriter().findRegion(getIBXMLPage(pageKey), label, regionId);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return region == null ? false : true;
 	}
 }
