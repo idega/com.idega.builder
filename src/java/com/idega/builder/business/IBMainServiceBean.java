@@ -471,4 +471,16 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public String getPageURI(IWContext iwc, String pageKey, boolean checkIfDeleted) throws RemoteException {
 		return getBuilderLogic().getIBPageURL(iwc, pageKey, checkIfDeleted);
 	}
+	
+	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
+		return getBuilderLogic().addNewModule(pageKey, parentObjectInstanceID, newICObjectID, label, null);
+	}
+	
+	public int getICObjectId(String objectClass) {
+		return getBuilderLogic().getICObjectId(objectClass);
+	}
+	
+	public boolean existsRegion(String pageKey, String label, String regionId) {
+		return getBuilderLogic().existsRegion(pageKey, label, regionId);
+	}
 }
