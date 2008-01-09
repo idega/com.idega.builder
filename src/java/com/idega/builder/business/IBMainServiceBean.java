@@ -234,8 +234,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().movePage(newParentId, nodeId, domain);
 	}
 	
-	public boolean changePageName(int ID, String newName) {
-		return getBuilderLogic().changePageName(ID, newName);
+	public boolean changePageName(int ID, String newName, IWContext iwc) {
+		return getBuilderLogic().changePageName(ID, newName, iwc);
 	}
 
 	public Collection getTopLevelPages(IWContext iwc){
@@ -472,8 +472,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getIBPageURL(iwc, pageKey, checkIfDeleted);
 	}
 	
-	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
-		return getBuilderLogic().addNewModule(pageKey, parentObjectInstanceID, newICObjectID, label, null);
+	public String addNewModule(String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID, String label) {
+		return getBuilderLogic().addNewModule(pageKey, parentObjectInstanceID, regionId, newICObjectID, label, null);
 	}
 	
 	public int getICObjectId(String objectClass) {
@@ -482,5 +482,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public boolean existsRegion(String pageKey, String label, String regionId) {
 		return getBuilderLogic().existsRegion(pageKey, label, regionId);
+	}
+	
+	public boolean copyAllModulesFromRegionIntoRegion(String pageKey, String sourceRegionLabel, String destinationRegionId, String destinationRegionLabel) {
+		return getBuilderLogic().copyAllModulesFromRegionIntoRegion(pageKey, sourceRegionLabel, destinationRegionId, destinationRegionLabel, null); 
 	}
 }
