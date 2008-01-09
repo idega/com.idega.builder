@@ -117,11 +117,6 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	public boolean movePage(int newParentId, int nodeId, ICDomain domain);
 
 	/**
-	 * @see com.idega.builder.business.IBMainServiceBean#changePageName
-	 */
-	public boolean changePageName(int ID, String newName);
-
-	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#getTopLevelPages
 	 */
 	public Collection getTopLevelPages(IWContext iwc);
