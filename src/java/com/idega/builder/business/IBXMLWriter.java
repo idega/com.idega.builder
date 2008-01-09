@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.15 2007/10/16 07:43:34 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.16 2008/01/09 13:42:57 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -70,14 +70,14 @@ public class IBXMLWriter {
 		XMLElement region;
 		if (label != null) {
 			//first try to search by the label identifier
-			region = findXMLElement(xml, IBXMLConstants.LABEL_STRING, label, IBXMLConstants.REGION_STRING);
+			region = findXMLElement(xml, IBXMLConstants.LABEL_STRING, label);
 			if (region != null) {
 				return region;
 			}
 		}
 		else if (regionId != null) {
 			//if nothing is found with the label label then try the id
-			region = findXMLElementWithId(xml, regionId, IBXMLConstants.REGION_STRING);
+			region = findXMLElementWithId(xml, regionId);
 		}
 		else {
 			throw new RuntimeException("Can not find any region. Both label and regionId are null");
@@ -89,29 +89,29 @@ public class IBXMLWriter {
 	 *  
 	 */
 	public XMLElement findModule(IBXMLAble xml, String instanceId) {
-		return findXMLElementWithId(xml, instanceId, IBXMLConstants.MODULE_STRING);
+		return findXMLElementWithId(xml, instanceId);
 	}
 
 	/**
 	 *  
 	 */
 	private XMLElement findModule(IBXMLAble xml, String instanceId, XMLElement startElement) {
-		return findXMLElementInsideWithId(xml, instanceId, IBXMLConstants.MODULE_STRING, startElement);
+		return findXMLElementInsideWithId(xml, instanceId, startElement);
 	}
 
 	/**
 	 * Returns null if nothing found
 	 */
-	private XMLElement findXMLElementWithId(IBXMLAble xml, String id, String name) {
+	private XMLElement findXMLElementWithId(IBXMLAble xml, String id) {
 		String idAttributeKey = IBXMLConstants.ID_STRING;
-		return findXMLElement(xml, idAttributeKey, id, name);
+		return findXMLElement(xml, idAttributeKey, id);
 	}
 
 	/**
 	 * Returns null if nothing found
 	 */
-	private XMLElement findXMLElement(IBXMLAble xml, String attributeKey, String attributeValue, String name) {
-		return findXMLElementInside(xml, attributeKey, attributeValue, name, getPageRootElement(xml));
+	private XMLElement findXMLElement(IBXMLAble xml, String attributeKey, String attributeValue) {
+		return findXMLElementInside(xml, attributeKey, attributeValue, getPageRootElement(xml));
 	}
 
 	/**
@@ -120,9 +120,9 @@ public class IBXMLWriter {
 	 * 
 	 * If name is null it searches all elements with any name
 	 */
-	private XMLElement findXMLElementInsideWithId(IBXMLAble xml, String id, String name, XMLElement parentElement) {
+	private XMLElement findXMLElementInsideWithId(IBXMLAble xml, String id, XMLElement parentElement) {
 		String idAttributeKey = IBXMLConstants.ID_STRING;
-		return findXMLElementInside(xml, idAttributeKey, id, name, parentElement);
+		return findXMLElementInside(xml, idAttributeKey, id, parentElement);
 	}
 
 	/**
@@ -138,9 +138,7 @@ public class IBXMLWriter {
 	 * 
 	 * If name is null it searches all elements with any name
 	 */
-	private XMLElement findXMLElementInside(IBXMLAble xml, String attributeKey, String attributeValue,
-			String name2, XMLElement parentElement) {
-		//TODO remove unused String name2
+	private XMLElement findXMLElementInside(IBXMLAble xml, String attributeKey, String attributeValue, XMLElement parentElement) {
 		List list = null;
 		if (parentElement != null) {
 			list = parentElement.getChildren();
@@ -155,29 +153,16 @@ public class IBXMLWriter {
 			Iterator iter = list.iterator();
 			while (iter.hasNext()) {
 				XMLElement element = (XMLElement) iter.next();
-				//if(element.getName().equals(name)||nameIsNull){
-				//List attributes = element.getAttributes();
-				//if(attributes!=null){
-				//Iterator iter2 = attributes.iterator();
-				//while (iter2.hasNext()){
 				XMLAttribute attr = element.getAttribute(attributeKey);
-				//XMLAttribute attr = (XMLAttribute)iter2.next();
-				//if(item2.getName().equals(ID_STRING)){
 				if (attr != null) {
 					if (attr.getValue().equals(attributeValue)) {
 						return element;
 					}
 				}
-				//}
-				//}
-				//}
-				//}
-				//else{
-				XMLElement el = findXMLElementInside(xml, attributeKey, attributeValue, null, element);
+				XMLElement el = findXMLElementInside(xml, attributeKey, attributeValue, element);
 				if (el != null) {
 					return el;
 				}
-				//}
 			}
 		}
 		return null;
@@ -814,7 +799,7 @@ public class IBXMLWriter {
 		}
 		else {
 			String regionId = null;
-			if (parentObjectInstanceID.indexOf(".") >= 0) {
+			if (parentObjectInstanceID.indexOf(CoreConstants.DOT) >= 0) {
 				regionId = "-1";
 			}
 			else {
@@ -822,6 +807,10 @@ public class IBXMLWriter {
 			}
 			return addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, regionId, label);
 		}
+	}
+	
+	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID,	String label) {
+		return addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, regionId, label);
 	}
 
 	/**
@@ -855,7 +844,7 @@ public class IBXMLWriter {
 	 * Deletes the module
 	 */
 	public boolean deleteModule(IBXMLAble xml, String parentObjectInstanceID, String instanceId) {
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent == null) {
 			return false;
 		}
@@ -875,7 +864,7 @@ public class IBXMLWriter {
 					deleteModule(parent.getParent(), parent);
 					this.log.info("Deleted corrupt region with id:" + parentObjectInstanceID);
 					//Find the parent (region) again:
-					parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+					parent = findXMLElementWithId(xml, parentObjectInstanceID);
 					//Find the module again:
 					module = findModule(xml, instanceId, parent);
 				}
@@ -883,7 +872,7 @@ public class IBXMLWriter {
 			boolean result = deleteModule(parent, module);
 			if (!result) {
 				String newId = new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(parentObjectInstanceID).toString();
-				result = deleteModule(findXMLElementWithId(xml, newId, null), module);
+				result = deleteModule(findXMLElementWithId(xml, newId), module);
 			}
 			return result;
 		}
@@ -897,7 +886,7 @@ public class IBXMLWriter {
 	 *  
 	 */
 	public boolean lockRegion(IBXMLAble xml, String parentObjectInstanceID) {
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent != null) {
 			XMLAttribute lock = new XMLAttribute(IBXMLConstants.REGION_LOCKED, "true");
 			//      if (parent.getAttribute(XMLConstants.REGION_LOCKED) != null)
@@ -932,7 +921,7 @@ public class IBXMLWriter {
 	 */
 	public boolean setAttribute(IBXMLAble xml, String parentObjectInstanceID, String attributeName,
 			String attributeValue) {
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent != null) {
 			XMLAttribute attribute = new XMLAttribute(attributeName, attributeValue);
 			//      if (parent.getAttribute(attributeName) != null)
@@ -948,7 +937,7 @@ public class IBXMLWriter {
 	 *  
 	 */
 	public boolean unlockRegion(IBXMLAble xml, String parentObjectInstanceID) {
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent != null) {
 			XMLAttribute lock = new XMLAttribute(IBXMLConstants.REGION_LOCKED, "false");
 			//      if (parent.getAttribute(XMLConstants.REGION_LOCKED) != null)
@@ -1020,7 +1009,7 @@ public class IBXMLWriter {
 	 *  
 	 */
 	public boolean labelRegion(IBXMLAble xml, String parentObjectInstanceID, String label) {
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent != null) {
 			if (label != null && !label.equals("")) {
 				XMLAttribute labelAttribute = new XMLAttribute(IBXMLConstants.LABEL_STRING, label);
@@ -1063,7 +1052,7 @@ public class IBXMLWriter {
 	 *  
 	 */
 	public boolean copyModule(IBXMLAble xml, String parentObjectInstanceID, String instanceId) {
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent != null) {
 			try {
 				XMLElement module = findModule(xml, instanceId, parent);
@@ -1142,13 +1131,13 @@ public class IBXMLWriter {
 			changeModuleIds(element, pageKey);
 		}
 		
-		XMLElement parent = findXMLElementWithId(xml, parentInstanceId, null);
+		XMLElement parent = findXMLElementWithId(xml, parentInstanceId);
 		if (parent != null) {
 			parent.addContent(element);
 			return getElementId(element);
 		}
 		else {
-			int index = parentInstanceId.indexOf(".");
+			int index = parentInstanceId.indexOf(CoreConstants.DOT);
 			if (index != -1) {
 				XMLElement region = new XMLElement(IBXMLConstants.REGION_STRING);
 				XMLAttribute id = new XMLAttribute(IBXMLConstants.ID_STRING, parentInstanceId);
@@ -1227,7 +1216,7 @@ public class IBXMLWriter {
 		if(changeInstanceId){
 			changeModuleIds(element, pageKey);
 		}
-		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID, null);
+		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent != null) {
 			//      parent.addContent(element);
 			List li = parent.getChildren();
@@ -1370,7 +1359,7 @@ public class IBXMLWriter {
 	 *  
 	 */
 	public XMLElement copyModule(IBXMLAble xml, String id) {
-		return (findXMLElementWithId(xml,id, IBXMLConstants.MODULE_STRING));
+		return (findXMLElementWithId(xml, id));
 	}
 	
 	protected BuilderLogic getBuilderLogic(){
