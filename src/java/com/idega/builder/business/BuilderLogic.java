@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.301 2008/01/08 16:32:29 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.302 2008/01/09 13:43:16 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1561,6 +1561,20 @@ public class BuilderLogic implements Singleton {
 		}
 		return (false);
 	}
+	
+	public String addNewModule(String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID, String label, IWSlideSession session) {
+		IBXMLPage page = getIBXMLPage(pageKey);
+		
+		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, regionId, newICObjectID, label);
+		if (id == null) {
+			return null;
+		}
+		
+		if (savePage(page, session)) {
+			return id;
+		}
+		return null;
+	}
 
 	/**
 	 *  	 *
@@ -1578,7 +1592,7 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	/**
-	 * After insering new module IBXMLPage is saved (if successfully inserted module) in other thread
+	 * After inserting new module IBXMLPage is saved (if successfully inserted module) in other thread
 	 * @param pageKey
 	 * @param parentObjectInstanceID
 	 * @param newICObjectID
@@ -2569,14 +2583,15 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 	
-	public boolean changePageName(int id, String newName) {
+	public boolean changePageName(int id, String newName, IWContext iwc) {
 //		PageNameHandler.onChangePageName(ID, newName);
 		IBPageUpdater.updatePageName(id, newName);
 //		IBPageUpdater.updatePageName(ID, newName);
 		
-		Map tree = PageTreeNode.getTree(IWContext.getInstance());
-		PageTreeNode node = (PageTreeNode) tree.get(id);
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWContext.getInstance());
+		PageTreeNode node = tree.get(id);
 		node.setNodeName(newName);
+		node.setLocalizedNodeName(iwc.getCurrentLocale().getLanguage(), newName, iwc);
 		
 		return true;
 	}
@@ -3506,5 +3521,49 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return region == null ? false : true;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean copyAllModulesFromRegionIntoRegion(String pageKey, String sourceRegionLabel, String destinationRegionId, String destinationRegionLabel,
+			IWSlideSession session) {
+		if (pageKey == null || sourceRegionLabel == null || destinationRegionId == null || destinationRegionLabel == null) {
+			return false;
+		}
+		
+		IBXMLPage page = getIBXMLPage(pageKey);
+		if (page == null) {
+			return false;
+		}
+		XMLElement sourceRegion = getIBXMLWriter().findRegion(page, sourceRegionLabel, null);
+		if (sourceRegion == null) {
+			return false;
+		}
+		
+		//	TODO:	Find all modules, not just first level ones
+		List<XMLElement> modules = sourceRegion.getChildren(IBXMLConstants.MODULE_STRING);
+		if (modules == null) {
+			return false;
+		}
+		
+		String id = null;
+		Object o = null;
+		for (int i = 0; i < modules.size(); i++) {
+			o = modules.get(i).clone();
+			if (o instanceof XMLElement) {
+				id = getIBXMLWriter().insertElementLast(page, pageKey, destinationRegionId, destinationRegionLabel, (XMLElement) o, true);
+				if (id == null) {
+					return false;
+				}
+			}
+			else {
+				return false;
+			}
+		}
+		
+		if (savePage(page, session)) {
+			return true;
+		}
+		
+		return false;
 	}
 }
