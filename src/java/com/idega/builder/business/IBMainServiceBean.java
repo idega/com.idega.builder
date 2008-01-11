@@ -280,7 +280,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 				convertedTree.put(key, (ICTreeNode) node);
 			}
 			else {
-				logError(node.getNodeName() + " is not instance of " + ICTreeNode.class.getName());
+				logError(node + " is not instance of " + ICTreeNode.class.getName());
 			}
 		}
 		
