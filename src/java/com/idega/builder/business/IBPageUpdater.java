@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageUpdater.java,v 1.7 2007/09/11 13:10:13 justinas Exp $
+ * $Id: IBPageUpdater.java,v 1.8 2008/01/11 15:12:03 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,8 +69,14 @@ public class IBPageUpdater {
 	}
 
 	public static boolean addLocalizedPageName(int pageId, int localeId, String pageName) {
+		IBPageName name = null;
 		try {
-			IBPageName name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).findByPageIdAndLocaleId(pageId, localeId);
+			name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).findByPageIdAndLocaleId(pageId, localeId);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
 			if (name == null) {
 				name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).create();
 			}
@@ -83,9 +89,6 @@ public class IBPageUpdater {
 			return true;
 		}
 		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
 			e.printStackTrace();
 		}
 		catch (CreateException e) {

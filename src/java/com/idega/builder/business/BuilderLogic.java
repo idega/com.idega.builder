@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.302 2008/01/09 13:43:16 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.303 2008/01/11 15:12:03 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -74,6 +74,7 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.data.GenericGroup;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
@@ -2583,17 +2584,13 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 	
-	public boolean changePageName(int id, String newName, IWContext iwc) {
-//		PageNameHandler.onChangePageName(ID, newName);
-		IBPageUpdater.updatePageName(id, newName);
-//		IBPageUpdater.updatePageName(ID, newName);
-		
+	public boolean changePageName(int id, String newName, IWContext iwc) {	
 		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWContext.getInstance());
 		PageTreeNode node = tree.get(id);
 		node.setNodeName(newName);
 		node.setLocalizedNodeName(iwc.getCurrentLocale().getLanguage(), newName, iwc);
 		
-		return true;
+		return IBPageUpdater.addLocalizedPageName(id, ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()), newName);
 	}
 		
 //	public Collection getTopLevelPages(IWContext iwc){
