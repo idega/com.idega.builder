@@ -5,6 +5,8 @@ package com.idega.builder.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -257,12 +259,32 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return IBPageBMPBean.FORMAT_HTML;
 	}
 	
-	public Map<Integer, PageTreeNode> getTree(IWContext iwc) {
-		return PageTreeNode.getTree(iwc);
+	public Map<Integer, ICTreeNode> getTree(IWContext iwc) {
+		return getTree(iwc.getApplicationContext());
 	}
 	
-	public Map<Integer, PageTreeNode> getTree(IWApplicationContext iwac) {
-		return PageTreeNode.getTree(iwac);
+	public Map<Integer, ICTreeNode> getTree(IWApplicationContext iwac) {
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(iwac);
+		if (tree == null) {
+			return null;
+		}
+		
+		Map<Integer, ICTreeNode> convertedTree = new HashMap<Integer, ICTreeNode>();
+		Integer key = null;
+		PageTreeNode node = null;
+		for (Iterator<Integer> it = tree.keySet().iterator(); it.hasNext();) {
+			key = it.next();
+			
+			node = tree.get(key);
+			if (node instanceof ICTreeNode) {
+				convertedTree.put(key, (ICTreeNode) node);
+			}
+			else {
+				logError(node.getNodeName() + " is not instance of " + ICTreeNode.class.getName());
+			}
+		}
+		
+		return convertedTree;
 	}
 	
 	public String getTopLevelTemplateId(Collection templates) {
