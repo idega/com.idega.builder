@@ -257,11 +257,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return IBPageBMPBean.FORMAT_HTML;
 	}
 	
-	public Map getTree(IWContext iwc) {
+	public Map<Integer, PageTreeNode> getTree(IWContext iwc) {
 		return PageTreeNode.getTree(iwc);
 	}
 	
-	public Map getTree(IWApplicationContext iwac) {
+	public Map<Integer, PageTreeNode> getTree(IWApplicationContext iwac) {
 		return PageTreeNode.getTree(iwac);
 	}
 	
