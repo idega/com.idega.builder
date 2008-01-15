@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.80 2007/12/10 21:00:03 eiki Exp $
+ * $Id: IBPageHelper.java,v 1.81 2008/01/15 09:34:17 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -308,12 +308,17 @@ public class IBPageHelper implements Singleton  {
 		file.setMimeType(com.idega.core.file.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
 		ibPage.setFile(file);
 		
+		ICPage parentpage = null;
+		try {
+			parentpage = this.getICPageHome().findByPrimaryKey(parentId);
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
 		//Set the pageUri to a generated value if not set
 		if(pageUri==null){
-			ICPage parentpage = null;
+			
 			try {
 				if(parentId!=null){
-					parentpage = this.getICPageHome().findByPrimaryKey(parentId);
 					//Create a pageUrl object to create the name with a generated name by default if not set
 					PageUrl pUrl = new PageUrl(parentpage,name,domainId);
 					pageUri = pUrl.getGeneratedUrlFromName();
@@ -323,11 +328,13 @@ public class IBPageHelper implements Singleton  {
 					pageUri = pUrl.getGeneratedUrlFromName();
 				}
 			}
-			catch (FinderException e) {
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		ibPage.setDefaultPageURI(pageUri);
+		
+		ibPage.setHidePageInMenu(parentpage.isHidePageInMenu());
 		
 		if (type.equals(PAGE)) {
 			ibPage.setType(ICPageBMPBean.PAGE);
