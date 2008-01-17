@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.81 2008/01/15 09:34:17 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.82 2008/01/17 09:27:40 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -334,7 +334,9 @@ public class IBPageHelper implements Singleton  {
 		}
 		ibPage.setDefaultPageURI(pageUri);
 		
-		ibPage.setHidePageInMenu(parentpage.isHidePageInMenu());
+		if (parentpage != null) {
+			ibPage.setHidePageInMenu(parentpage.isHidePageInMenu());
+		}
 		
 		if (type.equals(PAGE)) {
 			ibPage.setType(ICPageBMPBean.PAGE);
