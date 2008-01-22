@@ -487,4 +487,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean copyAllModulesFromRegionIntoRegion(String pageKey, String sourceRegionLabel, String destinationRegionId, String destinationRegionLabel) {
 		return getBuilderLogic().copyAllModulesFromRegionIntoRegion(pageKey, sourceRegionLabel, destinationRegionId, destinationRegionLabel, null); 
 	}
+	
+	public String getUriToObject(Class<?> objectClass, List<AdvancedProperty> parameters) {
+		return getBuilderLogic().getUriToObject(objectClass, parameters);
+	}
 }
