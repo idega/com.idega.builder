@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.303 2008/01/11 15:12:03 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.304 2008/01/22 08:22:56 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -277,7 +277,7 @@ public class BuilderLogic implements Singleton {
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
 		try {
-			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	Mootools
+			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	MooTools
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -287,7 +287,7 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 		}
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getReflectionForMootoolsScriptFilePath());	//	Reflection
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsScript());				//	Mootabs
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsScript());				//	MooTabs
 		
 		//	JavaScript actions
 		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
@@ -300,11 +300,11 @@ public class BuilderLogic implements Singleton {
 		//	CSS
 		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("style/builder.css"));	//	Builder
 		try {
-			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());						//	Moodalbox
+			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());						//	MoodalBox
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsStyle());							//	Mootabs
+		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsStyle());							//	MooTabs
 		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
@@ -3263,6 +3263,8 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
+		iwc.setApplicationAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS, Boolean.TRUE);
+		
 		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
 		iwc.setResponseWriter(writer);
 		
@@ -3277,6 +3279,8 @@ public class BuilderLogic implements Singleton {
 		} catch (Exception e){
 			e.printStackTrace();
 			return null;
+		} finally {
+			iwc.removeApplicationAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS);
 		}
 		
 		String rendered = writer.toString();
@@ -3316,7 +3320,7 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 
-//		removing <!DOCTYPE .. >
+		//	Removing <!DOCTYPE .. >
 		Matcher matcher = getDoctypeReplacementPattern().matcher(rendered);
 		rendered = matcher.replaceAll(CoreConstants.EMPTY);
 		
