@@ -658,6 +658,10 @@ function addSelectedModuleCallback(component, id) {
 	if (elementToHighlight != null) {
 		highlightElement(elementToHighlight, 4000, '#ffffff');
 	}
+	
+	try {
+		registerArticleLinksForMoodalBox();
+	} catch(e) {}
 }
 
 function manageComponentPropertiesList(id) {	
