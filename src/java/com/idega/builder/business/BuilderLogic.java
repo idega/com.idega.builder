@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.304 2008/01/22 08:22:56 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.305 2008/01/23 08:37:55 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3263,7 +3263,7 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		iwc.setApplicationAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS, Boolean.TRUE);
+		iwc.setSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS, Boolean.TRUE);
 		
 		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
 		iwc.setResponseWriter(writer);
@@ -3280,7 +3280,7 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return null;
 		} finally {
-			iwc.removeApplicationAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS);
+			iwc.removeSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS);
 		}
 		
 		String rendered = writer.toString();
