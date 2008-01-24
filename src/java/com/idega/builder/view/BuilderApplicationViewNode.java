@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderApplicationViewNode.java,v 1.8 2007/03/19 08:46:31 valdas Exp $
+ * $Id: BuilderApplicationViewNode.java,v 1.9 2008/01/24 10:11:48 valdas Exp $
  * Created on 25.11.2005 in project com.idega.builder
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -15,16 +15,17 @@ import com.idega.builder.app.IBApplication;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.view.DefaultViewNode;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.CoreConstants;
 
 
 /**
  * <p>
  * TODO tryggvil Describe Type BuilderApplicationViewNode
  * </p>
- *  Last modified: $Date: 2007/03/19 08:46:31 $ by $Author: valdas $
+ *  Last modified: $Date: 2008/01/24 10:11:48 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class BuilderApplicationViewNode extends DefaultViewNode {
 
@@ -54,9 +55,10 @@ public class BuilderApplicationViewNode extends DefaultViewNode {
 	 * @see com.idega.core.view.DefaultViewNode#getResourceURI()
 	 */
 	public String getResourceURI() {
-		if(getBuilderLogic().isFirstBuilderRun()){
-			//return getParent().getChild("initialsetup").getURI();
-			return "/workspace/site/tree";
+		if (getBuilderLogic().isFirstBuilderRun()) {
+			StringBuffer redirectUri = new StringBuffer("/workspace/").append(CoreConstants.CONTENT_VIEW_MANAGER_ID).append(CoreConstants.SLASH);
+			redirectUri.append(CoreConstants.PAGES_VIEW_MANAGER_ID);
+			return redirectUri.toString();
 		}
 		else{
 			return getIWMainApplication().getWindowOpenerURIWithoutContextPath(IBApplication.class);
