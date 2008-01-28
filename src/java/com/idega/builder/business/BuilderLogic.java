@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.306 2008/01/28 06:20:59 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.307 2008/01/28 08:11:33 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1142,13 +1142,13 @@ public class BuilderLogic implements Singleton {
 				//	PropertiesBean
 				if (types[0].equals(PropertiesBean.class)) {
 					GroupsChooserHelper helper = new GroupsChooserHelper();
-					return helper.getPropertyValue(values);
+					return helper.getPropertyValue(values, true);
 				}
 				
 				//	CalendarPropertiesBean
 				if (types[0].equals(CalendarPropertiesBean.class)) {
 					CalendarsChooserHelper helper = new CalendarsChooserHelper();
-					return helper.getPropertyValue(values);
+					return helper.getPropertyValue(values, false);
 				}
 			}
 			
