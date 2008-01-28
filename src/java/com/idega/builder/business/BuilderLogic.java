@@ -1,14 +1,12 @@
 /*
- * $Id: BuilderLogic.java,v 1.305 2008/01/23 08:37:55 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.306 2008/01/28 06:20:59 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -3327,8 +3325,8 @@ public class BuilderLogic implements Singleton {
 		// Building JDOM Document
 		InputStream stream = null;
 		try {
-			stream = new ByteArrayInputStream(rendered.getBytes(CoreConstants.ENCODING_UTF8));
-		} catch (UnsupportedEncodingException e) {
+			stream = StringHandler.getStreamFromString(rendered);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
