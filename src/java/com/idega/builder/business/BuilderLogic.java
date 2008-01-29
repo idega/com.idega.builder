@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.307 2008/01/28 08:11:33 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.308 2008/01/29 10:46:03 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -2342,16 +2342,18 @@ public class BuilderLogic implements Singleton {
 	
 	
 	public String getInstanceId(UIComponent object) {
-		if(object instanceof PresentationObject){
-			/*int icObjectInstanceId = ((PresentationObject)object).getICObjectInstanceID();
-			if(icObjectInstanceId!=-1){
-				return Integer.toString(icObjectInstanceId);
-			}*/
-			PresentationObject po = (PresentationObject)object;
-			return po.getXmlId();
+		String instanceId = null;
+		if (object instanceof PresentationObject) {
+			PresentationObject po = (PresentationObject) object;
+			instanceId = po.getXmlId();
 		}
-		//set from the xml
-		return object.getId();
+		
+		if (instanceId == null) {
+			//	set from the xml
+			instanceId = object.getId();
+		}
+		
+		return instanceId;
 	}
 	
 
