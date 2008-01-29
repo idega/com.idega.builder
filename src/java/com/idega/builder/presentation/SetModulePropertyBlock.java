@@ -21,24 +21,6 @@ public class SetModulePropertyBlock extends Block {
 	
 	private boolean isMultiValue = false;
 	
-	public SetModulePropertyBlock() {
-		setCacheable(getCacheKey());
-	}
-	
-	@Override
-	public String getCacheKey() {
-		return BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY;
-	}
-	
-	@Override
-	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
-		String pageKey = iwc.getApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER).toString();
-		String propertyName = iwc.getApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER).toString();
-		String instanceId = iwc.getApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER).toString();
-
-		return new StringBuffer(cacheStatePrefix).append(pageKey).append(propertyName).append(instanceId).toString();
-	}
-	
 	@Override
 	public void main(IWContext iwc) throws Exception {
 		String pageKey = iwc.getApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER).toString();
