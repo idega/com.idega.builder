@@ -32,22 +32,6 @@ import com.idega.presentation.text.Text;
 
 public class EditModuleBlock extends Block {
 	
-	/*public EditModuleBlock() {
-		setCacheable(getCacheKey(), 0);
-	}
-	
-	public String getCacheKey() {
-		return BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY;
-	}
-	
-	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
-		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
-		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
-		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
-
-		return new StringBuffer(cacheStatePrefix).append(name).append(instanceId).append(pageKey).toString();
-	}*/
-	
 	private String localizedText = "Sorry, there are no properties for this module.";
 	private Map<String, List<ComponentProperty>> addedProperties = new HashMap<String, List<ComponentProperty>>();
 	
