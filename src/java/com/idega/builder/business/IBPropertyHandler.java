@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.77 2007/10/19 12:04:52 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.78 2008/01/29 10:47:52 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -550,12 +550,12 @@ public class IBPropertyHandler implements Singleton{
 			no.setValue("N");
 			setMarkupAttributes(no, properties);
 			
-			if (stringValue.equalsIgnoreCase("Y") || stringValue.equalsIgnoreCase("T")) {
-				yes.setSelected();
+			if (stringValue.equalsIgnoreCase("Y") || stringValue.equalsIgnoreCase("T") || Boolean.TRUE.toString().equalsIgnoreCase(stringValue)) {
+				yes.setSelected(true);
 			}
 			else {
-				if (stringValue.equalsIgnoreCase("N") || stringValue.equalsIgnoreCase("F")) {
-					no.setSelected();
+				if (stringValue.equalsIgnoreCase("N") || stringValue.equalsIgnoreCase("F") || Boolean.FALSE.toString().equalsIgnoreCase(stringValue)) {
+					no.setSelected(true);
 				}
 			}
 			

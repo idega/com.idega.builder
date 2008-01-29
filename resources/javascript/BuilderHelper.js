@@ -771,24 +771,21 @@ function getActivePropertyBoxId() {
 	return ACTIVE_PROPERTY_SETTER_BOX;
 }
 
-function getPropertyBox(id, propertyName, objectInstanceId) {
+function getPropertyBox(id, propertyName, objectInstanceId, reloadBox) {
 	EXTRACTED_VALUES = new Array();
 	ACTIVE_PROPERTY_SETTER_BOX = id;
 	PROPERTY_NAME = propertyName;
 	INSTANCE_ID = objectInstanceId;
-	getBuilderModulePropertyBox(id, propertyName, objectInstanceId, false);
+	getBuilderModulePropertyBox(id, propertyName, objectInstanceId, reloadBox, true);
 }
 
-function getBuilderModulePropertyBox(id, propertyName, objectInstanceId, reloadBox) {
+function getBuilderModulePropertyBox(id, propertyName, objectInstanceId, reloadBox, openPropertyBox) {
 	var fullId = id + '_property_setter_box';
 	closeOldPropertyBoxes(fullId);
 	var propertySetterBox = $(fullId);
 	
-	var openPropertyBox = true;
 	if (reloadBox) {
-		openPropertyBox = false;
 		if (propertySetterBox != null) {
-			openPropertyBox = !(propertySetterBox.style.display == 'none');
 			propertySetterBox.remove();
 			propertySetterBox = null;
 		}
@@ -911,7 +908,14 @@ function saveModuleProperty(event, element) {
 	}
 	else {
 		values = new Array();
-		values.push(DWRUtil.getValue(element));
+		var value = null;
+		if (element.getTag() == 'input') {
+			value = element.getProperty('value');
+		}
+		else {
+			value = DWRUtil.getValue(element);
+		}
+		values.push(value);
 	}
 	
 	saveValuesForModule(values, moduleId, propertyName, needsReload, null, parametersCount);
@@ -935,6 +939,10 @@ function saveValuesForModule(values, moduleId, propertyName, needsReload, opened
 			
 			closeAllLoadingMessages();
 			saveModulePropertyCallback(result, moduleId, needsReload, propertyName);
+			
+			if (propertyName.indexOf('boolean') != -1) {
+				getBuilderModulePropertyBox(ACTIVE_PROPERTY_SETTER_BOX, propertyName, moduleId, true, true);
+			}
 		}
 	});
 }
@@ -1335,7 +1343,7 @@ function removeBuilderModuleProperty(id, boxId, moduleId, propertyName) {
 			container.removeClass('modulePropertyIsSet');
 			container.addClass('moduleProperty');
 			
-			getBuilderModulePropertyBox(boxId, propertyName, moduleId, true);
+			getBuilderModulePropertyBox(boxId, propertyName, moduleId, true, true);
 			renderModuleAgain(PAGE_KEY, REGION_ID, moduleId, MODULE_CONTENT_ID);
 		}
 	});

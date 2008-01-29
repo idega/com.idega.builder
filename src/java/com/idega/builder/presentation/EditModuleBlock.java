@@ -225,7 +225,10 @@ public class EditModuleBlock extends Block {
 				item.setStyleClass(itemStyle);
 			}
 			propertyName = new Span(new Text(property.getDisplayName(iwc.getCurrentLocale())));
-			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(property.getName()).append("', '").append(instanceId).append("');").toString());
+			
+			String methodName = property.getName();
+			boolean reloadPropertyBox = methodName.indexOf("boolean") != -1;
+			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(methodName).append("', '").append(instanceId).append("', ").append(reloadPropertyBox).append(");").toString());
 			item.add(propertyName);
 			
 			if (isPropertySet) {
