@@ -52,7 +52,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		IWBundle bundle = builder.getBuilderBundle();
 		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 		
-		info.add(builder.getUriToObject(AddModuleBlock.class));																// 0
+		info.add(builder.getUriToObject(AddModuleBlock.class.getName()));													// 0
 		info.add(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));										// 1
 		info.add(iwrb.getLocalizedString("set_module_properties", "Set module properties"));								// 2
 		info.add(new StringBuffer(bundle.getResourcesPath()).append("/add.png").toString());								// 3
@@ -61,7 +61,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(String.valueOf(iwc.getCurrentIBPageID()));																	// 6
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
 		info.add(iwrb.getLocalizedString("create_simple_template.Region", "Region"));										// 8
-		info.add(builder.getUriToObject(EditModuleBlock.class));															// 9
+		info.add(builder.getUriToObject(EditModuleBlock.class.getName()));													// 9
 		info.add(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);															// 10
 		info.add(BuilderConstants.MODULE_NAME);																				// 11
 		info.add(iwrb.getLocalizedString("deleting", "Deleting..."));														// 12

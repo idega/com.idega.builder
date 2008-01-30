@@ -2,6 +2,7 @@ package com.idega.builder.presentation;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +12,7 @@ import javax.ejb.FinderException;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.business.ModuleComparator;
+import com.idega.builder.business.ICObjectComparator;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
@@ -29,18 +30,6 @@ import com.idega.presentation.text.Lists;
 import com.idega.util.CoreConstants;
 
 public class AddModuleBlock extends Block {
-	
-	/*public AddModuleBlock() {
-		setCacheable(getCacheKey());
-	}
-	
-	public String getCacheKey() {
-		return BuilderConstants.ADD_NEW_MODULE_WINDOW_CACHE_KEY;
-	}
-	
-	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
-		return cacheStatePrefix;
-	}*/
 	
 	private Map<String, List<ICObject>> addedTabs = new HashMap<String, List<ICObject>>();
 	private String localizedText = "Sorry, there are no components available.";
@@ -73,15 +62,21 @@ public class AddModuleBlock extends Block {
 		titles.setStyleClass("mootabs_title");
 		
 		List<ICObject> widgets = getConcreteComponents(iwc, allComoponents, true, false, false);
-		addComponentsTitles(titles, widgets, "widgetsTab", iwrb.getLocalizedString("widget_modules", "Widgets"));
+		if (widgets != null && widgets.size() > 0) {
+			addComponentsTitles(titles, widgets, "widgetsTab", iwrb.getLocalizedString("widget_modules", "Widgets"));
+		}
 
 		List<ICObject> blocks = getConcreteComponents(iwc, allComoponents, false, true, false);
-		addComponentsTitles(titles, blocks, "blocksTab", iwrb.getLocalizedString("blocks_header", "Blocks"));
+		if (blocks != null && blocks.size() > 0) {
+			addComponentsTitles(titles, blocks, "blocksTab", iwrb.getLocalizedString("blocks_header", "Blocks"));
+		}
 
-		List<ICObject> builder = null;
+		List<ICObject> builderComponents = null;
 		if (isBuilderUser) {
-			builder = getConcreteComponents(iwc, allComoponents, false, false, true);
-			addComponentsTitles(titles, builder, "builderTab", iwrb.getLocalizedString("builder_modules", "Builder"));
+			builderComponents = getConcreteComponents(iwc, allComoponents, false, false, true);
+			if (builderComponents != null && builderComponents.size() > 0) {
+				addComponentsTitles(titles, builderComponents, "builderTab", iwrb.getLocalizedString("builder_modules", "Builder"));
+			}
 		}
 		
 		if (addedTabs.size() == 0) {
@@ -158,7 +153,7 @@ public class AddModuleBlock extends Block {
 					addComponent(components, object, namesList);
 				}
 			}
-			return components;
+			return getSortedComponents(components);
 		}
 		
 		//	Find "block" type modules
@@ -171,7 +166,7 @@ public class AddModuleBlock extends Block {
 					}
 				}
 			}
-			return components;
+			return getSortedComponents(components);
 		}
 		
 		//	Find all other Builder/Development modules
@@ -189,10 +184,18 @@ public class AddModuleBlock extends Block {
 				}
 			}
 		}
-		if (components != null) {
-			ModuleComparator comparator = new ModuleComparator(iwc);
-			java.util.Collections.sort(components, comparator);
+		
+		return getSortedComponents(components);
+	}
+	
+	private List<ICObject> getSortedComponents(List<ICObject> components) {
+		if (components == null) {
+			return null;
 		}
+		
+		ICObjectComparator comparator = new ICObjectComparator();
+		Collections.sort(components, comparator);
+		
 		return components;
 	}
 	

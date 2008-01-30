@@ -29,6 +29,7 @@ import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
+import com.idega.util.CoreConstants;
 
 public class EditModuleBlock extends Block {
 	
@@ -39,15 +40,27 @@ public class EditModuleBlock extends Block {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
 		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
 		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
-		if (instanceId == null || pageKey == null) {
+		if (instanceId == null) {
 			return;
 		}
-		UIComponent component = BuilderLogic.getInstance().findComponentInPage(iwc, pageKey, instanceId);
+		
+		BuilderLogic builder = BuilderLogic.getInstance();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
+		String nullInString = "null";
+		if (pageKey == null || CoreConstants.EMPTY.equals(pageKey) || nullInString.equals(pageKey)) {
+			pageKey = builder.getCurrentIBPage(iwc);
+		}
+		if (pageKey == null || CoreConstants.MINUS.equals(pageKey) || nullInString.equals(pageKey)) {
+			add(new Heading1(iwrb.getLocalizedString("error_page_was_not_found", "Sorry, page was not found.")));
+			return;
+		}
+		
+		UIComponent component = builder.findComponentInPage(iwc, pageKey, instanceId);
 		if (component instanceof PresentationObject) {
 			name = ((PresentationObject) component).getBuilderName(iwc);
 		}
 		
-		IWResourceBundle iwrb = getResourceBundle(iwc);
 		localizedText = iwrb.getLocalizedString("no_properties_for_this_module", localizedText);
 		
 		List<ComponentProperty> properties = getPropertyListOrdered(iwc, instanceId);
@@ -110,7 +123,7 @@ public class EditModuleBlock extends Block {
 		Lists tabs = new Lists();
 		tabs.setStyleClass("mootabs_title");
 		container.add(tabs);
-		if (simpleProperties.size() == 0 && advancedProperties.size() == 0) {
+		if (simpleProperties.size() == 0 || advancedProperties.size() == 0) {
 			List<ComponentProperty> jointList = new ArrayList<ComponentProperty>(simpleProperties);
 			jointList.addAll(advancedProperties);
 			String propertiesText = "module_properties";

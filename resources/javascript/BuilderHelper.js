@@ -1,5 +1,5 @@
-var ADD_NEW_COMPONENT_WINDOW_LINK = '/workspace/window/';
-var EDIT_COMPONENT_WINDOW_LINK = '/workspace/window/';
+var ADD_NEW_COMPONENT_WINDOW_LINK = '/servlet/ObjectInstanciator?idegaweb_instance_class=com.idega.builder.presentation.AddModuleBlock';
+var EDIT_COMPONENT_WINDOW_LINK = '/servlet/ObjectInstanciator?idegaweb_instance_class=com.idega.builder.presentation.EditModuleBlock';
 
 var ADD_NEW_COMPONENT_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/add.png';
 var COMPONENT_INFORMATION_IMAGE = '/idegaweb/bundles/com.idega.builder.bundle/resources/information.png';
@@ -144,7 +144,7 @@ function registerBuilderActions() {
 }
 
 function intializeMoodalboxInBuilder() {
-	MOOdalBox.init({resizeDuration: 50, evalScripts: true, defContentsWidth: MOODALBOX_WINDOW_WIDTH, defContentsHeight: MOODALBOX_WINDOW_HEIGHT});
+	MOOdalBox.init({resizeDuration: 0, evalScripts: true, animateCaption: false, defContentsWidth: MOODALBOX_WINDOW_WIDTH, defContentsHeight: MOODALBOX_WINDOW_HEIGHT});
 }
 
 function addEventsToBuilderElements() {
@@ -428,7 +428,8 @@ function showComponentInfoImage(element) {
 		return false;
 	}
 	
-	if (container.style.visibility == '') {	// If it is the first time	
+	if (container.style.visibility == '') {
+		//	It is the first time	
 		var moduleName = 'Undefined';
 		var moduleNameSpans = getElementsByClassName(element, 'span', 'moduleNameTooltip');
 		if (moduleNameSpans.length > 0) {
@@ -444,7 +445,7 @@ function showComponentInfoImage(element) {
 		}
 		
 		var instanceId = null;
-		var inputs = element.getElementsByTagName('input');
+		var inputs = element.getElements('input');//.getElementsByTagName('input');
 		if (inputs != null) {
 			var input = null;
 			var foundInstance = false;
