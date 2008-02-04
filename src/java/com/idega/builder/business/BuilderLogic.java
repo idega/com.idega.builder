@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.308 2008/01/29 10:46:03 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.309 2008/02/04 11:30:37 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -71,6 +71,7 @@ import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.view.ViewManager;
@@ -210,7 +211,7 @@ public class BuilderLogic implements Singleton {
 		return getPageCacher().getCachedBuilderPage(key).getICPage();
 	}
 
-	public IBXMLPage getIBXMLPage(String pageKey) {
+	public IBXMLPage getIBXMLPage(String pageKey) throws Exception {
 		return getPageCacher().getIBXML(pageKey);
 	}
 
@@ -984,13 +985,24 @@ public class BuilderLogic implements Singleton {
 	 * with the specified keys Returns the selectedValues[] if nothing found
 	 */
 	public String[] getPropertyValues(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		return IBPropertyHandler.getInstance().getPropertyValues(iwma, xml, instanceId, propertyName, selectedValues, returnSelectedValueIfNothingFound);
-		//return getXMLWriter().getPropertyValues(xml,ObjectInstanceId,propertyName);
 	}
 
 	public boolean removeProperty(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] values) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (getIBXMLWriter().removeProperty(iwma, xml, instanceId, propertyName, values)) {
 			xml.store();
 			return true;
@@ -1033,7 +1045,13 @@ public class BuilderLogic implements Singleton {
 	 * Returns the first property if there is an array of properties set
 	 */
 	public String getProperty(String pageKey, String instanceId, String propertyName) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		return getIBXMLWriter().getProperty(xml, instanceId, propertyName);
 	}
 
@@ -1224,7 +1242,13 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId, IWSlideSession session) {
-		IBXMLPage page = getIBXMLPage(pageKey);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		deleteBlock(instanceId, pageKey);
 		boolean result = getIBXMLWriter().deleteModule(page, parentObjectInstanceID, instanceId);
 		
@@ -1236,7 +1260,13 @@ public class BuilderLogic implements Singleton {
 
 	// add by Aron 20.sept 2001 01:49
 	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		
 		deleteBlock(instanceId, pageKey);
 		
@@ -1268,7 +1298,13 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public boolean copyModule(IWUserContext iwc, String pageKey, String instanceId) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		
 		XMLElement element = xml.copyModule(instanceId);
 		if (element == null) {
@@ -1288,7 +1324,13 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String putModuleIntoRegion(IWContext iwc, String pageKey, String regionId, String regionLabel, boolean changeInstanceId) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		if (element == null) {
 			return null;
@@ -1311,7 +1353,13 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String moveModule(String pageKey, String formerPageKey, String formerParentId, String instanceId, String parentId, IWContext iwc) {
-		IBXMLPage page = getIBXMLPage(formerPageKey);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		if (page == null) {
 			return null;
 		}
@@ -1345,7 +1393,13 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public boolean pasteModuleAbove(IWUserContext iwc, String pageKey, String parentID, String objectID) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		if (element == null) {
 			return (false);
@@ -1359,7 +1413,13 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public boolean pasteModuleBelow(IWUserContext iwc, String pageKey, String parentID, String objectID) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		XMLElement element = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		if (element == null) {
 			return (false);
@@ -1520,7 +1580,13 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (getIBXMLWriter().lockRegion(xml, parentObjectInstanceID)) {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
@@ -1540,7 +1606,13 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public boolean unlockRegion(String pageKey, String parentObjectInstanceID, String label) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (getIBXMLWriter().unlockRegion(xml, parentObjectInstanceID)) {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
@@ -1562,7 +1634,13 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String addNewModule(String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID, String label, IWSlideSession session) {
-		IBXMLPage page = getIBXMLPage(pageKey);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		
 		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, regionId, newICObjectID, label);
 		if (id == null) {
@@ -1579,7 +1657,13 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public boolean addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		//TODO add handling for generic UIComponent adding
 		
 		String id = getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label);
@@ -1600,7 +1684,13 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, IWSlideSession session) {
-		IBXMLPage page = getIBXMLPage(pageKey);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, newICObjectID, label);
 		if (id == null) {
 			return null;
@@ -1656,7 +1746,13 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public boolean addRegion(String pageKey, String label, String parentId, boolean storePage) {
-		IBXMLPage page = getIBXMLPage(pageKey);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (page == null) {
 			return false;
 		}
@@ -1673,7 +1769,13 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public boolean addNewModule(String pageKey, String parentObjectInstanceID, ICObject newObjectType, String label) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		String id = getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newObjectType, label);
 		if (id == null) {
 			return false;
@@ -1682,9 +1784,9 @@ public class BuilderLogic implements Singleton {
 		return true;	
 	}
 
-	public Class getObjectClass(int icObjectInstanceID) {
+	public Class<?> getObjectClass(int icObjectInstanceID) {
 		try {
-			ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceID);
+			ICObjectInstance instance = ((ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(icObjectInstanceID);
 			return instance.getObject().getObjectClass();
 		}
 		catch (Exception e) {
@@ -1759,7 +1861,13 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public boolean labelRegion(String pageKey, String parentObjectInstanceID, String label) {
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (getIBXMLWriter().labelRegion(xml, parentObjectInstanceID, label)) {
 			xml.store();
 			return true;
@@ -1878,15 +1986,16 @@ public class BuilderLogic implements Singleton {
 	 *          The new template id for the current page.
 	 */
 	public void setTemplateId(String pageKey, String newTemplateId) {
+		IBXMLPage xml = null;
 		try {
-			IBXMLPage xml = getIBXMLPage(pageKey);
-			if (xml == null) {
-				return;
-			}
-			xml.setTemplateId(newTemplateId);
-		} catch (ClassCastException e) {
-			
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			return;
 		}
+		if (xml == null) {
+			return;
+		}
+		xml.setTemplateId(newTemplateId);
 	}
 
 	/**
@@ -1923,7 +2032,13 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public void changeDPTCrawlableLinkContainerPageIds(int moduleId, String currentPageID, String newLinkedPageIds) {
-		IBXMLPage page = getIBXMLPage(currentPageID);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(currentPageID);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 		XMLElement element = new XMLElement(IBXMLConstants.CHANGE_ROOT_PAGE);
 		XMLAttribute id = new XMLAttribute(IBXMLConstants.LINK_ID_STRING, Integer.toString(moduleId));
 		XMLAttribute newPageLink = new XMLAttribute(IBXMLConstants.LINK_TO, newLinkedPageIds);
@@ -1935,7 +2050,13 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public void changeDPTCrawlableLinkedPageId(int moduleId, String currentPageID, String newLinkedPageId) {
-		IBXMLPage page = getIBXMLPage(currentPageID);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(currentPageID);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 		XMLElement element = new XMLElement(IBXMLConstants.CHANGE_PAGE_LINK);
 		XMLAttribute id = new XMLAttribute(IBXMLConstants.LINK_ID_STRING, Integer.toString(moduleId));
 		XMLAttribute newPageLink = new XMLAttribute(IBXMLConstants.LINK_TO, newLinkedPageId);
@@ -2811,7 +2932,13 @@ public class BuilderLogic implements Singleton {
 		if (pageKey == null || moduleClass == null) {
 			return null;
 		}
-		IBXMLPage page = getIBXMLPage(pageKey);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		if (page == null) {
 			return null;
 		}
@@ -2853,7 +2980,13 @@ public class BuilderLogic implements Singleton {
 		if (pageKey == null || instanceId == null) {
 			return null;
 		}
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 		if (xml == null) {
 			return null;
 		}
@@ -2881,7 +3014,13 @@ public class BuilderLogic implements Singleton {
 			return false;
 		}
 		
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (xml == null) {
 			return false;
 		}
@@ -2933,7 +3072,13 @@ public class BuilderLogic implements Singleton {
 		if (pageKey == null || moduleId == null || propertyName == null || valueToRemove == null) {
 			return false;
 		}
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (xml == null) {
 			return false;
 		}
@@ -3232,7 +3377,13 @@ public class BuilderLogic implements Singleton {
 					"\nnew_region_id: "+new_region_id
 			);
 		}
-		IBXMLPage xml = getIBXMLPage(pageKey);
+		IBXMLPage xml = null;
+		try {
+			xml = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
 		
 		if (xml == null)
 			throw new NullPointerException("Page not found by key provided: "+pageKey);
@@ -3531,7 +3682,13 @@ public class BuilderLogic implements Singleton {
 			return false;
 		}
 		
-		IBXMLPage page = getIBXMLPage(pageKey);
+		IBXMLPage page = null;
+		try {
+			page = getIBXMLPage(pageKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (page == null) {
 			return false;
 		}

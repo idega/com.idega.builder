@@ -338,7 +338,13 @@ public class DPTTriggerBusinessBean extends IBOServiceBean implements DPTTrigger
 
     cSession.setNewValue(ICPage.class,String.valueOf(dptTemplateId),String.valueOf(id));
     
-    IBXMLPage currentXMLPage = instance.getIBXMLPage(Integer.toString(id));
+    IBXMLPage currentXMLPage = null;
+    try {
+		currentXMLPage = instance.getIBXMLPage(Integer.toString(id));
+	} catch (Exception e) {
+		e.printStackTrace();
+		return -1;
+	}
 	currentXMLPage.getPageRootElement().setAttribute(IBXMLConstants.DPT_ROOTPAGE_STRING,String.valueOf(((rootPageID!=-1)?rootPageID:id)));
 	currentXMLPage.store();
     Page current = currentXMLPage.getPopulatedPage();

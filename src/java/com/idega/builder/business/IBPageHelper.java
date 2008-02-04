@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.82 2008/01/17 09:27:40 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.83 2008/02/04 11:30:37 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -433,7 +433,12 @@ public class IBPageHelper implements Singleton  {
 		if(IBPageBMPBean.FORMAT_IBXML.equals(ibPage.getFormat())) {
 			//Special handling of the format IBXML
 			if(tid != -1 ){
-				IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
+				IBXMLPage currentXMLPage = null;
+				try {
+					currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				Page current = currentXMLPage.getPopulatedPage();
 				List children = current.getChildrenRecursive();
 				if (children != null) {
@@ -536,7 +541,13 @@ public class IBPageHelper implements Singleton  {
 	public boolean addElementToPage(ICPage ibPage, int[] templateObjInstID, IWUserContext iwuc) {
 		System.out.println("addElementToPage begins");
 		if (templateObjInstID != null) {
-			IBXMLPage currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
+			IBXMLPage currentXMLPage = null;
+			try {
+				currentXMLPage = BuilderLogic.getInstance().getIBXMLPage(ibPage.getPageKey());
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
 			Page current = currentXMLPage.getPopulatedPage();
 			List children = current.getChildrenRecursive();
 			if (children != null) {
@@ -670,7 +681,12 @@ public class IBPageHelper implements Singleton  {
 				if (it != null) {
 					while (it.hasNext()) {
 						ICPage child = (ICPage) it.next();
-						IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getPageKey());
+						IBXMLPage xml = null;
+						try {
+							xml = BuilderLogic.getInstance().getIBXMLPage(child.getPageKey());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 						List map = xml.getUsingTemplate();
 						if ((map != null) || (!map.isEmpty())) {
 							return false;

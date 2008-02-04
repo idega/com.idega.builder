@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.16 2008/01/09 13:42:57 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.17 2008/02/04 11:30:36 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -673,7 +673,13 @@ public class IBXMLWriter {
 	private void onObjectAdd(XMLElement parent, XMLElement newElement, String pageKey, String newInstanceId, ICObject obj) {
 		if (obj.getClassName().equals(CoreConstants.getArticleItemViewerClass().getName())) {
 			
-			IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(pageKey);
+			IBXMLPage xml = null;
+			try {
+				xml = BuilderLogic.getInstance().getIBXMLPage(pageKey);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
+			}
 			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			
 			String base = new StringBuffer(CoreConstants.CONTENT_PATH).append(CoreConstants.ARTICLE_CONTENT_PATH).toString();
