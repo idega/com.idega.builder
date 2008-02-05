@@ -829,13 +829,13 @@ function getPropertyBoxCallback(id, propertyName, objectInstanceId, box, openPro
 	var propertySetterBox = new Element('div');
 	var fullId = id + '_property_setter_box';
 	propertySetterBox.setProperty('id', fullId);
-	PROPERTY_BOX_SHOWN.push(fullId);
-	
-	insertNodesToContainer(box, propertySetterBox);
 	if (!openPropertyBox) {
 		propertySetterBox.style.display = 'none';
 	}
 	container.appendChild(propertySetterBox);
+	PROPERTY_BOX_SHOWN.push(fullId);
+	
+	insertNodesToContainer(box, propertySetterBox);
 	
 	addEventsToBuilderElements();	// Need to re-register actions
 }
