@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLWriter.java,v 1.17 2008/02/04 11:30:36 valdas Exp $
+ * $Id: IBXMLWriter.java,v 1.18 2008/02/06 14:32:44 valdas Exp $
  * 
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  * 
@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
@@ -809,7 +810,13 @@ public class IBXMLWriter {
 				regionId = "-1";
 			}
 			else {
-				regionId = new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(parentObjectInstanceID).toString();
+				if (label.startsWith(ICObjectBusiness.UUID_PREFIX)) {
+					regionId = new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(label).toString();
+				}
+				else {
+					regionId = label;
+				}
+				label = regionId;
 			}
 			return addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, regionId, label);
 		}
