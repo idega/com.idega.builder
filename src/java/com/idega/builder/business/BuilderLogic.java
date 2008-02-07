@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.310 2008/02/07 09:53:37 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.311 2008/02/07 12:51:12 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1680,11 +1680,11 @@ public class BuilderLogic implements Singleton {
 	 * @param parentObjectInstanceID
 	 * @param newICObjectID
 	 * @param label
-	 * @param session
+	 * @param slideSession
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, IWSlideSession session) {
+	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, IWSlideSession slideSession) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1693,25 +1693,27 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		//	Will check if can use thread
-		XMLElement region = null;
-		try {
-			region = getIBXMLWriter().findRegion(page, label, null);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		boolean useThread = true;
-		if (region == null) {
-			useThread = false;
-		}
-		else {
-			List children = region.getChildren();
-			if (children == null || children.size() == 0) {
+		if (slideSession != null) {
+			//	Will check if can use thread
+			XMLElement region = null;
+			try {
+				region = getIBXMLWriter().findRegion(page, label, null);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			boolean useThread = true;
+			if (region == null) {
 				useThread = false;
 			}
-		}
-		if (!useThread) {
-			session = null;
+			else {
+				List children = region.getChildren();
+				if (children == null || children.size() == 0) {
+					useThread = false;
+				}
+			}
+			if (!useThread) {
+				slideSession = null;
+			}
 		}
 		
 		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, newICObjectID, label);
@@ -1719,7 +1721,7 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		if (savePage(page, session)) {
+		if (savePage(page, slideSession)) {
 			return id;
 		}
 		return null;
