@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.309 2008/02/04 11:30:37 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.310 2008/02/07 09:53:37 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1683,6 +1683,7 @@ public class BuilderLogic implements Singleton {
 	 * @param session
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, IWSlideSession session) {
 		IBXMLPage page = null;
 		try {
@@ -1691,6 +1692,28 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return null;
 		}
+		
+		//	Will check if can use thread
+		XMLElement region = null;
+		try {
+			region = getIBXMLWriter().findRegion(page, label, null);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		boolean useThread = true;
+		if (region == null) {
+			useThread = false;
+		}
+		else {
+			List children = region.getChildren();
+			if (children == null || children.size() == 0) {
+				useThread = false;
+			}
+		}
+		if (!useThread) {
+			session = null;
+		}
+		
 		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, newICObjectID, label);
 		if (id == null) {
 			return null;

@@ -568,6 +568,18 @@ function addSelectedModuleCallback(component, id) {
 			EXTRA_PARENT_ID = null;
 		}
 		if (container == null) {
+			var moduleContainers = $(document.body).getElements('div[parentid='+id+']');
+			if (moduleContainers != null) {
+				var sameLevelModuleContainer = null;
+				for (var i = 0; (i < moduleContainers.length && container == null); i++) {
+					sameLevelModuleContainer = $(moduleContainers[i]);
+					if (sameLevelModuleContainer.hasClass('moduleContainer')) {
+						container = sameLevelModuleContainer.getParent();
+					}
+				}
+			}
+		}
+		if (container == null) {
 			executeActionsBeforeReloading();
 			return false;
 		}
