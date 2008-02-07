@@ -548,3 +548,8 @@ div.builderButtons div.builderButton a {
 div.builderButtons div.builderButton img {
 	vertical-align: bottom;
 }
+
+.groupPermissionFrameInNewBuilderStyle {
+	width: 99%;
+	height: 99%;
+}

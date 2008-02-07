@@ -10,10 +10,12 @@ import java.util.Random;
 
 import javax.faces.component.UIComponent;
 
+import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.component.business.ComponentProperty;
 import com.idega.idegaweb.IWBundle;
@@ -29,9 +31,13 @@ import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.IFrame;
 import com.idega.util.CoreConstants;
 
 public class EditModuleBlock extends Block {
+	
+	private String groupPermissionsText = "group_permissions";
+	private String rolePermissionsText = "role_permissions";
 	
 	private String localizedText = "Sorry, there are no properties for this module.";
 	private Map<String, List<ComponentProperty>> addedProperties = new HashMap<String, List<ComponentProperty>>();
@@ -139,11 +145,9 @@ public class EditModuleBlock extends Block {
 		
 		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
 		if (isBuilderUser) {
-			String groupPermissionsText = "group_permissions";
-			addTab(tabs, groupPermissionsText, iwrb.getLocalizedString(groupPermissionsText, "Group permissions"), null);	//	TODO
+			addTab(tabs, groupPermissionsText, iwrb.getLocalizedString(groupPermissionsText, "Group permissions"), null);
 			
-			String rolePermissionsText = "role_permissions";
-			addTab(tabs, rolePermissionsText, iwrb.getLocalizedString(rolePermissionsText, "Role permissions"), null);		//	TODO
+//			addTab(tabs, rolePermissionsText, iwrb.getLocalizedString(rolePermissionsText, "Role permissions"), null);		//	TODO
 		}
 		
 		String key = null;
@@ -155,8 +159,26 @@ public class EditModuleBlock extends Block {
 			container.add(tabContentContainer);
 			tabContentContainer.setId(key);
 			tabContentContainer.setStyleClass("mootabs_panel");
-			addPropertiesToContainer(addedProperties.get(key), tabContentContainer, instanceId, iwc, pageKey);
+			if (key.equals(groupPermissionsText)) {
+				addGroupPermissionsWindow(iwc, tabContentContainer, instanceId);
+			}
+			else if (key.equals(rolePermissionsText)) {
+				//	TODO
+			}
+			else {
+				addPropertiesToContainer(addedProperties.get(key), tabContentContainer, instanceId, iwc, pageKey);
+			}
 		}
+	}
+	
+	private void addGroupPermissionsWindow(IWContext iwc, Layer main, String instanceId) {
+		List<AdvancedProperty> parameters = new ArrayList<AdvancedProperty>();
+		parameters.add(new AdvancedProperty(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, instanceId));
+		parameters.add(new AdvancedProperty(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY, String.valueOf(AccessController.CATEGORY_OBJECT_INSTANCE)));
+		parameters.add(new AdvancedProperty(BuilderConstants.CURRENT_COMPONENT_IS_IN_FRAME, Boolean.TRUE.toString()));
+		IFrame frame = new IFrame(groupPermissionsText, BuilderLogic.getInstance().getUriToObject(IBPermissionWindow.class, parameters));
+		frame.setStyleClass("groupPermissionFrameInNewBuilderStyle");
+		main.add(frame);
 	}
 	
 	private void addTab(Lists tabs, String key, String text, List<ComponentProperty> properties) {

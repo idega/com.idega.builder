@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
@@ -28,7 +29,7 @@ import com.idega.presentation.ui.SubmitButton;
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company: idega
  * 
- * @author <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a>
+ * @author <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a>
  * @version 1.0
  */
 public class IBPermissionWindow extends IBAdminWindow {
@@ -42,6 +43,8 @@ public class IBPermissionWindow extends IBAdminWindow {
 	private static final String SessionAddressPermissionMapOldValue = "ib_permission_hashtable_old_value";
 	private boolean collectOld = false;
 	private IWResourceBundle iwrb;
+	
+	private boolean needCancelButton = true;
 
 	public IBPermissionWindow() {
 		setWidth(370);
@@ -192,7 +195,9 @@ public class IBPermissionWindow extends IBAdminWindow {
 			frameTable.add(permissionBox, 1, 2);
 			frameTable.add(submit, 1, 3);
 			frameTable.add(Text.getNonBrakingSpace(), 1, 3);
-			frameTable.add(cancel, 1, 3);
+			if (needCancelButton) {
+				frameTable.add(cancel, 1, 3);
+			}
 			frameTable.add(new HiddenInput(lastPermissionKeyParameterString, permissionType));
 		}
 		return frameTable;
@@ -205,6 +210,15 @@ public class IBPermissionWindow extends IBAdminWindow {
 		myForm.setToShowLoadingOnSubmit(false);
 		myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
 		myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
+		
+		boolean isComponentInFrame = false;
+		String componentInFrame = iwc.getParameter(BuilderConstants.CURRENT_COMPONENT_IS_IN_FRAME);
+		if (componentInFrame != null && Boolean.TRUE.toString().equals(componentInFrame)) {
+			myForm.maintainParameter(BuilderConstants.CURRENT_COMPONENT_IS_IN_FRAME);
+			isComponentInFrame = true;
+		}
+		needCancelButton = !isComponentInFrame;
+		
 		this.iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		super.addTitle(this.iwrb.getLocalizedString("ib_permission_window", "Permissions"),
 				IWConstants.BUILDER_FONT_STYLE_TITLE);
@@ -218,7 +232,12 @@ public class IBPermissionWindow extends IBAdminWindow {
 				this.collect(iwc);
 				this.store(iwc);
 				this.dispose(iwc);
-				this.close();
+				if (isComponentInFrame) {
+					myForm.add(this.lineUpElements(iwc, permissionType));
+				}
+				else {
+					this.close();
+				}
 			}
 			else {
 				this.add("ERROR: nothing to save");
