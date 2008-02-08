@@ -18,6 +18,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -25,6 +26,9 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
+import com.idega.util.CoreConstants;
+import com.idega.util.PresentationUtil;
 
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company: idega
@@ -32,7 +36,7 @@ import com.idega.presentation.ui.SubmitButton;
  * @author <a href="mailto:gummi@idega.is">Gu�mundur �g�st S�mundsson</a>
  * @version 1.0
  */
-public class IBPermissionWindow extends IBAdminWindow {
+public class IBPermissionWindow extends Window {
 
 	public static final String _PARAMETERSTRING_IDENTIFIER = AccessController._PARAMETERSTRING_IDENTIFIER;
 	public static final String _PARAMETERSTRING_PERMISSION_CATEGORY = AccessController._PARAMETERSTRING_PERMISSION_CATEGORY;
@@ -216,12 +220,13 @@ public class IBPermissionWindow extends IBAdminWindow {
 		if (componentInFrame != null && Boolean.TRUE.toString().equals(componentInFrame)) {
 			myForm.maintainParameter(BuilderConstants.CURRENT_COMPONENT_IS_IN_FRAME);
 			isComponentInFrame = true;
+			
+			PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(CoreConstants.WORKSPACE_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/workspace.css"));
 		}
 		needCancelButton = !isComponentInFrame;
 		
 		this.iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
-		super.addTitle(this.iwrb.getLocalizedString("ib_permission_window", "Permissions"),
-				IWConstants.BUILDER_FONT_STYLE_TITLE);
+		setTitle(this.iwrb.getLocalizedString("ib_permission_window", "Permissions"));
 		// System.out.println("_PARAMETERSTRING_PERMISSION_CATEGORY:
 		// "+iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)+" and
 		// _PARAMETERSTRING_IDENTIFIER:
@@ -230,7 +235,12 @@ public class IBPermissionWindow extends IBAdminWindow {
 			String permissionType = iwc.getParameter(permissionKeyParameterString);
 			if (permissionType != null) {
 				this.collect(iwc);
-				this.store(iwc);
+				try {
+					this.store(iwc);
+				} catch(Exception e) {
+					e.printStackTrace();
+					myForm.add(new Heading3(iwrb.getLocalizedString("can_not_save_permissions", "Error: can not save permissions.")));
+				}
 				this.dispose(iwc);
 				if (isComponentInFrame) {
 					myForm.add(this.lineUpElements(iwc, permissionType));
@@ -359,6 +369,10 @@ public class IBPermissionWindow extends IBAdminWindow {
 				throw new RuntimeException("identifier or permissionCategory not set or does not match");
 			}
 		}
+	}
+	
+	private BuilderLogic getBuilderLogic() {
+		return BuilderLogic.getInstance();
 	}
 
 	private void dispose(IWContext iwc) {

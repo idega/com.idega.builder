@@ -146,7 +146,6 @@ public class EditModuleBlock extends Block {
 		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
 		if (isBuilderUser) {
 			addTab(tabs, groupPermissionsText, iwrb.getLocalizedString(groupPermissionsText, "Group permissions"), null);
-			
 //			addTab(tabs, rolePermissionsText, iwrb.getLocalizedString(rolePermissionsText, "Role permissions"), null);		//	TODO
 		}
 		
@@ -162,9 +161,9 @@ public class EditModuleBlock extends Block {
 			if (key.equals(groupPermissionsText)) {
 				addGroupPermissionsWindow(iwc, tabContentContainer, instanceId);
 			}
-			else if (key.equals(rolePermissionsText)) {
+			/*else if (key.equals(rolePermissionsText)) {
 				//	TODO
-			}
+			}*/
 			else {
 				addPropertiesToContainer(addedProperties.get(key), tabContentContainer, instanceId, iwc, pageKey);
 			}
