@@ -113,3 +113,4 @@ region=region
 no_properties_for_this_module=Sorry, there are no properties for this module.
 no_components_available=Sorry, there are no components available.
 error_page_was_not_found=Sorry, page was not found.
+builder=Builder

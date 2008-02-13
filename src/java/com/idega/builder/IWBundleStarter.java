@@ -44,6 +44,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.repository.data.ImplementorRepository;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.slide.business.IWSlideService;
+import com.idega.util.CoreConstants;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -111,7 +112,9 @@ public class IWBundleStarter implements IWBundleStartable {
 			
 			ViewNode workspaceNode = viewManager.getWorkspaceRoot();
 			
-			//Class applicationClass = IBApplication.class;
+			DefaultViewNode builderAppNode = new DefaultViewNode(CoreConstants.BUILDER_APPLICATION, workspaceNode);
+			builderAppNode.setName("#{localizedStrings['com.idega.builder']['builder']}");
+			
 			FramedApplicationViewNode builderNode = new FramedApplicationViewNode("builder",workspaceNode);
 			Collection roles = new ArrayList();
 			roles.add(StandardRoles.ROLE_KEY_BUILDER);
@@ -120,6 +123,7 @@ public class IWBundleStarter implements IWBundleStartable {
 			//builderNode.setJspUri(workspaceNode.getResourceURI());
 			builderNode.setJspUri(starterBundle.getJSPURI("builderapp.jsp"));
 			builderNode.setKeyboardShortcut(new KeyboardShortcut("2"));
+			builderNode.setVisibleInMenus(false);
 			
 			
 			DefaultViewNode setupNode = new DefaultViewNode("initialsetup",builderNode);

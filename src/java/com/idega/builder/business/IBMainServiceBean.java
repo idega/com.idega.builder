@@ -491,4 +491,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public String getUriToObject(Class<?> objectClass, List<AdvancedProperty> parameters) {
 		return getBuilderLogic().getUriToObject(objectClass, parameters);
 	}
+	public boolean isFirstBuilderRun() {
+		return getBuilderLogic().isFirstBuilderRun();
+	}
 }
