@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.83 2008/02/04 11:30:37 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.84 2008/02/14 12:57:39 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -309,11 +309,14 @@ public class IBPageHelper implements Singleton  {
 		ibPage.setFile(file);
 		
 		ICPage parentpage = null;
-		try {
-			parentpage = this.getICPageHome().findByPrimaryKey(parentId);
-		} catch (FinderException e) {
-			e.printStackTrace();
+		if (parentId != null) {
+			try {
+				parentpage = this.getICPageHome().findByPrimaryKey(parentId);
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
 		}
+		
 		//Set the pageUri to a generated value if not set
 		if(pageUri==null){
 			
