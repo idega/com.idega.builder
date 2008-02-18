@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleTag.java,v 1.3 2006/04/09 11:43:35 laddi Exp $
+ * $Id: ModuleTag.java,v 1.4 2008/02/18 13:59:45 valdas Exp $
  * Created on 14.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,13 +11,15 @@ package com.idega.builder.tag;
 
 import javax.faces.webapp.UIComponentTag;
 
+import com.idega.webface.WFUtil;
+
 
 /**
  * 
- *  Last modified: $Date: 2006/04/09 11:43:35 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/02/18 13:59:45 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ModuleTag extends UIComponentTag {
 
@@ -89,7 +91,16 @@ public class ModuleTag extends UIComponentTag {
 	public String getComponentClass() {
 		return this.componentClass;
 	}
+	
 	public void setComponentClass(String componentClass) {
+		Object o = null;
+		try {
+			o = WFUtil.invoke(componentClass);
+		} catch(Exception e) {}
+		if (o instanceof String) {
+			componentClass = (String) o;
+		}
+		
 		this.componentClass = componentClass;
 	}
 }
