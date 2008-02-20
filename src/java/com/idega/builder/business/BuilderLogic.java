@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.311 2008/02/07 12:51:12 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.312 2008/02/20 12:24:44 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -169,6 +169,7 @@ public class BuilderLogic implements Singleton {
 	public static final String CLIPBOARD = "user_clipboard";
 	
 	private Pattern doctypeReplacementPattern;
+	private Pattern commentinHtmlReplacementPattern;
 	
 	private static Instantiator instantiator = new Instantiator() { @Override
 	public Object getInstance() { return new BuilderLogic();}};
@@ -753,7 +754,15 @@ public class BuilderLogic implements Singleton {
 	 */
 	public int getCurrentIBPageID(IWContext iwc) {
 		String theReturn = getCurrentIBPage(iwc);
-		return Integer.parseInt(theReturn);
+		if (theReturn == null) {
+			return -1;
+		}
+		try {
+			return Integer.parseInt(theReturn);
+		} catch(NumberFormatException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	
@@ -3495,10 +3504,18 @@ public class BuilderLogic implements Singleton {
 		if (rendered == null) {
 			return null;
 		}
+		
+		//	Removing <!--... ms-->
+		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(rendered);
+		rendered = commentsMatcher.replaceAll(CoreConstants.EMPTY);
 
 		//	Removing <!DOCTYPE .. >
 		Matcher matcher = getDoctypeReplacementPattern().matcher(rendered);
 		rendered = matcher.replaceAll(CoreConstants.EMPTY);
+		
+		if (rendered.equals(CoreConstants.EMPTY)) {
+			return null;
+		}
 		
 		// Building JDOM Document
 		InputStream stream = null;
@@ -3529,6 +3546,13 @@ public class BuilderLogic implements Singleton {
 			doctypeReplacementPattern = Pattern.compile("<!DOCTYPE[^>]*>");
 		
 		return doctypeReplacementPattern;
+	}
+	
+	private Pattern getCommentRemplacementPattern() {
+		if (commentinHtmlReplacementPattern == null) {
+			commentinHtmlReplacementPattern = Pattern.compile("<!--.+ms-->");
+		}
+		return commentinHtmlReplacementPattern;
 	}
 	
 	private void closeStream(InputStream stream) {
