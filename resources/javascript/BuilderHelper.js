@@ -48,9 +48,6 @@ var PASTE_ICONS_SLIDERS = new Array();
 var EXTRACTED_VALUES = new Array();
 var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'com.idega.user.presentation.group.GroupInfoViewer',
 	 'com.idega.user.presentation.group.GroupUsersViewer', 'com.idega.block.media.presentation.VideoViewer'];
-	 
-var MOODALBOX_WINDOW_WIDTH = 650;
-var MOODALBOX_WINDOW_HEIGHT = 500;
 
 function getBuilderInitInfo() {
 	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
@@ -144,7 +141,9 @@ function registerBuilderActions() {
 }
 
 function intializeMoodalboxInBuilder() {
-	MOOdalBox.init({resizeDuration: 0, evalScripts: true, animateCaption: false, defContentsWidth: MOODALBOX_WINDOW_WIDTH, defContentsHeight: MOODALBOX_WINDOW_HEIGHT});
+	var width = Math.round(window.getWidth() * 0.8);
+	var height = Math.round(window.getHeight() * 0.8);
+	MOOdalBox.init({resizeDuration: 0, evalScripts: true, animateCaption: false, defContentsWidth: width, defContentsHeight: height});
 }
 
 function addEventsToBuilderElements() {
@@ -1396,6 +1395,8 @@ function getRemoveBuilderPropertyImage(moduleId, propertyName) {
 }
 
 function createTabsWithMootabs(id) {
+	var widthForTabs = Math.round(window.getWidth() * 0.8);
+	var heightForTabs = Math.round(window.getHeight() * 0.8);
 	//	http://www.silverscripting.com/mootabs
-	var tabs = new mootabs(id, {width: MOODALBOX_WINDOW_WIDTH + 'px', height: (MOODALBOX_WINDOW_HEIGHT - 50) + 'px', changeTransition: 'none'});
+	var tabs = new mootabs(id, {width: widthForTabs + 'px', height: (heightForTabs - 50) + 'px', changeTransition: 'none'});
 }
