@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.37 2008/01/07 15:17:42 valdas Exp $
+ * $Id: PageTreeNode.java,v 1.38 2008/02/26 14:06:36 valdas Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -423,33 +423,21 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	/**
 	 * Returns the Localized node name for this node
 	 */
-	public String getNodeName(Locale locale) {
-		IWApplicationContext iwac = getApplicationContext();
-		return getNodeName(locale,iwac);
-	}
-	
-	public String getNodeName(Locale locale, IWApplicationContext iwac){
-		return getLocalizedNodeName(iwac,locale);
+	public String getNodeName(Locale locale){
+		return getLocalizedNodeName(locale);
 	}
 	
 	public String getLocalizedNodeName(IWContext iwc) {
 		Locale curr = iwc.getCurrentLocale();
-		return getLocalizedNodeName(iwc,curr);
+		return getLocalizedNodeName(curr);
 	}
 	
-	public String getLocalizedNodeName(IWApplicationContext iwc,Locale locale) {
-		//Hashtable names = (Hashtable)iwc.getApplicationAttribute(NAME_TREE);
+	public String getLocalizedNodeName(Locale locale) {
 		Map pageNames = getPageNames();
 		if (pageNames == null||pageNames.isEmpty()) {
 			return getNodeName();
 		}
-			
-		/*Hashtable pageNames = (Hashtable)names.get(new Integer(getNodeID()));
-		if (pageNames == null) {
-			return getNodeName();
-		}*/
 	
-		//Locale curr = iwc.getCurrentLocale();
 		StringBuffer localeString = new StringBuffer(locale.getLanguage());
 		String country = locale.getCountry();
 		if (country != null && !country.equals("")) {
@@ -837,6 +825,10 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	
 	public void setChildPageIds(List childPageIds){
 		this.childPageIds = childPageIds;
+	}
+
+	public String getNodeName(Locale locale, IWApplicationContext iwac) {
+		return getLocalizedNodeName(locale);
 	}
 	
 }
