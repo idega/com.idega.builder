@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.313 2008/02/21 13:11:41 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.314 2008/02/29 10:44:02 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3551,7 +3551,7 @@ public class BuilderLogic implements Singleton {
 	
 	private Pattern getCommentRemplacementPattern() {
 		if (commentinHtmlReplacementPattern == null) {
-			commentinHtmlReplacementPattern = Pattern.compile("<!--.+ms-->");
+			commentinHtmlReplacementPattern = Pattern.compile("<!--\\d+ ms-->");
 		}
 		return commentinHtmlReplacementPattern;
 	}
