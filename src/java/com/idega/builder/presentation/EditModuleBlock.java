@@ -33,6 +33,7 @@ import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.IFrame;
 import com.idega.util.CoreConstants;
+import com.idega.util.PresentationUtil;
 
 public class EditModuleBlock extends Block {
 	
@@ -45,7 +46,7 @@ public class EditModuleBlock extends Block {
 	public void main(IWContext iwc) throws Exception {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
 		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
-		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
+		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER_FOR_EDIT_MODULE_BLOCK);
 		if (instanceId == null) {
 			return;
 		}
@@ -58,7 +59,9 @@ public class EditModuleBlock extends Block {
 			pageKey = builder.getCurrentIBPage(iwc);
 		}
 		if (pageKey == null || CoreConstants.MINUS.equals(pageKey) || nullInString.equals(pageKey)) {
+			logError("Page id is not defined for EditModuleBlock!");
 			add(new Heading1(iwrb.getLocalizedString("error_page_was_not_found", "Sorry, page was not found.")));
+			add(PresentationUtil.getJavaScriptAction("MOOdalBox.addEventToCloseAction(function(){reloadPage();});"));
 			return;
 		}
 		

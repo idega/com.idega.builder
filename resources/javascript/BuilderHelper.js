@@ -37,7 +37,7 @@ var ACTIVE_PROPERTY_SETTER_BOX = null;
 
 var IC_OBJECT_INSTANCE_ID_PARAMETER = 'ic_object_instance_id_par';
 var MODULE_NAME_PARAMETER = 'moduleName';
-var IB_PAGE_PARAMETER = 'ib_page';
+var IB_PAGE_PARAMETER = 'ib_page_for_edit_module_block';
 var HANLDER_VALUE_OBJECTS_STYLE_CLASS = 'handlerValueObjects';
 
 var PROPERTIES_SHOWN = new Array();
@@ -151,9 +151,9 @@ function addEventsToBuilderElements() {
 		function(element) {
 			element.addEvent('mouseenter', function() {
 				try {
+					showComponentInfoImage(element);
 					showModuleContainerTop(element);
 					showAllComponentsLabels(element);
-					showComponentInfoImage(element);
 				} catch(err) {}
 			});
 			element.addEvent('mouseleave', function() {
