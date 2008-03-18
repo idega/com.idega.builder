@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.314 2008/02/29 10:44:02 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.315 2008/03/18 08:08:28 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3341,7 +3341,11 @@ public class BuilderLogic implements Singleton {
 		return uri.toString();
 	}
 	
-	@SuppressWarnings("deprecation")
+	public boolean removeBlockObjectFromCache(String cacheKey) {
+		return removeBlockObjectFromCache(CoreUtil.getIWContext(), cacheKey);
+	}
+	
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey) {
 		if (iwc == null || cacheKey == null) {
 			return false;
