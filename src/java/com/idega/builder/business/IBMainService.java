@@ -251,7 +251,7 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	
 	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove);
 	
-	public boolean removeValueFromModuleProperty(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove);
+	public boolean removeValueFromModulesProperties(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove);
 	
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey);
 	

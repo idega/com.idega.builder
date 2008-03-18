@@ -369,7 +369,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().removeValueFromModuleProperty(pageKey, moduleId, propertyName, valueToRemove);
 	}
 	
-	public boolean removeValueFromModuleProperty(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove) {
+	public boolean removeValueFromModulesProperties(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove) {
 		return getBuilderLogic().removeValueFromModuleProperty(pageKey, moduleIds, propertyName, valueToRemove);
 	}
 	
@@ -493,5 +493,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 	public boolean isFirstBuilderRun() {
 		return getBuilderLogic().isFirstBuilderRun();
+	}
+	public boolean removeBlockObjectFromCacheByCacheKey(String cacheKey) {
+		return getBuilderLogic().removeBlockObjectFromCache(cacheKey);
 	}
 }
