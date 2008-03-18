@@ -297,6 +297,20 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		return builder.removeModuleProperty(pageKey, moduleId, propertyName);
 	}
 	
+	public boolean needReloadPropertyBox() {
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return false;
+		}
+		
+		Object parameter = iwc.getSessionAttribute(BuilderConstants.BUILDER_MODULE_PROPERTY_HAS_BOOLEAN_TYPE_ATTRIBUTE);
+		if (parameter instanceof Boolean) {
+			return (Boolean) parameter;
+		}
+		
+		return false;
+	}
+	
 	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index, String parentId) {
 		Page currentPage = builder.getPage(pageKey, iwc);
 		if (currentPage == null || component == null) {

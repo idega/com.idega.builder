@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.78 2008/01/29 10:47:52 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.79 2008/03/18 12:52:26 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -63,6 +63,7 @@ import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
 import com.idega.util.caching.Cache;
 import com.idega.util.reflect.MethodFinder;
@@ -184,18 +185,7 @@ public class IBPropertyHandler implements Singleton{
 			IWProperty methodProperty = this.getMethodProperty(instanceId, methodIdentifier, iwma);
 			String sValue = getMethodParameterProperty(methodProperty, parameterIndex, METHOD_PARAMETER_PROPERTY_PRIMARY_KEY);
 			if (sValue != null) {
-				if (sValue.equalsIgnoreCase("true")) {
-					return true;
-				}
-				else if (sValue.equalsIgnoreCase("false")) {
-					return false;
-				}
-				else if (sValue.equalsIgnoreCase("y")) {
-					return true;
-				}
-				else if (sValue.equalsIgnoreCase("n")) {
-					return false;
-				}
+				return CoreUtil.getBooleanValueFromString(sValue);
 			}
 		}
 		catch (Exception e) {
@@ -400,20 +390,7 @@ public class IBPropertyHandler implements Singleton{
 		else if (parameterClass.equals(java.lang.Boolean.class) || parameterClass.equals(Boolean.TYPE)) {
 			obj = new BooleanInput(name);
 			((BooleanInput) obj).displaySelectOption();
-			if (stringValue != null) {
-				if (stringValue.equalsIgnoreCase("Y")) {
-					((BooleanInput) obj).setSelected(true);
-				}
-				else if (stringValue.equalsIgnoreCase("T")) {
-					((BooleanInput) obj).setSelected(true);
-				}
-				else if (stringValue.equalsIgnoreCase("N")) {
-					((BooleanInput) obj).setSelected(false);
-				}
-				else if (stringValue.equalsIgnoreCase("F")) {
-					((BooleanInput) obj).setSelected(false);
-				}
-			}
+			((BooleanInput) obj).setSelected(CoreUtil.getBooleanValueFromString(stringValue));
 		}
 		else if (parameterClass.equals(java.lang.Float.class) || parameterClass.equals(Float.TYPE)) {
 			obj = new FloatInput(name);
@@ -542,19 +519,19 @@ public class IBPropertyHandler implements Singleton{
 			
 			Span yesOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).append(":").toString()));
 			RadioButton yes = new RadioButton(name);
-			yes.setValue("Y");
+			yes.setValue(CoreConstants.BUILDER_MODULE_PROPERTY_YES_VALUE);
 			setMarkupAttributes(yes, properties);
 			
 			Span noOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("no", "No")).append(":").toString()));
 			RadioButton no = new RadioButton(name);
-			no.setValue("N");
+			no.setValue(CoreConstants.BUILDER_MODULE_PROPERTY_NO_VALUE);
 			setMarkupAttributes(no, properties);
 			
-			if (stringValue.equalsIgnoreCase("Y") || stringValue.equalsIgnoreCase("T") || Boolean.TRUE.toString().equalsIgnoreCase(stringValue)) {
+			if (stringValue.equalsIgnoreCase(CoreConstants.BUILDER_MODULE_PROPERTY_YES_VALUE) || stringValue.equalsIgnoreCase("T") || Boolean.TRUE.toString().equalsIgnoreCase(stringValue)) {
 				yes.setSelected(true);
 			}
 			else {
-				if (stringValue.equalsIgnoreCase("N") || stringValue.equalsIgnoreCase("F") || Boolean.FALSE.toString().equalsIgnoreCase(stringValue)) {
+				if (stringValue.equalsIgnoreCase(CoreConstants.BUILDER_MODULE_PROPERTY_NO_VALUE) || stringValue.equalsIgnoreCase("F") || Boolean.FALSE.toString().equalsIgnoreCase(stringValue)) {
 					no.setSelected(true);
 				}
 			}

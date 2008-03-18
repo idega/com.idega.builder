@@ -149,7 +149,7 @@ public class EditModuleBlock extends Block {
 		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
 		if (isBuilderUser) {
 			addTab(tabs, groupPermissionsText, iwrb.getLocalizedString(groupPermissionsText, "Group permissions"), null);
-//			addTab(tabs, rolePermissionsText, iwrb.getLocalizedString(rolePermissionsText, "Role permissions"), null);		//	TODO
+//			addTab(tabs, rolePermissionsText, iwrb.getLocalizedString(rolePermissionsText, "Role permissions"), null);		//	TODO:	implement tab for roles
 		}
 		
 		String key = null;
@@ -165,7 +165,7 @@ public class EditModuleBlock extends Block {
 				addGroupPermissionsWindow(iwc, tabContentContainer, instanceId);
 			}
 			/*else if (key.equals(rolePermissionsText)) {
-				//	TODO
+				//	TODO:	implement tab for roles
 			}*/
 			else {
 				addPropertiesToContainer(addedProperties.get(key), tabContentContainer, instanceId, iwc, pageKey);
@@ -248,8 +248,7 @@ public class EditModuleBlock extends Block {
 			propertyName = new Span(new Text(property.getDisplayName(iwc.getCurrentLocale())));
 			
 			String methodName = property.getName();
-			boolean reloadPropertyBox = methodName.indexOf("boolean") != -1;
-			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(methodName).append("', '").append(instanceId).append("', ").append(reloadPropertyBox).append(");").toString());
+			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(methodName).append("', '").append(instanceId).append("', ").append(needReloadPropertyBox(methodName, property.getClassName())).append(");").toString());
 			item.add(propertyName);
 			
 			if (isPropertySet) {
@@ -266,6 +265,17 @@ public class EditModuleBlock extends Block {
 		propertiesWrapper.add(propertiesContainer);
 		propertiesWrapper.setId(new StringBuffer(propertiesContainer.getId()).append("Wrapper").toString());
 		container.add(propertiesWrapper);
+	}
+	
+	private boolean needReloadPropertyBox(String methodName, String propertyClassName) {
+		String booleanClassName = boolean.class.getName();
+		boolean needReload = methodName.toLowerCase().indexOf(booleanClassName) != -1;
+		
+		if (!needReload && propertyClassName != null) {
+			needReload = propertyClassName.indexOf(booleanClassName) != -1;
+		}
+		
+		return needReload;
 	}
 	
 	public String getBundleIdentifier() {

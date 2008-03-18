@@ -8,7 +8,10 @@ import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.core.component.business.ComponentInfo;
 import com.idega.core.component.business.ComponentProperty;
+import com.idega.core.component.business.ComponentRegistry;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
@@ -20,6 +23,7 @@ import com.idega.util.reflect.MethodFinder;
 public class SetModulePropertyBlock extends Block {
 	
 	private boolean isMultiValue = false;
+	private boolean isMethodIdentifier = false;
 	
 	@Override
 	public void main(IWContext iwc) throws Exception {
@@ -43,20 +47,10 @@ public class SetModulePropertyBlock extends Block {
 		else {
 			presObjClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
 		}
-		String namePrefix = "ib_property_";
-	
-		MethodFinder methodFinder = MethodFinder.getInstance();
-		Class<?> parameters[] = null;
-		boolean isMethodIdentifier = false;
+		
+		Class<?> parameters[] = getMethodParameters(propertyName, presObjClass, iwc.getIWMainApplication());
+		checkIfParametersHasBooleanType(iwc, parameters);
 		boolean needsReload = doesPropertyNeedReload(instanceId, propertyName, iwc);
-		if (methodFinder.isMethodIdentifier(propertyName)) {
-			Method method = MethodFinder.getInstance().getMethod(propertyName, presObjClass);
-			parameters = method.getParameterTypes();
-			isMethodIdentifier = true;
-		}
-		else{
-			parameters = new Class[]{String.class};
-		}
 		isMultiValue = parameters.length == 1 ? false : true;
 		boolean isChangingProperty = setter.isChangingProperty(iwc);
 		String selectedValues[] = setter.parseValues(iwc);
@@ -67,6 +61,7 @@ public class SetModulePropertyBlock extends Block {
 		String paramDescription = null;
 		String handlerClass = null;
 		Class<?> parameterClass = null;
+		String namePrefix = "ib_property_";
 		for (int i = 0; i < parameters.length; i++) {
 			parameterClass = parameters[i];
 			value = BuilderConstants.EMPTY;
@@ -122,6 +117,64 @@ public class SetModulePropertyBlock extends Block {
 		}
 		
 		this.add(container);
+	}
+	
+	private void checkIfParametersHasBooleanType(IWContext iwc, Class<?>[] parameters) {
+		if (parameters == null || parameters.length == 0) {
+			iwc.removeSessionAttribute(BuilderConstants.BUILDER_MODULE_PROPERTY_HAS_BOOLEAN_TYPE_ATTRIBUTE);
+			return;
+		}
+		
+		boolean hasAnyBoolean = false;
+		for (int i = 0; (i < parameters.length && !hasAnyBoolean); i++) {
+			hasAnyBoolean = parameters[i].getName().toLowerCase().indexOf(boolean.class.getName()) != -1;
+		}
+		
+		iwc.setSessionAttribute(BuilderConstants.BUILDER_MODULE_PROPERTY_HAS_BOOLEAN_TYPE_ATTRIBUTE, Boolean.valueOf(hasAnyBoolean));
+	}
+	
+	private Class<?>[] getMethodParameters(String propertyName, Class<?> presObjClass, IWMainApplication iwma) {
+		MethodFinder methodFinder = MethodFinder.getInstance();
+		Class<?>[] parameters = null;
+		if (methodFinder.isMethodIdentifier(propertyName)) {
+			Method method = MethodFinder.getInstance().getMethod(propertyName, presObjClass);
+			parameters = method.getParameterTypes();
+			isMethodIdentifier = true;
+			return parameters;
+		}
+
+		//	Fix for JSF type components
+		try {
+			ComponentRegistry registry = ComponentRegistry.getInstance(iwma);
+			ComponentInfo info = registry.getComponentByClassName(presObjClass.getName());
+			
+			List<ComponentProperty> properties = info.getProperties();
+			ComponentProperty property = null;
+			for (int i = 0; (i < properties.size() && property == null); i++) {
+				property = properties.get(i);
+				if (!propertyName.equals(property.getName())) {
+					property = null;
+				}
+			}
+			
+			Class<?> parameter = null;
+			String className = property.getClassName();
+			if (boolean.class.getName().equals(className)) {
+				parameter = Boolean.class;
+			}
+			if (parameter == null) {
+				parameter = Class.forName(className);
+			}
+			parameters = new Class[]{parameter};
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (parameters == null || parameters.length == 0) {
+			parameters = new Class[]{String.class};
+		}
+		
+		return parameters;
 	}
 	
 	public boolean isMultiValue() {

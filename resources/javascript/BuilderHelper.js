@@ -952,9 +952,13 @@ function saveValuesForModule(values, moduleId, propertyName, needsReload, opened
 			closeAllLoadingMessages();
 			saveModulePropertyCallback(result, moduleId, needsReload, propertyName);
 			
-			if (propertyName.indexOf('boolean') != -1) {
-				getBuilderModulePropertyBox(ACTIVE_PROPERTY_SETTER_BOX, propertyName, moduleId, true, true);
-			}
+			BuilderEngine.needReloadPropertyBox({
+				callback: function(needReloadPropertyBox) {
+					if (needReloadPropertyBox) {
+						getBuilderModulePropertyBox(ACTIVE_PROPERTY_SETTER_BOX, propertyName, moduleId, true, true);
+					}
+				}
+			});
 		}
 	});
 }

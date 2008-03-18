@@ -43,4 +43,5 @@ public class BuilderConstants {
 	public static final String ADD_MODULE_TO_REGION_LOCALIZATION_VALUE = "Add a new module";
 
 	public static final String CURRENT_COMPONENT_IS_IN_FRAME = "currentComponentIsInFrame";
+	public static final String BUILDER_MODULE_PROPERTY_HAS_BOOLEAN_TYPE_ATTRIBUTE = "builderModulePropertyHasBooleanTypeAttribute";
 }
