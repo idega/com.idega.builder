@@ -1,6 +1,7 @@
 package com.idega.builder.presentation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +12,6 @@ import java.util.Map;
 import javax.ejb.FinderException;
 
 import com.idega.builder.business.BuilderConstants;
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ICObjectComparator;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.component.data.ICObject;
@@ -34,9 +34,27 @@ public class AddModuleBlock extends Block {
 	private Map<String, List<ICObject>> addedTabs = new HashMap<String, List<ICObject>>();
 	private String localizedText = "Sorry, there are no components available.";
 	
+	private boolean isBuilderUser(IWContext iwc) {
+		if (iwc.hasRole(StandardRoles.ROLE_KEY_BUILDER)) {
+			return true;
+		}
+		
+		if (iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR)) {
+			return true;
+		}
+		
+		return iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR);
+	}
+	
+	@Override
+	public String getBundleIdentifier() {
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
+	}
+	
+	@Override
 	public void main(IWContext iwc) throws Exception {
-		IWResourceBundle iwrb = BuilderLogic.getInstance().getBuilderBundle().getResourceBundle(iwc);
-		boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER, iwc);
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		boolean isBuilderUser = isBuilderUser(iwc);
 		
 		localizedText = iwrb.getLocalizedString("no_components_available", localizedText);
 		
@@ -170,16 +188,12 @@ public class AddModuleBlock extends Block {
 		}
 		
 		//	Find all other Builder/Development modules
+		List<String> componentTypes = Arrays.asList(new String[] {ICObjectBMPBean.COMPONENT_TYPE_ELEMENT, ICObjectBMPBean.COMPONENT_TYPE_BLOCK,
+				ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT});
 		for (Iterator<ICObject> it = allComponents.iterator(); it.hasNext(); ) {
 			object = it.next();
 			if (!object.isBlock() && !object.isWidget()) {
-				if (ICObjectBMPBean.COMPONENT_TYPE_ELEMENT.equals(object.getObjectType())) {
-					addComponent(components, object, namesList);
-				}
-				if (ICObjectBMPBean.COMPONENT_TYPE_BLOCK.equals(object.getObjectType())) {
-					addComponent(components, object, namesList);
-				}
-				if (ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT.equals(object.getObjectType())) {
+				if (componentTypes.contains(object.getObjectType())) {
 					addComponent(components, object, namesList);
 				}
 			}

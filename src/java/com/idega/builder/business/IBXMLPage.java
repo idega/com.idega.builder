@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.69 2007/10/17 15:09:25 valdas Exp $
+ * $Id: IBXMLPage.java,v 1.70 2008/03/21 15:16:46 valdas Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -24,6 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.idega.builder.data.IBPageBMPBean;
+import com.idega.core.accesscontrol.business.StandardRoles;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.data.IDOLookup;
@@ -43,10 +45,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2007/10/17 15:09:25 $ by $Author: valdas $
+ *  Last modified: $Date: 2008/03/21 15:16:46 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.69 $
+ * @version $Revision: 1.70 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -526,6 +528,22 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	    return getPage(builderView,iwc);
 	}
 	
+	private boolean hasEditPermissions(IWContext iwc, Page page) {
+		if (iwc.hasEditPermission(page)) {
+			return true;
+		}
+		
+		ICPage icPage = getBuilderLogic().getICPage(getPageKey());
+		if (icPage == null) {
+			return false;
+		}
+		if (icPage.isPublished() && !iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR)) {
+			return false;
+		}
+		
+		return iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR);
+	}
+	
 	/**
 	 *
 	 */
@@ -537,7 +555,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			}
 			Page page = getNewPage(iwc);
 			
-			if (builderEditView && iwc.hasEditPermission(page)) {
+			if (builderEditView && hasEditPermissions(iwc, page)) {
 				return (getBuilderLogic().getBuilderTransformed(getPageKey(), page, iwc));
 			}
 			else if (permissionview) {
