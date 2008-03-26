@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.315 2008/03/18 08:08:28 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.316 2008/03/26 16:36:24 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3286,12 +3286,10 @@ public class BuilderLogic implements Singleton {
 	
 	private Web2Business getWeb2Business(IWContext iwc) {
 		if (web2 == null) {
-			synchronized (BuilderLogic.class) {
-				if (iwc == null) {
-					iwc = IWContext.getInstance();
-				}
-				web2 = SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
+			if (iwc == null) {
+				iwc = CoreUtil.getIWContext();
 			}
+			web2 = SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
 		}
 		return web2;
 	}
