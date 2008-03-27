@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderRootViewNode.java,v 1.8 2007/07/27 15:42:50 civilis Exp $
+ * $Id: BuilderRootViewNode.java,v 1.9 2008/03/27 20:16:25 tryggvil Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -29,10 +29,10 @@ import com.idega.presentation.IWContext;
  * default mapped under '/pages/'. The instance of this class is the one that handles precicely this url, i.e. the 
  * one on the root for pages.
  * </p>
- *  Last modified: $Date: 2007/07/27 15:42:50 $ by $Author: civilis $
+ *  Last modified: $Date: 2008/03/27 20:16:25 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class BuilderRootViewNode extends DefaultViewNode {
 	private Map domainNodeMap;
@@ -105,5 +105,14 @@ public class BuilderRootViewNode extends DefaultViewNode {
 		FacesContext context = FacesContext.getCurrentInstance();
 		ViewNode defaultChild = getDomainNode(context);
 		return defaultChild.getResourceURI();
+	}
+	
+	public ViewNode getChild(String childViewId){
+		FacesContext context = FacesContext.getCurrentInstance();
+		if(context!=null){
+			ViewNode defaultChild = getDomainNode(context);
+			return defaultChild.getChild(childViewId);
+		}
+		return null;
 	}
 }
