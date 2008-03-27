@@ -105,26 +105,23 @@ public class IWBundleStarter implements IWBundleStartable {
 		//FIXME: This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
 		if(starterBundle!=null){
 			IWMainApplication iwma = starterBundle.getApplication();
-			//IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			ViewManager viewManager = ViewManager.getInstance(iwma);
-			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode(BUILDER_ROOT_VIEW_NODE_NAME,viewManager.getApplicationRoot());
+			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode(BUILDER_ROOT_VIEW_NODE_NAME, viewManager.getApplicationRoot());
 			pagesViewNode.setKeyboardShortcut(new KeyboardShortcut("p"));
 			
 			ViewNode workspaceNode = viewManager.getWorkspaceRoot();
 			
+			Collection<String> roles = new ArrayList<String>();
+			roles.add(StandardRoles.ROLE_KEY_BUILDER);
 			DefaultViewNode builderAppNode = new DefaultViewNode(CoreConstants.BUILDER_APPLICATION, workspaceNode);
 			builderAppNode.setName("#{localizedStrings['com.idega.builder']['builder']}");
+			builderAppNode.setAuthorizedRoles(roles);
 			
-			FramedApplicationViewNode builderNode = new FramedApplicationViewNode("builder",workspaceNode);
-			Collection roles = new ArrayList();
-			roles.add(StandardRoles.ROLE_KEY_BUILDER);
+			FramedApplicationViewNode builderNode = new FramedApplicationViewNode("builder", workspaceNode);
 			builderNode.setAuthorizedRoles(roles);
-			//builderNode.setWindowClass(applicationClass);
-			//builderNode.setJspUri(workspaceNode.getResourceURI());
 			builderNode.setJspUri(starterBundle.getJSPURI("builderapp.jsp"));
 			builderNode.setKeyboardShortcut(new KeyboardShortcut("2"));
 			builderNode.setVisibleInMenus(false);
-			
 			
 			DefaultViewNode setupNode = new DefaultViewNode("initialsetup",builderNode);
 			setupNode.setJspUri(starterBundle.getJSPURI("initialSetup.jsp"));
