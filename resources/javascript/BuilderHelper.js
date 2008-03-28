@@ -156,14 +156,6 @@ function addEventsToBuilderElements() {
 					showAllComponentsLabels(element);
 				} catch(err) {}
 			});
-			element.addEvent('mouseleave', function() {
-				try {
-					hideModuleContainerTop(element);
-					hideOldLabels(element);
-					hideComponentInfoImage(element);
-					element.removeAttribute('style');
-				} catch(err) {}
-			});
     	}
     );
     
@@ -367,50 +359,6 @@ function getInputValue(inputs, inputName) {
 	return null;
 }
 
-function getFirstElementFromList(elements) {
-	if (elements == null) {
-		return null;
-	}
-	if (elements.length == 0) {
-		return null;
-	}
-	return $(elements[0]);
-}
-
-function hideComponentInfoImage(element) {
-	if (element == null) {
-		return false;
-	}
-	
-	var list = getElementsByClassName(element, '*', 'regionInfoImageContainer');
-	var container = getFirstElementFromList(list);
-	if (container == null) {
-		return false;
-	}
-	
-	container.style.visibility = 'hidden';
-}
-
-function showModuleContainerTop(element) {
-	var list = getElementsByClassName(element, '*', 'moduleContainerTop');
-	var container = getFirstElementFromList(list);
-	if (container == null) {
-		return false;
-	}
-	
-	container.style.visibility = 'visible';
-}
-
-function hideModuleContainerTop(element) {
-	var list = getElementsByClassName(element, '*', 'moduleContainerTop');
-	var container = getFirstElementFromList(list);
-	if (container == null) {
-		return false;
-	}
-	
-	container.style.visibility = 'hidden';
-}
-
 function showComponentInfoImage(element) {
 	if (element == null) {
 		return false;
@@ -444,7 +392,7 @@ function showComponentInfoImage(element) {
 		}
 		
 		var instanceId = null;
-		var inputs = element.getElements('input');//.getElementsByTagName('input');
+		var inputs = element.getElements('input');
 		if (inputs != null) {
 			var input = null;
 			var foundInstance = false;

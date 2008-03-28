@@ -16,7 +16,6 @@
 .moduleContainerTop {
 	overflow: hidden;	
 	margin: 0 !important;
-	visibility: hidden;
 	border-bottom: 1px #fff solid;
 	background: url(images/top_background.gif) center center repeat-x;
 }
@@ -44,7 +43,6 @@
 	text-transform: none !important;
 	font-weight: bold !important;
 	float: left;
-	visibility: hidden;
 	overflow: hidden;
 	text-align: left;
 	margin: 0 !important;
@@ -52,7 +50,6 @@
 }
 
 .regionInfoImageContainer {
-	visibility: hidden;
 	float: right;
 	margin: 0 !important;
 	width: auto;
