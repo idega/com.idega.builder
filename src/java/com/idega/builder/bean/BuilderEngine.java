@@ -1,16 +1,18 @@
 package com.idega.builder.bean;
 
 
-import java.util.List;
-import org.jdom.Document;
-import com.idega.business.IBOSession;
 import java.rmi.RemoteException;
+import java.util.List;
+
+import org.jdom.Document;
+
+import com.idega.business.IBOSession;
 
 public interface BuilderEngine extends IBOSession {
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#getBuilderInitInfo
 	 */
-	public List<String> getBuilderInitInfo() throws RemoteException;
+	public List<String> getBuilderInitInfo(String uri) throws RemoteException;
 
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#addModule

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.316 2008/03/26 16:36:24 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.317 2008/04/02 13:42:10 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1334,9 +1334,9 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String putModuleIntoRegion(IWContext iwc, String pageKey, String regionId, String regionLabel, boolean changeInstanceId) {
-		IBXMLPage xml = null;
+		IBXMLPage page = null;
 		try {
-			xml = getIBXMLPage(pageKey);
+			page = getIBXMLPage(pageKey);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -1346,11 +1346,11 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		XMLElement toPaste = (XMLElement) element.clone();
-		String instanceId = getIBXMLWriter().insertElementLast(xml, pageKey, regionId, regionLabel, toPaste, changeInstanceId);
+		String instanceId = getIBXMLWriter().insertElementLast(page, pageKey, regionId, regionLabel, toPaste, changeInstanceId);
 		if (instanceId == null) {
 			return null;
 		}
-		xml.store();
+		page.store();
 		return instanceId;
 	}
 	
@@ -1363,6 +1363,7 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String moveModule(String pageKey, String formerPageKey, String formerParentId, String instanceId, String parentId, IWContext iwc) {
+		//	Page to put module into
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1373,17 +1374,35 @@ public class BuilderLogic implements Singleton {
 		if (page == null) {
 			return null;
 		}
-		XMLElement moduleXML = getIBXMLWriter().findModule(page, instanceId);
+		
+		//	Page to take module from
+		IBXMLPage formerPageForModule = page;
+		if (!pageKey.equals(formerPageKey)) {
+			try {
+				formerPageForModule = getIBXMLPage(formerPageKey);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		if (formerPageForModule == null) {
+			return null;
+		}
+		
+		//	Module's XML
+		XMLElement moduleXML = getIBXMLWriter().findModule(formerPageForModule, instanceId);
 		if (moduleXML == null) {
 			return null;
 		}
-		XMLElement parentXML = getIBXMLWriter().findModule(page, formerParentId);
+		
+		//	Module container's XML
+		XMLElement parentXML = getIBXMLWriter().findModule(formerPageForModule, formerParentId);
 		if (parentXML == null) {
 			return null;
 		}
 		
+		//	Removing module from original page
 		boolean success = false;
-		//	Removes element from current region	
 		try {
 			success = getIBXMLWriter().removeElement(parentXML, moduleXML, false);
 		} catch (Exception e) {
@@ -1392,10 +1411,13 @@ public class BuilderLogic implements Singleton {
 		if (!success) {
 			return null;
 		}
+		
+		//	Storing page module was taken from (current page will be stored later)
 		if (!pageKey.equals(formerPageKey)) {
-			page.store();
+			formerPageForModule.store();
 		}
 		
+		//	Putting module in new region (and page (if needed))
 		return putModuleIntoRegion(iwc, pageKey, parentId, null, false);
 	}
 

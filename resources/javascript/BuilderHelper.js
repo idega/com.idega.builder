@@ -50,7 +50,7 @@ var SPECIAL_OBJECTS = ['com.idega.block.article.component.ArticleItemViewer', 'c
 	 'com.idega.user.presentation.group.GroupUsersViewer', 'com.idega.block.media.presentation.VideoViewer'];
 
 function getBuilderInitInfo() {
-	BuilderEngine.getBuilderInitInfo(getBuilderInitInfoCallback);
+	BuilderEngine.getBuilderInitInfo(window.location.pathname, getBuilderInitInfoCallback);
 }
 
 function getBuilderInitInfoCallback(list) {

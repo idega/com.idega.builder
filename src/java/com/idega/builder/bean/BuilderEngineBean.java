@@ -40,7 +40,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	
 	private CutModuleBean cutModule = null;
 	
-	public List<String> getBuilderInitInfo() {
+	public List<String> getBuilderInitInfo(String uri) {
 		List<String> info = new ArrayList<String>();
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
@@ -56,7 +56,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(new StringBuffer(bundle.getResourcesPath()).append("/add.png").toString());								// 3
 		info.add(new StringBuffer(bundle.getResourcesPath()).append("/information.png").toString());						// 4
 		info.add(iwrb.getLocalizedString("no_ids_inserting_module", "Error occurred while inserting selected module!"));	// 5
-		info.add(String.valueOf(iwc.getCurrentIBPageID()));																	// 6
+		info.add(BuilderLogic.getInstance().getPageKeyByURI(uri, iwc.getDomain()));											// 6
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
 		info.add(iwrb.getLocalizedString("create_simple_template.Region", "Region"));										// 8
 		info.add(BuilderLogic.getInstance().getUriToObject(EditModuleBlock.class.getName()));								// 9
