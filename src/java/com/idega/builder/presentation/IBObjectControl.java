@@ -10,6 +10,7 @@ import javax.faces.component.UIComponent;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.CSSSpacer;
@@ -38,20 +39,23 @@ public class IBObjectControl extends PresentationObjectContainer {
 	private boolean isPresentationObject = false;
 	private int number = 0;
 	private boolean lastModuleInRegion = false;
+	private boolean moduleFromCurrentPage = true;
 
 	@Override
 	public String getBundleIdentifier(){
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 	
-	public IBObjectControl(UIComponent obj, PresentationObjectContainer parent, String parentKey, IWContext iwc, int index, boolean lastModuleInRegion) {
+	public IBObjectControl(UIComponent obj, PresentationObjectContainer parent, String parentKey, IWContext iwc, int index, boolean lastModuleInRegion,
+			boolean moduleFromCurrentPage) {
 		this.parent = parent;
 		this.object = obj;
 		this.parentKey = parentKey;
 		this.number = index;
 		this.isPresentationObject = this.object instanceof PresentationObject;
 		this.lastModuleInRegion = lastModuleInRegion;
-		
+		this.moduleFromCurrentPage = moduleFromCurrentPage;
+
 		init(iwc);
 		add(obj);
 	}
@@ -72,9 +76,6 @@ public class IBObjectControl extends PresentationObjectContainer {
 		this.containerLayer.setStyleClass("moduleContainer");
 		super.add(this.containerLayer);
 		
-		//	Drop area at the begining
-		this.containerLayer.add(getDropAreaLayer(true, iwc));
-		
 		String containerId = this.containerLayer.getId();
 		
 		//	Content
@@ -83,9 +84,20 @@ public class IBObjectControl extends PresentationObjectContainer {
 		String moduleContentId = new StringBuffer("content_").append(containerId).toString();
 		this.contentLayer.setID(moduleContentId);
 		
+		super.add(new Text("<!-- idegaweb-module ends -->"));
+		
+		if (moduleFromCurrentPage) {
+			//	Drop area at the begining
+			this.containerLayer.add(getDropAreaLayer(true, iwc));
+		}
+		
 		//	Name
 		Layer nameLayer = new Layer(Layer.DIV);
-		nameLayer.setStyleClass("moduleName");
+		String nameLayerClassName = "moduleName";
+		if (!moduleFromCurrentPage) {
+			nameLayerClassName = "moduleFromOtherPageName";
+		}
+		nameLayer.setStyleClass(nameLayerClassName);
 		nameLayer.setID("moduleName_"+containerId);
 		
 		//	Buttons
@@ -98,8 +110,6 @@ public class IBObjectControl extends PresentationObjectContainer {
 		upperPartContainer.add(nameLayer);
 		upperPartContainer.add(buttonsLayer);
 		this.containerLayer.add(upperPartContainer);
-		
-		super.add(new Text("<!-- idegaweb-module ends -->"));
 		
 		if (this.object == null) {
 			return;
@@ -115,20 +125,32 @@ public class IBObjectControl extends PresentationObjectContainer {
 			String className = this.object.getClass().getName();
 			int indexOfDot = className.lastIndexOf(".");
 			String objectName = null;
-			if(indexOfDot!=-1){
+			if (indexOfDot!=-1) {
 				objectName = className.substring(indexOfDot+1,className.length());
 			}
-			else{
+			else {
 				objectName = className;
 			}
 			
 			text = new Span(new Text(objectName));
 		}
-		StringBuffer tooltip = new StringBuffer(iwrb.getLocalizedString("move", "Move")).append(" :: ");
-		tooltip.append(iwrb.getLocalizedString("move_to_other_location", "Move this module to other location"));
-		text.setMarkupAttribute("title", tooltip.toString());
-		text.setStyleClass("moduleNameTooltip");
+		if (moduleFromCurrentPage) {
+			StringBuffer tooltip = new StringBuffer(iwrb.getLocalizedString("move", "Move")).append(" :: ");
+			tooltip.append(iwrb.getLocalizedString("move_to_other_location", "Move this module to other location"));
+			text.setMarkupAttribute("title", tooltip.toString());
+			text.setStyleClass("moduleNameTooltip");
+		}
 		nameLayer.add(text);
+		if (!moduleFromCurrentPage) {
+			ICPage foreignPage = BuilderLogic.getInstance().findPageForModule(iwc, BuilderLogic.getInstance().getInstanceId(this.object));
+			if (foreignPage != null) {
+				String linkText = iwrb.getLocalizedString("link_to_edit_page", "Click here to edit this module");
+				Link goToForeignPage = new Link(linkText, new StringBuilder("/pages").append(foreignPage.getDefaultPageURI()).append("?view=builder").toString());
+				goToForeignPage.setStyleClass("foreignPageContainingCurrentModuleLinkStyle");
+				goToForeignPage.setToolTip(linkText);
+				nameLayer.add(goToForeignPage);
+			}
+		}
 		
 		String instanceId = BuilderLogic.getInstance().getInstanceId(this.object);
 		if (instanceId == null) {
@@ -156,50 +178,52 @@ public class IBObjectControl extends PresentationObjectContainer {
 		
 		this.containerLayer.add(this.contentLayer);
 		
-		//	Delete module
-		StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
-		title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
-		Image deleteImage = iwb.getImage("del_16.png", title.toString(), 16, 16);
-		String separator = "', '";
-		StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(separator).append(instanceId);
-		action.append(separator).append(deleteImage.getId()).append("');");
-		deleteImage.setOnClick(action.toString());
-		deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-		buttonsLayer.add(deleteImage);
-		
-		//	Copy module
-		title = new StringBuffer(iwrb.getLocalizedString("copy", "Copy")).append(" :: ");
-		title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
-		Image copyModule = iwb.getImage("copy_16.png", title.toString(), 16, 16);
-		copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-		action = new StringBuffer("copyThisModule('").append(containerId).append(separator).append(instanceId).append("');");
-		copyModule.setOnClick(action.toString());
-		buttonsLayer.add(copyModule);
-		
-		//	Cut module
-		title = new StringBuffer(iwrb.getLocalizedString("cut", "Cut")).append(" :: ");
-		title.append(iwrb.getLocalizedString("cut_module", "Cut module"));
-		Image cutModule = iwb.getImage("cut_16.png", title.toString(), 16, 16);
-		cutModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-		action = new StringBuffer("cutThisModule('").append(cutModule.getId()).append(separator).append(containerId).append(separator);
-		action.append(instanceId).append("');");
-		cutModule.setOnClick(action.toString());
-		buttonsLayer.add(cutModule);
-		
-		//	Module properties
-		title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
-		title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
-		Image propertiesImage = iwb.getImage("prefs_16.png", title.toString(), 16, 16);
-		propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-		Link link = new Link(propertiesImage);
-		link.setMarkupAttribute("rel", "moodalbox");
-		link.setStyleClass("modulePropertiesLinkStyleClass");
-		buttonsLayer.add(link);
-		
-		HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);
-		buttonsLayer.add(regionIdHidden);
-		HiddenInput moduleContentIdHidden = new HiddenInput("moduleContentId", moduleContentId);
-		buttonsLayer.add(moduleContentIdHidden);
+		if (moduleFromCurrentPage) {
+			//	Delete module
+			StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
+			title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
+			Image deleteImage = iwb.getImage("del_16.png", title.toString(), 16, 16);
+			String separator = "', '";
+			StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(separator).append(instanceId);
+			action.append(separator).append(deleteImage.getId()).append("');");
+			deleteImage.setOnClick(action.toString());
+			deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+			buttonsLayer.add(deleteImage);
+			
+			//	Copy module
+			title = new StringBuffer(iwrb.getLocalizedString("copy", "Copy")).append(" :: ");
+			title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
+			Image copyModule = iwb.getImage("copy_16.png", title.toString(), 16, 16);
+			copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+			action = new StringBuffer("copyThisModule('").append(containerId).append(separator).append(instanceId).append("');");
+			copyModule.setOnClick(action.toString());
+			buttonsLayer.add(copyModule);
+			
+			//	Cut module
+			title = new StringBuffer(iwrb.getLocalizedString("cut", "Cut")).append(" :: ");
+			title.append(iwrb.getLocalizedString("cut_module", "Cut module"));
+			Image cutModule = iwb.getImage("cut_16.png", title.toString(), 16, 16);
+			cutModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+			action = new StringBuffer("cutThisModule('").append(cutModule.getId()).append(separator).append(containerId).append(separator);
+			action.append(instanceId).append("');");
+			cutModule.setOnClick(action.toString());
+			buttonsLayer.add(cutModule);
+			
+			//	Module properties
+			title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
+			title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
+			Image propertiesImage = iwb.getImage("prefs_16.png", title.toString(), 16, 16);
+			propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
+			Link link = new Link(propertiesImage);
+			link.setMarkupAttribute("rel", "moodalbox");
+			link.setStyleClass("modulePropertiesLinkStyleClass");
+			buttonsLayer.add(link);
+			
+			HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);
+			buttonsLayer.add(regionIdHidden);
+			HiddenInput moduleContentIdHidden = new HiddenInput("moduleContentId", moduleContentId);
+			buttonsLayer.add(moduleContentIdHidden);
+		}
 		
 		if (lastModuleInRegion) {
 			this.containerLayer.add(getDropAreaLayer(false, iwc));	//	The last module in region

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.317 2008/04/02 13:42:10 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.318 2008/04/03 15:41:52 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -598,7 +598,7 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		PresentationObject transformed = null;
-		if ( (isPresentationObject && ((PresentationObject) obj).getUseBuilderObjectControl()) || !isPresentationObject ) {
+		if ((isPresentationObject && ((PresentationObject) obj).getUseBuilderObjectControl()) || !isPresentationObject) {
 			if (index != -1) {
 				boolean lastModuleInRegion = false;
 				if (index >= parent.getChildCount()) {
@@ -607,7 +607,14 @@ public class BuilderLogic implements Singleton {
 					lastModuleInRegion = true;
 				}
 				
-				transformed = new IBObjectControl(obj, parent, parentKey, iwc, index, lastModuleInRegion);
+				boolean objectFromCurrentPage = true;
+				try {
+					IBXMLPage page = getIBXMLPage(pageKey);
+					objectFromCurrentPage = getIBXMLWriter().findModule(page, getInstanceId(obj)) != null;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				transformed = new IBObjectControl(obj, parent, parentKey, iwc, index, lastModuleInRegion, objectFromCurrentPage);
 				
 				if (index < parent.getChildCount()) {	
 					parent.set(index, transformed);
@@ -3797,5 +3804,36 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return false;
+	}
+	
+	public ICPage findPageForModule(IWContext iwc, String instanceId) {
+		if (instanceId == null) {
+			return null;
+		}
+		
+		Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwc);
+		if (pages == null || pages.isEmpty()) {
+			return null;
+		}
+		
+		Iterator<PageTreeNode> allPages = pages.values().iterator();
+		ICPage page = null;
+		String pageId = null;
+		for (Iterator<PageTreeNode> it = allPages; it.hasNext();) {
+			pageId = it.next().getId();
+			
+			page = getICPage(pageId);
+			if (page.getIsFormattedInIBXML()) {
+				try {
+					if (getIBXMLWriter().findModule(getIBXMLPage(pageId), instanceId) != null) {
+						return page;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return null;
 	}
 }
