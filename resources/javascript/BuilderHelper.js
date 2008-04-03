@@ -137,7 +137,9 @@ function registerBuilderActions() {
 	
 	addEventsToBuilderElements();
 	
-	hidePasteIcons(false);
+	if (COPIED_MODULE_ID == null) {
+		hidePasteIcons(false);
+	}
 }
 
 function intializeMoodalboxInBuilder() {

@@ -262,7 +262,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		
 		String instanceId = null;
 		if (paste) {
-			instanceId = BuilderLogic.getInstance().pasteModule(pageKey, parentId, iwc);
+			instanceId = BuilderLogic.getInstance().putModuleIntoRegion(iwc, pageKey, parentId, parentId, true);
 		}
 		else if (cutModule != null) {
 			instanceId = BuilderLogic.getInstance().moveModule(pageKey, cutModule.getPageKey(), cutModule.getParentId(), cutModule.getInstanceId(), parentId, iwc);
@@ -273,7 +273,9 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			return null;
 		}
 		
-		iwc.removeSessionAttribute(BuilderLogic.CLIPBOARD);
+		if (!paste) {
+			iwc.removeSessionAttribute(BuilderLogic.CLIPBOARD);
+		}
 
 		return getTransformedModule(pageKey, iwc, BuilderLogic.getInstance().findComponentInPage(iwc, pageKey, instanceId), (modulesCount + 1), parentId);
 	}
@@ -310,8 +312,11 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	}
 	
 	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index, String parentId) {
+		if (component == null) {
+			return null;
+		}
 		Page currentPage = BuilderLogic.getInstance().getPage(pageKey, iwc);
-		if (currentPage == null || component == null) {
+		if (currentPage == null) {
 			return null;
 		}
 		
