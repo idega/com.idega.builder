@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.320 2008/04/03 17:51:35 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.321 2008/04/03 19:33:19 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1359,14 +1359,6 @@ public class BuilderLogic implements Singleton {
 		}
 		page.store();
 		return instanceId;
-	}
-	
-	public boolean pasteModule(IWContext iwc, String pageKey, String parentID) {
-		return pasteModuleIntoRegion(iwc, pageKey, parentID, null);
-	}
-	
-	public String pasteModule(String pageKey, String parentId, IWContext iwc) {
-		return putModuleIntoRegion(iwc, pageKey, parentId, null, true);
 	}
 	
 	public String moveModule(String pageKey, String formerPageKey, String formerParentId, String instanceId, String parentId, IWContext iwc) {
