@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.318 2008/04/03 15:41:52 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.319 2008/04/03 17:44:52 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3823,7 +3823,7 @@ public class BuilderLogic implements Singleton {
 			pageId = it.next().getId();
 			
 			page = getICPage(pageId);
-			if (page.getIsFormattedInIBXML()) {
+			if (page != null && page.getIsFormattedInIBXML()) {
 				try {
 					if (getIBXMLWriter().findModule(getIBXMLPage(pageId), instanceId) != null) {
 						return page;
