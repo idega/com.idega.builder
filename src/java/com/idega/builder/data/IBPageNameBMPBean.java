@@ -11,15 +11,19 @@ package com.idega.builder.data;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Locale;
 
 import javax.ejb.FinderException;
 
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
+import com.idega.util.CoreConstants;
 
 /**
  * This class does something very clever.....
@@ -147,5 +151,12 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
 	
 	public Collection ejbFindAll() throws FinderException {
 		return super.idoFindAllIDsBySQL();	
+	}
+	
+	public Collection ejbFindAllByPhrase(String phrase, Locale locale) throws FinderException {
+		IDOQuery query = idoQuery("select ").append(getIDColumnName()).append(" from ").append(getEntityName());
+		query.appendWhereEquals(LOCALE_ID, ICLocaleBusiness.getLocaleId(locale)).appendAnd().append("lower(").append(PAGE_NAME).append(")").appendLike();
+		query.appendSingleQuote().append(CoreConstants.PERCENT).append(phrase.toLowerCase(locale)).append(CoreConstants.PERCENT).appendSingleQuote();
+		return idoFindPKsByQuery(query);
 	}
 }

@@ -2,9 +2,12 @@ package com.idega.builder.data;
 
 
 import java.util.Collection;
+import java.util.Locale;
+
 import javax.ejb.CreateException;
-import com.idega.data.IDOHome;
 import javax.ejb.FinderException;
+
+import com.idega.data.IDOHome;
 
 public interface IBPageNameHome extends IDOHome {
 
@@ -19,4 +22,6 @@ public interface IBPageNameHome extends IDOHome {
 	public Collection findAllByPageId(int pageId) throws FinderException;
 
 	public Collection findAll() throws FinderException;
+	
+	public Collection findAllByPhrase(String phrase, Locale locale) throws FinderException;
 }
