@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.321 2008/04/03 19:33:19 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.322 2008/04/08 18:45:27 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -63,7 +63,9 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.builder.business.ICBuilderConstants;
+import com.idega.core.builder.data.CachedDomain;
 import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICDomainHome;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
@@ -108,6 +110,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
+import com.idega.servlet.filter.BaseFilter;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.user.bean.PropertiesBean;
@@ -3831,5 +3834,26 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean reloadGroupsInCachedDomain(IWApplicationContext iwac, String serverName) {
+		try {
+			ICDomain mostlyCachedDomain = iwac.getDomain();
+			if (serverName == null) {
+				serverName = mostlyCachedDomain.getServerName();
+			}
+			ICDomain domain = ((ICDomainHome) IDOLookup.getHome(ICDomain.class)).findDomainByServernameOrDefault(serverName);
+			Collection groups = domain.getTopLevelGroupsUnderDomain();
+			if (mostlyCachedDomain instanceof CachedDomain) {
+				((CachedDomain) mostlyCachedDomain).setTopLevelGroupsUnderDomain(groups);
+				BaseFilter.reInitializeCachedDomainOnNextRequest();
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 }

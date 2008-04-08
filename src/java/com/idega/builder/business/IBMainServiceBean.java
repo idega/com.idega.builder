@@ -497,4 +497,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean removeBlockObjectFromCacheByCacheKey(String cacheKey) {
 		return getBuilderLogic().removeBlockObjectFromCache(cacheKey);
 	}
+	public boolean reloadGroupsInCachedDomain(IWApplicationContext iwac, String serverName) {
+		return getBuilderLogic().reloadGroupsInCachedDomain(iwac, serverName);
+	}
 }
