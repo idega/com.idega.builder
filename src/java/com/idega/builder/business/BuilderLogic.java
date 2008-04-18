@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.322 2008/04/08 18:45:27 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.323 2008/04/18 21:09:31 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1356,7 +1356,7 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		XMLElement toPaste = (XMLElement) element.clone();
-		String instanceId = getIBXMLWriter().insertElementLast(page, pageKey, regionId, regionLabel, toPaste, changeInstanceId);
+		String instanceId = getIBXMLWriter().insertElementLast(page, pageKey, regionId, regionLabel == null ? regionId : regionLabel, toPaste, changeInstanceId);
 		if (instanceId == null) {
 			return null;
 		}
