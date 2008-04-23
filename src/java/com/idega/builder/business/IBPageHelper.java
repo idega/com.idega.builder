@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.84 2008/02/14 12:57:39 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.85 2008/04/23 00:53:03 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1199,39 +1199,38 @@ public class IBPageHelper implements Singleton  {
 	}
 	
 	public void setTreeOrder(int id, int order){
-		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
 		PageTreeNode childNode = null;
-		
 		if (tree != null) {
-			childNode = (PageTreeNode) tree.get(id);
+			childNode = tree.get(id);
 			childNode.setOrder(order);
 		}
 	}
+	
 	public int getTreeOrder(int id){
-		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
 		PageTreeNode childNode = null;		
 		if (tree != null) {
-			childNode = (PageTreeNode) tree.get(id);
+			childNode = tree.get(id);
 			return childNode.getOrder();
 		}		
 		return -1;
 	}
-	public void increaseTreeOrder(int id){
-		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
-		PageTreeNode childNode = null;		
-		if (tree != null) {
-			childNode = (PageTreeNode) tree.get(id);
-			childNode.setOrder(childNode.getOrder()+1);
-		}		
+	
+	public void changeTreeOrder(int pageId, int change) {
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		if (tree == null) {
+			return;
+		}
+		
+		PageTreeNode page = tree.get(pageId);
+		if (page == null) {
+			return;
+		}
+		
+		page.setOrder(page.getOrder() + change);
 	}
-	public void decreaseTreeOrder(int id){
-		Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
-		PageTreeNode childNode = null;		
-		if (tree != null) {
-			childNode = (PageTreeNode) tree.get(id);
-			childNode.setOrder(childNode.getOrder()-1);
-		}				
-	}
+	
 	public int setAsLastInLevel(boolean isTopLevel, String parentId){
 		BuilderLogic blogic = BuilderLogic.getInstance();
 		if (isTopLevel){

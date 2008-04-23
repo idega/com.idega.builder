@@ -381,13 +381,9 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getTreeOrder(id);
 	}
 	
-	public void increaseTreeOrder(int id){
-		getBuilderLogic().increaseTreeOrder(id);
+	public void changeTreeOrder(int pageId, int change) {
+		getBuilderLogic().changeTreeOrder(pageId, change);
 	}
-
-	public void decreaseTreeOrder(int id){
-		getBuilderLogic().decreaseTreeOrder(id);
-	}	
 	
 	public int setAsLastInLevel(boolean isTopLevel, String parentId){
 		return getBuilderLogic().setAsLastInLevel(isTopLevel, parentId);
