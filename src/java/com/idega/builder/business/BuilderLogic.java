@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.324 2008/04/23 00:53:03 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.325 2008/04/23 23:40:33 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3467,6 +3467,10 @@ public class BuilderLogic implements Singleton {
 	 * @return String of rendered object or null
 	 */
 	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml) {
+		return getRenderedComponent(component, iwc, cleanHtml, true, true);
+	}
+	
+	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
 		if (iwc == null || component == null) {
 			return null;
 		}
@@ -3500,8 +3504,9 @@ public class BuilderLogic implements Singleton {
 		if (cleanHtml) {
 			// Cleaning - need valid XML structure
 			HtmlCleaner cleaner = new HtmlCleaner(rendered);
-			cleaner.setOmitDoctypeDeclaration(true);
-			cleaner.setOmitHtmlEnvelope(true);
+			cleaner.setOmitDoctypeDeclaration(omitDocTypeEnvelope);
+			cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
+			cleaner.setOmitXmlDeclaration(true);
 			try {
 				cleaner.clean();
 				rendered = cleaner.getPrettyXmlAsString();
@@ -3523,7 +3528,11 @@ public class BuilderLogic implements Singleton {
 	 * @return JDOM Document or null
 	 */
 	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml) {
-		String rendered = getRenderedComponent(component, iwc, cleanHtml);
+		return getRenderedComponent(iwc, component, cleanHtml, true, true);
+	}
+	
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
+		String rendered = getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope);
 		if (rendered == null) {
 			return null;
 		}

@@ -496,4 +496,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean reloadGroupsInCachedDomain(IWApplicationContext iwac, String serverName) {
 		return getBuilderLogic().reloadGroupsInCachedDomain(iwac, serverName);
 	}
+	
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
+		return getBuilderLogic().getRenderedComponent(iwc, component, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope);
+	}
+	
+	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
+		return getBuilderLogic().getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope);
+	}
 }
