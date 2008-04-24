@@ -391,27 +391,27 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		return session;
 	}
 
-	private class CutModuleBean {
+	protected class CutModuleBean {
 		
 		private String pageKey = null;
 		private String parentId = null;
 		private String instanceId = null;
 		
-		private  CutModuleBean(String pageKey, String parentId, String instanceId) {
+		protected  CutModuleBean(String pageKey, String parentId, String instanceId) {
 			this.pageKey = pageKey;
 			this.parentId = parentId;
 			this.instanceId = instanceId;
 		}
 		
-		private String getPageKey() {
+		protected String getPageKey() {
 			return pageKey;
 		}
 		
-		private String getParentId() {
+		protected String getParentId() {
 			return parentId;
 		}
 		
-		private String getInstanceId() {
+		protected String getInstanceId() {
 			return instanceId;
 		}
 	}
