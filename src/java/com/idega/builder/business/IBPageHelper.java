@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.85 2008/04/23 00:53:03 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.86 2008/04/24 21:13:01 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TreeViewer;
 import com.idega.repository.data.Singleton;
-import com.idega.servlet.filter.IWWelcomeFilter;
+import com.idega.servlet.filter.BaseFilter;
 import com.idega.util.CoreConstants;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -504,7 +504,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		
 		//This resets the redirect to /pages or /workspace
-		IWWelcomeFilter.reInitializeCachedDomainOnNextRequest();
+		BaseFilter.reInitializeCachedDomainOnNextRequest();
 
 		return (id);
 	}
@@ -691,7 +691,7 @@ public class IBPageHelper implements Singleton  {
 							e.printStackTrace();
 						}
 						List map = xml.getUsingTemplate();
-						if ((map != null) || (!map.isEmpty())) {
+						if ((map != null) && (!map.isEmpty())) {
 							return false;
 						}
 						boolean check = true;
@@ -943,7 +943,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		
 		//if this was the last page we need to check the redirect to pages or workspace again
-		IWWelcomeFilter.reInitializeCachedDomainOnNextRequest();
+		BaseFilter.reInitializeCachedDomainOnNextRequest();
 		
 		return true;
 	}
