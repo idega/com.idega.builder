@@ -38,11 +38,12 @@ import com.idega.util.PresentationUtil;
 public class EditModuleBlock extends Block {
 	
 	private String groupPermissionsText = "group_permissions";
-	private String rolePermissionsText = "role_permissions";
+	//private String rolePermissionsText = "role_permissions";
 	
 	private String localizedText = "Sorry, there are no properties for this module.";
 	private Map<String, List<ComponentProperty>> addedProperties = new HashMap<String, List<ComponentProperty>>();
 	
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
 		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
@@ -278,6 +279,7 @@ public class EditModuleBlock extends Block {
 		return needReload;
 	}
 	
+	@Override
 	public String getBundleIdentifier() {
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}

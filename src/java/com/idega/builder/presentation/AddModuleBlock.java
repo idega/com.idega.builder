@@ -128,7 +128,6 @@ public class AddModuleBlock extends Block {
 		addedTabs.put(tabText, components);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void addListToWindow(List<ICObject> objects, Layer container) {
 		Layer content = new Layer();
 		container.add(content);
@@ -153,7 +152,6 @@ public class AddModuleBlock extends Block {
 		content.add(items);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private List<ICObject> getConcreteComponents(IWContext iwc, Collection<ICObject> allComponents, boolean findWidgets, boolean findBlocks, boolean findBuilder) {
 		List<ICObject> components = new ArrayList<ICObject>();
 		List<String> namesList = new ArrayList<String>();
@@ -226,7 +224,6 @@ public class AddModuleBlock extends Block {
 		components.add(component);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private Collection<ICObject> getAllComponents() {
 		ICObjectHome icoHome = null;
 		try {

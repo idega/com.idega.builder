@@ -175,7 +175,7 @@ public class DPTCopySessionBean extends IBOSessionBean implements DPTCopySession
 		while (iter.hasNext()) {
 			Object o = iter.next();
 			if (o instanceof DPTCrawlable && !(((DPTCrawlable)o).getLinkedDPTTemplateID() == 0)) {
-				l.addLast(new KeyAndValue(pageID,(DPTCrawlable) o));
+				l.addLast(new KeyAndValue(pageID, o));
 			}
 		}
 

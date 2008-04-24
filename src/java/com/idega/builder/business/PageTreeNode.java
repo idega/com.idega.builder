@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.38 2008/02/26 14:06:36 valdas Exp $
+ * $Id: PageTreeNode.java,v 1.39 2008/04/24 23:06:44 laddi Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -281,8 +281,8 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 			while (it.hasNext()) {
 				Integer parentId = (Integer) it.next();
 				Integer childId = (Integer) it.next();
-				PageTreeNode parent = (PageTreeNode) tree.get(parentId);
-				PageTreeNode child = (PageTreeNode) tree.get(childId);
+				PageTreeNode parent = tree.get(parentId);
+				PageTreeNode child = tree.get(childId);
 				if (parent != null) {
 					parent.addChild(child,tree);
 				}
@@ -298,8 +298,8 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 			while (it.hasNext()) {
 				Integer parentId = (Integer) it.next();
 				Integer childId = (Integer) it.next();
-				PageTreeNode parent = (PageTreeNode) tree.get(parentId);
-				PageTreeNode child = (PageTreeNode) tree.get(childId);
+				PageTreeNode parent = tree.get(parentId);
+				PageTreeNode child = tree.get(childId);
 				if (parent != null) {
 					parent.addChild(child,tree);
 				}
@@ -387,7 +387,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 *
 	 */
 	public ICTreeNode getParentNode() {
-		PageTreeNode parent = (PageTreeNode) getTree(getApplicationContext()).get(getParentId());
+		PageTreeNode parent = getTree(getApplicationContext()).get(getParentId());
 		return parent;
 	}
 	
@@ -589,7 +589,6 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	/**
 	 * Gets the tree and preloads it if you set the boolean loadIfEmpty to true
 	 */
-	@SuppressWarnings("unchecked")
 	public static Map<Integer, PageTreeNode> getTree(IWApplicationContext iwc, boolean loadIfEmpty) {
 		Map<Integer, PageTreeNode> tree = null;
 		try {
@@ -662,6 +661,7 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof PageTreeNode) {
 			PageTreeNode node = (PageTreeNode) obj;

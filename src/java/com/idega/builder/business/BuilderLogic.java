@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.325 2008/04/23 23:40:33 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.326 2008/04/24 23:06:43 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -1717,7 +1717,6 @@ public class BuilderLogic implements Singleton {
 	 * @param slideSession
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, IWSlideSession slideSession) {
 		IBXMLPage page = null;
 		try {
@@ -3363,7 +3362,6 @@ public class BuilderLogic implements Singleton {
 		return removeBlockObjectFromCache(CoreUtil.getIWContext(), cacheKey);
 	}
 	
-	@SuppressWarnings({ "deprecation", "unchecked" })
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey) {
 		if (iwc == null || cacheKey == null) {
 			return false;
@@ -3396,7 +3394,6 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public boolean removeAllBlockObjectsFromCache(IWContext iwc) {
 		if (iwc == null) {
 			return false;
@@ -3679,7 +3676,6 @@ public class BuilderLogic implements Singleton {
 		return findComponentInList(page.getChildren(), instanceId);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private UIComponent findComponentInList(List<UIComponent> children, String instanceId) {
 		if (children == null || instanceId == null) {
 			return null;
@@ -3756,7 +3752,6 @@ public class BuilderLogic implements Singleton {
 		return region == null ? false : true;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public boolean copyAllModulesFromRegionIntoRegion(String pageKey, String sourceRegionLabel, String destinationRegionId, String destinationRegionLabel,
 			IWSlideSession session) {
 		if (pageKey == null || sourceRegionLabel == null || destinationRegionId == null || destinationRegionLabel == null) {
@@ -3841,7 +3836,6 @@ public class BuilderLogic implements Singleton {
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public boolean reloadGroupsInCachedDomain(IWApplicationContext iwac, String serverName) {
 		try {
 			ICDomain mostlyCachedDomain = iwac.getDomain();
