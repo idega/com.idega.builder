@@ -3,6 +3,7 @@
  */
 package com.idega.builder.business;
 
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
@@ -503,5 +504,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
 		return getBuilderLogic().getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope);
+	}
+	
+	public String getCleanedHtmlContent(String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
+		return getBuilderLogic().getCleanedHtmlContent(htmlContent, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
+	}
+	public String getCleanedHtmlContent(InputStream htmlStream, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
+		return getBuilderLogic().getCleanedHtmlContent(htmlStream, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 	}
 }

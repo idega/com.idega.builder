@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.326 2008/04/24 23:06:43 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.327 2008/04/26 00:07:38 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -173,6 +173,7 @@ public class BuilderLogic implements Singleton {
 	
 	private Pattern doctypeReplacementPattern;
 	private Pattern commentinHtmlReplacementPattern;
+	private Pattern xmlEncodingReplacementPattern = null;
 	
 	private static Instantiator instantiator = new Instantiator() { @Override
 	public Object getInstance() { return new BuilderLogic();}};
@@ -3499,22 +3500,47 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		if (cleanHtml) {
-			// Cleaning - need valid XML structure
-			HtmlCleaner cleaner = new HtmlCleaner(rendered);
-			cleaner.setOmitDoctypeDeclaration(omitDocTypeEnvelope);
-			cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
-			cleaner.setOmitXmlDeclaration(true);
-			try {
-				cleaner.clean();
-				rendered = cleaner.getPrettyXmlAsString();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}
-//			System.out.println("Cleaned object: \n" + rendered);
+			rendered = getCleanedHtmlContent(rendered, omitDocTypeEnvelope, omitHtmlEnvelope, false);
 		}
 		
 		return rendered;
+	}
+	
+	public String getCleanedHtmlContent(InputStream htmlStream, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
+		return getCleanedHtmlContent(htmlStream, null, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
+	}
+	
+	public String getCleanedHtmlContent(String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
+		return getCleanedHtmlContent(null, htmlContent, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
+	}
+	
+	private String getCleanedHtmlContent(InputStream htmlStream, String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
+		if (htmlStream == null && htmlContent == null) {
+			return null;
+		}
+		
+		HtmlCleaner cleaner = htmlStream == null ? new HtmlCleaner(htmlContent) : new HtmlCleaner(htmlStream);
+		cleaner.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
+		cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
+		cleaner.setOmitComments(omitComments);
+		cleaner.setOmitXmlDeclaration(true);
+		try {
+			cleaner.clean();
+			htmlContent = cleaner.getPrettyXmlAsString();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+//		System.out.println("Cleaned: \n" + htmlContent);
+		
+		// Removing <?xml version... />
+		Matcher commentsMatcher = getXmlEncodingReplacementPattern().matcher(htmlContent);
+		htmlContent = commentsMatcher.replaceAll(CoreConstants.EMPTY);
+		
+//		System.out.println("Cleaned and replaced: \n" + htmlContent);
+		
+		return htmlContent;
 	}
 	
 	/**
@@ -3567,6 +3593,13 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return renderedObject;
+	}
+	
+	private Pattern getXmlEncodingReplacementPattern() {
+		if (xmlEncodingReplacementPattern == null) {
+			xmlEncodingReplacementPattern = Pattern.compile("&lt.+?xml.+&gt;");
+		}
+		return xmlEncodingReplacementPattern;
 	}
 	
 	private Pattern getDoctypeReplacementPattern() {
