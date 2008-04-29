@@ -294,7 +294,12 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	}
 	
 	public boolean removeProperty(String pageKey, String moduleId, String propertyName) {
-		return BuilderLogic.getInstance().removeModuleProperty(pageKey, moduleId, propertyName);
+		if (BuilderLogic.getInstance().removeModuleProperty(pageKey, moduleId, propertyName)) {
+			clearCacheIfNeeded(pageKey, moduleId);
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public boolean needReloadPropertyBox() {
