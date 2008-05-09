@@ -622,7 +622,7 @@ function addSelectedModuleCallback(component, id) {
 	}
 	
 	try {
-		registerArticleLinksForMoodalBox();
+		initializeJavaScriptActionsForEditingAndCreatingArticles();
 	} catch(e) {}
 }
 
