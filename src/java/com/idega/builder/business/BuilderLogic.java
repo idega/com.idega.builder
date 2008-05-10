@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.327 2008/04/26 00:07:38 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.328 2008/05/10 11:53:50 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3474,9 +3474,17 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		iwc.setSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS, Boolean.TRUE);
-		
-		HtmlBufferResponseWriterWrapper writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
-		iwc.setResponseWriter(writer);
+
+		HtmlBufferResponseWriterWrapper writer = null;
+		try {
+			writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+			iwc.setResponseWriter(writer);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		if (writer == null) {
+			return null;
+		}
 		
 		if (iwc.getViewRoot() == null) {
 			UIViewRoot root = new UIViewRoot();
