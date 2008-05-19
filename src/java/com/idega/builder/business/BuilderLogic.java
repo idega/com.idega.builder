@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.328 2008/05/10 11:53:50 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.329 2008/05/19 20:25:33 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -3895,5 +3895,56 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return true;
+	}
+	
+	public String getFullPageUrlByPageType(IWContext iwc, String pageType) {
+		
+		String serverURL = iwc.getServerURL();
+		String pageUri = getPageUri(iwc, pageType);
+		
+		serverURL = serverURL.endsWith(CoreConstants.SLASH) ? serverURL.substring(0, serverURL.length()-1) : serverURL;
+		
+		String fullURL = new StringBuilder(serverURL)
+		.append(pageUri.startsWith(CoreConstants.SLASH) ? CoreConstants.EMPTY : CoreConstants.SLASH)
+		.append(pageUri)
+		.toString();
+		
+		return fullURL;
+	}
+	
+	protected String getPageUri(IWApplicationContext iwac, String pageType) {
+		
+		Collection<ICPage> icpages = getPages(pageType);
+		
+		ICPage icPage = null;
+		
+		if(icpages == null || icpages.isEmpty()) {
+			
+			throw new RuntimeException("No page found by page type: "+pageType);			
+		}
+		
+		if(icPage == null)
+			icPage = icpages.iterator().next();
+		
+		String uri = icPage.getDefaultPageURI();
+		
+		if(!uri.startsWith(CoreConstants.PAGES_URI_PREFIX))
+			uri = CoreConstants.PAGES_URI_PREFIX+uri;
+		
+		return iwac.getIWMainApplication().getTranslatedURIWithContext(uri);
+	}
+	
+	protected Collection<ICPage> getPages(String pageSubType) {
+		
+		try {
+			ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
+			@SuppressWarnings("unchecked")
+			Collection<ICPage> icpages = home.findBySubType(pageSubType, false);
+			
+			return icpages;
+			
+		} catch (Exception e) {
+			throw new RuntimeException("Exception while resolving icpages by subType: "+pageSubType, e);
+		}
 	}
 }

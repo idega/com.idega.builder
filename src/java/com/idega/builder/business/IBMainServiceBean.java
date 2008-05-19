@@ -512,4 +512,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public String getCleanedHtmlContent(InputStream htmlStream, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
 		return getBuilderLogic().getCleanedHtmlContent(htmlStream, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 	}
+	
+	public String getFullPageUrlByPageType(IWContext iwc, String pageType) {
+		return getBuilderLogic().getFullPageUrlByPageType(iwc, pageType);
+	}
 }
