@@ -147,6 +147,7 @@ public class FormEmailer extends Block {
 
 	private void cleanUpFromSession(IWContext iwc) {
 		iwc.removeSessionAttribute(TEXT_SESSION_KEY);
+		iwc.removeSessionAttribute(UPLOADED_FILENAME_SESSION_KEY);
 	}
 
 	public void sendEmail(IWContext iwc) throws Exception {
