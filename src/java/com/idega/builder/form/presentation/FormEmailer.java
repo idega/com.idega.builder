@@ -1,6 +1,7 @@
 package com.idega.builder.form.presentation;
 
 import java.io.File;
+
 import com.idega.builder.handler.IBGenericFormHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
@@ -44,7 +45,7 @@ public class FormEmailer extends Block {
 	private boolean sendReceipt = false;
 
 	private String receiptEmailParameter;
-	
+
 	private String spambot_catch_dummy_parameter;
 	private String spambot_catch_time_parameter;
 	private Integer spambot_catch_timeup;
@@ -60,15 +61,12 @@ public class FormEmailer extends Block {
 	}
 
 	public void main(IWContext iwc) {
-	
-		if(isSpambot(iwc)) {
-			add(
-				getBundle(iwc).getResourceBundle(iwc).getLocalizedString("formemailer.spambotdetected",
-				"Sorry, you're most likely to be a spambot. If that's not the case, please press back and refill the form.")
-			);
+
+		if (isSpambot(iwc)) {
+			add(getBundle(iwc).getResourceBundle(iwc).getLocalizedString("formemailer.spambotdetected", "Sorry, you're most likely to be a spambot. If that's not the case, please press back and refill the form."));
 			return;
 		}
-		
+
 		UploadFile uploadFile = iwc.getUploadedFile();
 		if (uploadFile != null) {
 			String uploadedFileName = uploadFile.getAbsolutePath();
@@ -81,8 +79,7 @@ public class FormEmailer extends Block {
 		if (doDisplayConfirmation(iwc)) {
 			try {
 				String sentText = this.getSentText(iwc);
-				String confirmationText = iwrb.getLocalizedString("formemailer.confirmationtext",
-						"Confirm send of supplied information:");
+				String confirmationText = iwrb.getLocalizedString("formemailer.confirmationtext", "Confirm send of supplied information:");
 				String sendText = iwrb.getLocalizedString("formemailer.send", "Send");
 				Table t = new Table();
 				add(t);
@@ -98,8 +95,7 @@ public class FormEmailer extends Block {
 				e.printStackTrace();
 				Table t = new Table();
 				add(t);
-				String errorText = iwrb.getLocalizedString("formemailer.error4",
-						"There was an error processing the form, one or more fields may be empty");
+				String errorText = iwrb.getLocalizedString("formemailer.error4", "There was an error processing the form, one or more fields may be empty");
 				t.add(errorText, 1, 1);
 				String buttonText = iwrb.getLocalizedString("formemailer.back", "Back");
 				BackButton back = new BackButton(buttonText);
@@ -147,6 +143,7 @@ public class FormEmailer extends Block {
 
 	private void cleanUpFromSession(IWContext iwc) {
 		iwc.removeSessionAttribute(TEXT_SESSION_KEY);
+		iwc.removeSessionAttribute(UPLOADED_FILENAME_SESSION_KEY);
 	}
 
 	public void sendEmail(IWContext iwc) throws Exception {
@@ -197,60 +194,59 @@ public class FormEmailer extends Block {
 			com.idega.util.SendMail.send(this.senderEmail, this.emailToSendTo, "", "", this.emailServer, this.subject, bodyText, uploadFile);
 		}
 		if (this.sendReceipt) {
-			String receiptSubject = iwrb.getLocalizedString("formemailer.receiptSubject",
-					"The subject of the receipt email");
+			String receiptSubject = iwrb.getLocalizedString("formemailer.receiptSubject", "The subject of the receipt email");
 			String receiptBody = iwrb.getLocalizedString("formemailer.receiptBody", "The body of the receipt email");
-			String receiptSignature = iwrb.getLocalizedString("formemailer.receiptSignature",
-					"The signature on the receipt email");
+			String receiptSignature = iwrb.getLocalizedString("formemailer.receiptSignature", "The signature on the receipt email");
 			String emailReceiptTo = this.handler.getParameterValue(iwc, this.receiptEmailParameter);
 			if (emailReceiptTo != null) {
 				try {
-					com.idega.util.SendMail.send(this.emailToSendTo, emailReceiptTo, "", "", this.emailServer, receiptSubject,
-							receiptBody + "\n" + receiptSignature);
+					com.idega.util.SendMail.send(this.emailToSendTo, emailReceiptTo, "", "", this.emailServer, receiptSubject, receiptBody + "\n" + receiptSignature);
 				}
 				catch (Exception e) {
 					try {
-						com.idega.util.SendMail.send(emailFrom, emailReceiptTo, "", "", this.emailServer, receiptSubject,
-								receiptBody + "\n" + receiptSignature);
+						com.idega.util.SendMail.send(emailFrom, emailReceiptTo, "", "", this.emailServer, receiptSubject, receiptBody + "\n" + receiptSignature);
 					}
 					catch (Exception e1) {
-						com.idega.util.SendMail.send(this.senderEmail, emailReceiptTo, "", "", this.emailServer, receiptSubject,
-								receiptBody + "\n" + receiptSignature);
+						com.idega.util.SendMail.send(this.senderEmail, emailReceiptTo, "", "", this.emailServer, receiptSubject, receiptBody + "\n" + receiptSignature);
 					}
 				}
 			}
 		}
 		cleanUpFromSession(iwc);
 	}
-	
+
 	protected boolean isSpambot(IWContext iwc) {
-		
-		if(getSpambotCatchDummyParameter() != null) {
-			
+
+		if (getSpambotCatchDummyParameter() != null) {
+
 			String dsc_par = handler.getParameterValue(iwc, getSpambotCatchDummyParameter());
-			
-			if(!"0".equals(dsc_par))
-				return true;
-		}
-		
-		if(getSpambotCatchTimeParameter() != null) {
-			
-			String sct_par = handler.getParameterValue(iwc, getSpambotCatchTimeParameter());
-			
-			if(sct_par == null)
-				return true;
-			
-			try {
-				int sct = Integer.parseInt(sct_par);
-				
-				if(sct < getSpambotCatchTimeup().intValue())
-					return true;
-				
-			} catch (Exception e) {
+
+			if (!"0".equals(dsc_par)) {
 				return true;
 			}
 		}
-		
+
+		if (getSpambotCatchTimeParameter() != null) {
+
+			String sct_par = handler.getParameterValue(iwc, getSpambotCatchTimeParameter());
+
+			if (sct_par == null) {
+				return true;
+			}
+
+			try {
+				int sct = Integer.parseInt(sct_par);
+
+				if (sct < getSpambotCatchTimeup().intValue()) {
+					return true;
+				}
+
+			}
+			catch (Exception e) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -314,13 +310,12 @@ public class FormEmailer extends Block {
 	public String getReceiptEmailParameter() {
 		return this.receiptEmailParameter;
 	}
-	
+
 	public String getSpambotCatchDummyParameter() {
 		return spambot_catch_dummy_parameter;
 	}
 
-	public void setSpambotCatchDummyParameter(
-			String spambot_catch_dummy_parameter) {
+	public void setSpambotCatchDummyParameter(String spambot_catch_dummy_parameter) {
 		this.spambot_catch_dummy_parameter = spambot_catch_dummy_parameter;
 	}
 
