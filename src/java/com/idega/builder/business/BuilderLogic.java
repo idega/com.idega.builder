@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.330 2008/05/22 08:09:13 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.331 2008/05/29 14:05:03 anton Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -133,6 +133,8 @@ import com.idega.xml.XMLElement;
  * </p>
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
+ * 
+ * Last modified: $Date: 2008/05/29 14:05:03 $ by $Author: anton $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3579,6 +3581,8 @@ public class BuilderLogic implements Singleton {
 		if (rendered.equals(CoreConstants.EMPTY)) {
 			return null;
 		}
+		//Replace symbols which can cause exceptions with SAXParser
+		rendered = rendered.replaceAll("&ouml;", "&#246;");
 		
 		// Building JDOM Document
 		InputStream stream = null;
