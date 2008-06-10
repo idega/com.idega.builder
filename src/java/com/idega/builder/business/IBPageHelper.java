@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.86 2008/04/24 21:13:01 laddi Exp $
+ * $Id: IBPageHelper.java,v 1.87 2008/06/10 12:53:07 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -680,33 +680,32 @@ public class IBPageHelper implements Singleton  {
 				return true;
 			}
 			else {
-				Iterator it = page.getChildrenIterator();
-				if (it != null) {
-					while (it.hasNext()) {
-						ICPage child = (ICPage) it.next();
-						IBXMLPage xml = null;
-						try {
-							xml = BuilderLogic.getInstance().getIBXMLPage(child.getPageKey());
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						List map = xml.getUsingTemplate();
-						if ((map != null) && (!map.isEmpty())) {
-							return false;
-						}
-						boolean check = true;
-						if (child.getChildCount() != 0) {
-							check = checkDeleteChildrenOfPage((child.getPageKey()));
-						}
-						if (!check) {
-							return false;
-						}
+				Collection<ICPage> children = page.getChildren();
+				if (children == null || children.isEmpty()) {
+					return false;
+				}
+				for (ICPage child: children) {
+					IBXMLPage xml = BuilderLogic.getInstance().getIBXMLPage(child.getPageKey());
+					if (xml == null) {
+						return false;
+					}
+					
+					List map = xml.getUsingTemplate();
+					if ((map != null) && (!map.isEmpty())) {
+						return false;
+					}
+					boolean check = true;
+					if (child.getChildCount() != 0) {
+						check = checkDeleteChildrenOfPage((child.getPageKey()));
+					}
+					if (!check) {
+						return false;
 					}
 				}
 				return true;
 			}
 		}
-		catch (SQLException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
