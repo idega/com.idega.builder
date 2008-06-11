@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.332 2008/06/11 14:53:30 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.333 2008/06/11 17:41:25 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -135,7 +135,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/06/11 14:53:30 $ by $Author: valdas $
+ * Last modified: $Date: 2008/06/11 17:41:25 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3572,11 +3572,11 @@ public class BuilderLogic implements Singleton {
 		if (jsSources != null) {
 			StringBuffer actionsInSingleFunction = null;
 			if (jsActions != null) {
-				actionsInSingleFunction = new StringBuffer("function() {\n");
+				actionsInSingleFunction = new StringBuffer("function() {");
 				for (String jsAction: jsActions) {
-					actionsInSingleFunction.append(jsAction).append("\n");
+					actionsInSingleFunction.append(jsAction);
 				}
-				actionsInSingleFunction.append("\n}");
+				actionsInSingleFunction.append("}");
 				jsActions.clear();
 			}
 			
@@ -3656,6 +3656,7 @@ public class BuilderLogic implements Singleton {
 		
 		//	Replace symbols which can cause exceptions with SAXParser
 		componentHtml = componentHtml.replaceAll("&ouml;", "&#246;");
+		componentHtml = componentHtml.replaceAll("&nbsp;", "&#160;");
 		
 		if (componentHtml.equals(CoreConstants.EMPTY)) {
 			return null;
