@@ -543,9 +543,6 @@ function addSelectedModuleCallback(component, id) {
 		executeActionsBeforeReloading();
 		return false;
 	}
-
-	// Making copy
-	var allNodes = getTransformedDocumentToDom(component);
 	
 	// Finding place where to put new module
 	var elementToInsertBefore = null;
@@ -573,21 +570,9 @@ function addSelectedModuleCallback(component, id) {
 	//	Removing old last drop area
 	markModuleContainerAsNotLast(lastModule, getDropAreaFromElement(lastModule));
 	
-	// Inserting nodes
-	var activeNode = null;
-	var realNode = null;
+	//	Inserting nodes
 	var elementToHighlight = null;
-	for (var i = 0; i < allNodes.length; i++) {
-		activeNode = allNodes[allNodes.length - (i + 1)];
-		realNode = createRealNode(activeNode);
-		if (realNode.className) {
-			if (realNode.className == 'moduleContainer') {
-				elementToHighlight = realNode;
-			}
-		}
-		container.insertBefore(realNode, elementToInsertBefore);
-		elementToInsertBefore = realNode;
-	}
+	insertNodesToContainerBefore(component, container, elementToInsertBefore);
 	
 	addDropAreaToTheLastModuleContainer($(container));
 	
