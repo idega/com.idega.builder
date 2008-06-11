@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.331 2008/05/29 14:05:03 anton Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.332 2008/06/11 14:53:30 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -118,6 +118,7 @@ import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
+import com.idega.util.PresentationUtil;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
 import com.idega.util.reflect.MethodFinder;
@@ -134,7 +135,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/05/29 14:05:03 $ by $Author: anton $
+ * Last modified: $Date: 2008/06/11 14:53:30 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -188,6 +189,7 @@ public class BuilderLogic implements Singleton {
 	
 	private volatile Web2Business web2 = null;
 	private IWSlideService slideService = null;
+	private XMLOutputter outputter = null;
 	
 	protected BuilderLogic() {
 		// empty
@@ -3470,7 +3472,7 @@ public class BuilderLogic implements Singleton {
 		return getRenderedComponent(component, iwc, cleanHtml, true, true);
 	}
 	
-	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
+	public synchronized String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
 		if (iwc == null || component == null) {
 			return null;
 		}
@@ -3494,17 +3496,38 @@ public class BuilderLogic implements Singleton {
 			iwc.setViewRoot(root);
 		}
 		
+		List<String> jsSources = null;
+		List<String> jsActions = null;
+		List<String> cssSources = null;
 		try {
 			RenderUtils.renderChild(iwc, component);
+			
+			Object o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
+			if (o instanceof List) {
+				jsSources = (List) o;
+			}
+			
+			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
+			if (o instanceof List) {
+				jsActions = (List) o;
+			}
+			
+			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
+			if (o instanceof List) {
+				cssSources = (List) o;
+			}
 		} catch (Exception e){
 			e.printStackTrace();
 			return null;
 		} finally {
 			iwc.removeSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS);
+			
+			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
+			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
+			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
 		}
 		
 		String rendered = writer.toString();
-//		System.out.println("Rendered object: \n" + rendered);
 		if (rendered == null) {
 			return null;
 		}
@@ -3513,7 +3536,152 @@ public class BuilderLogic implements Singleton {
 			rendered = getCleanedHtmlContent(rendered, omitDocTypeEnvelope, omitHtmlEnvelope, false);
 		}
 		
+		if (jsSources != null || jsActions != null || cssSources != null) {
+			rendered = getRenderedComponentWithDynamicResources(getRenderedComponent(rendered), cssSources, jsSources, jsActions);
+		}
+		
+//		System.out.println("Rendered:\n" + rendered);
 		return rendered;
+	}
+	
+	private String getRenderedComponentWithDynamicResources(Document component, List<String> cssSources, List<String> jsSources, List<String> jsActions) {
+		if (component == null) {
+			return null;
+		}
+		
+		Element root = component.getRootElement();
+		if (root == null) {
+			return null;
+		}
+		
+		//	CSS
+		if (cssSources != null) {
+			Collection<Element> cssElements = new ArrayList<Element>(cssSources.size());
+			for (String cssUri: cssSources) {
+				Element css = new Element("link");
+				css.setAttribute(new Attribute("type", "text/css"));
+				css.setAttribute(new Attribute("rel", "stylesheet"));
+				css.setAttribute(new Attribute("media", "screen"));
+				css.setAttribute(new Attribute("href", cssUri));
+				cssElements.add(css);
+			}
+			root.addContent(cssElements);
+		}
+		
+		//	JavaScript sources
+		if (jsSources != null) {
+			StringBuffer actionsInSingleFunction = null;
+			if (jsActions != null) {
+				actionsInSingleFunction = new StringBuffer("function() {\n");
+				for (String jsAction: jsActions) {
+					actionsInSingleFunction.append(jsAction).append("\n");
+				}
+				actionsInSingleFunction.append("\n}");
+				jsActions.clear();
+			}
+			
+			StringBuilder scriptsPathes = new StringBuilder("[");
+			for (Iterator<String> iterator = jsSources.iterator(); iterator.hasNext();) {
+				String script = iterator.next();
+				
+				scriptsPathes.append("'").append(script);
+				
+				if (iterator.hasNext()) {
+					scriptsPathes.append("', ");
+				}
+				else {
+					scriptsPathes.append("']");
+				}
+			}
+			
+			String action = "LazyLoader.loadMultiple(" + scriptsPathes + ", " + (actionsInSingleFunction == null ? "null" : actionsInSingleFunction.toString()) + ");";
+			Collection<Element> includeScriptsAndExecuteActions = new ArrayList<Element>(1);
+			Element mainAction = new Element("script");
+			mainAction.setAttribute(new Attribute("type", "text/javascript"));
+			mainAction.setText(action);
+			includeScriptsAndExecuteActions.add(mainAction);
+			root.addContent(includeScriptsAndExecuteActions);
+		}
+		
+		//	JavaScript actions
+		if (jsActions != null && !jsActions.isEmpty()) {
+			Collection<Element> actions = new ArrayList<Element>(jsActions.size());
+			for (String jsAction: jsActions) {
+				Element action = new Element("script");
+				action.setAttribute(new Attribute("type", "text/javascript"));
+				action.setText(jsAction);
+				actions.add(action);
+			}
+			
+			root.addContent(actions);
+		}
+		
+		return getJDOMOutputter().outputString(component);
+	}
+	
+	private XMLOutputter getJDOMOutputter() {
+		if (outputter == null) {
+			outputter = new XMLOutputter(Format.getPrettyFormat());
+		}
+		return outputter;
+	}
+	
+	/**
+	 * Renders single UIComponent and creates JDOM Document of rendered object
+	 * @param iwc
+	 * @param component - object to render
+	 * @param cleanHtml
+	 * @return JDOM Document or null
+	 */
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml) {
+		return getRenderedComponent(iwc, component, cleanHtml, true, true);
+	}
+	
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
+		return getRenderedComponent(getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope));
+	}
+	
+	private Document getRenderedComponent(String componentHtml) {
+		if (componentHtml == null) {
+			return null;
+		}
+		
+		//	Removing <!--... ms-->
+		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(componentHtml);
+		componentHtml = commentsMatcher.replaceAll(CoreConstants.EMPTY);
+
+		//	Removing <!DOCTYPE .. >
+		Matcher matcher = getDoctypeReplacementPattern().matcher(componentHtml);
+		componentHtml = matcher.replaceAll(CoreConstants.EMPTY);
+		
+		//	Replace symbols which can cause exceptions with SAXParser
+		componentHtml = componentHtml.replaceAll("&ouml;", "&#246;");
+		
+		if (componentHtml.equals(CoreConstants.EMPTY)) {
+			return null;
+		}
+		
+		// Building JDOM Document
+		InputStream stream = null;
+		try {
+			stream = StringHandler.getStreamFromString(componentHtml);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		SAXBuilder sax = new SAXBuilder(false);
+		Document renderedObject = null;
+		try {
+			renderedObject = sax.build(stream);
+		} catch (JDOMException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			closeStream(stream);
+		}
+		
+		return renderedObject;
 	}
 	
 	public String getCleanedHtmlContent(InputStream htmlStream, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
@@ -3551,60 +3719,6 @@ public class BuilderLogic implements Singleton {
 //		System.out.println("Cleaned and replaced: \n" + htmlContent);
 		
 		return htmlContent;
-	}
-	
-	/**
-	 * Renders single UIComponent and creates JDOM Document of rendered object
-	 * @param iwc
-	 * @param component - object to render
-	 * @param cleanHtml
-	 * @return JDOM Document or null
-	 */
-	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml) {
-		return getRenderedComponent(iwc, component, cleanHtml, true, true);
-	}
-	
-	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
-		String rendered = getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope);
-		if (rendered == null) {
-			return null;
-		}
-		
-		//	Removing <!--... ms-->
-		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(rendered);
-		rendered = commentsMatcher.replaceAll(CoreConstants.EMPTY);
-
-		//	Removing <!DOCTYPE .. >
-		Matcher matcher = getDoctypeReplacementPattern().matcher(rendered);
-		rendered = matcher.replaceAll(CoreConstants.EMPTY);
-		
-		if (rendered.equals(CoreConstants.EMPTY)) {
-			return null;
-		}
-		//Replace symbols which can cause exceptions with SAXParser
-		rendered = rendered.replaceAll("&ouml;", "&#246;");
-		
-		// Building JDOM Document
-		InputStream stream = null;
-		try {
-			stream = StringHandler.getStreamFromString(rendered);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		SAXBuilder sax = new SAXBuilder(false);
-		Document renderedObject = null;
-		try {
-			renderedObject = sax.build(stream);
-		} catch (JDOMException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			closeStream(stream);
-		}
-		
-		return renderedObject;
 	}
 	
 	private Pattern getXmlEncodingReplacementPattern() {
