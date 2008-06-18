@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.8 2007/11/13 09:31:00 laddi Exp $
+ * $Id: IBXMLReader.java,v 1.9 2008/06/18 13:01:02 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package com.idega.builder.business;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -20,19 +22,26 @@ import javax.faces.component.UIComponent;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlable;
 import com.idega.builder.dynamicpagetrigger.util.DPTCrawlableContainer;
 import com.idega.builder.tag.BuilderPage;
+import com.idega.core.component.business.ComponentRegistry;
 import com.idega.core.component.business.ICObjectBusiness;
+import com.idega.core.component.business.ICObjectComponentInfo;
 import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
+import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.event.ObjectInstanceCacher;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.repository.data.RefactorClassRegistry;
+import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -47,7 +56,11 @@ import com.idega.xml.XMLException;
  * @version 1.0
  */
 public class IBXMLReader {
+	
+	public static final Logger logger = Logger.getLogger(IBXMLReader.class.getName());
+	
 	public static final String UUID_PREFIX = ICObjectBusiness.UUID_PREFIX;
+	
 	/**
 	 *<p>
 	 *Constructor only used by BuilderLogic
@@ -493,7 +506,8 @@ public class IBXMLReader {
 		try {
 			//first create an instance
 			//try to do it first by the classname (definately an UIComponent and maybe a PresentationObject)
-			if (className !=null) {
+			if (className != null) {
+				makeSureObjectExists(className);
 				
 				if(componentId!=null){
 					try{
@@ -636,6 +650,67 @@ public class IBXMLReader {
 		
 		
 		return firstUICInstance;
+	}
+	
+	private void makeSureObjectExists(String className) {
+		ICObject icObject = null;
+		try {
+			icObject = getICObjectHome().findByClassName(className);
+		} catch (FinderException e) {
+			logger.log(Level.WARNING, "Object '" + className + "' isn't registered in database, trying to register.");
+		}
+		if (icObject == null) {
+			UIComponent component = null;
+			try {
+				component = (UIComponent) RefactorClassRegistry.forName(className).newInstance();
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Error while getting instance from class: " + className, e);
+				return;
+			}
+			
+			ICObject newICObject = null;
+			try {
+				newICObject = ICObjectBusiness.getInstance().createICObject();
+			} catch (IDOCreateException e) {
+				logger.log(Level.SEVERE, "Error while inserting new record in ic_object table", e);
+			}
+			if (newICObject == null) {
+				return;
+			}
+			
+			String name = null;
+			String objectType = null;
+			String bundleIdentifier = null;
+			if (component instanceof PresentationObject) {
+				PresentationObject po = (PresentationObject) component;
+				
+				name = po.getBuilderName(CoreUtil.getIWContext());
+				bundleIdentifier = po.getBundleIdentifier();
+				objectType = po.getComponentType();
+			}
+			
+			if (name == null) {
+				if (className.indexOf(CoreConstants.DOT) != -1) {
+					name = className.substring(className.lastIndexOf(CoreConstants.DOT) + 1);
+				}
+			}
+			newICObject.setName(name == null ? className : name);
+			newICObject.setClassName(className);
+			newICObject.setObjectType(objectType == null ? ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT : objectType);
+			newICObject.setBundleIdentifier(bundleIdentifier == null ? CoreConstants.CORE_IW_BUNDLE_IDENTIFIER : bundleIdentifier);
+			newICObject.store();
+			
+			ComponentRegistry registry = ComponentRegistry.getInstance(IWMainApplication.getDefaultIWMainApplication());
+			try {
+				registry.registerComponent(new ICObjectComponentInfo(newICObject));
+			} catch (ClassNotFoundException e) {
+				logger.log(Level.SEVERE, "Error while registering component in ComponentRegistry", e);
+			}
+			
+			logger.log(Level.INFO, "New ic_object for '" + className + "' was created successfully.");
+			
+			getBuilderLogic().clearAllCaches();
+		}
 	}
 
 	public int getICObjectInstanceIdFromComponentId(String componentId, String className,String pageKey){
