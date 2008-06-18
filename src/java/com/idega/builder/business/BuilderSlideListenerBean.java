@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderSlideListenerBean.java,v 1.3 2006/12/14 15:17:01 valdas Exp $
+ * $Id: BuilderSlideListenerBean.java,v 1.4 2008/06/18 14:12:33 valdas Exp $
  * Created on 29.5.2006 in project com.idega.builder
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -12,16 +12,17 @@ package com.idega.builder.business;
 import com.idega.business.IBOServiceBean;
 import com.idega.slide.business.IWContentEvent;
 import com.idega.slide.business.IWSlideChangeListener;
+import com.idega.util.CoreConstants;
 
 
 /**
  * <p>
  * TODO tryggvil Describe Type BuilderSlideListener
  * </p>
- *  Last modified: $Date: 2006/12/14 15:17:01 $ by $Author: valdas $
+ *  Last modified: $Date: 2008/06/18 14:12:33 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class BuilderSlideListenerBean extends IBOServiceBean implements IWSlideChangeListener {
 	
@@ -32,7 +33,7 @@ public class BuilderSlideListenerBean extends IBOServiceBean implements IWSlideC
 
 	public void onSlideChange(IWContentEvent contentEvent){
 		String uri = contentEvent.getContentEvent().getUri();
-		if(uri.startsWith("/files/cms/pages/") && uri.indexOf("idega_theme") == -1){
+		if (uri.startsWith(CoreConstants.PAGES_PATH) && uri.indexOf("idega_theme") == -1 && uri.indexOf("article_viewer_template") == -1) {
 			getBuilderLogic().clearAllCachedPages();
 		}
 	}
