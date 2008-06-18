@@ -9,7 +9,6 @@ import org.apache.myfaces.component.html.ext.HtmlInputTextarea;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.HtmlTemplateGrabber;
-import com.idega.business.SpringBeanLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -22,6 +21,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
+import com.idega.util.PresentationUtil;
+import com.idega.webface.WFUtil;
 
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company: idega
@@ -44,8 +45,8 @@ public class IBSourceView extends Window {
 	public void main(IWContext iwc) {
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
 		
-		Web2Business web2 = SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
-		this.getParentPage().addJavascriptURL(web2.getCodePressScriptFilePath());
+		Web2Business web2 = WFUtil.getBeanInstance(iwc, Web2Business.SPRING_BEAN_IDENTIFIER);
+		add(PresentationUtil.getJavaScriptSourceLine(web2.getCodePressScriptFilePath()));
 				
 		String action = iwc.getParameter(IB_SOURCE_ACTION);
 		if (action != null) {
@@ -98,31 +99,11 @@ public class IBSourceView extends Window {
 			sourceViewButtonsLeft.setStyleAttribute("height", "15%");
 			sourceViewButtonsRight.setStyleAttribute("height", "15%");
 		}
-		////////////////
 	
 		Form form = new Form();
-		//sourceView.add(form);
-		
-		
 		try {
-			getBuilderLogic().getCurrentIBPageEntity(iwc).getFormat();
-			String source = BuilderLogic.getInstance().getPageSource(iwc);
-//			if (BuilderLogic.getInstance().PAGE_FORMAT_HTML.equals(format)) {
-//				//HTMLArea area = new HTMLArea(SOURCE_PARAMETER, source, "100%", "500");
-//				HTMLArea area = new HTMLArea();
-//				area.addPlugin(HTMLArea.PLUGIN_TABLE_OPERATIONS);
-//				area.addPlugin(HTMLArea.PLUGIN_DYNAMIC_CSS, "3");
-//				area.addPlugin(HTMLArea.PLUGIN_CSS, "3");
-//				area.addPlugin(HTMLArea.PLUGIN_CONTEXT_MENU);
-//				area.addPlugin(HTMLArea.PLUGIN_LIST_TYPE);
-//				area.addPlugin(HTMLArea.PLUGIN_CHARACTER_MAP);
-//				area.setAllowFontSelection(false);
-//				
-//			
-//				area.setFullHTMLPageSupport(true);
-//				table.add(area, 1, 1);
-//			}
-//			else {
+			String pageKey = getCurrentPageKey(iwc);
+			String source = pageKey == null ? BuilderLogic.getInstance().getPageSource(iwc) : BuilderLogic.getInstance().getPageSource(pageKey);
 			HtmlInputTextarea area = new HtmlInputTextarea();
 			area.setId(SOURCE_PARAMETER);
 			area.setWrap("OFF");
@@ -130,20 +111,12 @@ public class IBSourceView extends Window {
 			//enable syntax coloring!
 			area.setStyleClass("codepress html linenumbers-on");
 			
-			
 			if(isFubarBrowserForNow){
 				area.setStyle("height: 83%");
 			}
 			area.setValue(source);
-			
-//				TextArea area = new TextArea("test_source", source);
-//				area.setWrap(false);
-//				
-//				if(isFubarBrowserForNow){
-//					area.setStyleAttribute("height", "83%");
-//				}
-				form.add(area);
-			//}
+
+			form.add(area);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -166,7 +139,6 @@ public class IBSourceView extends Window {
 		sourceViewButtonsRight.add(menu);
 		
 		//left
-		
 		TextInput templateGrabInput = new TextInput(PARAM_TEMPLATEURL,"http://");
 		sourceViewButtonsLeft.add(templateGrabInput);
 		SubmitButton templateGrabButton = new SubmitButton(iwrb.getLocalizedString("sourceview.grab_button_text","Grab template from URL"), IB_SOURCE_ACTION, "grab");
@@ -179,26 +151,25 @@ public class IBSourceView extends Window {
 		sourceView.add(form);
 		
 	}
+	
+	private String getCurrentPageKey(IWContext iwc) {
+		return iwc.getParameter("pageForSourceId");
+	}
 
 	private void doPageSourceUpdate(String sourceString, String pageFormat, IWContext iwc) throws Exception {
-		BuilderLogic.getInstance().setPageSource(iwc, pageFormat, sourceString);
+		String pageKey = getCurrentPageKey(iwc);
+		if (pageKey == null) {
+			getBuilderLogic().setPageSource(iwc, pageFormat, sourceString);
+			return;
+		}
+		
+		getBuilderLogic().setPageSource(pageKey, pageFormat, sourceString);
 	}
 
 	private void doPageTemplateGrab(String url, IWContext iwc) throws Exception {
-		String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
+		String pageKey = getBuilderLogic().getCurrentIBPage(iwc);
 		new HtmlTemplateGrabber(url, pageKey);
 	}
-
-	// public void setSource(TextArea area,IWContext iwc){
-	// //IBXMLPage page = BuilderLogic.getInstance().getCurrentIBXMLPage(iwc);
-	// try{
-	// String source = BuilderLogic.getInstance().getPageSource(iwc);
-	// area.setContent(source);
-	// }
-	// catch(Exception e){
-	// add(e);
-	// }
-	// }
 	
 	public DropdownMenu getFormatDropdown(IWContext iwc) {
 		ICPage page;
@@ -209,7 +180,6 @@ public class IBSourceView extends Window {
 			pageFormat = page.getFormat();
 		}
 		catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		DropdownMenu menu = new DropdownMenu(IB_PAGE_FORMAT);
@@ -220,12 +190,6 @@ public class IBSourceView extends Window {
 			String description = (String) formats.get(format);
 			menu.addMenuElement(format,description);
 		}
-		/*for (int i = 0; i < formats.length; i++) {
-			String formatKey = formats[i];
-			menu.addMenuElement(formatKey);
-		}*/
-		// menu.addMenuElement("IBXML");
-		// menu.addMenuElement("HTML");
 		menu.setSelectedElement(pageFormat);
 		return menu;
 	}
