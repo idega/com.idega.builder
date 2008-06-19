@@ -513,7 +513,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getCleanedHtmlContent(htmlStream, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 	}
 	
-	public String getFullPageUrlByPageType(IWContext iwc, String pageType) {
-		return getBuilderLogic().getFullPageUrlByPageType(iwc, pageType);
+	public String getFullPageUrlByPageType(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
+		return getBuilderLogic().getFullPageUrlByPageType(iwc, pageType, checkFirstlyNearestPages);
+	}
+	
+	public ICPage getNearestPageForCurrentPageByPageType(IWContext iwc, String pageType) {
+		return getBuilderLogic().getNearestPageForCurrentPageByPageType(iwc, pageType);
 	}
 }

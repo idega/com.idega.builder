@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.333 2008/06/11 17:41:25 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.334 2008/06/19 08:30:00 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -75,6 +75,7 @@ import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.data.GenericGroup;
+import com.idega.core.data.ICTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
@@ -135,7 +136,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/06/11 17:41:25 $ by $Author: valdas $
+ * Last modified: $Date: 2008/06/19 08:30:00 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4016,10 +4017,10 @@ public class BuilderLogic implements Singleton {
 		return true;
 	}
 	
-	public String getFullPageUrlByPageType(IWContext iwc, String pageType) {
+	public String getFullPageUrlByPageType(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
 		
 		String serverURL = iwc.getServerURL();
-		String pageUri = getPageUri(iwc, pageType);
+		String pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
 		
 		serverURL = serverURL.endsWith(CoreConstants.SLASH) ? serverURL.substring(0, serverURL.length()-1) : serverURL;
 		
@@ -4031,26 +4032,86 @@ public class BuilderLogic implements Singleton {
 		return fullURL;
 	}
 	
-	protected String getPageUri(IWApplicationContext iwac, String pageType) {
-		
-		Collection<ICPage> icpages = getPages(pageType);
-		
-		ICPage icPage = null;
-		
-		if(icpages == null || icpages.isEmpty()) {
-			
-			throw new RuntimeException("No page found by page type: "+pageType);			
+	@SuppressWarnings("unchecked")
+	public ICPage getNearestPageForCurrentPageByPageType(IWContext iwc, String pageType) {
+		Integer pageKey = iwc.getCurrentIBPageID();
+		if (pageKey == null) {
+			return null;
 		}
 		
-		if(icPage == null)
+		ICPage currentPage = getICPage(String.valueOf(pageKey));
+		if (currentPage == null) {
+			return null;
+		}
+		
+		ICPage nearestPage = null;
+		ICTreeNode parentNode = currentPage.getParentNode();
+		if (parentNode == null) {
+			nearestPage = getPageByPageType(currentPage.getChildren(), pageType);	//	Checking current page's children
+		}
+		else {
+			nearestPage = getPageByPageType(parentNode.getChildren(), pageType);	//	Checking current page's siblings and children
+		}
+		
+		return nearestPage;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private ICPage getPageByPageType(Collection<ICTreeNode> pages, String pageType) {
+		if (pages == null || pages.isEmpty()) {
+			return null;
+		}
+		
+		ICPage page = null;
+		Collection<ICTreeNode> children = null;
+		for (ICTreeNode node: pages) {
+			page = getICPage(node.getId());
+			
+			if (page != null) {
+				if (pageType.equals(page.getSubType())) {
+					return page;
+				}
+
+				children = page.getChildren();
+				if (children != null && !children.isEmpty()) {
+					return getPageByPageType(children, pageType);
+				}
+			}
+			
+		}
+		
+		return null;
+	}
+	
+	protected String getPageUri(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
+		ICPage icPage = null;
+		String messageForException = "No page found by page type: " + pageType;
+		
+		if (checkFirstlyNearestPages) {
+			icPage = getNearestPageForCurrentPageByPageType(iwc, pageType);
+		}
+		
+		if (icPage == null) {
+			Collection<ICPage> icpages = getPages(pageType);
+			
+			if (icpages == null || icpages.isEmpty()) {
+				throw new RuntimeException(messageForException);
+			}
+			
 			icPage = icpages.iterator().next();
+		}
+		
+		if (icPage == null) {
+			throw new RuntimeException(messageForException);
+		}
 		
 		String uri = icPage.getDefaultPageURI();
 		
-		if(!uri.startsWith(CoreConstants.PAGES_URI_PREFIX))
-			uri = CoreConstants.PAGES_URI_PREFIX+uri;
+		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
+			uri = CoreConstants.PAGES_URI_PREFIX + uri;
+		}
 		
-		return iwac.getIWMainApplication().getTranslatedURIWithContext(uri);
+		return iwc.getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
 	
 	protected Collection<ICPage> getPages(String pageSubType) {
