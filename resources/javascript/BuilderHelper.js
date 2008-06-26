@@ -817,6 +817,12 @@ function saveModuleProperty(event, element) {
 		return false;
 	}
 	
+	if (element.length != null && element.length > 0) {
+		element = element[0];
+		
+		element.setProperty('valuechanged', true);
+	}
+	
 	if (event != null) {
 		if (event.type == 'keyup' && (element.type == 'text' || element.type == 'password')) {
 			//	Checking if 'Enter' was pressed
