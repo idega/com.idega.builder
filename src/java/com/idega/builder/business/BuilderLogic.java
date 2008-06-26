@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.334 2008/06/19 08:30:00 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.335 2008/06/26 08:31:02 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -69,6 +69,7 @@ import com.idega.core.builder.data.ICDomainHome;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
@@ -136,7 +137,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/06/19 08:30:00 $ by $Author: valdas $
+ * Last modified: $Date: 2008/06/26 08:31:02 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3776,6 +3777,13 @@ public class BuilderLogic implements Singleton {
 		boolean result = setProperty(pageKey, moduleId, propertyName, properties, application);
 		
 		if (result) {
+			Object handler = iwc.getSessionAttribute(CoreConstants.HANDLER_PARAMETER);
+			if (handler instanceof ICPropertyHandler) {
+				iwc.removeSessionAttribute(CoreConstants.HANDLER_PARAMETER);
+				
+				((ICPropertyHandler) handler).onUpdate(properties, iwc);
+			}
+			
 			removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
 			removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
 		}
