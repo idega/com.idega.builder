@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.335 2008/06/26 08:31:02 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.336 2008/07/02 19:25:30 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -55,7 +55,6 @@ import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.business.SpringBeanLookup;
 import com.idega.business.chooser.helper.CalendarsChooserHelper;
 import com.idega.business.chooser.helper.GroupsChooserHelper;
 import com.idega.cal.bean.CalendarPropertiesBean;
@@ -123,6 +122,7 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.PresentationUtil;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
+import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
@@ -137,7 +137,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/06/26 08:31:02 $ by $Author: valdas $
+ * Last modified: $Date: 2008/07/02 19:25:30 $ by $Author: civilis $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -278,7 +278,7 @@ public class BuilderLogic implements Singleton {
 		
 		AddResource adder = AddResourceFactory.getInstance(iwc);
 		
-		Web2Business web2 = getWeb2Business(iwc);
+		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
 		
 		//	JavaScript
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_UTIL_SCRIPT);
@@ -3308,16 +3308,6 @@ public class BuilderLogic implements Singleton {
 		catch(FinderException fe) {
 		}
 		return null;
-	}
-	
-	private Web2Business getWeb2Business(IWContext iwc) {
-		if (web2 == null) {
-			if (iwc == null) {
-				iwc = CoreUtil.getIWContext();
-			}
-			web2 = SpringBeanLookup.getInstance().getSpringBean(iwc, Web2Business.class);
-		}
-		return web2;
 	}
 	
 	private String getUriToAddModuleWindow(String regionName) {
