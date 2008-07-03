@@ -817,10 +817,13 @@ function saveModuleProperty(event, element) {
 		return false;
 	}
 	
-	if (element.length != null && element.length > 0) {
-		element = element[0];
-		
-		element.setProperty('valuechanged', true);
+	if (!element.tagName) {
+		//	Some object
+		if (element.length != null && element.length > 0) {
+			element = element[0];
+			
+			element.setProperty('valuechanged', true);
+		}
 	}
 	
 	if (event != null) {
