@@ -4,6 +4,12 @@
 		<author email="tryggvi@idega.com">Tryggvi Larusson</author>
 	</properties>
 	<body>
+		<release version="3.1.17" date="2008-07-16">
+      		<action dev="laddi" type="update">
+				Added a check for mysterious nullpointer exception when building page tree.
+      		</action>
+    	</release>
+	
 		<release version="3.1.16" date="2008-05-21">
       		<action dev="laddi" type="update">
 				Fixed so that the uploaded file is removed from session after successful submit (FormEmailer).
