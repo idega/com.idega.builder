@@ -1,5 +1,5 @@
 /*
- * $Id: PageTreeNode.java,v 1.30 2006/06/08 07:48:00 laddi Exp $
+ * $Id: PageTreeNode.java,v 1.30.2.1 2008/07/16 15:25:35 laddi Exp $
  *
  * Copyright (C) 2001-2006 Idega hf. All Rights Reserved.
  *
@@ -292,12 +292,8 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				Integer childId = (Integer) it.next();
 				PageTreeNode parent = (PageTreeNode) tree.get(parentId);
 				PageTreeNode child = (PageTreeNode) tree.get(childId);
-				if (parent != null) {
+				if (parent != null && child != null) {
 					parent.addChild(child,tree);
-				}
-
-				if (child != null) {
-					child.setParent(parent);
 				}
 			}
 		}
