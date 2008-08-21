@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.337 2008/07/10 08:19:30 arunas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.338 2008/08/21 11:33:37 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -7,6 +7,8 @@ package com.idega.builder.business;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -36,10 +38,10 @@ import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom.input.DOMBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.xml.sax.InputSource;
 
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdvancedProperty;
@@ -125,6 +127,7 @@ import com.idega.util.StringHandler;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.util.reflect.PropertyCache;
+import com.idega.util.xml.XmlUtil;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -137,7 +140,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/07/10 08:19:30 $ by $Author: arunas $
+ * Last modified: $Date: 2008/08/21 11:33:37 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3663,19 +3666,31 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return null;
 		}
-		SAXBuilder sax = new SAXBuilder(false);
-		Document renderedObject = null;
+		Reader reader = null;
 		try {
-			renderedObject = sax.build(stream);
-		} catch (JDOMException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+			reader = new InputStreamReader(stream, CoreConstants.ENCODING_UTF8);
+			DOMBuilder domBuilder = new DOMBuilder();
+			return domBuilder.build(XmlUtil.getDocumentBuilder().parse(new InputSource(reader)));
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			closeStream(stream);
+			closeReader(reader);
 		}
 		
-		return renderedObject;
+		return null;
+	}
+	
+	private void closeReader(Reader reader) {
+		if (reader == null) {
+			return;
+		}
+		
+		try {
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public String getCleanedHtmlContent(InputStream htmlStream, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
