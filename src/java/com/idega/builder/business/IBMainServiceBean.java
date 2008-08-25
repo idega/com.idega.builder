@@ -518,6 +518,6 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 	
 	public ICPage getNearestPageForCurrentPageByPageType(IWContext iwc, String pageType) {
-		return getBuilderLogic().getNearestPageForCurrentPageByPageType(iwc, pageType);
+		return getBuilderLogic().getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
 	}
 }

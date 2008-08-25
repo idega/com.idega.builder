@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.338 2008/08/21 11:33:37 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.339 2008/08/25 06:50:55 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -62,6 +62,7 @@ import com.idega.business.chooser.helper.GroupsChooserHelper;
 import com.idega.cal.bean.CalendarPropertiesBean;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.data.CachedDomain;
@@ -117,10 +118,12 @@ import com.idega.servlet.filter.BaseFilter;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.user.bean.PropertiesBean;
+import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
+import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
@@ -140,7 +143,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/08/21 11:33:37 $ by $Author: valdas $
+ * Last modified: $Date: 2008/08/25 06:50:55 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4047,32 +4050,59 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ICPage getNearestPageForCurrentPageByPageType(IWContext iwc, String pageType) {
-		Integer pageKey = iwc.getCurrentIBPageID();
-		if (pageKey == null) {
-			return null;
+	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(IWContext iwc, String pageType) {
+		ICPage startPage = null;
+		
+		User currentUser = null;
+		try {
+			currentUser = iwc.getCurrentUser();
+		} catch(NotLoggedOnException e) {
+			e.printStackTrace();
+		}
+		if (currentUser != null) {
+			//	Trying to get nearest page to user's home page
+			startPage = currentUser.getHomePage();
+			if (startPage == null) {
+				int homePageId = currentUser.getHomePageID();
+				if (homePageId != -1) {
+					try {
+						startPage = getICPage(String.valueOf(homePageId));
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 		
-		ICPage currentPage = getICPage(String.valueOf(pageKey));
-		if (currentPage == null) {
+		if (startPage == null) {
+			//	Trying to get nearest page to current page
+			try {
+				startPage = getICPage(String.valueOf(iwc.getCurrentIBPageID()));
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		if (startPage == null) {
 			return null;
 		}
-		
-		ICPage nearestPage = null;
-		ICTreeNode parentNode = currentPage.getParentNode();
+
+		ICTreeNode parentNode = startPage.getParentNode();
+		Collection<ICTreeNode> children = null;
 		if (parentNode == null) {
-			nearestPage = getPageByPageType(currentPage.getChildren(), pageType);	//	Checking current page's children
+			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page ant it's children
+			children.add(startPage);
 		}
 		else {
-			nearestPage = getPageByPageType(parentNode.getChildren(), pageType);	//	Checking current page's siblings and children
+			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
 		}
 		
+		ICPage nearestPage = getPageByPageType(children, pageType);
 		return nearestPage;
 	}
 	
 	@SuppressWarnings("unchecked")
 	private ICPage getPageByPageType(Collection<ICTreeNode> pages, String pageType) {
-		if (pages == null || pages.isEmpty()) {
+		if (ListUtil.isEmpty(pages)) {
 			return null;
 		}
 		
@@ -4087,7 +4117,7 @@ public class BuilderLogic implements Singleton {
 				}
 
 				children = page.getChildren();
-				if (children != null && !children.isEmpty()) {
+				if (!ListUtil.isEmpty(children)) {
 					return getPageByPageType(children, pageType);
 				}
 			}
@@ -4102,7 +4132,7 @@ public class BuilderLogic implements Singleton {
 		String messageForException = "No page found by page type: " + pageType;
 		
 		if (checkFirstlyNearestPages) {
-			icPage = getNearestPageForCurrentPageByPageType(iwc, pageType);
+			icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
 		}
 		
 		if (icPage == null) {
