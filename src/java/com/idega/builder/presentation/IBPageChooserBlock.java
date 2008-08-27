@@ -29,23 +29,25 @@ public class IBPageChooserBlock extends AbstractChooserBlock {
 		TreeViewer viewer = getTreeViewer(iwc, false);
 		container.add(viewer);
 		
+		viewer.setCloseOrOpenNodesHref("javascript:void(0)");
+		
 		Link link = new Link();
-		link = new Link();
-		link.setURL("javascript:void(0)");
+		link.setMarkupAttribute("href", "javascript:void(0)");
 		link.setNoTextObject(true);
 		viewer.setLinkOpenClosePrototype(link);
 		
 		StringBuffer action = new StringBuffer();
 		//	Action to remove old value
 		action.append(getRemoveSelectedPropertyAction());
-		
 		//	Action to add new Value
 		boolean simpleAction = getHiddenInputAttribute() == null ? true : false;
 		action.append(getChooserObjectAction(simpleAction));
-		
 		// Action to set view
 		action.append(getChooserViewAction());
 		
+		link = new Link();
+		link.setURL("javascript:void(0)");
+		link.setNoTextObject(true);
 		link.setOnClick(action.toString());
 		viewer.setLinkPrototype(link);
 	}
