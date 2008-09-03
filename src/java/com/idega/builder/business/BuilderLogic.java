@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.339 2008/08/25 06:50:55 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.340 2008/09/03 07:06:19 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -127,6 +129,7 @@ import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
+import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.util.reflect.PropertyCache;
@@ -143,7 +146,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/08/25 06:50:55 $ by $Author: valdas $
+ * Last modified: $Date: 2008/09/03 07:06:19 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3657,7 +3660,7 @@ public class BuilderLogic implements Singleton {
 		componentHtml = componentHtml.replaceAll("&Ouml;", "&#246;");
 		componentHtml = componentHtml.replaceAll("&nbsp;", "&#160;");
 		
-		if (componentHtml.equals(CoreConstants.EMPTY)) {
+		if (StringUtil.isEmpty(componentHtml)) {
 			return null;
 		}
 		
@@ -3675,7 +3678,7 @@ public class BuilderLogic implements Singleton {
 			DOMBuilder domBuilder = new DOMBuilder();
 			return domBuilder.build(XmlUtil.getDocumentBuilder().parse(new InputSource(reader)));
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getLogger(BuilderLogic.class.getName()).log(Level.SEVERE, "Error generating XML from component's HTML: \n" + componentHtml, e);
 		} finally {
 			closeStream(stream);
 			closeReader(reader);
@@ -3704,7 +3707,8 @@ public class BuilderLogic implements Singleton {
 		return getCleanedHtmlContent(null, htmlContent, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 	}
 	
-	private String getCleanedHtmlContent(InputStream htmlStream, String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
+	private String getCleanedHtmlContent(InputStream htmlStream, String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
+			boolean omitComments) {
 		if (htmlStream == null && htmlContent == null) {
 			return null;
 		}
