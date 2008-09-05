@@ -43,11 +43,19 @@ public class IBSourceView extends Window {
 	}
 
 	public void main(IWContext iwc) {
+		setPrintScriptSourcesDirectly(false);
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
 		
+		Layer sourceView = new Layer();
+		sourceView.setStyleClass("sourceView");
+		add(sourceView);
+		
+		IWBundle iwb = this.getBundle(iwc);
+		
 		Web2Business web2 = WFUtil.getBeanInstance(iwc, Web2Business.SPRING_BEAN_IDENTIFIER);
-		add(PresentationUtil.getJavaScriptSourceLine(web2.getCodePressScriptFilePath()));
-				
+		sourceView.add(PresentationUtil.getJavaScriptSourceLine(web2.getCodePressScriptFilePath()));
+		PresentationUtil.addStyleSheetToHeader(iwc, iwb.getVirtualPathWithFileNameString("style/builder.css"));
+		
 		String action = iwc.getParameter(IB_SOURCE_ACTION);
 		if (action != null) {
 			if (action.equals("update")) {
@@ -78,13 +86,7 @@ public class IBSourceView extends Window {
 			}
 		}
 		
-		IWBundle iwb = this.getBundle(iwc);
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
-		
-		addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
-		Layer sourceView = new Layer();
-		sourceView.setStyleClass("sourceView");
-		add(sourceView);
 		
 		Layer sourceViewButtonsLeft = new Layer();
 		sourceViewButtonsLeft.setStyleClass("sourceViewButtonsLeft");
