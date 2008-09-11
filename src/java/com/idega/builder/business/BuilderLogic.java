@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.340 2008/09/03 07:06:19 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.341 2008/09/11 11:28:59 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -146,7 +146,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/09/03 07:06:19 $ by $Author: valdas $
+ * Last modified: $Date: 2008/09/11 11:28:59 $ by $Author: civilis $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4061,7 +4061,7 @@ public class BuilderLogic implements Singleton {
 		try {
 			currentUser = iwc.getCurrentUser();
 		} catch(NotLoggedOnException e) {
-			e.printStackTrace();
+			Logger.getLogger(getClass().getName()).log(Level.INFO, "User is not logged in");
 		}
 		if (currentUser != null) {
 			//	Trying to get nearest page to user's home page
