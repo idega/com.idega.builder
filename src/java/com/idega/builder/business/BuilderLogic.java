@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.341 2008/09/11 11:28:59 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.342 2008/09/19 08:06:30 arunas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -146,7 +146,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/09/11 11:28:59 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/19 08:06:30 $ by $Author: arunas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3659,6 +3659,7 @@ public class BuilderLogic implements Singleton {
 		componentHtml = componentHtml.replaceAll("&ouml;", "&#246;");
 		componentHtml = componentHtml.replaceAll("&Ouml;", "&#246;");
 		componentHtml = componentHtml.replaceAll("&nbsp;", "&#160;");
+		componentHtml = componentHtml.replaceAll("&iacute;", "&#237;");
 		
 		if (StringUtil.isEmpty(componentHtml)) {
 			return null;
