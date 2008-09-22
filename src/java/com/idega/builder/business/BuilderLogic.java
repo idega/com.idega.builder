@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.342 2008/09/19 08:06:30 arunas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.343 2008/09/22 14:18:59 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -7,8 +7,6 @@ package com.idega.builder.business;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -40,11 +38,8 @@ import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.input.DOMBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.xml.sax.InputSource;
-
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.presentation.AddModuleBlock;
@@ -146,11 +141,13 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/09/19 08:06:30 $ by $Author: arunas $
+ * Last modified: $Date: 2008/09/22 14:18:59 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
 
+	private static final Logger logger = Logger.getLogger(BuilderLogic.class.getName());
+	
 	private static final String PAGES_PREFIX = "/pages/";
 	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	public static final String IB_PARENT_PARAMETER = "ib_parent_par";
@@ -3466,14 +3463,16 @@ public class BuilderLogic implements Singleton {
 	 * Renders single UIComponent
 	 * @param iwc
 	 * @param component - object to render
-	 * @param cleanHtml
+	 * @param cleanCode
 	 * @return String of rendered object or null
 	 */
-	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml) {
-		return getRenderedComponent(component, iwc, cleanHtml, true, true);
+	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanCode) {
+		return getRenderedComponent(component, iwc, cleanCode, true, true);
 	}
 	
-	public synchronized String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
+	@SuppressWarnings("unchecked")
+	public synchronized String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanCode, boolean omitDocTypeDeclaration,
+			boolean omitHtmlEnvelope) {
 		if (iwc == null || component == null) {
 			return null;
 		}
@@ -3533,12 +3532,13 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		if (cleanHtml) {
-			rendered = getCleanedHtmlContent(rendered, omitDocTypeEnvelope, omitHtmlEnvelope, false);
+		if (cleanCode) {
+			rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
 		}
 		
 		if (jsSources != null || jsActions != null || cssSources != null) {
-			rendered = getRenderedComponentWithDynamicResources(getRenderedComponent(rendered), cssSources, jsSources, jsActions);
+			rendered = getRenderedComponentWithDynamicResources(getXMLDocumentFromComponentHTML(rendered, false, omitDocTypeDeclaration, omitHtmlEnvelope,
+					false), cssSources, jsSources, jsActions);
 		}
 		
 //		System.out.println("Rendered:\n" + rendered);
@@ -3595,7 +3595,9 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 			
-			String action = "LazyLoader.loadMultiple(" + scriptsPathes + ", " + (actionsInSingleFunction == null ? "null" : actionsInSingleFunction.toString()) + ");";
+			String action = new StringBuilder("LazyLoader.loadMultiple(").append(scriptsPathes.toString()).append(", ")
+								.append(actionsInSingleFunction == null ? "null" : actionsInSingleFunction.toString()).append(");")
+							.toString();
 			Collection<Element> includeScriptsAndExecuteActions = new ArrayList<Element>(1);
 			Element mainAction = new Element("script");
 			mainAction.setAttribute(new Attribute("type", "text/javascript"));
@@ -3631,73 +3633,53 @@ public class BuilderLogic implements Singleton {
 	 * Renders single UIComponent and creates JDOM Document of rendered object
 	 * @param iwc
 	 * @param component - object to render
-	 * @param cleanHtml
+	 * @param cleanCode
 	 * @return JDOM Document or null
 	 */
-	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml) {
-		return getRenderedComponent(iwc, component, cleanHtml, true, true);
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanCode) {
+		return getRenderedComponent(iwc, component, cleanCode, true, true);
 	}
 	
-	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
-		return getRenderedComponent(getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope));
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope) {
+		return getXMLDocumentFromComponentHTML(getRenderedComponent(component, iwc, cleanCode, omitDocTypeDeclaration, omitHtmlEnvelope), false,
+				omitDocTypeDeclaration, omitHtmlEnvelope, true);
 	}
 	
-	private Document getRenderedComponent(String componentHtml) {
-		if (componentHtml == null) {
+	private Document getXMLDocumentFromComponentHTML(String componentHTML, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
+			boolean omitComments) {
+		if (StringUtil.isEmpty(componentHTML)) {
 			return null;
+		}
+		
+		if (cleanCode) {
+			componentHTML = getCleanedHtmlContent(componentHTML, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
 		
 		//	Removing <!--... ms-->
-		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(componentHtml);
-		componentHtml = commentsMatcher.replaceAll(CoreConstants.EMPTY);
+		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(componentHTML);
+		componentHTML = commentsMatcher.replaceAll(CoreConstants.EMPTY);
 
 		//	Removing <!DOCTYPE .. >
-		Matcher matcher = getDoctypeReplacementPattern().matcher(componentHtml);
-		componentHtml = matcher.replaceAll(CoreConstants.EMPTY);
+		Matcher matcher = getDoctypeReplacementPattern().matcher(componentHTML);
+		componentHTML = matcher.replaceAll(CoreConstants.EMPTY);
 		
+		//	Do not add any more replaceAll - HtmlCleaner should fix ALL problems
 		//	Replace symbols which can cause exceptions with SAXParser
-		componentHtml = componentHtml.replaceAll("&ouml;", "&#246;");
-		componentHtml = componentHtml.replaceAll("&Ouml;", "&#246;");
-		componentHtml = componentHtml.replaceAll("&nbsp;", "&#160;");
-		componentHtml = componentHtml.replaceAll("&iacute;", "&#237;");
+		componentHTML = componentHTML.replaceAll("&ouml;", "&#246;");
+		componentHTML = componentHTML.replaceAll("&Ouml;", "&#246;");
+		componentHTML = componentHTML.replaceAll("&nbsp;", "&#160;");
+		componentHTML = componentHTML.replaceAll("&iacute;", "&#237;");
 		
-		if (StringUtil.isEmpty(componentHtml)) {
+		if (StringUtil.isEmpty(componentHTML)) {
 			return null;
 		}
-		
-		// Building JDOM Document
-		InputStream stream = null;
-		try {
-			stream = StringHandler.getStreamFromString(componentHtml);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+
+		Document componentXML = XmlUtil.getJDOMXMLDocument(componentHTML);
+		if (componentXML == null && !cleanCode) {
+			logger.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed.");
+			return getXMLDocumentFromComponentHTML(componentHTML, true, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
-		Reader reader = null;
-		try {
-			reader = new InputStreamReader(stream, CoreConstants.ENCODING_UTF8);
-			DOMBuilder domBuilder = new DOMBuilder();
-			return domBuilder.build(XmlUtil.getDocumentBuilder().parse(new InputSource(reader)));
-		} catch (Exception e) {
-			Logger.getLogger(BuilderLogic.class.getName()).log(Level.SEVERE, "Error generating XML from component's HTML: \n" + componentHtml, e);
-		} finally {
-			closeStream(stream);
-			closeReader(reader);
-		}
-		
-		return null;
-	}
-	
-	private void closeReader(Reader reader) {
-		if (reader == null) {
-			return;
-		}
-		
-		try {
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		return componentXML;
 	}
 	
 	public String getCleanedHtmlContent(InputStream htmlStream, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
@@ -3758,17 +3740,6 @@ public class BuilderLogic implements Singleton {
 			commentinHtmlReplacementPattern = Pattern.compile("<!--\\d+ ms-->");
 		}
 		return commentinHtmlReplacementPattern;
-	}
-	
-	private void closeStream(InputStream stream) {
-		if (stream == null) {
-			return;
-		}
-		try {
-			stream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] properties) {
@@ -3859,6 +3830,7 @@ public class BuilderLogic implements Singleton {
 		return findComponentInList(page.getChildren(), instanceId);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private UIComponent findComponentInList(List<UIComponent> children, String instanceId) {
 		if (children == null || instanceId == null) {
 			return null;
@@ -3901,7 +3873,7 @@ public class BuilderLogic implements Singleton {
 		return component;
 	}
 	
-	public Document getRenderedModule(String pageKey, String componentId, boolean cleanHtml) {
+	public Document getRenderedModule(String pageKey, String componentId, boolean cleanCode) {
 		if (pageKey == null || componentId == null) {
 			return null;
 		}
@@ -3916,7 +3888,7 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		return getRenderedComponent(iwc, component, cleanHtml);
+		return getRenderedComponent(iwc, component, cleanCode);
 	}
 	
 	public boolean existsRegion(String pageKey, String label, String regionId) {
