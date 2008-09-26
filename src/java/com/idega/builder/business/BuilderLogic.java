@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.343 2008/09/22 14:18:59 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.344 2008/09/26 15:01:16 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -141,7 +141,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/09/22 14:18:59 $ by $Author: valdas $
+ * Last modified: $Date: 2008/09/26 15:01:16 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3338,8 +3338,12 @@ public class BuilderLogic implements Singleton {
 	
 	public String getUriToObject(Class<?> objectClass, List<AdvancedProperty> parameters) {
 		String baseUri = getUriToObject(objectClass);
-		if (baseUri == null) {
+		if (StringUtil.isEmpty(baseUri)) {
 			return null;
+		}
+		
+		if (ListUtil.isEmpty(parameters)) {
+			return baseUri;
 		}
 		
 		StringBuffer params = new StringBuffer();
