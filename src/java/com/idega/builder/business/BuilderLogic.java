@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.345 2008/09/30 06:32:57 arunas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.346 2008/10/01 14:40:04 arunas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -141,7 +141,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/09/30 06:32:57 $ by $Author: arunas $
+ * Last modified: $Date: 2008/10/01 14:40:04 $ by $Author: arunas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3666,6 +3666,13 @@ public class BuilderLogic implements Singleton {
 		//	Removing <!DOCTYPE .. >
 		Matcher matcher = getDoctypeReplacementPattern().matcher(componentHTML);
 		componentHTML = matcher.replaceAll(CoreConstants.EMPTY);
+			
+		//	Do not add any more replaceAll - HtmlCleaner should fix ALL problems
+		//	Replace symbols which can cause exceptions with SAXParser
+		componentHTML = componentHTML.replaceAll("&ouml;", "&#246;");
+		componentHTML = componentHTML.replaceAll("&Ouml;", "&#246;");
+		componentHTML = componentHTML.replaceAll("&nbsp;", "&#160;");
+		componentHTML = componentHTML.replaceAll("&iacute;", "&#237;");
 			
 		if (StringUtil.isEmpty(componentHTML)) {
 			return null;
