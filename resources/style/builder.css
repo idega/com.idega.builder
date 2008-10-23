@@ -48,7 +48,7 @@
 	color: #fff;
 }
 
-.moduleName{
+.moduleName span {
 	font-size: 12px !important;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	line-height: 24px !important;
@@ -62,7 +62,7 @@
 	overflow: hidden;
 	text-align: left;
 	margin: 0 !important;
-	color: #fff;
+	color: #fff !important;
 }
 
 .regionInfoImageContainer {
@@ -475,7 +475,14 @@ div#simple_properties_box {
 }
 
 .moduleProperty, .modulePropertyIsSet {
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	margin-bottom: 6px;
+	font-size: 14px !important;
+}
+
+.moduleProperty span, .modulePropertyIsSet span {
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
+	font-size: 14px !important;
 }
 
 .moduleProperty:hover span, .modulePropertyIsSet:hover span {
@@ -492,7 +499,7 @@ div#simple_properties_box {
 }
 
 .modulePropertyContainer {
-	padding: 8px;
+	padding: 8px 8px 0 8px;
 	border: 1px #666 solid;
 	background-color: #efefef;
 	margin-right: 40px;
@@ -506,6 +513,12 @@ div#simple_properties_box {
 	float: left;
 	width: 100px;
 	font-weight: bold;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
+	font-size: 14px !important;
+}
+
+.modulePropertyContainer .modulePropertyItem {
+	margin-bottom: 8px;
 }
 
 .modulePropertyContainer .modulePropertyItem .booleanInput label {
@@ -515,6 +528,10 @@ div#simple_properties_box {
 .modulePropertyContainer .modulePropertyItem input.modulePropertySetter {
 	font-size: 14px;
 	padding: 2px 4px;
+}
+
+.modulePropertyContainer .modulePropertyItem select.modulePropertySetter {
+	font-size: 14px;
 }
 
 .add_article_module_to_region_image:hover {
@@ -600,6 +617,7 @@ div.builderButtons div.builderButton img {
 
 .addModuleToBuilderPage, #editModuleHeader {
 	background: #fff !important;
+	font-size: 16px;
 }
 
 #mb_center .mootabs_title {
@@ -611,6 +629,7 @@ div.builderButtons div.builderButton img {
 
 #mb_center .mootabs_title li {
 	height: 20px;
+	font-size: 13px;
 	border: 1px #e6e6e6 solid;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
 }
@@ -625,5 +644,5 @@ div.builderButtons div.builderButton img {
 	z-index: 0;
 	border-top: 1px #e6e6e6 solid;
 	background-color: #fff;
-	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 }
