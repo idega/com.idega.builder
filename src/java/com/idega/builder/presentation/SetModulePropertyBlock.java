@@ -74,7 +74,7 @@ public class SetModulePropertyBlock extends Block {
 			}
 			
 			Layer item = new Layer();
-			item.setStyleClass("moduleProperyItem");
+			item.setStyleClass("modulePropertyItem");
 			
 			name = new StringBuffer(namePrefix).append(i).toString();
 			handlerClass = null;

@@ -1,5 +1,5 @@
 /*
- * $Id: HeightAndWidthHandler.java,v 1.9 2007/10/16 07:40:53 valdas Exp $
+ * $Id: HeightAndWidthHandler.java,v 1.10 2008/10/23 11:43:58 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,6 @@ import java.util.List;
 import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.CoreConstants;
 
@@ -40,7 +39,6 @@ public class HeightAndWidthHandler implements ICPropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
-    Table table = new Table();
     TextInput input = new TextInput(name);
     if (value != null) {
       input.setValue(value);
@@ -48,9 +46,8 @@ public class HeightAndWidthHandler implements ICPropertyHandler {
     input.setMaxlength(4);
     input.setLength(4);
     input.setStyleClass(CoreConstants.BUILDER_PORPERTY_SETTER_STYLE_CLASS);
-    table.add(input,1,1);
 
-    return(table);
+    return(input);
   }
 
   /**

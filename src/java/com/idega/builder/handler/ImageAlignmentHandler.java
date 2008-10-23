@@ -1,5 +1,5 @@
 /*
- * $Id: ImageAlignmentHandler.java,v 1.6 2007/05/24 11:31:12 valdas Exp $
+ * $Id: ImageAlignmentHandler.java,v 1.7 2008/10/23 11:43:58 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,15 +9,13 @@
  */
 package com.idega.builder.handler;
 
-import com.idega.core.builder.presentation.ICPropertyHandler;
-import com.idega.idegaweb.IWConstants;
 import java.util.List;
-import com.idega.presentation.PresentationObject;
+
+import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.Image;
-import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.DropdownMenu;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -41,11 +39,6 @@ public class ImageAlignmentHandler implements ICPropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
-    Table table = new Table(1,3);
-      table.setCellpadding(0);
-      table.setCellspacing(0);
-      table.setHeight(2,"5");
-
     DropdownMenu menu = new DropdownMenu(name);
     menu.addMenuElement("","Select:");
     menu.addMenuElement(Image.ALIGNMENT_TOP,"Top");
@@ -58,13 +51,8 @@ public class ImageAlignmentHandler implements ICPropertyHandler {
     menu.addMenuElement(Image.ALIGNMENT_BASELINE,"* Baseline");
     menu.addMenuElement(Image.ALIGNMENT_TEXT_TOP,"* Text top");
     menu.setSelectedElement(value);
-    table.add(menu,1,1);
 
-    Text starText = new Text("* not supported by all browsers");
-      starText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
-    table.add(starText,1,3);
-
-    return(table);
+    return(menu);
   }
 
   /**

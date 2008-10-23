@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.346 2008/10/01 14:40:04 arunas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.347 2008/10/23 11:43:58 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -141,7 +141,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/10/01 14:40:04 $ by $Author: arunas $
+ * Last modified: $Date: 2008/10/23 11:43:58 $ by $Author: laddi $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -195,7 +195,7 @@ public class BuilderLogic implements Singleton {
 	
 	private String[] pageFormats = {this.PAGE_FORMAT_IBXML,this.PAGE_FORMAT_HTML,this.PAGE_FORMAT_JSP_1_2};
 	
-	private volatile Web2Business web2 = null;
+	//private volatile Web2Business web2 = null;
 	private IWSlideService slideService = null;
 	private XMLOutputter outputter = null;
 	
@@ -2323,7 +2323,6 @@ public class BuilderLogic implements Singleton {
 		buttons.setStyleClass("builderButtons");
 		
 		parent.addAtBeginning(buttons);
-		parent.addAtBeginning(new CSSSpacer());
 		
 		//	Add module button
 		Layer addModuleContainer = new Layer();

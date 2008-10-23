@@ -4,6 +4,7 @@
 	border: 1px transparent solid;
 	margin: 0px;
 	position: relative;
+	top: -25px;
 }
 
 .moduleContainer:hover {	
@@ -16,8 +17,7 @@
 .moduleContainerTop {
 	overflow: hidden;	
 	margin: 0 !important;
-	border-bottom: 1px #fff solid;
-	background: url(images/top_background.gif) center center repeat-x;
+	background: #333;
 }
 
 .moduleHandle {
@@ -66,7 +66,8 @@
 }
 
 .regionInfoImageContainer {
-	float: right;
+	position: absolute;
+	right: 0;
 	margin: 0 !important;
 	width: auto;
 	overflow: hidden;
@@ -91,7 +92,8 @@
 	display: none;
 	text-align: center;
 	font-weight: bold;
-	border: 1px #d7d7d7 solid;
+	border: 1px #999 solid;
+	background-color: #efefef;
 }
 
 .moduleDropAreaHover{
@@ -490,18 +492,29 @@ div#simple_properties_box {
 }
 
 .modulePropertyContainer {
-	padding: 6px 12px 0 12px;
+	padding: 8px;
+	border: 1px #666 solid;
+	background-color: #efefef;
+	margin-right: 40px;
 }
 
 .modulePropertyContainer div {
-	margin-bottom: 6px;
 	overflow: hidden;
 }
 
 .modulePropertyContainer label {
 	float: left;
 	width: 100px;
-	line-height: 22px;
+	font-weight: bold;
+}
+
+.modulePropertyContainer .modulePropertyItem .booleanInput label {
+	font-weight: normal;
+}
+
+.modulePropertyContainer .modulePropertyItem input.modulePropertySetter {
+	font-size: 14px;
+	padding: 2px 4px;
 }
 
 .add_article_module_to_region_image:hover {
@@ -548,13 +561,29 @@ div#simple_properties_box {
 }
 
 /* Button layer */
+.regionLabel {
+	position: relative;
+	top: -25px;
+	z-index: 100;
+	margin-bottom: 3px;
+	width: 100%;
+	overflow: hidden;
+}
+
+.regionLabel .builderButtons {
+	border: 1px #aa5 solid;
+	background-color: #ffa;
+	padding: 3px;
+	float: left;
+}
+
 div.builderButtons div.builderButton {
 	float: left;
 	border: 1px #d0d0d0 solid;
-	padding: 2px 4px;
+	padding: 3px;
 	background: #fff;
-	margin-right: 2px;
-	height: 20px;
+	margin: 2px;
+	height: 16px;
 }
 
 div.builderButtons div.builderButton a {
@@ -562,10 +591,39 @@ div.builderButtons div.builderButton a {
 }
 
 div.builderButtons div.builderButton img {
-	vertical-align: bottom;
 }
 
 .groupPermissionFrameInNewBuilderStyle {
 	width: 99%;
 	height: 99%;
+}
+
+.addModuleToBuilderPage, #editModuleHeader {
+	background: #fff !important;
+}
+
+#mb_center .mootabs_title {
+	padding-left: 6px;
+	height: 25px;
+	position: relative;
+	z-index: 1;
+}
+
+#mb_center .mootabs_title li {
+	height: 20px;
+	border: 1px #e6e6e6 solid;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+}
+
+#mb_center .mootabs_title li.active {
+	background-color: #fff;
+	border-bottom: 1px #fff solid;
+}
+
+#mb_center .mootabs_panel {
+	position: relative;
+	z-index: 0;
+	border-top: 1px #e6e6e6 solid;
+	background-color: #fff;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
 }

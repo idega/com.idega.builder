@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.79 2008/03/18 12:52:26 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.80 2008/10/23 11:43:58 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -48,13 +48,13 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Span;
 import com.idega.presentation.Table;
 import com.idega.presentation.TableCell;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.AbstractChooser;
 import com.idega.presentation.ui.BooleanInput;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.IntegerInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.TextInput;
@@ -86,7 +86,8 @@ public class IBPropertyHandler implements Singleton{
 	private static final String TABLE_ROWS_PROPERTY = ":method:1:implied:void:setRows:int:";
 	private static final String TABLE_COLUMNS_PROPERTY = ":method:1:implied:void:setColumns:int:";
 
-	private static Instantiator instantiator = new Instantiator() { public Object getInstance() { return new IBPropertyHandler();}};
+	private static Instantiator instantiator = new Instantiator() { @Override
+	public Object getInstance() { return new IBPropertyHandler();}};
 	private Map propertyHandlers;
 	private IBClassesFactory builderClassesFactory;
 
@@ -516,17 +517,28 @@ public class IBPropertyHandler implements Singleton{
 			IWResourceBundle iwrb = getBuilderLogic().getBuilderBundle().getResourceBundle(iwc);
 			
 			obj = new Layer();
+			obj.setStyleClass("booleanInput");
 			
-			Span yesOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).append(":").toString()));
 			RadioButton yes = new RadioButton(name);
 			yes.setValue(CoreConstants.BUILDER_MODULE_PROPERTY_YES_VALUE);
 			setMarkupAttributes(yes, properties);
+
+			Label label = new Label(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).toString(), yes);
 			
-			Span noOption = new Span(new Text(new StringBuffer(iwrb.getLocalizedString("no", "No")).append(":").toString()));
+			Span yesOption = new Span();
+			yesOption.add(yes);
+			yesOption.add(label);
+			
 			RadioButton no = new RadioButton(name);
 			no.setValue(CoreConstants.BUILDER_MODULE_PROPERTY_NO_VALUE);
 			setMarkupAttributes(no, properties);
 			
+			label = new Label(new StringBuffer(iwrb.getLocalizedString("no", "No")).toString(), no);
+			
+			Span noOption = new Span();
+			noOption.add(no);
+			noOption.add(label);
+
 			if (stringValue.equalsIgnoreCase(CoreConstants.BUILDER_MODULE_PROPERTY_YES_VALUE) || stringValue.equalsIgnoreCase("T") || Boolean.TRUE.toString().equalsIgnoreCase(stringValue)) {
 				yes.setSelected(true);
 			}
@@ -535,9 +547,6 @@ public class IBPropertyHandler implements Singleton{
 					no.setSelected(true);
 				}
 			}
-			
-			yesOption.add(yes);
-			noOption.add(no);
 			
 			((Layer) obj).add(yesOption);
 			((Layer) obj).add(noOption);

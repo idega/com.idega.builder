@@ -9,15 +9,13 @@
  */
 package com.idega.builder.handler;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import com.idega.core.builder.presentation.ICPropertyHandler;
-import com.idega.idegaweb.IWStyleManager;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -41,23 +39,13 @@ public class StyleClassHandler implements ICPropertyHandler {
    *
    */
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc, boolean oldGenerationHandler, String instanceId, String method) {
-    IWStyleManager manager = IWStyleManager.getInstance();
-    List list = manager.getStyleList();
-    Collections.sort(list);
-    
-    DropdownMenu chooser = new DropdownMenu(name);
-    chooser.setStyleAttribute("font-size: 8pt; border: 1 solid #000000");
-    chooser.addMenuElement("","Select:");
-	  
-	  Iterator iter = list.iterator();
-    while (iter.hasNext()) {
-    	String style = (String) iter.next();
-    	if (style.indexOf(":") == -1) {
-				chooser.addMenuElement(style);
-			}
+    TextInput input = new TextInput(name);
+    if (value != null) {
+      input.setValue(value);
     }
-    chooser.setSelectedElement(value);
-    return(chooser);
+    input.setStyleClass(CoreConstants.BUILDER_PORPERTY_SETTER_STYLE_CLASS);
+
+    return(input);
   }
 
   /**
