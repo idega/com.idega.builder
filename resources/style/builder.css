@@ -5,6 +5,7 @@
 	margin: 0px;
 	position: relative;
 	top: -25px;
+	z-index: 1000;
 }
 
 .moduleContainer:hover {	
@@ -69,7 +70,7 @@
 	position: absolute;
 	right: 0;
 	margin: 0 !important;
-	width: auto;
+	width: 80px;
 	overflow: hidden;
 }
 
@@ -474,10 +475,11 @@ div#simple_properties_box {
 	float: right;
 }
 
-.moduleProperty, .modulePropertyIsSet {
+.moduleProperty, .modulePropertyIsSet, .modulesListItemStyle {
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	margin-bottom: 6px;
 	font-size: 14px !important;
+	text-align: left;
 }
 
 .moduleProperty span, .modulePropertyIsSet span {
