@@ -72,6 +72,7 @@
 	margin: 0 !important;
 	width: 80px;
 	overflow: hidden;
+	z-index: 1000;
 }
 
 .regionInfoImageContainer img {
