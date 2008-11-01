@@ -168,10 +168,7 @@ public class FormEmailer extends Block {
 			// System.out.println("formText==null");
 			formText = iwrb.getLocalizedString("formemailer.error_no_email_body", "<<No email body found>>");
 		}
-		if (this.emailServer == null) {
-			String error2 = iwrb.getLocalizedString("formemailer.error2", "Email Server not specified");
-			throw new Exception(error2);
-		}
+		
 		if (this.emailToSendTo == null) {
 			String error3 = iwrb.getLocalizedString("formemailer.error3", "No email to send to");
 			throw new Exception(error3);
