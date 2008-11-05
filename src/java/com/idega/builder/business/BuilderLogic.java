@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.347 2008/10/23 11:43:58 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.348 2008/11/05 16:34:47 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -141,7 +141,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/10/23 11:43:58 $ by $Author: laddi $
+ * Last modified: $Date: 2008/11/05 16:34:47 $ by $Author: laddi $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -464,7 +464,7 @@ public class BuilderLogic implements Singleton {
 
 	private void filterForPermission(List groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc) {
 		if (!iwc.hasViewPermission(groupIds, obj)) {
-			System.err.println(obj + ": removed");
+			logger.severe(obj + ": removed");
 			parentObject.getChildren().remove(index);
 			parentObject.getChildren().add(index, PresentationObject.NULL_CLONE_OBJECT);
 		}
@@ -2218,7 +2218,7 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	private void clearCaches(IWApplicationContext iwac) {
-		System.out.println("Clearing all DomainTree Cache");
+		logger.info("Clearing all DomainTree Cache");
 		DomainTree.clearCache(iwac);
 		getPageCacher().flagAllPagesInvalid();
 	}
@@ -3544,7 +3544,6 @@ public class BuilderLogic implements Singleton {
 					false), cssSources, jsSources, jsActions);
 		}
 		
-//		System.out.println("Rendered:\n" + rendered);
 		return rendered;
 	}
 	
@@ -3712,13 +3711,9 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-//		System.out.println("Cleaned: \n" + htmlContent);
-		
 		// Removing <?xml version... />
 		Matcher commentsMatcher = getXmlEncodingReplacementPattern().matcher(htmlContent);
 		htmlContent = commentsMatcher.replaceAll(CoreConstants.EMPTY);
-		
-//		System.out.println("Cleaned and replaced: \n" + htmlContent);
 		
 		return htmlContent;
 	}
