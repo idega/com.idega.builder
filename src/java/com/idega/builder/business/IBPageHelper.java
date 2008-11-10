@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageHelper.java,v 1.87 2008/06/10 12:53:07 valdas Exp $
+ * $Id: IBPageHelper.java,v 1.88 2008/11/10 09:24:02 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -323,7 +323,7 @@ public class IBPageHelper implements Singleton  {
 			try {
 				if(parentId!=null){
 					//Create a pageUrl object to create the name with a generated name by default if not set
-					PageUrl pUrl = new PageUrl(parentpage,name,domainId);
+					PageUrl pUrl = new PageUrl(parentpage, name, domainId);
 					pageUri = pUrl.getGeneratedUrlFromName();
 				}
 				else{

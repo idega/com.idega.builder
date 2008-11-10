@@ -1,5 +1,5 @@
 /*
- * $Id: PageUrl.java,v 1.6 2007/04/17 19:02:10 eiki Exp $
+ * $Id: PageUrl.java,v 1.7 2008/11/10 09:24:02 valdas Exp $
  * Created on 24.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import com.idega.util.StringHandler;
  *  <p>
  *  Class for setting and manipulating generated URLs for builder pages
  *  <p>
- *  Last modified: $Date: 2007/04/17 19:02:10 $ by $Author: eiki $
+ *  Last modified: $Date: 2008/11/10 09:24:02 $ by $Author: valdas $
  * 
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class PageUrl {
 	
@@ -179,8 +179,13 @@ public class PageUrl {
 	
 	protected boolean doesUrlExist(String url){
 		try {
-			ICPage page = getICPageHome().findByUri(url,this.domainId);
-			if(page!=null){
+			ICPage page = getICPageHome().findByUri(url, this.domainId);
+			if (page != null) {
+				if (page.getDeleted()) {
+					page.setDefaultPageURI(new StringBuilder(url).append("deleted").append(System.currentTimeMillis()).toString());
+					page.store();
+					return false;
+				}
 				return true;
 			}
 		}
