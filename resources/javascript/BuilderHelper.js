@@ -124,6 +124,7 @@ function hideNewestPasteIcons(useSlideOut) {
 					}
 				} catch(e){}
 				PASTE_ICONS_SLIDERS.push(slider);
+				element.getParent().addClass('sliderWrapper');
 			}
 		}
 	);
@@ -136,6 +137,16 @@ function registerBuilderActions() {
 	DWREngine.setErrorHandler(errorHanlder);
 	
 	addEventsToBuilderElements();
+	
+	$$('div.regionLabel').each(function(element) {
+		if (element.getStyle('display') != 'none') {
+			var span  = new Element('span', {class: 'addableRegionLabel'});
+			var parent = element.getParent();
+			parent.addClass('addableRegion');
+			$(span).appendText(element.getProperty('instanceid')).inject(parent, 'top');
+			element.setStyle('display', 'none');
+		}
+	});
 	
 	if (COPIED_MODULE_ID == null) {
 		hidePasteIcons(false);

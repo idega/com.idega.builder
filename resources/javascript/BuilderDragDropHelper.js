@@ -26,7 +26,7 @@ function registerDragAndDropActionsForModuleNameElement(element) {
 	element.addEvent('mousedown', function(e) {
 		e = new Event(e).stop();
 
-		ORIGINAL = element.getParent().getParent();
+		ORIGINAL = element.getParent();
 		PARENT_CONTAINER_ID = ORIGINAL.getParent().clone().id;
 		CLONE = ORIGINAL.clone();
 		CLONE.setStyles(ORIGINAL.getCoordinates());
@@ -200,9 +200,11 @@ function manageDropAreas(needToShow) {
 				if (ORIGINAL.id != parentNode.id) {
 					if (needToShow) {
 						element.setStyle('display', 'block');
+						parentNode.addClass('showingDrag');
 					}
 					else {
 						element.setStyle('display', 'none');
+						parentNode.removeClass('showingDrag');
 					}
 				}
 			}
