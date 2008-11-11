@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.ejb.FinderException;
@@ -17,6 +18,8 @@ import org.jdom.Document;
 import com.idega.builder.app.IBApplication;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.data.IBPageBMPBean;
+import com.idega.builder.data.IBPageName;
+import com.idega.builder.data.IBPageNameHome;
 import com.idega.builder.presentation.IBSourceView;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderPageWriterService;
@@ -27,12 +30,15 @@ import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.util.ListUtil;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
@@ -519,5 +525,20 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public ICPage getNearestPageForCurrentPageByPageType(IWContext iwc, String pageType) {
 		return getBuilderLogic().getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String getLocalizedPageName(String pageKey, Locale locale) {
+		try {
+			IBPageNameHome pageNameHome = (IBPageNameHome) IDOLookup.getHome(IBPageName.class);
+			int localeId = ICLocaleBusiness.getLocaleId(locale);
+			Collection<IBPageName> pageNames = pageNameHome.findAllByPageIdAndLocaleId(Integer.valueOf(pageKey), localeId);
+			if (!ListUtil.isEmpty(pageNames)) {
+				return pageNames.iterator().next().getPageName();
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
