@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.350 2008/11/12 09:31:55 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.351 2008/11/12 15:04:02 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -142,7 +142,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/12 09:31:55 $ by $Author: valdas $
+ * Last modified: $Date: 2008/11/12 15:04:02 $ by $Author: civilis $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3709,6 +3709,7 @@ public class BuilderLogic implements Singleton {
 		cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
 		cleaner.setOmitComments(omitComments);
 		cleaner.setOmitXmlDeclaration(true);
+		cleaner.setUseCdataForScriptAndStyle(false);
 		try {
 			cleaner.clean();
 			htmlContent = cleaner.getPrettyXmlAsString();
