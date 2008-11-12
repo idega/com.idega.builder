@@ -140,7 +140,8 @@ function registerBuilderActions() {
 	
 	$$('div.regionLabel').each(function(element) {
 		if (element.getStyle('display') != 'none') {
-			var span  = new Element('span', {class: 'addableRegionLabel'});
+			var span  = new Element('span')
+			span.addClass('addableRegionLabel');
 			var parent = element.getParent();
 			parent.addClass('addableRegion');
 			$(span).appendText(element.getProperty('instanceid')).inject(parent, 'top');
@@ -232,8 +233,21 @@ function addEventsToBuilderElements() {
 			}
 		}
 	);
+	$$('a.addModuleLinkStyleClass').each(
+		function(element) {
+			if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
+				ELEMENTS_WITH_TOOLTIP.push(element);
+				initToolTipForElement(element);
+			}
+		}
+	);
 	
 	$$('img.add_article_module_to_region_image').each(
+		function(element) {
+			addActionsForArticleButton(element);
+		}
+	);
+	$$('span.add_article_module_to_region_image').each(
 		function(element) {
 			addActionsForArticleButton(element);
 		}
@@ -1358,4 +1372,9 @@ function createTabsWithMootabs(id) {
 	var heightForTabs = Math.round(window.getHeight() * 0.8);
 	//	http://www.silverscripting.com/mootabs
 	var tabs = new mootabs(id, {width: widthForTabs + 'px', height: (heightForTabs - 60) + 'px', changeTransition: 'none'});
+}
+
+function openSelectAndAddModuleWindow(id, uri) {
+	setPropertiesForAddModule(id);
+	MOOdalBox.open(uri, '', 'moodalbox');
 }

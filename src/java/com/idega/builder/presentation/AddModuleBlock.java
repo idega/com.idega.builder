@@ -115,7 +115,7 @@ public class AddModuleBlock extends Block {
 		}
 		
 		Layer script = new Layer();
-		script.add(new StringBuffer("<script type=\"text/javascript\">createTabsWithMootabs('").append(container.getId()).append("');</script>").toString());
+		script.add(new StringBuffer("<script type=\"text/javascript\">createTabsWithMootabs('").append(container.getId()).append("'); closeAllLoadingMessages();</script>").toString());
 		container.add(script);
 	}
 	

@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.349 2008/11/11 15:43:38 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.350 2008/11/12 09:31:55 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -142,7 +142,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/11 15:43:38 $ by $Author: laddi $
+ * Last modified: $Date: 2008/11/12 09:31:55 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -2337,11 +2337,11 @@ public class BuilderLogic implements Singleton {
 		/*Image addModule = getBuilderBundle().getImage("add_16.png", title.toString(), 16, 16);
 		addModule.setOnClick(new StringBuffer("setPropertiesForAddModule('").append(labelMarkerContainerId).append("');").toString());
 		addModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);*/
+		
 		// Link for MOOdalBox
-		Link link = new Link(new Text(iwrb.getLocalizedString("add", "Add")), uri);
+		Link link = new Link(new Text(iwrb.getLocalizedString("add", "Add")), "javascript:void(0);");
 		link.setToolTip(title.toString());
-		link.setOnClick(new StringBuffer("setPropertiesForAddModule('").append(labelMarkerContainerId).append("');").toString());
-		link.setMarkupAttribute("rel", "moodalbox");
+		link.setOnClick(new StringBuilder("openSelectAndAddModuleWindow('").append(labelMarkerContainerId).append("', '").append(uri).append("');").toString());
 		link.setStyleClass("addModuleLinkStyleClass");
 		addModuleContainer.add(link);
 		buttons.add(addModuleContainer);
