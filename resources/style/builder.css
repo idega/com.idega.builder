@@ -8,14 +8,31 @@
 	min-width: 150px;
 }
 
-.moduleContainer:hover {	
+.edit .moduleContainer:hover {	
 	/*cursor: default;*/	
 	border: 1px #000000 dotted;
 	/*margin: 1px;*/
 	background-color: #eee;
 }
 
-.moduleContainer:hover .regionInfoImageContainer {
+.edit .moduleContainer:hover .regionInfoImageContainer {
+	display: block;
+	opacity: 1;
+}
+
+.moduleWrapper {
+	display: none;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background-color: #ccc;
+	z-index: 2;
+	opacity: .5;
+}
+
+.edit .moduleContainer:hover .moduleWrapper {
 	display: block;
 }
 
@@ -48,16 +65,22 @@
 }
 
 .moduleName {
+border: 1px #fff solid;
+	display: none;
 	position: absolute;
 	top: 1px;
 	left: 1px;
 	z-index: 2000;
-	background: #999;
+	background: #000;
 	opacity: 0.6;
 	-moz-opacity: 0.6;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+}
+
+.edit .moduleName {
+	display: block;
 }
 
 .showingDrag .moduleName {
@@ -74,15 +97,17 @@
 	color: #fff;
 }
 
-.moduleContainer:hover .moduleName {
-	background: #000;
+.edit .moduleContainer:hover .moduleName {
+	background: #333;
+	opacity: 1;
 }
 
-.moduleContainer:hover .moduleName span {
-	color: #999;
+.edit .moduleContainer:hover .moduleName span {
+	color: #fff;
 }
 
 .regionInfoImageContainer {
+	border: 1px #fff solid;
 	display: none;
 	position: absolute;
 	right: 1px;
@@ -92,7 +117,7 @@
 	z-index: 1000;
 	font-size: 9px;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
-	background: #000;
+	background: #333;
 	opacity: 0.6;
 	-moz-opacity: 0.6;
 	border-radius: 3px;
@@ -109,22 +134,27 @@
 .regionInfoImageContainer ol li {
 	display: block;
 	float: left;
-	line-height: 11px;
-	padding: 2px 4px !important;
+	line-height: 1em !important;
 	background: none !important;
 	height: auto !important;
 	margin: 0 !important;
 	text-transform: lowercase;
+border-right: 1px #fff solid;
+}
+
+.regionInfoImageContainer ol li.propertiesModule {
+border-right: 0;
 }
 
 .regionInfoImageContainer ol li span {
 	display: block;
 	float: left;
-	color: #999;
+	color: #fff;
+padding: 3px 5px;
 }
 
 .regionInfoImageContainer ol li a {
-	color: #999;
+	color: #fff;
 	height: auto !important;
 }
 
@@ -627,11 +657,10 @@ div#simple_properties_box {
 }
 
 /* Button layer */
-.addableRegion {
+.edit .addableRegion {
 	position: relative;
 	min-height: 20px;
 	border: 1px #ccc dotted;
-	padding-top: 15px;
 }
 
 .addableRegion:hover {
@@ -639,12 +668,17 @@ div#simple_properties_box {
 }
 
 .addableRegion .addableRegionLabel {
+display: none;
+}
+
+.edit .addableRegion .addableRegionLabel {
+display: block;
 	border: 1px #ccc dotted;
-	border-left: 0;
+	border-right: 0;
 	border-top: 0;
 	position: absolute;
 	top: 0;
-	left: 0;
+	right: 0;
 	line-height: 8px;
 	padding: 3px 4px;
 	font-size: 7px;
@@ -664,16 +698,17 @@ div#simple_properties_box {
 	z-index: 100;
 	margin-bottom: 3px;
 	overflow: hidden;
-	bottom: -20px;
+	bottom: -18px;
 	left: -1px;
 }
 
-.addableRegion:hover > .regionLabel {
+.edit .addableRegion:hover > .regionLabel {
 	display: block !important;
 }
 
 .regionLabel .builderButtons {
 	border: 1px #666 dotted;
+	border-top: 0;
 	background-color: #ff0;
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;

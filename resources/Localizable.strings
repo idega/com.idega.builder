@@ -66,6 +66,7 @@ sourceview.template_text=Note\: Template regions in HTML templates are defined l
 submit=Submit
 target=Target
 template_name=Template name
+text=Text
 tooltip.delete_page=Delete Page/Template
 tooltip.export_pages=Export Pages/Templates
 tooltip.import_pages=Import Pages/Templates

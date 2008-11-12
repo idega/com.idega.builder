@@ -138,14 +138,22 @@ function registerBuilderActions() {
 	
 	addEventsToBuilderElements();
 	
+	$$('div.moduleContainer').each(function(element) {
+		var layer = new Element('layer');
+		layer.addClass('moduleWrapper');
+		$(layer).inject(element, 'top');
+	});
+	
 	$$('div.regionLabel').each(function(element) {
 		if (element.getStyle('display') != 'none') {
-			var span  = new Element('span')
-			span.addClass('addableRegionLabel');
+			element.setStyle('display', 'none');
+
 			var parent = element.getParent();
 			parent.addClass('addableRegion');
+
+			var span  = new Element('span');
+			span.addClass('addableRegionLabel');
 			$(span).appendText(element.getProperty('instanceid')).inject(parent, 'top');
-			element.setStyle('display', 'none');
 		}
 	});
 	
