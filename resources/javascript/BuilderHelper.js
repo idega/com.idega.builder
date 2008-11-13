@@ -640,7 +640,7 @@ function addSelectedModuleCallback(component, id) {
 	}
 	
 	try {
-		initializeJavaScriptActionsForEditingAndCreatingArticles();
+		ArticleEditorHelper.initializeJavaScriptActionsForEditingAndCreatingArticles();
 	} catch(e) {}
 }
 
