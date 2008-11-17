@@ -120,13 +120,19 @@ public class EditModuleBlock extends Block {
 		ComponentProperty property = null;
 		List<ComponentProperty> simpleProperties = new ArrayList<ComponentProperty>();
 		List<ComponentProperty> advancedProperties = new ArrayList<ComponentProperty>();
+		List<String> addedPropertiesNames = new ArrayList<String>();
 		for (int i = 0; i < properties.size(); i++) {
 			property = properties.get(i);
-			if (property.isSimpleProperty()) {
-				simpleProperties.add(property);
-			}
-			else {
-				advancedProperties.add(property);
+			
+			if (!addedPropertiesNames.contains(property.getName())) {
+				addedPropertiesNames.add(property.getName());
+				
+				if (property.isSimpleProperty()) {
+					simpleProperties.add(property);
+				}
+				else {
+					advancedProperties.add(property);
+				}
 			}
 		}
 	
