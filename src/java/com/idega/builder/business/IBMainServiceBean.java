@@ -28,6 +28,7 @@ import com.idega.core.builder.data.ICDomain;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.core.component.bean.RenderedComponent;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -541,4 +542,13 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		}
 		return null;
 	}
+	
+	public RenderedComponent getRenderedComponent(String uuid, String uri) {
+		return getBuilderLogic().getRenderedComponent(uuid, uri);
+	}
+	
+	public RenderedComponent getRenderedComponentByClassName(String className, List<AdvancedProperty> properties) {
+		return getBuilderLogic().getRenderedComponentByClassName(className, properties);
+	}
+	
 }

@@ -23,6 +23,7 @@ create_simple_template.Reset=Reset
 create_simple_template.Save=Save
 create_simple_template.Type=Type
 deleting_not_allowed=This page (template) is either used by other pages (templates) or is the start page (template) of the domain so you can't delete it.
+error_rendering_component=Ooops... Some error occurred rendering component...
 frontPageName=frontPageName
 group_permissions=Group permissions
 ib_page_export_Close=Close

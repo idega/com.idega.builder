@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.352 2008/11/17 08:42:42 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.353 2008/11/17 18:03:09 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -73,6 +73,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.core.component.bean.RenderedComponent;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
@@ -146,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/17 08:42:42 $ by $Author: laddi $
+ * Last modified: $Date: 2008/11/17 18:03:09 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4171,5 +4172,100 @@ public class BuilderLogic implements Singleton {
 		} catch (Exception e) {
 			throw new RuntimeException("Exception while resolving icpages by subType: "+pageSubType, e);
 		}
+	}
+	
+	private RenderedComponent getRenderedInstanciatedComponent(IWContext iwc, UIComponent component) {
+		RenderedComponent rendered = new RenderedComponent();
+		rendered.setErrorMessage("Ooops... Some error occurred rendering component...");
+		
+		if (iwc == null || component == null) {
+			return rendered;
+		}
+		
+		String html = getRenderedComponent(component, iwc, true, true, true);
+		if (StringUtil.isEmpty(html)) {
+			rendered.setErrorMessage(iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc)
+					.getLocalizedString("error_rendering_component", rendered.getErrorMessage()));
+			return rendered;
+		}
+		
+		rendered.setErrorMessage(null);
+		rendered.setHtml(html);
+		
+		List<String> resources = new ArrayList<String>();
+		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.SPRING_BEAN_IDENTIFIER);
+		resources.add(web2.getBundleUriToHumanizedMessagesStyleSheet());
+		resources.add(web2.getBundleURIToJQueryLib());
+		resources.add(web2.getBundleUriToHumanizedMessagesScript());
+		rendered.setResources(resources);
+		
+		return rendered;
+	}
+	
+	public RenderedComponent getRenderedComponent(String uuid, String uri) {
+		if (StringUtil.isEmpty(uuid)) {
+			logger.log(Level.WARNING, "Unknown UUID!");
+			return getRenderedInstanciatedComponent(null, null);
+		}
+		
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			logger.log(Level.WARNING, "IWContext is unavailable");
+			return getRenderedInstanciatedComponent(null, null);
+		}
+		
+		String pageKey = null;
+		try {
+			pageKey = getPageKeyByURI(uri, iwc.getDomain());
+		} catch(Exception e) {
+			logger.log(Level.WARNING, "Error getting page key by uri: " + uri);
+		}
+		if (StringUtil.isEmpty(pageKey)) {
+			try {
+				pageKey = getPageKeyByURI(iwc.getRequestURI(), iwc.getDomain());
+			} catch(Exception e) {
+				logger.log(Level.WARNING, "Error getting page key by uri: " + iwc.getRequestURI());
+			}
+		}
+		if (StringUtil.isEmpty(pageKey)) {
+			pageKey = String.valueOf(iwc.getCurrentIBPageID());
+		}
+		if (StringUtil.isEmpty(pageKey)) {
+			logger.log(Level.WARNING, "Unable to get page key!");
+			return getRenderedInstanciatedComponent(null, null);
+		}
+		
+		UIComponent component = findComponentInPage(iwc, pageKey, uuid);
+		if (component == null) {
+			logger.log(Level.SEVERE, "Didn't find component by uuid ('" + uuid + "') in page: " + pageKey);
+		}
+
+		return getRenderedInstanciatedComponent(iwc, component);
+	}
+	
+	public RenderedComponent getRenderedComponentByClassName(String className, List<AdvancedProperty> properties) {
+		UIComponent component = null;
+		if (StringUtil.isEmpty(className)) {
+			return getRenderedInstanciatedComponent(null, null);
+		}
+		
+		Object o = null;
+		try {
+			o = Class.forName(className).newInstance();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error creating instance of: " + className, e);
+		}
+		if (o instanceof UIComponent) {
+			component = (UIComponent) o;
+		}
+		else {
+			return getRenderedInstanciatedComponent(null, null);
+		}
+		
+		if (!ListUtil.isEmpty(properties)) {
+			//	TODO: set properties
+		}
+		
+		return getRenderedInstanciatedComponent(CoreUtil.getIWContext(), component);
 	}
 }
