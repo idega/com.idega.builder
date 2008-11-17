@@ -14,12 +14,14 @@ import com.idega.builder.business.ComponentPropertyHandler;
 import com.idega.builder.business.IBMainServiceBean;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.PageUrl;
+import com.idega.builder.business.UserLoggedInListener;
 import com.idega.builder.dynamicpagetrigger.data.DynamicPageTrigger;
 import com.idega.builder.presentation.InvisibleInBuilder;
 import com.idega.builder.view.BuilderApplicationViewNode;
 import com.idega.builder.view.BuilderRootViewNode;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.accesscontrol.business.AuthenticationBusiness;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderPageWriterService;
 import com.idega.core.builder.business.BuilderService;
@@ -87,6 +89,17 @@ public class IWBundleStarter implements IWBundleStartable {
 			BuilderRootViewNode pagesViewNode = new BuilderRootViewNode(BUILDER_ROOT_VIEW_NODE_NAME,viewManager.getApplicationRoot());
 			pagesViewNode.setKeyboardShortcut(new KeyboardShortcut("p"));
 		}*/
+		
+		try {
+			AuthenticationBusiness authentication = (AuthenticationBusiness) IBOLookup.getServiceInstance(starterBundle.getApplication().getIWApplicationContext(), AuthenticationBusiness.class);
+			authentication.addAuthenticationListener(new UserLoggedInListener());
+		}
+		catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
 		
 		addViewNodes(starterBundle);
 		

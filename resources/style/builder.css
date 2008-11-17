@@ -1,21 +1,36 @@
 /* The edit view*/
-.moduleContainer {	
-	cursor: default;	
-	border: 1px transparent solid;
+.isEditAdmin .moduleContainer {	
+	cursor: default;
 	margin: 0px;
 	position: relative;
-	min-height: 34px;
-	min-width: 150px;
+	min-height: 37px;
+	min-width: 160px;
+	border: 1px transparent dotted;
 }
 
-.edit .moduleContainer:hover {	
+.isContentAdmin .applicationPropertyStyleClass {
+	border: 1px #ccc dotted;
+	position: relative;
+	padding-right: 16px;
+}
+
+.isContentAdmin .applicationPropertyStyleClass .icon {
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	width: 10px;
+	height: 10px;
+	background: url(images/text-edit.png) top left no-repeat;
+}
+
+.isEditAdmin .moduleContainer:hover {	
 	/*cursor: default;*/	
 	border: 1px #000000 dotted;
 	/*margin: 1px;*/
 	background-color: #eee;
 }
 
-.edit .moduleContainer:hover .regionInfoImageContainer {
+.isEditAdmin .moduleContainer:hover .regionInfoImageContainer {
 	display: block;
 	opacity: 1;
 }
@@ -32,7 +47,7 @@
 	opacity: .5;
 }
 
-.edit .moduleContainer:hover .moduleWrapper {
+.isEditAdmin .moduleContainer:hover .moduleWrapper {
 	display: block;
 }
 
@@ -79,7 +94,7 @@ border: 1px #fff solid;
 	-webkit-border-radius: 3px;
 }
 
-.edit .moduleName {
+.isEditAdmin .moduleName {
 	display: block;
 }
 
@@ -97,12 +112,12 @@ border: 1px #fff solid;
 	color: #fff;
 }
 
-.edit .moduleContainer:hover .moduleName {
+.isEditAdmin .moduleContainer:hover .moduleName {
 	background: #333;
 	opacity: 1;
 }
 
-.edit .moduleContainer:hover .moduleName span {
+.isEditAdmin .moduleContainer:hover .moduleName span {
 	color: #fff;
 }
 
@@ -424,18 +439,48 @@ html>body .sourceviewButtonsLeft {
 	font-weight: bold;
 }
 
-.modulesListStyle {
+.addModuleContainer .mootabs_panel ul {
 	list-style: none;
+	text-align: center;
+	margin: 10px;
+	padding: 0;
+	overflow: hidden;
 }
 
 .modulesListItemStyle {
 	cursor: pointer;
 	font-weight: normal;
+	border: 1px #999 solid;
+	float: left;
+	width: 180px;
+	height: 150px;
+	margin: 10px;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+}
+
+.modulesListItemStyle span {
+	display: block;
+}
+
+.modulesListItemStyle img {
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.modulesListItemStyle span.objectName {
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 4px;
+}
+
+.modulesListItemStyle span.objectDescription {
+	font-size: 10px;
+	color: #666;
 }
 
 .modulesListItemStyle:hover {
-	cursor: pointer;
-	font-weight: bold;
+	border-color: #333;
+background-color: #efefef;
 }
 
 .regionContainer {	
@@ -552,7 +597,7 @@ div#simple_properties_box {
 	float: right;
 }
 
-.moduleProperty, .modulePropertyIsSet, .modulesListItemStyle {
+.moduleProperty, .modulePropertyIsSet {
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	margin-bottom: 6px;
 	font-size: 14px !important;
@@ -657,7 +702,7 @@ div#simple_properties_box {
 }
 
 /* Button layer */
-.edit .addableRegion {
+.isEditAdmin .addableRegion {
 	position: relative;
 	min-height: 20px;
 	border: 1px #ccc dotted;
@@ -671,7 +716,7 @@ div#simple_properties_box {
 display: none;
 }
 
-.edit .addableRegion .addableRegionLabel {
+.isEditAdmin .addableRegion .addableRegionLabel {
 display: block;
 	border: 1px #ccc dotted;
 	border-right: 0;
@@ -681,7 +726,7 @@ display: block;
 	right: 0;
 	line-height: 8px;
 	padding: 3px 4px;
-	font-size: 7px;
+	font-size: 9px;
 	z-index: 0;
 	background-color: #efefef;
 	color: #000 !important;
@@ -702,7 +747,7 @@ display: block;
 	left: -1px;
 }
 
-.edit .addableRegion:hover > .regionLabel {
+.isEditAdmin .addableRegion:hover > .regionLabel {
 	display: block !important;
 }
 

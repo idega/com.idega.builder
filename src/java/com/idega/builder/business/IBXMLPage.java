@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.70 2008/03/21 15:16:46 valdas Exp $
+ * $Id: IBXMLPage.java,v 1.71 2008/11/17 08:42:42 laddi Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -45,10 +45,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2008/03/21 15:16:46 $ by $Author: valdas $
+ *  Last modified: $Date: 2008/11/17 08:42:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -87,6 +87,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * Sets the key for the page for this instance to represent.
 	 * This is typically an id to a ICPage or ib_page.
 	 */
+	@Override
 	public void setPageKey(String key){
 		super.setPageKey(key);
 /*		ICPage ibpage = null;
@@ -184,11 +185,13 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @return
 	 * @throws PageDoesNotExist
 	 */
+	@Override
 	protected void readPageStream(InputStream stream) throws PageDoesNotExist{
 		readIBXMLDocument(stream);
 	}
 	
 
+	@Override
 	public synchronized boolean store() {
 		/*try {
 			ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(new Integer(getPageKey()));
@@ -218,6 +221,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * Called from the update method
 	 * @param stream
 	 */
+	@Override
 	protected synchronized void storeStream(OutputStream stream) {
 		XMLDocument doc = getXMLDocument();
 		if (doc == null) {
@@ -351,6 +355,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		}
 	}
 
+	@Override
 	public void setPageAsEmptyPage(String type, String template) {
 		XMLElement _rootElement = new XMLElement(IBXMLConstants.ROOT_STRING);
 		setRootElement(_rootElement);
@@ -439,6 +444,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		return li;
 	}
 
+	@Override
 	public void setType(String type) {
 		if ((type.equals(TYPE_PAGE)) || (type.equals(TYPE_TEMPLATE)) || (type.equals(TYPE_DRAFT)) || (type.equals(TYPE_DPT_TEMPLATE)) || (type.equals(TYPE_DPT_PAGE))) {
 			super.setType(type);
@@ -448,6 +454,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		}
 	}
 	
+	@Override
 	public void setSourceFromString(String xmlRepresentation) throws Exception {
 		super.setSourceFromString(xmlRepresentation);
 		try{
@@ -462,6 +469,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		//update();
 	}
 
+	@Override
 	public String toString() {
 		if(getSourceAsString()!=null){
 			return getSourceAsString();
@@ -517,14 +525,12 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 */
 	public Page getPage(IWContext iwc) {
 	    boolean builderView = false;
-	    if (iwc.isParameterSet("view")) {
-	      if(getBuilderLogic().isBuilderApplicationRunning(iwc)){
-	        String view = iwc.getParameter("view");
-	        if(view.equals("builder")) {
-						builderView=true;
-					}
-	      }
+      if (iwc.getApplicationSettings().getBoolean(CoreConstants.PROP_SHOW_ADMIN_TOOLBAR) && getBuilderLogic().isBuilderApplicationRunning(iwc)) {
+				builderView = true;
 	    }
+      else if (iwc.isParameterSet("view") && iwc.getParameter("view").equals("builder") && getBuilderLogic().isBuilderApplicationRunning(iwc)) {
+      	builderView = true;
+      }
 	    return getPage(builderView,iwc);
 	}
 	
@@ -598,6 +604,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	}
 	
 	
+	@Override
 	public UIComponent createComponent(FacesContext context){
 		IWContext iwc = IWContext.getIWContext(context);
 		return getPage(iwc);

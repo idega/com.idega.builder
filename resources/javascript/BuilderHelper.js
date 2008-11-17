@@ -1379,7 +1379,7 @@ function createTabsWithMootabs(id) {
 	var widthForTabs = Math.round(window.getWidth() * 0.8);
 	var heightForTabs = Math.round(window.getHeight() * 0.8);
 	//	http://www.silverscripting.com/mootabs
-	var tabs = new mootabs(id, {width: widthForTabs + 'px', height: (heightForTabs - 60) + 'px', changeTransition: 'none'});
+	var tabs = new mootabs(id, {width: widthForTabs + 'px', height: heightForTabs + 'px', changeTransition: 'none'});
 }
 
 function openSelectAndAddModuleWindow(id, uri) {

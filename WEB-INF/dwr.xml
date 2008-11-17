@@ -10,5 +10,12 @@
 		<create creator="ibo" javascript="BuilderEngine" scope="session">
 			<param name="class" value="com.idega.builder.bean.BuilderEngine"/>
 		</create>
+
+        <create creator="jsf" javascript="AdminToolbarSession">
+            <param name="managedBeanName" value="adminToolbarSession" />
+            <param name="class" value="com.idega.builder.bean.AdminToolbarSessionBean" />
+            <include method="getMode"/>
+            <include method="setMode"/>
+        </create>
 	</allow>
 </dwr>

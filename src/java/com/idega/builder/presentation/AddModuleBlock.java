@@ -22,12 +22,13 @@ import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
-import com.idega.presentation.text.Heading1;
+import com.idega.presentation.Span;
 import com.idega.presentation.text.Heading3;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
-import com.idega.util.CoreConstants;
+import com.idega.presentation.text.Text;
 
 public class AddModuleBlock extends Block {
 	
@@ -61,10 +62,11 @@ public class AddModuleBlock extends Block {
 		Collection<ICObject> allComoponents = getAllComponents();
 		
 		Layer container = new Layer();
+		container.setStyleClass("addModuleContainer");
 		add(container);
 		
 		// Header
-		Layer header = new Layer();
+		/*Layer header = new Layer();
 		String regionName = iwc.getParameter(BuilderConstants.REGION_NAME);
 		StringBuffer label = new StringBuffer(iwrb.getLocalizedString(BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_KEY,
 				BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_VALUE));
@@ -74,7 +76,7 @@ public class AddModuleBlock extends Block {
 		}
 		header.add(new Heading1(label.toString()));
 		header.setStyleClass("addModuleToBuilderPage");
-		container.add(header);
+		container.add(header);*/
 		
 		Lists titles = new Lists();
 		titles.setStyleClass("mootabs_title");
@@ -110,7 +112,7 @@ public class AddModuleBlock extends Block {
 			Layer componentsListContainer = new Layer();
 			componentsListContainer.setStyleClass("mootabs_panel");
 			componentsListContainer.setId(key);
-			addListToWindow(addedTabs.get(key), componentsListContainer);
+			addListToWindow(iwc, addedTabs.get(key), componentsListContainer);
 			container.add(componentsListContainer);
 		}
 		
@@ -128,11 +130,9 @@ public class AddModuleBlock extends Block {
 		addedTabs.put(tabText, components);
 	}
 	
-	private void addListToWindow(List<ICObject> objects, Layer container) {
-		Layer content = new Layer();
-		container.add(content);
+	private void addListToWindow(IWContext iwc, List<ICObject> objects, Layer container) {
 		if (objects == null || objects.size() == 0) {
-			content.add(localizedText);
+			container.add(localizedText);
 			return;
 		}
 		
@@ -143,13 +143,34 @@ public class AddModuleBlock extends Block {
 		ICObject object = null;
 		for (int i = 0; i < objects.size(); i++) {
 			object = objects.get(i);
+			String iconURI = object.getIconURI();
+			//IWBundle iwb = object.getBundle(iwc.getIWMainApplication());
+			//IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+
 			item = new ListItem();
-			item.addText(object.getName());
 			item.setStyleClass(itemStyleClass);
 			item.attributes.put(actionDefinition, new StringBuffer("addSelectedModule(").append(object.getID()).append(", '").append(object.getClassName()).append("');").toString());
 			items.add(item);
+
+			if (iconURI != null) {
+				Image image = new Image(iconURI);
+				image.setAlt(object.getName());
+				item.add(image);
+			}
+			
+			Span span = new Span();
+			span.setStyleClass("objectName");
+			//span.add(new Text(iwrb.getLocalizedString("iw.component." + object.getClassName(), object.getName())));
+			span.add(new Text(object.getName()));
+			item.add(span);
+			
+			span = new Span();
+			span.setStyleClass("objectDescription");
+			//span.add(new Text(iwrb.getLocalizedString("iw.component.description." + object.getName(), "Descripition for item " + object.getName())));
+			span.add(new Text("Descripition for item " + object.getName()));
+			item.add(span);
 		}
-		content.add(items);
+		container.add(items);
 	}
 	
 	private List<ICObject> getConcreteComponents(IWContext iwc, Collection<ICObject> allComponents, boolean findWidgets, boolean findBlocks, boolean findBuilder) {

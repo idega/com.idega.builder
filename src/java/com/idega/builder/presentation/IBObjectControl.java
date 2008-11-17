@@ -269,8 +269,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 	
 	@Override
 	public void add(PresentationObject obj) {
-		
-		String objWidth = obj.getWidth();
+		/*String objWidth = obj.getWidth();
 		String objHeight = obj.getHeight();
 		
 		if (objWidth!=null) {
@@ -299,8 +298,9 @@ public class IBObjectControl extends PresentationObjectContainer {
 			obj.removeMarkupAttribute(Layer.TOP);
 			obj.removeMarkupAttribute(Layer.POSITION);
 			obj.removeMarkupAttribute(Layer.ZINDEX);
-		}
+		}*/
 		
+		obj.setStyleClass("addedBuilderModule");
 		this.contentLayer.add(obj);
 		obj.setParentObject(this.parent);
 		obj.setLocation(this.parent.getLocation());

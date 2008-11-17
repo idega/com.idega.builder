@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.351 2008/11/12 15:04:02 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.352 2008/11/17 08:42:42 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -40,9 +40,12 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
 import com.idega.block.web2.business.Web2Business;
+import com.idega.builder.bean.AdminToolbarSession;
 import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.presentation.AddModuleBlock;
+import com.idega.builder.presentation.AdminToolbar;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
 import com.idega.builder.presentation.IBCutModuleWindow;
@@ -60,6 +63,7 @@ import com.idega.cal.bean.CalendarPropertiesBean;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
+import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.data.CachedDomain;
@@ -142,7 +146,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/12 15:04:02 $ by $Author: civilis $
+ * Last modified: $Date: 2008/11/17 08:42:42 $ by $Author: laddi $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -281,16 +285,17 @@ public class BuilderLogic implements Singleton {
 		IWBundle iwb = getBuilderBundle();
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		
-		CoreUtil.addJavaScriptForChooser(iwc);
+		//CoreUtil.addJavaScriptForChooser(iwc);
 		
 		AddResource adder = AddResourceFactory.getInstance(iwc);
 		
 		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
 		
 		//	JavaScript
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_ENGINE_SCRIPT);
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_UTIL_SCRIPT);
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
+		//adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
 		try {
@@ -337,6 +342,20 @@ public class BuilderLogic implements Singleton {
 				UIComponent item = (UIComponent) iter.next();
 				getTransformedObject(page,pageKey, item, index, parent, "-1", iwc);
 			}
+		}
+		
+		if (iwc.getApplicationSettings().getBoolean(CoreConstants.PROP_SHOW_ADMIN_TOOLBAR, false) && iwc.getRequestURI().indexOf("/workspace/") == -1 && iwc.getRequestURI().indexOf("/pages") != -1 && (iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR))) {
+			page.add(new AdminToolbar());
+			page.setStyleClass("isAdmin");
+			
+			AdminToolbarSession session = ELUtil.getInstance().getBean(AdminToolbarSession.class);
+			if (session.getMode() != null) {
+				page.setStyleClass(session.getMode());
+			}
+		}
+		else if (iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR)) {
+			page.setStyleClass("isContentAdmin");
+			page.setStyleClass("isEditAdmin");
 		}
 		
 		String addModuleUri = null;

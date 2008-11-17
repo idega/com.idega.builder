@@ -1,0 +1,104 @@
+body.isAdmin {
+	padding-top: 51px;
+}
+
+div#adminTopLayer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 50px;
+	border-bottom: 1px #999 solid;
+	z-index: 99999;
+	background: url(images/admin-tiler.png);
+}
+
+div#adminTopLayer .login {
+	max-width: none;
+	position: absolute;
+	top: 10px;
+	left: 15px;
+}
+
+div#adminTopLayer div.login p {
+	float: left;
+	padding: 0;
+	line-height: 30px;
+	color: #fff;
+	margin-right: 15px;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+}
+
+div#adminTopLayer div.login div.submit {
+	float: left;
+	margin-top: 4px;
+}
+
+div#adminTopLayer div.login div.submit input {
+	border: 2px #333 solid;
+	background-color: #efefef;
+	font-size: 12px;
+	padding: 2px 4px;
+	margin: 0;
+	float: left;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	color: #333;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+}
+
+div#adminTopLayer div.login div.submit input:hover {
+	border-color: #666;
+	cursor: pointer;
+	color: #666;
+}
+
+div#adminTopLayer ul {
+	position: absolute;
+	top: 0;
+	right: 0;
+	color: #fff;
+	line-height: 1em;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 10px;
+}
+
+div#adminTopLayer ul li {
+	margin: 0;
+	float: left;
+	width: 58px;
+	padding-top: 37px;
+	text-align: center;
+	height: 13px;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	border-left: 1px transparent solid;
+	border-right: 1px transparent solid;
+}
+
+div#adminTopLayer ul li:hover {
+	cursor: pointer;
+}
+
+div#adminTopLayer ul li.adminEditMode {
+	background: url(images/apps_32.png) center 2px no-repeat;
+}
+
+div#adminTopLayer ul li.adminContentMode {
+	background: url(images/edit_32.png) center 2px no-repeat;
+}
+
+div#adminTopLayer ul li.adminPreviewMode {
+	background: url(images/lgicn_32.png) center 2px no-repeat;
+	border-right: 0;
+}
+
+div#adminTopLayer ul li.selected {
+	background-color: #ccc;
+	color: #333;
+	border-color: #999;
+}
