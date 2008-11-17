@@ -78,10 +78,15 @@ div#adminTopLayer ul li {
 	color: #fff !important;
 	border-left: 1px transparent solid;
 	border-right: 1px transparent solid;
+	position: relative;
 }
 
 div#adminTopLayer ul li:hover {
 	cursor: pointer;
+}
+
+div#adminTopLayer ul li.adminThemesMode {
+	background: url(images/lgicn_32.png) center 2px no-repeat;
 }
 
 div#adminTopLayer ul li.adminEditMode {
@@ -93,12 +98,69 @@ div#adminTopLayer ul li.adminContentMode {
 }
 
 div#adminTopLayer ul li.adminPreviewMode {
-	background: url(images/lgicn_32.png) center 2px no-repeat;
+	background: url(images/srch_32.png) center 2px no-repeat;
 	border-right: 0;
 }
 
 div#adminTopLayer ul li.selected {
 	background-color: #ccc;
-	color: #333;
+	color: #333 !important;
 	border-color: #999;
+}
+
+div#adminTopLayer ul li .modeHelper {
+	display: none;
+	position: absolute;
+	border: 2px #fff solid;
+	background: #000;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	opacity: .8;
+	-moz-opacity: .8;
+	right: 1px;
+	top: 53px;
+	padding: 10px;
+	width: 180px;
+	text-align: left;
+	box-shadow: 2px 2px 5px #000;
+	-webkit-box-shadow: 2px 2px 5px #000;
+}
+
+div#adminTopLayer ul li.adminContentMode .modeHelper {
+	right: -59px;
+}
+
+div#adminTopLayer ul li.adminEditMode .modeHelper {
+	right: -70px;
+}
+
+div#adminTopLayer ul li.adminThemesMode .modeHelper {
+	right: -70px;
+}
+
+div#adminTopLayer ul li .modeHelper h1 {
+	padding: 0;
+	margin-bottom: 6px;
+	font-size: 11px;
+	color: #fff;
+	font-weight: bold;
+}
+
+div#adminTopLayer ul li .modeHelper p {
+	margin: 0;
+	color: #ccc;
+	line-height: 1.2em;
+}
+
+div#themeSlider {
+	background: #000;
+	opacity: .6;
+	position: fixed;
+	-moz-border-radius: 16px;
+	left: 20px;
+	right: 20px;
+	bottom: 20px;
+	height: 150px;
+	z-index: 9999;
 }

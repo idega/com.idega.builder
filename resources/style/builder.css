@@ -3,8 +3,8 @@
 	cursor: default;
 	margin: 0px;
 	position: relative;
-	min-height: 37px;
-	min-width: 160px;
+	min-height: 50px;
+	min-width: 170px;
 	border: 1px transparent dotted;
 }
 
@@ -25,7 +25,7 @@
 
 .isEditAdmin .moduleContainer:hover {	
 	/*cursor: default;*/	
-	border: 1px #000000 dotted;
+	border: 1px #000 dotted;
 	/*margin: 1px;*/
 	background-color: #eee;
 }
@@ -49,6 +49,7 @@
 
 .isEditAdmin .moduleContainer:hover .moduleWrapper {
 	display: block;
+	cursor: move !important;
 }
 
 .moduleHandle {
@@ -80,15 +81,13 @@
 }
 
 .moduleName {
-border: 1px #fff solid;
+	border: 1px #f2d900 solid;
 	display: none;
 	position: absolute;
 	top: 1px;
 	left: 1px;
 	z-index: 2000;
-	background: #000;
-	opacity: 0.6;
-	-moz-opacity: 0.6;
+	background: url(images/module-name-tiler.gif) top left repeat-x #eecf00;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -103,38 +102,27 @@ border: 1px #fff solid;
 }
 
 .moduleName span {
-	font-size: 9px !important;
+	font-size: 10px !important;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
-	cursor: move;
+	cursor: move !important;
 	display: block;
-	line-height: 11px;
-	padding: 2px 4px;
-	color: #fff;
-}
-
-.isEditAdmin .moduleContainer:hover .moduleName {
-	background: #333;
-	opacity: 1;
-}
-
-.isEditAdmin .moduleContainer:hover .moduleName span {
-	color: #fff;
+	line-height: 15px !important;
+	padding: 0px 4px !important;
+	color: #101010;
 }
 
 .regionInfoImageContainer {
-	border: 1px #fff solid;
+	border: 1px #555 solid;
 	display: none;
 	position: absolute;
-	right: 1px;
-	bottom: 1px;
+	right: 5px;
+	bottom: 5px;
 	margin: 0 !important;
 	overflow: hidden;
-	z-index: 1000;
-	font-size: 9px;
+	z-index: 10000;
+	font-size: 10px;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
-	background: #333;
-	opacity: 0.6;
-	-moz-opacity: 0.6;
+	background: url(images/properties-tiler.gif) top left repeat-x #666;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -149,23 +137,23 @@ border: 1px #fff solid;
 .regionInfoImageContainer ol li {
 	display: block;
 	float: left;
-	line-height: 1em !important;
 	background: none !important;
 	height: auto !important;
 	margin: 0 !important;
 	text-transform: lowercase;
-border-right: 1px #fff solid;
+	border-right: 1px #555 solid;
 }
 
 .regionInfoImageContainer ol li.propertiesModule {
-border-right: 0;
+	border-right: 0;
 }
 
 .regionInfoImageContainer ol li span {
 	display: block;
 	float: left;
 	color: #fff;
-padding: 3px 5px;
+	line-height: 16px !important;
+	padding: 0 6px !important;
 }
 
 .regionInfoImageContainer ol li a {
@@ -705,36 +693,42 @@ div#simple_properties_box {
 .isEditAdmin .addableRegion {
 	position: relative;
 	min-height: 20px;
-	border: 1px #ccc dotted;
+	border: 1px #aaa dotted;
 }
 
 .addableRegion:hover {
 	border-color: #666;
 }
 
+.isEditAdmin .addableRegion .addableRegion {
+	margin-bottom: 20px;
+}
+
 .addableRegion .addableRegionLabel {
-display: none;
+	display: none;
 }
 
 .isEditAdmin .addableRegion .addableRegionLabel {
-display: block;
-	border: 1px #ccc dotted;
-	border-right: 0;
-	border-top: 0;
+	display: block;
+	border: 1px #aaa solid;
 	position: absolute;
-	top: 0;
-	right: 0;
-	line-height: 8px;
-	padding: 3px 4px;
-	font-size: 9px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	top: -10px;
+	right: 3px;
+	line-height: 18px !important;
+	padding: 0 6px !important;
+	font-size: 10px;
 	z-index: 0;
-	background-color: #efefef;
+	background: url(images/region-label-tiler.gif) top left repeat-x #c9c9c9;
 	color: #000 !important;
+	z-index: 999;
 }
 
 .addableRegion:hover > .addableRegionLabel {
 	border-color: #666;
-	background-color: #999;
+	background: url(images/region-label-tiler-hover.gif) top left repeat-x #838383;
 	color: #fff !important;
 }
 
@@ -743,7 +737,7 @@ display: block;
 	z-index: 100;
 	margin-bottom: 3px;
 	overflow: hidden;
-	bottom: -18px;
+	bottom: -21px;
 	left: -1px;
 }
 
@@ -753,8 +747,7 @@ display: block;
 
 .regionLabel .builderButtons {
 	border: 1px #666 dotted;
-	border-top: 0;
-	background-color: #ff0;
+	background-color: #ccc;
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;
 	-moz-border-radius-bottomleft: 3px;
@@ -768,11 +761,11 @@ display: block;
 
 div.builderButtons div.builderButton {
 	float: left;
-	font-size: 9px !important;
+	font-size: 10px !important;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	color: #000 !important;
-	line-height: 1em;
-	padding: 3px 4px;
+	line-height: 16px;
+	padding: 0 4px !important;
 }
 
 div.builderButtons div.sliderWrapper {
@@ -781,9 +774,20 @@ div.builderButtons div.sliderWrapper {
 }
 
 div.builderButtons div.builderButton a {
-	border: 0;
+	border: 0 !important;
 	color: #000 !important;
-	text-decoration: none;
+	text-decoration: none !important;
+padding-left: 12px !important;
+display: block;
+}
+
+div.builderButtons div.builderButton a.addModuleLinkStyleClass {
+background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/add.png) left no-repeat !important;
+}
+
+div.builderButtons div.builderButton span.add_article_module_to_region_image {
+background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/text.png) left no-repeat !important;
+padding-left: 12px;
 }
 
 div.builderButtons div.builderButton img {

@@ -139,7 +139,7 @@ function registerBuilderActions() {
 	addEventsToBuilderElements();
 	
 	$$('div.moduleContainer').each(function(element) {
-		var layer = new Element('layer');
+		var layer = new Element('div');
 		layer.addClass('moduleWrapper');
 		$(layer).inject(element, 'top');
 	});

@@ -3,7 +3,7 @@ var PARENT_CONTAINER_ID = null;
 var CLONE = null;
 
 function registerBuilderDragDropActions() {
-	$$('div.moduleName').each(
+	$$('div.moduleName, div.moduleWrapper').each(
 		function(element) {
 			registerDragAndDropActionsForModuleNameElement(element);
 		}
@@ -15,11 +15,11 @@ function registerBuilderDragDropActions() {
 		}
 	);
 	
-	$$('span.moduleNameTooltip').each(
+	/*$$('span.moduleNameTooltip').each(
 		function(element) {
 			initToolTipForElement(element);
 		}
-	);
+	);*/
 }
 
 function registerDragAndDropActionsForModuleNameElement(element) {
