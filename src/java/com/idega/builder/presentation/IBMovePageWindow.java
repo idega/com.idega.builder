@@ -22,11 +22,13 @@ import com.idega.builder.business.IBPageHelper;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.CoreUtil;
+import com.idega.util.PresentationUtil;
 /**
 
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -44,10 +46,9 @@ public class IBMovePageWindow extends IBPageWindow {
 		setScrollbar(false);
 	}
 	
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		BuilderLogic instance = BuilderLogic.getInstance();
-		
-		CoreUtil.addJavaScriptForChooser(iwc);
 		
 		boolean okToMove = false;
 		boolean submit = false;
@@ -57,6 +58,11 @@ public class IBMovePageWindow extends IBPageWindow {
 		setTitle(iwrb.getLocalizedString("move_page", "Move page"));
 		addTitle(iwrb.getLocalizedString("move_page", "Move page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		add(form);
+		
+		Layer container = new Layer();
+		container.add(PresentationUtil.getJavaScriptAction(PresentationUtil.getJavaScriptLinesLoadedLazily(CoreUtil.getResourcesForChooser(iwc), null)));
+		form.add(container);
+		
 		String sPageId = instance.getCurrentIBPage(iwc);
 		int iPageId = Integer.parseInt(sPageId);
 		String sNewParentPageId = iwc.getParameter(PARAM_NEW_PARENT_PAGE_ID);

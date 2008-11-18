@@ -13,6 +13,7 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -21,6 +22,7 @@ import com.idega.presentation.ui.FileInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.CoreUtil;
+import com.idega.util.PresentationUtil;
 import com.idega.util.datastructures.MessageContainer;
 
 /**
@@ -57,6 +59,7 @@ public class IBPageImporterWindow extends IBPageWindow {
 	
 	private IBPageImportBusiness pageImportBusiness = null;
 	
+	@Override
 	public String getBundleIdentifier() {
     return IW_BUNDLE_IDENTIFIER;
   }
@@ -68,9 +71,8 @@ public class IBPageImporterWindow extends IBPageWindow {
     setResizable(true);
   }
 
-  public void main(IWContext iwc) throws Exception {
-	  CoreUtil.addJavaScriptForChooser(iwc);
-	  
+  @Override
+public void main(IWContext iwc) throws Exception {
   	setTitle("PageImporter");
   	String action = parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);
@@ -78,8 +80,14 @@ public class IBPageImporterWindow extends IBPageWindow {
 			getContent(resourceBundle, iwc);
 		}
 		else {
-			getErrorContent(resourceBundle);
+			getErrorContent(resourceBundle, iwc);
 		}
+  }
+  
+  private Layer getResourcesLoader(IWContext iwc) {
+	  Layer container = new Layer();
+	  container.add(PresentationUtil.getJavaScriptAction(PresentationUtil.getJavaScriptLinesLoadedLazily(CoreUtil.getResourcesForChooser(iwc), null)));
+	  return container;
   }
   
   private void getContent(IWResourceBundle resourceBundle, IWContext iwc)  {
@@ -112,9 +120,10 @@ public class IBPageImporterWindow extends IBPageWindow {
   	form.add(table);
   	form.add(getButtons(resourceBundle));
   	add(form);
+  	form.add(getResourcesLoader(iwc));
   }
   
-  private void getErrorContent(IWResourceBundle resourceBundle) {
+  private void getErrorContent(IWResourceBundle resourceBundle, IWContext iwc) {
   	List messages = this.messageContainer.getMessages();
   	int numberOfRows = 1 + ((messages == null) ? 0 : messages.size());
   	Table table = new Table(1, numberOfRows);
@@ -137,6 +146,7 @@ public class IBPageImporterWindow extends IBPageWindow {
   	form.add(table);
   	form.add(getCloseButton(resourceBundle));
   	add(form);
+  	form.add(getResourcesLoader(iwc));
   }
   	
   	

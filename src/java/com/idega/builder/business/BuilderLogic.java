@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.355 2008/11/18 11:09:08 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.356 2008/11/18 12:58:27 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -148,7 +148,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/18 11:09:08 $ by $Author: valdas $
+ * Last modified: $Date: 2008/11/18 12:58:27 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -287,8 +287,6 @@ public class BuilderLogic implements Singleton {
 		IWBundle iwb = getBuilderBundle();
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		
-		//CoreUtil.addJavaScriptForChooser(iwc);
-		
 		AddResource adder = AddResourceFactory.getInstance(iwc);
 		
 		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
@@ -297,7 +295,6 @@ public class BuilderLogic implements Singleton {
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_ENGINE_SCRIPT);
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_UTIL_SCRIPT);
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
-		//adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/builder_general.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
 		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
 		try {
