@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.353 2008/11/17 18:03:09 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.354 2008/11/18 09:09:32 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -147,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/17 18:03:09 $ by $Author: valdas $
+ * Last modified: $Date: 2008/11/18 09:09:32 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4178,26 +4178,35 @@ public class BuilderLogic implements Singleton {
 		RenderedComponent rendered = new RenderedComponent();
 		rendered.setErrorMessage("Ooops... Some error occurred rendering component...");
 		
-		if (iwc == null || component == null) {
-			return rendered;
+		Web2Business web2 = null;
+		try {
+			web2 = ELUtil.getInstance().getBean(Web2Business.SPRING_BEAN_IDENTIFIER);
+		} catch(Exception e) {
+			logger.log(Level.SEVERE, "Error getting bean: " + Web2Business.class.getName(), e);
+		}
+		if (web2 != null) {
+			List<String> resources = new ArrayList<String>();
+			resources.add(web2.getBundleUriToHumanizedMessagesStyleSheet());
+			resources.add(web2.getBundleURIToJQueryLib());
+			resources.add(web2.getBundleUriToHumanizedMessagesScript());
+			rendered.setResources(resources);
+		}
+		
+		if (iwc == null) {
+			iwc = CoreUtil.getIWContext();
 		}
 		
 		String html = getRenderedComponent(component, iwc, true, true, true);
 		if (StringUtil.isEmpty(html)) {
-			rendered.setErrorMessage(iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc)
-					.getLocalizedString("error_rendering_component", rendered.getErrorMessage()));
+			if (iwc != null) {
+				rendered.setErrorMessage(iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc)
+						.getLocalizedString("error_rendering_component", rendered.getErrorMessage()));
+			}
 			return rendered;
 		}
 		
 		rendered.setErrorMessage(null);
 		rendered.setHtml(html);
-		
-		List<String> resources = new ArrayList<String>();
-		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.SPRING_BEAN_IDENTIFIER);
-		resources.add(web2.getBundleUriToHumanizedMessagesStyleSheet());
-		resources.add(web2.getBundleURIToJQueryLib());
-		resources.add(web2.getBundleUriToHumanizedMessagesScript());
-		rendered.setResources(resources);
 		
 		return rendered;
 	}
@@ -4259,6 +4268,7 @@ public class BuilderLogic implements Singleton {
 			component = (UIComponent) o;
 		}
 		else {
+			logger.log(Level.WARNING, "Instance of '" + className + "' is not UIComponent!");
 			return getRenderedInstanciatedComponent(null, null);
 		}
 		
