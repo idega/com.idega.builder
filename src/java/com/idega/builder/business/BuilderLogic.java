@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.354 2008/11/18 09:09:32 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.355 2008/11/18 11:09:08 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -133,6 +133,7 @@ import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
+import com.idega.util.reflect.MethodInvoker;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.util.xml.XmlUtil;
 import com.idega.xml.XMLAttribute;
@@ -147,7 +148,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/18 09:09:32 $ by $Author: valdas $
+ * Last modified: $Date: 2008/11/18 11:09:08 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4211,7 +4212,7 @@ public class BuilderLogic implements Singleton {
 		return rendered;
 	}
 	
-	public RenderedComponent getRenderedComponent(String uuid, String uri) {
+	public RenderedComponent getRenderedComponentById(String uuid, String uri) {
 		if (StringUtil.isEmpty(uuid)) {
 			logger.log(Level.WARNING, "Unknown UUID!");
 			return getRenderedInstanciatedComponent(null, null);
@@ -4273,7 +4274,13 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		if (!ListUtil.isEmpty(properties)) {
-			//	TODO: set properties
+			for (AdvancedProperty property: properties) {
+				try {
+					MethodInvoker.getInstance().invokeMethodWithParameter(component, property.getId(), property.getValue());
+				} catch (Exception e) {
+					logger.log(Level.WARNING, "Error invoking method '" + property.getId() + "' with value: " + property.getValue(), e);
+				}
+			}
 		}
 		
 		return getRenderedInstanciatedComponent(CoreUtil.getIWContext(), component);

@@ -543,8 +543,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return null;
 	}
 	
-	public RenderedComponent getRenderedComponent(String uuid, String uri) {
-		return getBuilderLogic().getRenderedComponent(uuid, uri);
+	public RenderedComponent getRenderedComponentById(String uuid, String uri) {
+		return getBuilderLogic().getRenderedComponentById(uuid, uri);
 	}
 	
 	public RenderedComponent getRenderedComponentByClassName(String className, List<AdvancedProperty> properties) {
