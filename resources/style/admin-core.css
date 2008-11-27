@@ -157,7 +157,9 @@ div#themeSlider {
 	background: #000;
 	opacity: .6;
 	position: fixed;
+	border-radius: 16px;
 	-moz-border-radius: 16px;
+	-webkit-border-radius: 16px;
 	left: 20px;
 	right: 20px;
 	bottom: 20px;

@@ -8,7 +8,12 @@
 	border: 1px transparent dotted;
 }
 
+.applicationPropertyStyleClass {
+	display: none;	
+}
+
 .isContentAdmin .applicationPropertyStyleClass {
+	display: block;
 	border: 1px #ccc dotted;
 	position: relative;
 	padding-right: 16px;
@@ -64,11 +69,15 @@
 	cursor: default;
 }
 
+.isEditMode .moduleContent {
+	min-height: 50px;
+}
+
 .moduleFromOtherPageName {
 	font-size: 12px !important;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	line-height: 24px !important;
-	display: block;
+	display: none;
 	white-space: nowrap !important;
 	padding-left: 6px !important;
 	text-transform: none !important;
@@ -93,7 +102,7 @@
 	-webkit-border-radius: 3px;
 }
 
-.isEditAdmin .moduleName {
+.isEditAdmin .moduleName, .isEditAdmin .moduleFromOtherPageName {
 	display: block;
 }
 
