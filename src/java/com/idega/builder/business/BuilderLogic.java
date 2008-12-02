@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.356 2008/11/18 12:58:27 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.357 2008/12/02 06:42:10 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -148,7 +148,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/11/18 12:58:27 $ by $Author: valdas $
+ * Last modified: $Date: 2008/12/02 06:42:10 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3581,22 +3581,19 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
+		List<String> resourcesToLoad = new ArrayList<String>();
+		
 		//	CSS
-		if (cssSources != null) {
-			Collection<Element> cssElements = new ArrayList<Element>(cssSources.size());
+		if (!ListUtil.isEmpty(cssSources)) {
 			for (String cssUri: cssSources) {
-				Element css = new Element("link");
-				css.setAttribute(new Attribute("type", "text/css"));
-				css.setAttribute(new Attribute("rel", "stylesheet"));
-				css.setAttribute(new Attribute("media", "screen"));
-				css.setAttribute(new Attribute("href", cssUri));
-				cssElements.add(css);
+				if (!resourcesToLoad.contains(cssUri)) {
+					resourcesToLoad.add(cssUri);
+				}
 			}
-			root.addContent(cssElements);
 		}
 		
 		//	JavaScript sources
-		if (jsSources != null) {
+		if (!ListUtil.isEmpty(jsSources) || !ListUtil.isEmpty(resourcesToLoad)) {
 			StringBuffer actionsInSingleFunction = null;
 			if (jsActions != null) {
 				actionsInSingleFunction = new StringBuffer("function() {");
@@ -3607,23 +3604,16 @@ public class BuilderLogic implements Singleton {
 				jsActions.clear();
 			}
 			
-			StringBuilder scriptsPathes = new StringBuilder("[");
-			for (Iterator<String> iterator = jsSources.iterator(); iterator.hasNext();) {
-				String script = iterator.next();
-				
-				scriptsPathes.append("'").append(script);
-				
-				if (iterator.hasNext()) {
-					scriptsPathes.append("', ");
-				}
-				else {
-					scriptsPathes.append("']");
+			if (!ListUtil.isEmpty(jsSources)) {
+				for (String jsResource: jsSources) {
+					if (!resourcesToLoad.contains(jsResource)) {
+						resourcesToLoad.add(jsResource);
+					}
 				}
 			}
 			
-			String action = new StringBuilder("LazyLoader.loadMultiple(").append(scriptsPathes.toString()).append(", ")
-								.append(actionsInSingleFunction == null ? "null" : actionsInSingleFunction.toString()).append(");")
-							.toString();
+			String action = PresentationUtil.getJavaScriptLinesLoadedLazily(resourcesToLoad, actionsInSingleFunction == null ? null :
+																															actionsInSingleFunction.toString());
 			Collection<Element> includeScriptsAndExecuteActions = new ArrayList<Element>(1);
 			Element mainAction = new Element("script");
 			mainAction.setAttribute(new Attribute("type", "text/javascript"));
