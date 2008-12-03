@@ -14,6 +14,8 @@ div#adminTopLayer {
 }
 
 div#adminTopLayer .login {
+	border: 0;
+	padding: 0;
 	max-width: none;
 	position: absolute;
 	top: 10px;
@@ -86,6 +88,7 @@ div#adminTopLayer ul li:hover {
 }
 
 div#adminTopLayer ul li.adminThemesMode {
+	display: none;
 	background: url(images/lgicn_32.png) center 2px no-repeat;
 }
 

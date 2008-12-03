@@ -8,10 +8,6 @@
 	border: 1px transparent dotted;
 }
 
-.applicationPropertyStyleClass {
-	display: none;	
-}
-
 .isContentAdmin .applicationPropertyStyleClass {
 	display: block;
 	border: 1px #ccc dotted;

@@ -3,11 +3,9 @@
  */
 package com.idega.builder.presentation;
 
-import java.util.logging.Level;
-
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+import com.idega.block.login.presentation.Login2;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdminToolbarSession;
 import com.idega.builder.business.BuilderConstants;
@@ -30,10 +28,10 @@ import com.idega.util.expression.ELUtil;
  * <p>
  * TODO laddi Describe Type AdminToolbar
  * </p>
- *  Last modified: $Date: 2008/11/17 22:10:30 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/12/03 09:38:10 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AdminToolbar extends PresentationObjectTransitional {
 
@@ -59,19 +57,9 @@ public class AdminToolbar extends PresentationObjectTransitional {
 		layer.setID("adminTopLayer");
 		add(layer);
 		
-		try{
-			UIComponent login = (UIComponent) Class.forName("com.idega.block.login.presentation.Login2").newInstance();
-			layer.add(login);
-		}
-		catch(ClassNotFoundException cnfe){
-			this.getLogger().log(Level.SEVERE, cnfe.getMessage(), cnfe);
-		}
-		catch (InstantiationException ie) {
-			this.getLogger().log(Level.SEVERE, ie.getMessage(), ie);
-		}
-		catch (IllegalAccessException iae) {
-			this.getLogger().log(Level.SEVERE, iae.getMessage(), iae);
-		}
+		Login2 login = new Login2();
+		login.setURLToRedirectToOnLogon("/");
+		layer.add(login);
 		
 		Lists list = new Lists();
 		layer.add(list);
