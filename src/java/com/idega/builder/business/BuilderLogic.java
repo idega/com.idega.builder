@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.357 2008/12/02 06:42:10 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.358 2008/12/03 06:32:46 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -148,7 +148,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/12/02 06:42:10 $ by $Author: valdas $
+ * Last modified: $Date: 2008/12/03 06:32:46 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3564,14 +3564,19 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		if (jsSources != null || jsActions != null || cssSources != null) {
+			Object addCSSDirectly = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
+			if (addCSSDirectly != null) {
+				iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
+			}
 			rendered = getRenderedComponentWithDynamicResources(getXMLDocumentFromComponentHTML(rendered, false, omitDocTypeDeclaration, omitHtmlEnvelope,
-					false), cssSources, jsSources, jsActions);
+					false), cssSources, jsSources, jsActions, addCSSDirectly instanceof Boolean ? (Boolean) addCSSDirectly : false);
 		}
 		
 		return rendered;
 	}
 	
-	private String getRenderedComponentWithDynamicResources(Document component, List<String> cssSources, List<String> jsSources, List<String> jsActions) {
+	private String getRenderedComponentWithDynamicResources(Document component, List<String> cssSources, List<String> jsSources, List<String> jsActions,
+			boolean addCSSDirectly) {
 		if (component == null) {
 			return null;
 		}
@@ -3585,9 +3590,23 @@ public class BuilderLogic implements Singleton {
 		
 		//	CSS
 		if (!ListUtil.isEmpty(cssSources)) {
-			for (String cssUri: cssSources) {
-				if (!resourcesToLoad.contains(cssUri)) {
-					resourcesToLoad.add(cssUri);
+			if (addCSSDirectly) {
+				Collection<Element> cssElements = new ArrayList<Element>(cssSources.size());
+				for (String cssUri: cssSources) {
+					Element css = new Element("link");
+					css.setAttribute(new Attribute("type", "text/css"));
+					css.setAttribute(new Attribute("rel", "stylesheet"));
+					css.setAttribute(new Attribute("media", "screen"));
+					css.setAttribute(new Attribute("href", cssUri));
+					cssElements.add(css);
+				}
+				root.addContent(cssElements);
+			}
+			else {
+				for (String cssUri: cssSources) {
+					if (!resourcesToLoad.contains(cssUri)) {
+						resourcesToLoad.add(cssUri);
+					}
 				}
 			}
 		}
