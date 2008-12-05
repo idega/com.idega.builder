@@ -7,6 +7,7 @@ import com.idega.builder.bean.PropertyHandlerBean;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPropertyHandler;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.core.component.business.ComponentInfo;
 import com.idega.core.component.business.ComponentProperty;
@@ -29,7 +30,7 @@ public class SetModulePropertyBlock extends Block {
 	public void main(IWContext iwc) throws Exception {
 		String pageKey = iwc.getApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER).toString();
 		String propertyName = iwc.getApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER).toString();
-		String instanceId = iwc.getApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER).toString();
+		String instanceId = iwc.getApplicationAttribute(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER).toString();
 		if (pageKey == null || propertyName == null || instanceId == null) {
 			return;
 		}

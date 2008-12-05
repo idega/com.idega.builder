@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.54 2006/05/10 08:27:07 laddi Exp $
+ * $Id: IBAddModuleWindow.java,v 1.55 2008/12/05 07:00:12 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import java.util.Map;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.ModuleComparator;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.component.data.ICObjectHome;
@@ -45,7 +46,7 @@ import com.idega.util.ListUtil;
  */
 
 public class IBAddModuleWindow extends IBAdminWindow {
-	private static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
+	private static final String IC_OBJECT_INSTANCE_ID_PARAMETER = ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
 	private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;

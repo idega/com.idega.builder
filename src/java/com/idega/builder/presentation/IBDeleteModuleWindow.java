@@ -3,6 +3,7 @@ package com.idega.builder.presentation;
 import javax.servlet.http.Cookie;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -21,7 +22,7 @@ import com.idega.presentation.ui.SubmitButton;
  */
 public class IBDeleteModuleWindow extends IBAdminWindow {
 
-	private static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
+	private static final String IC_OBJECT_INSTANCE_ID_PARAMETER = ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	private static final String ib_parent_parameter = BuilderLogic.IB_PARENT_PARAMETER;
 	private static final String ib_page_parameter = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String COOKIE_NAME = "not_again";

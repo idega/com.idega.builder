@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.358 2008/12/03 06:32:46 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.359 2008/12/05 07:00:12 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -148,7 +148,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/12/03 06:32:46 $ by $Author: valdas $
+ * Last modified: $Date: 2008/12/05 07:00:12 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -156,14 +156,11 @@ public class BuilderLogic implements Singleton {
 	private static final Logger logger = Logger.getLogger(BuilderLogic.class.getName());
 	
 	private static final String PAGES_PREFIX = "/pages/";
-	public static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
 	public static final String IB_PARENT_PARAMETER = "ib_parent_par";
 	public static final String IB_LABEL_PARAMETER = "ib_label";
 
 	public static final String IB_LIBRARY_NAME = "ib_library_name";
-	public static final String IB_CONTROL_PARAMETER = "ib_control_par";
 	public static final String ACTION_DELETE = "ACTION_DELETE";
-	public static final String ACTION_EDIT = "ACTION_EDIT";
 	public static final String ACTION_ADD = "ACTION_ADD";
 	public static final String ACTION_MOVE = "ACTION_MOVE";
 	public static final String ACTION_LOCK_REGION = "ACTION_LOCK";
@@ -1939,7 +1936,7 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBPasteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(IB_CONTROL_PARAMETER, ACTION_PASTE);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, ACTION_PASTE);
 		link.addParameter(IB_PARENT_PARAMETER, parentKey);
 		if(regionLabel!=null){
 			link.addParameter(IB_LABEL_PARAMETER , regionLabel);
@@ -2015,7 +2012,7 @@ public class BuilderLogic implements Singleton {
 	 *  	 *
 	 */
 	public String getIFrameContentURL(IWContext iwc, int ICObjectInstanceId) {
-		String src = iwc.getIWMainApplication().getIFrameContentURI() + "?" + IC_OBJECT_INSTANCE_ID_PARAMETER + "=" + ICObjectInstanceId;
+		String src = iwc.getIWMainApplication().getIFrameContentURI() + "?" + ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER + "=" + ICObjectInstanceId;
 		String query = iwc.getQueryString();
 		if (query != null && !query.equals("")) {
 			src += ("&" + query);
@@ -2426,7 +2423,7 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_UNLOCK_REGION);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_UNLOCK_REGION);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
 		if(label!=null){
@@ -2444,7 +2441,7 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LOCK_REGION);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LOCK_REGION);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		return (link);
 	}
@@ -2458,7 +2455,7 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("regionButton");
 		link.setWindowToOpen(IBAddRegionLabelWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(BuilderLogic.IB_LABEL_PARAMETER, label);
 		if(label!=null){
@@ -2473,9 +2470,9 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBCutModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		link.addParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
 		return link;
 	}
 
@@ -2489,9 +2486,9 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBCopyModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_COPY);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		link.addParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
 		return (link);
 	}
 
@@ -2501,9 +2498,9 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBDeleteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_DELETE);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_DELETE);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		link.addParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
 		return link;
 	}
 
@@ -2513,7 +2510,7 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPermissionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PERMISSION);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PERMISSION);
 		link.addParameter(IBPermissionWindow._PARAMETERSTRING_IDENTIFIER, key);
 		link.addParameter(
 			IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY,
@@ -2527,8 +2524,8 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPropertiesWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, ICBuilderConstants.ACTION_EDIT);
+		link.addParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
 		return link;
 	}
 
@@ -2543,9 +2540,9 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("moduleButton");
 		link.setWindowToOpen(IBPasteModuleWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
-		link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PASTE_ABOVE);
+		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_PASTE_ABOVE);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
+		link.addParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
 		return (link);
 	}	
 	

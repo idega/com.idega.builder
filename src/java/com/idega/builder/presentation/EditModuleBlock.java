@@ -17,6 +17,7 @@ import com.idega.builder.business.ComponentPropertyComparator;
 import com.idega.builder.business.IBPropertyHandler;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.accesscontrol.business.StandardRoles;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.component.business.ComponentProperty;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -46,7 +47,7 @@ public class EditModuleBlock extends Block {
 	@Override
 	public void main(IWContext iwc) throws Exception {
 		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
-		String instanceId = iwc.getParameter(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
+		String instanceId = iwc.getParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
 		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER_FOR_EDIT_MODULE_BLOCK);
 		if (instanceId == null) {
 			return;

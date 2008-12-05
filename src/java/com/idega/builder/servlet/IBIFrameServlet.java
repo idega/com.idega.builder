@@ -2,6 +2,7 @@ package com.idega.builder.servlet;
 
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
@@ -86,7 +87,7 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
     System.err.println("PageObjects end");
     //temp
 */
-    int instanceId = Integer.parseInt(iwc.getParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER));
+    int instanceId = Integer.parseInt(iwc.getParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER));
 
     //PresentationObject obj = parentPage.getContainedICObjectInstance(instanceId);
     PresentationObject iframeContent = null;
@@ -182,14 +183,14 @@ public class IBIFrameServlet extends IWJSPPresentationServlet {
       ex.printStackTrace(iwc.getResponse().getWriter());
     }
 
-    //AdminButton form = new AdminButton("Bæta við",window);
+    //AdminButton form = new AdminButton("Bï¿½ta viï¿½",window);
     if (isAdmin) {
       AdminButton form = new AdminButton(new Image("/common/pics/arachnea/add.gif"),window);
       form.addParameter("ib_window_action","window1");
       form.addParameter(new Parameter("page_id",Integer.toString(id)));
 
       //Form form = new Form(new Window("Baeta","window1.jsp"));
-      //form.add(new SubmitButton("Bæta við"));
+      //form.add(new SubmitButton("Bï¿½ta viï¿½"));
       //form.add(new Parameter("page_id",""+id));
 
       add(form);

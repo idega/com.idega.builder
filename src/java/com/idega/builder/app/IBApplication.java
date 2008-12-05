@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.104 2007/10/25 18:29:13 valdas Exp $
+ *  $Id: IBApplication.java,v 1.105 2008/12/05 07:00:14 valdas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,6 +31,7 @@ import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
@@ -823,10 +824,10 @@ public class IBApplication extends IWApplication {
 			link.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
 			link.setWindowToOpen(IBPropertiesWindow.class);
 			link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, BuilderLogic.getInstance().getCurrentIBPage(iwc));
-			link.addParameter(BuilderLogic.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_EDIT);
+			link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, ICBuilderConstants.ACTION_EDIT);
 			//Hardcoded -1 for the top page
 			String pageICObjectInstanceID = "-1";
-			link.addParameter(BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER, pageICObjectInstanceID);
+			link.addParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, pageICObjectInstanceID);
 			return (link);
 		}
 		/**

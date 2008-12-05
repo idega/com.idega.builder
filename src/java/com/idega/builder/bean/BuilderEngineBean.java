@@ -19,6 +19,7 @@ import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.SetModulePropertyBlock;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.idegaweb.IWBundle;
@@ -60,7 +61,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
 		info.add(iwrb.getLocalizedString("create_simple_template.Region", "Region"));										// 8
 		info.add(BuilderLogic.getInstance().getUriToObject(EditModuleBlock.class.getName()));								// 9
-		info.add(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);															// 10
+		info.add(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);															// 10
 		info.add(BuilderConstants.MODULE_NAME);																				// 11
 		info.add(iwrb.getLocalizedString("deleting", "Deleting..."));														// 12
 		info.add(iwrb.getLocalizedString("are_you_sure", "Are you sure?"));													// 13
@@ -177,14 +178,14 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		
 		iwc.setApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER, pageKey);
 		iwc.setApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER, propertyName);
-		iwc.setApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, objectInstanceId);
+		iwc.setApplicationAttribute(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, objectInstanceId);
 		
 		PresentationObject propertyBox = new SetModulePropertyBlock();
 		Document renderedBox = BuilderLogic.getInstance().getRenderedComponent(iwc, propertyBox, false);
 		
 		iwc.removeApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER);
 		iwc.removeApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER);
-		iwc.removeApplicationAttribute(BuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
+		iwc.removeApplicationAttribute(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
 		
 		return renderedBox;
 	}
