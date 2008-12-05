@@ -20,6 +20,8 @@ import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.data.IBPageName;
 import com.idega.builder.data.IBPageNameHome;
+import com.idega.builder.presentation.IBPermissionWindow;
+import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.builder.presentation.IBSourceView;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.builder.business.BuilderPageWriterService;
@@ -549,6 +551,13 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	
 	public RenderedComponent getRenderedComponentByClassName(String className, List<AdvancedProperty> properties) {
 		return getBuilderLogic().getRenderedComponentByClassName(className, properties);
+	}
+	
+	public String getUriToPagePermissionsWindow(List<AdvancedProperty> parameters) {
+		return getBuilderLogic().getUriToObject(IBPermissionWindow.class, parameters);
+	}
+	public String getUriToPagePropertiesWindow(List<AdvancedProperty> parameters) {
+		return getBuilderLogic().getUriToObject(IBPropertiesWindow.class, parameters);
 	}
 	
 }
