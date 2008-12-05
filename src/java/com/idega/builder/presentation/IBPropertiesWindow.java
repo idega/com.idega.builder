@@ -14,6 +14,7 @@ import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
+import com.idega.util.CoreConstants;
 
 /**
  * Title:        idegaclasses
@@ -128,13 +129,16 @@ public void main(IWContext iwc) throws Exception{
       setBackgroundColor(IWAdminWindow.HEADER_COLOR);
       setAllMargins(0);
       Script script = this.getAssociatedScript();
-      script.addFunction("doClose", new StringBuilder("function doClose(){").append(moduleInLightBox ? "window.parent.parent.tb_remove();" : "parent.close();").append("}")
+      script.addFunction("doClose", new StringBuilder("function doClose(){").append(moduleInLightBox ? "window.parent.parent.tb_remove();" : "parent.close();")
+    		  							.append("}")
     		  						.toString());
       script.addFunction("doApply", new StringBuilder("function doApply(){doSet();").append(moduleInLightBox ? "window.parent.parent.LucidHelper.reloadFrame();" :
     	  								"parent.opener.location.reload();").append("}").toString());
     
-      String setFunction = "function doSet(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();top.ib_prop_win_middle.ib_prop_list_frame.location.reload();}";
-      System.out.println(setFunction);
+      String setFunction = new StringBuilder("function doSet(){parent.").append(MIDDLE_FRAME).append(CoreConstants.DOT).append(IBPropertiesWindowList.PROPERTY_FRAME)
+      						.append(CoreConstants.DOT).append(IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME)
+      						.append("();parent.ib_prop_win_middle.ib_prop_list_frame.location.reload();}")
+      					.toString();
       script.addFunction("doSet", setFunction);
     }
 
