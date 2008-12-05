@@ -2,6 +2,7 @@ package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWURL;
@@ -25,7 +26,7 @@ import com.idega.presentation.Table;
 
 public class IBPropertiesWindow extends FrameSet{
 
-   static final String IC_OBJECT_INSTANCE_ID_PARAMETER = BuilderLogic.IC_OBJECT_INSTANCE_ID_PARAMETER;
+   static final String IC_OBJECT_INSTANCE_ID_PARAMETER = ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER;
    static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
    final static String METHOD_ID_PARAMETER = BuilderConstants.METHOD_ID_PARAMETER;
    final static String VALUE_SAVE_PARAMETER = "ib_method_save";
@@ -35,13 +36,20 @@ public class IBPropertiesWindow extends FrameSet{
    final static String BOTTOM_FRAME = "ib_prop_win_bottom";
 
    private final static String HEADER_TEXT_PARAMETER = "ib_prop_win_header";
+   
+   private static boolean moduleInLightBox;
 
 public IBPropertiesWindow() {
   super.setWidth(600);
   super.setHeight(470);
 }
 
-  public void main(IWContext iwc) throws Exception{
+  @Override
+public void main(IWContext iwc) throws Exception{
+	  if (iwc.isParameterSet(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX)) {
+		  moduleInLightBox = Boolean.valueOf(iwc.getParameter(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX));
+	  }
+	  
 	  String title = "Properties";
 	  
 	  //System.out.println("BuilderLogic.IB_CONTROL_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_CONTROL_PARAMETER)+" and BuilderLogic.IB_PAGE_PARAMETER: "+iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER));
@@ -94,7 +102,8 @@ public IBPropertiesWindow() {
 
   public static class IBPropertiesWindowMiddle extends FrameSet{
 
-    public void main(IWContext iwc){
+    @Override
+	public void main(IWContext iwc){
       super.setHorizontal();
       IWURL url1 = FrameSet.getFrameURL(IBPropertiesWindowList.class,iwc);
       url1.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER,iwc);
@@ -114,18 +123,23 @@ public IBPropertiesWindow() {
 
   }
 
-  public static class IBPropertiesWindowBottom extends Page{
+  public static class IBPropertiesWindowBottom extends Page {
     public IBPropertiesWindowBottom(){
       setBackgroundColor(IWAdminWindow.HEADER_COLOR);
       setAllMargins(0);
       Script script = this.getAssociatedScript();
-      script.addFunction("doClose","function doClose(){parent.close();}");
-      script.addFunction("doApply","function doApply(){doSet();parent.opener.location.reload();}");
-      script.addFunction("doSet","function doSet(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();top.ib_prop_win_middle.ib_prop_list_frame.location.reload();}");
-
+      script.addFunction("doClose", new StringBuilder("function doClose(){").append(moduleInLightBox ? "window.parent.parent.tb_remove();" : "parent.close();").append("}")
+    		  						.toString());
+      script.addFunction("doApply", new StringBuilder("function doApply(){doSet();").append(moduleInLightBox ? "window.parent.parent.LucidHelper.reloadFrame();" :
+    	  								"parent.opener.location.reload();").append("}").toString());
+    
+      String setFunction = "function doSet(){parent."+MIDDLE_FRAME+"."+IBPropertiesWindowList.PROPERTY_FRAME+"."+IBPropertiesWindowSetter.UPDATE_PROPERTY_FUNCTION_NAME+"();top.ib_prop_win_middle.ib_prop_list_frame.location.reload();}";
+      System.out.println(setFunction);
+      script.addFunction("doSet", setFunction);
     }
 
-    public void main(IWContext iwc){
+    @Override
+	public void main(IWContext iwc){
       Table table = new Table(1, 1);
       table.setCellpaddingAndCellspacing(0);
       table.setWidth(Table.HUNDRED_PERCENT);
@@ -155,7 +169,8 @@ public IBPropertiesWindow() {
       //setBackgroundColor("gray");
     }
 
-    public void main(IWContext iwc){
+    @Override
+	public void main(IWContext iwc){
       //Text t = new Text("Properties");
       //t.setBold();
       //add(t);

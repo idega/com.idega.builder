@@ -10,6 +10,7 @@ import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserGroupBusiness;
@@ -49,6 +50,7 @@ public class IBPermissionWindow extends Window {
 	private IWResourceBundle iwrb;
 	
 	private boolean needCancelButton = true;
+	private boolean componentIsInLightBox;
 
 	public IBPermissionWindow() {
 		setWidth(370);
@@ -194,6 +196,9 @@ public class IBPermissionWindow extends Window {
 			// Submit
 			SubmitButton submit = new SubmitButton(this.iwrb.getLocalizedImageButton("ok", "OK"), "submit");
 			SubmitButton cancel = new SubmitButton(this.iwrb.getLocalizedImageButton("cancel", "Cancel"), "cancel");
+			if (componentIsInLightBox) {
+				cancel.setOnClick("window.parent.tb_remove(); return false;");
+			}
 			frameTable.add(permissionKeyText, 1, 1);
 			frameTable.add(permissionTypes, 1, 1);
 			frameTable.add(permissionBox, 1, 2);
@@ -207,6 +212,7 @@ public class IBPermissionWindow extends Window {
 		return frameTable;
 	}
 
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		boolean submit = iwc.isParameterSet("submit");
 		boolean cancel = iwc.isParameterSet("cancel");
@@ -214,6 +220,11 @@ public class IBPermissionWindow extends Window {
 		myForm.setToShowLoadingOnSubmit(false);
 		myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
 		myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
+		
+		if (iwc.isParameterSet(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX)) {
+			myForm.maintainParameter(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX);
+			componentIsInLightBox = Boolean.valueOf(iwc.getParameter(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX));
+		}
 		
 		boolean isComponentInFrame = false;
 		String componentInFrame = iwc.getParameter(BuilderConstants.CURRENT_COMPONENT_IS_IN_FRAME);
@@ -233,6 +244,7 @@ public class IBPermissionWindow extends Window {
 		// "+iwc.getParameter(_PARAMETERSTRING_IDENTIFIER));
 		if (submit) {
 			String permissionType = iwc.getParameter(permissionKeyParameterString);
+			boolean error = false;
 			if (permissionType != null) {
 				this.collect(iwc);
 				try {
@@ -240,9 +252,13 @@ public class IBPermissionWindow extends Window {
 				} catch(Exception e) {
 					e.printStackTrace();
 					myForm.add(new Heading3(iwrb.getLocalizedString("can_not_save_permissions", "Error: can not save permissions.")));
+					error = true;
 				}
 				this.dispose(iwc);
-				if (isComponentInFrame) {
+				if (isComponentInFrame || componentIsInLightBox) {
+					if (!error) {
+						myForm.add(new Heading3(iwrb.getLocalizedString("permissions_saved_successfully", "Permissions were saved successfully")));
+					}
 					myForm.add(this.lineUpElements(iwc, permissionType));
 				}
 				else {
