@@ -41,7 +41,9 @@ import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
+import com.idega.util.StringUtil;
 import com.idega.util.xml.XMLData;
 import com.idega.xml.XMLElement;
 
@@ -558,6 +560,29 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 	public String getUriToPagePropertiesWindow(List<AdvancedProperty> parameters) {
 		return getBuilderLogic().getUriToObject(IBPropertiesWindow.class, parameters);
+	}
+	public boolean setLocalizedText(String pageUri, String moduleId, String text) {
+		if (StringUtil.isEmpty(pageUri) || StringUtil.isEmpty(moduleId) || StringUtil.isEmpty(text)) {
+			return false;
+		}
+		
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc == null) {
+			return false;
+		}
+		Locale locale = iwc.getCurrentLocale();
+		if (locale == null) {
+			return false;
+		}
+		
+		String pageKey = getBuilderLogic().getPageKeyByURI(pageUri, iwc.getDomain());
+		if (StringUtil.isEmpty(pageKey)) {
+			return false;
+		}
+		
+		String propertyName = ":method:1:implied:void:setLocalizedText:java.util.Locale:java.lang.String:";	//	TODO:	find better way to get name for property
+		
+		return getBuilderLogic().setModuleProperty(pageKey, moduleId, propertyName, new String[] {locale.toString(), text});
 	}
 	
 }
