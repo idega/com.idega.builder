@@ -5,14 +5,15 @@
 	position: relative;
 	min-height: 50px;
 	min-width: 170px;
-	border: 1px transparent dotted;
+	/*border: 1px transparent dotted;*/
 }
 
 .isContentAdmin .applicationPropertyStyleClass {
-	display: block;
 	border: 1px #ccc dotted;
 	position: relative;
 	padding-right: 16px;
+	min-width: 100px;
+	min-height: 12px;
 }
 
 .isContentAdmin .applicationPropertyStyleClass .icon {

@@ -28,10 +28,10 @@ import com.idega.util.expression.ELUtil;
  * <p>
  * TODO laddi Describe Type AdminToolbar
  * </p>
- *  Last modified: $Date: 2008/12/03 09:38:10 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/12/08 02:39:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AdminToolbar extends PresentationObjectTransitional {
 
@@ -58,7 +58,7 @@ public class AdminToolbar extends PresentationObjectTransitional {
 		add(layer);
 		
 		Login2 login = new Login2();
-		login.setURLToRedirectToOnLogon("/");
+		login.setURLToRedirectToOnLogoff("/pages/");
 		layer.add(login);
 		
 		Lists list = new Lists();
