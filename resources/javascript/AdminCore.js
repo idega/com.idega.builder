@@ -35,7 +35,7 @@ jQuery(document).ready(function() {
 		jQuery(this).addClass('selected');
 		jQuery('body').removeClass('isThemesAdmin').removeClass('isEditAdmin').removeClass('isContentAdmin');
 		jQuery('.applicationPropertyStyleClass .icon').hide();
-		jQuery('div.content_item_toolbar, div.commentsController').fadeOut('slow');
+		jQuery('div.content_item_toolbar, div.commentsController').hide();
 		jQuery('body div#themeSlider').remove();
 
 		if (jQuery(this).hasClass('adminThemesMode')) {
