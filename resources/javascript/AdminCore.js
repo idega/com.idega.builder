@@ -97,7 +97,7 @@ AdminCoreHelper.initializeInlineEditableComponents = function() {
 	if (jQuery('body').hasClass('isContentAdmin')) {
 		jQuery.each(jQuery('.InlineEditableComponent'), function() {
 			if (!jQuery(this).hasClass('inlineEditableInited')) {
-				AdminCoreHelper.makeComponentEditable(this, 'dsdsd');		//	TODO;
+				AdminCoreHelper.makeComponentEditable(this, jQuery(this).text());
 				jQuery(this).addClass('inlineEditableInited');
 			}
 		});
@@ -109,6 +109,11 @@ AdminCoreHelper.makeComponentEditable = function(component, oldValue) {
 		var instanceId = jQuery(component).attr('id');
 		if (instanceId == null || instanceId == '') {
 			return;
+		}
+		
+		if (newText == oldValue) {
+			jQuery('#' + instanceId).empty().text(oldValue);
+			return oldValue;
 		}
 		
 		if (jQuery('input[id=\''+instanceId+'inlineEditingInProcess\'][type=\'hidden\']', jQuery(component)).length == 0) {
