@@ -95,7 +95,6 @@ div#adminTopLayer ul li:hover {
 }
 
 div#adminTopLayer ul li.adminThemesMode {
-	display: none;
 	background: url(images/lgicn_32.png) center 2px no-repeat;
 }
 
