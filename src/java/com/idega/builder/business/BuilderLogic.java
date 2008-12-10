@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.359 2008/12/05 07:00:12 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.360 2008/12/10 05:57:45 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -62,7 +62,6 @@ import com.idega.business.chooser.helper.GroupsChooserHelper;
 import com.idega.cal.bean.CalendarPropertiesBean;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
-import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderPageException;
 import com.idega.core.builder.business.ICBuilderConstants;
@@ -148,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/12/05 07:00:12 $ by $Author: valdas $
+ * Last modified: $Date: 2008/12/10 05:57:45 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4062,8 +4061,8 @@ public class BuilderLogic implements Singleton {
 		User currentUser = null;
 		try {
 			currentUser = iwc.getCurrentUser();
-		} catch(NotLoggedOnException e) {
-			Logger.getLogger(getClass().getName()).log(Level.INFO, "User is not logged in");
+		} catch(Exception e) {
+			Logger.getLogger(getClass().getName()).log(Level.INFO, "Error getting current user", e);
 		}
 		if (currentUser != null) {
 			//	Trying to get nearest page to user's home page
@@ -4087,11 +4086,20 @@ public class BuilderLogic implements Singleton {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
+			if (startPage != null) {
+				logger.info("Using current page for search start: " + startPage.getId());
+			}
+		}
+		else {
+			logger.info("Using start page as user's start page for search: " + startPage.getId());
 		}
 		if (startPage == null) {
+			logger.warning("Didn't find page for search!");
 			return null;
 		}
 
+		logger.info("Start page for search: " + startPage.getId());
+		
 		ICTreeNode parentNode = startPage.getParentNode();
 		Collection<ICTreeNode> children = null;
 		if (parentNode == null) {
