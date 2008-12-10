@@ -163,7 +163,7 @@ div#adminTopLayer ul li .modeHelper p {
 }
 
 div#themeSlider {
-	background: #000;
+	/*background: #000;
 	opacity: .6;
 	position: fixed;
 	border-radius: 16px;
@@ -173,5 +173,5 @@ div#themeSlider {
 	right: 20px;
 	bottom: 20px;
 	height: 150px;
-	z-index: 9999;
+	z-index: 9999;*/
 }
