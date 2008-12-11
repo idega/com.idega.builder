@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.71 2008/11/17 08:42:42 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.72 2008/12/11 08:03:45 laddi Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -45,10 +45,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2008/11/17 08:42:42 $ by $Author: laddi $
+ *  Last modified: $Date: 2008/12/11 08:03:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.71 $
+ * @version $Revision: 1.72 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -525,10 +525,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 */
 	public Page getPage(IWContext iwc) {
 	    boolean builderView = false;
-      if (iwc.getApplicationSettings().getBoolean(CoreConstants.PROP_SHOW_ADMIN_TOOLBAR) && getBuilderLogic().isBuilderApplicationRunning(iwc)) {
-				builderView = true;
-	    }
-      else if (iwc.isParameterSet("view") && iwc.getParameter("view").equals("builder") && getBuilderLogic().isBuilderApplicationRunning(iwc)) {
+      if (getBuilderLogic().isBuilderApplicationRunning(iwc)) {
       	builderView = true;
       }
 	    return getPage(builderView,iwc);

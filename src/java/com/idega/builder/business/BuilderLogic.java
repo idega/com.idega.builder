@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.360 2008/12/10 05:57:45 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.361 2008/12/11 08:03:51 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -147,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/12/10 05:57:45 $ by $Author: valdas $
+ * Last modified: $Date: 2008/12/11 08:03:51 $ by $Author: laddi $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -339,7 +339,7 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		
-		if (iwc.getApplicationSettings().getBoolean(CoreConstants.PROP_SHOW_ADMIN_TOOLBAR, false) && iwc.getRequestURI().indexOf("/workspace/") == -1 && iwc.getRequestURI().indexOf("/pages") != -1 && (iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR))) {
+		if (iwc.getRequestURI().indexOf("/workspace/") == -1 && iwc.getRequestURI().indexOf("/pages") != -1 && (iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR))) {
 			page.add(new AdminToolbar());
 			page.setStyleClass("isAdmin");
 			
