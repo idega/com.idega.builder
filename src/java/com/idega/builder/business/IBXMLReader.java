@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.9 2008/06/18 13:01:02 valdas Exp $
+ * $Id: IBXMLReader.java,v 1.10 2008/12/13 21:01:41 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,6 +57,8 @@ import com.idega.xml.XMLException;
  */
 public class IBXMLReader {
 	
+	protected static final String ID_PREFIX = "id";
+
 	public static final Logger logger = Logger.getLogger(IBXMLReader.class.getName());
 	
 	public static final String UUID_PREFIX = ICObjectBusiness.UUID_PREFIX;
@@ -821,6 +823,10 @@ public class IBXMLReader {
 	 * @return
 	 */
 	private void setInstanceId(CachedBuilderPage ibxml, UIComponent firstUICInstance, String componentId, String sIcObjectId, ICObjectInstance icObjectInstance) {
+		//quick check to see if this is a legal ID (cannot start with a number)
+		if(componentId!=null && Character.isDigit(componentId.charAt(0)) ){
+			componentId = ID_PREFIX+componentId;
+		}
 		
 		if(firstUICInstance instanceof PresentationObject){
 			PresentationObject presentationObject = (PresentationObject) firstUICInstance;
@@ -849,6 +855,7 @@ public class IBXMLReader {
 			
 			//TODO JSF COMPAT FIND OUT WHAT THIS IS for??
 			// added by gummi@idega.is // - cache ObjectInstance
+			//NOT SURE BUT I THINK THIS WAS TO NOT STORE THE PAGE IT SELF?, EIKI dec 2008
 			if (!"0".equals(componentId)) {
 				cacheObjectInstance(ibxml, componentId, presentationObject);
 			}
