@@ -16,6 +16,18 @@
 	min-height: 12px;
 }
 
+.isContentAdmin .InlineEditableComponent {
+	border: 1px #ccc dotted;
+	position: relative;
+	padding-right: 20px;
+	background: url(images/text-edit.png) top right no-repeat;
+}
+
+.isContentAdmin .InlineEditableComponent input {
+	padding: 0 3px;
+	border: 0;
+}
+
 .isContentAdmin .applicationPropertyStyleClass .icon {
 	position: absolute;
 	top: 1px;
