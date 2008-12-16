@@ -561,28 +561,33 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public String getUriToPagePropertiesWindow(List<AdvancedProperty> parameters) {
 		return getBuilderLogic().getUriToObject(IBPropertiesWindow.class, parameters);
 	}
-	public boolean setLocalizedText(String pageUri, String moduleId, String text) {
-		if (StringUtil.isEmpty(pageUri) || StringUtil.isEmpty(moduleId) || StringUtil.isEmpty(text)) {
+	
+	public boolean setLocalizedText(String moduleId, String text) {
+		if (StringUtil.isEmpty(moduleId) || StringUtil.isEmpty(text)) {
+			logWarning("Invalid parameters: module ID: " + moduleId + ", new text: " + text);
 			return false;
 		}
 		
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
+			logWarning(IWContext.class.getSimpleName() + " is not available!");
 			return false;
 		}
 		Locale locale = iwc.getCurrentLocale();
 		if (locale == null) {
+			logWarning("Unable to get current locale!");
 			return false;
 		}
 		
-		String pageKey = getBuilderLogic().getPageKeyByURI(pageUri, iwc.getDomain());
-		if (StringUtil.isEmpty(pageKey)) {
+		ICPage page = getBuilderLogic().findPageForModule(iwc, moduleId);
+		if (page == null) {
+			logWarning("Can't find page for module: " + moduleId);
 			return false;
 		}
 		
 		String propertyName = ":method:1:implied:void:setLocalizedText:java.util.Locale:java.lang.String:";	//	TODO:	find better way to get name for property
 		
-		return getBuilderLogic().setModuleProperty(pageKey, moduleId, propertyName, new String[] {locale.toString(), text});
+		return getBuilderLogic().setModuleProperty(page.getId(), moduleId, propertyName, new String[] {locale.toString(), text});
 	}
 	
 }
