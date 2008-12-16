@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.361 2008/12/11 08:03:51 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.362 2008/12/16 13:08:45 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -147,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/12/11 08:03:51 $ by $Author: laddi $
+ * Last modified: $Date: 2008/12/16 13:08:45 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -1881,7 +1881,7 @@ public class BuilderLogic implements Singleton {
 		return null;
 	}
 
-	private boolean isPropertyMultivalued(String propertyName, String instanceId, IWMainApplication iwma, String pageKey) throws Exception {
+	public boolean isPropertyMultivalued(String propertyName, String instanceId, IWMainApplication iwma, String pageKey) throws Exception {
 		int objectId = -1;
 		try {
 			objectId = Integer.valueOf(instanceId).intValue();
@@ -4295,5 +4295,13 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return getRenderedInstanciatedComponent(CoreUtil.getIWContext(), component);
+	}
+	
+	public List<com.idega.core.component.business.ComponentProperty> getComponentProperties(IWContext iwc, String instanceId) {
+		if (StringUtil.isEmpty(instanceId) || iwc == null) {
+			return null;
+		}
+		
+		return IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale());
 	}
 }

@@ -6,6 +6,7 @@ package com.idega.builder.business;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -31,6 +32,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.bean.RenderedComponent;
+import com.idega.core.component.business.ComponentProperty;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -584,10 +586,35 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 			logWarning("Can't find page for module: " + moduleId);
 			return false;
 		}
+		String pageKey = page.getId();
 		
-		String propertyName = ":method:1:implied:void:setLocalizedText:java.util.Locale:java.lang.String:";	//	TODO:	find better way to get name for property
+		String propertyName = null;
+		List<com.idega.core.component.business.ComponentProperty> properties = getComponentProperties(iwc, moduleId);
+		if (ListUtil.isEmpty(properties)) {
+			logWarning("Can't set localized text: module doesn't have any properties available! Module ID: " + moduleId);
+			return false;
+		}
+		for (Iterator<ComponentProperty> propertiesIter = properties.iterator(); (propertiesIter.hasNext() && propertyName == null);) {
+			propertyName = propertiesIter.next().getName();
+			try {
+				if (propertyName.indexOf("LocalizedText") == -1 || !getBuilderLogic().isPropertyMultivalued(propertyName, moduleId, getIWMainApplication(), pageKey)) {
+					propertyName = null;
+				}
+			} catch (Exception e) {
+				propertyName = null;
+				log(e);
+			}
+		}
+		if (StringUtil.isEmpty(propertyName)) {
+			logWarning("Didn't find method to set localized value! Module ID: " + moduleId);
+			return false;
+		}
 		
-		return getBuilderLogic().setModuleProperty(page.getId(), moduleId, propertyName, new String[] {locale.toString(), text});
+		return getBuilderLogic().setModuleProperty(pageKey, moduleId, propertyName, new String[] {locale.toString(), text});
+	}
+	
+	public List<com.idega.core.component.business.ComponentProperty> getComponentProperties(IWContext iwc, String instanceId) {
+		return getBuilderLogic().getComponentProperties(iwc, instanceId);
 	}
 	
 }
