@@ -164,9 +164,30 @@ div#adminTopLayer ul li .modeHelper p {
 
 div#themeSlider {
 	position: fixed;
-	height: 155px;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	height: 165px;
+	bottom: 10px;
+	left: 10px;
+	right: 10px;
 	width: auto;
+	background: url('images/themesBackground.png') top left;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+
+div#themeSlider div.themesSlider {
+	background: none;
+	border: 0;
+	width: auto !important;
+	bottom: 10px !important;
+	right: 10px !important;
+	left: 10px !important;
+}
+
+div#themeSlider div.themeName {
+	color: #999;
+}
+
+div#themeSlider div.usedThemeName {
+	color: #fff;
 }
