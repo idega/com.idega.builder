@@ -43,6 +43,7 @@ import com.idega.idegaweb.IWUserContext;
 import com.idega.io.serialization.ObjectWriter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
+import com.idega.user.data.User;
 import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
@@ -617,4 +618,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getComponentProperties(iwc, instanceId);
 	}
 	
+	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User currentUser, IWContext iwc, String pageType) {
+		return getBuilderLogic().getNearestPageForUserHomePageOrCurrentPageByPageType(currentUser, iwc, pageType);
+	}
+	public String getFullPageUrlByPageType(User user, IWContext iwc,
+			String pageType, boolean checkFirstlyNearestPages) {
+		return getBuilderLogic().getFullPageUrlByPageType(user, iwc, pageType, checkFirstlyNearestPages);
+	}
 }

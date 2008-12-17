@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.362 2008/12/16 13:08:45 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.363 2008/12/17 16:15:16 civilis Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -147,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/12/16 13:08:45 $ by $Author: valdas $
+ * Last modified: $Date: 2008/12/17 16:15:16 $ by $Author: civilis $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4041,8 +4041,19 @@ public class BuilderLogic implements Singleton {
 	
 	public String getFullPageUrlByPageType(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
 		
+		User usr = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
+		return getFullPageUrlByPageType(usr, iwc, pageType, checkFirstlyNearestPages);
+	}
+	
+	public String getFullPageUrlByPageType(User user, IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
+		
 		String serverURL = iwc.getServerURL();
-		String pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
+		String pageUri;
+		
+		if(user == null)
+			pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
+		else
+			pageUri = getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
 		
 		serverURL = serverURL.endsWith(CoreConstants.SLASH) ? serverURL.substring(0, serverURL.length()-1) : serverURL;
 		
@@ -4054,16 +4065,16 @@ public class BuilderLogic implements Singleton {
 		return fullURL;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(IWContext iwc, String pageType) {
+		
+		User usr = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
+		return getNearestPageForUserHomePageOrCurrentPageByPageType(usr, iwc, pageType);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User currentUser, IWContext iwc, String pageType) {
 		ICPage startPage = null;
 		
-		User currentUser = null;
-		try {
-			currentUser = iwc.getCurrentUser();
-		} catch(Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.INFO, "Error getting current user", e);
-		}
 		if (currentUser != null) {
 			//	Trying to get nearest page to user's home page
 			startPage = currentUser.getHomePage();
@@ -4142,11 +4153,25 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	protected String getPageUri(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
+		
+		User user = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
+		return getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
+	}
+	
+	protected String getPageUri(User user, IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
 		ICPage icPage = null;
 		String messageForException = "No page found by page type: " + pageType;
 		
 		if (checkFirstlyNearestPages) {
-			icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
+
+			if(user == null) {
+				
+				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
+				
+			} else {
+				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(user, iwc, pageType);
+			}
+			
 		}
 		
 		if (icPage == null) {
