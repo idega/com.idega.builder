@@ -173,6 +173,7 @@ div#themeSlider {
 	border-radius: 10px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
+	z-index: 2;
 }
 
 div#themeSlider div.themesSlider {
