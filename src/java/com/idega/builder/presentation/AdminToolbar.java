@@ -28,10 +28,10 @@ import com.idega.util.expression.ELUtil;
  * <p>
  * TODO laddi Describe Type AdminToolbar
  * </p>
- *  Last modified: $Date: 2008/12/09 01:32:31 $ by $Author: valdas $
+ *  Last modified: $Date: 2008/12/22 06:45:03 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AdminToolbar extends PresentationObjectTransitional {
 
@@ -49,8 +49,6 @@ public class AdminToolbar extends PresentationObjectTransitional {
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_ENGINE_SCRIPT);
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_UTIL_SCRIPT);
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, "/dwr/interface/AdminToolbarSession.js");
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("javascript/jquery.dimensions.js"));
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("javascript/jquery.dropshadow.js"));
 		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwc.getIWMainApplication().getBundle(CoreConstants.CORE_IW_BUNDLE_IDENTIFIER)
 																									.getVirtualPathWithFileNameString("javascript/AdminCore.js"));
 		
