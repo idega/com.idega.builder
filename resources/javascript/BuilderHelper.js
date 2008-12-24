@@ -172,11 +172,13 @@ function addEventsToBuilderElements() {
 	$$('div.moduleContainer').each(
 		function(element) {
 			element.addEvent('mouseenter', function() {
-				try {
-					showComponentInfoImage(element);
-					showModuleContainerTop(element);
-					showAllComponentsLabels(element);
-				} catch(err) {}
+				if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+					try {
+						showComponentInfoImage(element);
+						showModuleContainerTop(element);
+						showAllComponentsLabels(element);
+					} catch(err) {}
+				}
 			});
     	}
     );
@@ -184,7 +186,9 @@ function addEventsToBuilderElements() {
     $$('div.regionInfoImageContainer').each(
     	function(element) {
 			element.addEvent('click', function() {
-				setRegionAndModuleContentId(element);
+				if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+					setRegionAndModuleContentId(element);
+				}
 			});
 		}
 	);
@@ -197,25 +201,31 @@ function addEventsToBuilderElements() {
 			
 			element.addEvents({
 				'blur': function(e) {
-					if (element.type == 'text' || element.type == 'password') {
+					if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+						if (element.type == 'text' || element.type == 'password') {
+							e = new Event(e);
+							saveModuleProperty(e, element);
+							e.stop();
+						}
+					}
+				},
+				'keyup': function(e) {
+					if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+						element.setProperty('valuechanged', true);
 						e = new Event(e);
 						saveModuleProperty(e, element);
 						e.stop();
 					}
 				},
-				'keyup': function(e) {
-					element.setProperty('valuechanged', true);
-					e = new Event(e);
-					saveModuleProperty(e, element);
-					e.stop();
-				},
 				'click': function(e) {
-					if (element.type == 'radio' || element.type == 'checkbox') {
-						element.setProperty('valuechanged', true);
+					if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+						if (element.type == 'radio' || element.type == 'checkbox') {
+							element.setProperty('valuechanged', true);
+						}
+						e = new Event(e);
+						saveModuleProperty(e, element);
+						e.stop();
 					}
-					e = new Event(e);
-					saveModuleProperty(e, element);
-					e.stop();
 				}
 			});
 		}
@@ -225,10 +235,12 @@ function addEventsToBuilderElements() {
 			element.removeEvents('change');
 			
 			element.addEvent('change', function(e) {
-				element.setProperty('valuechanged', true);
-				e = new Event(e);
-				saveModuleProperty(e, element);
-				e.stop();
+				if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+					element.setProperty('valuechanged', true);
+					e = new Event(e);
+					saveModuleProperty(e, element);
+					e.stop();
+				}
 			});
 		}
 	);
@@ -237,7 +249,7 @@ function addEventsToBuilderElements() {
 		function(element) {
 			if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
 				ELEMENTS_WITH_TOOLTIP.push(element);
-				initToolTipForElement(element);
+				//initToolTipForElement(element);
 			}
 		}
 	);
@@ -245,7 +257,7 @@ function addEventsToBuilderElements() {
 		function(element) {
 			if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
 				ELEMENTS_WITH_TOOLTIP.push(element);
-				initToolTipForElement(element);
+				//initToolTipForElement(element);
 			}
 		}
 	);
@@ -265,13 +277,15 @@ function addEventsToBuilderElements() {
 function addActionsForArticleButton(element) {
 	if (!existsElementInArray(ELEMENTS_WITH_TOOLTIP, element)) {
 		ELEMENTS_WITH_TOOLTIP.push(element);
-		initToolTipForElement(element);
+		//initToolTipForElement(element);
 	}
 	
 	element.removeEvents('click');	//	Do not want to duplicate events
 	
 	element.addEvent('click', function() {
-		addConcreteModule(element);
+		if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+			addConcreteModule(element);
+		}
 	});
 }
 
