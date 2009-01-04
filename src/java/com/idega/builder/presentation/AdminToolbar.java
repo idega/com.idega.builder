@@ -28,10 +28,10 @@ import com.idega.util.expression.ELUtil;
  * <p>
  * TODO laddi Describe Type AdminToolbar
  * </p>
- *  Last modified: $Date: 2008/12/22 06:45:03 $ by $Author: valdas $
+ *  Last modified: $Date: 2009/01/04 10:33:57 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class AdminToolbar extends PresentationObjectTransitional {
 
@@ -133,6 +133,8 @@ public class AdminToolbar extends PresentationObjectTransitional {
 			else {
 				preview.setStyleClass("selected");
 			}
+			
+			PresentationUtil.addJavaScriptActionToBody(iwc, new StringBuilder("AdminCoreHelper.currentMode = '").append(mode).append("';").toString());
 		}
 		else {
 			preview.setStyleClass("selected");
