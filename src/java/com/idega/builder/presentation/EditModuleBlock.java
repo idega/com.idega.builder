@@ -35,6 +35,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.IFrame;
 import com.idega.util.CoreConstants;
 import com.idega.util.PresentationUtil;
+import com.idega.util.StringUtil;
 
 public class EditModuleBlock extends Block {
 	
@@ -46,7 +47,6 @@ public class EditModuleBlock extends Block {
 	
 	@Override
 	public void main(IWContext iwc) throws Exception {
-		String name = iwc.getParameter(BuilderConstants.MODULE_NAME);
 		String instanceId = iwc.getParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
 		String pageKey = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER_FOR_EDIT_MODULE_BLOCK);
 		if (instanceId == null) {
@@ -67,9 +67,13 @@ public class EditModuleBlock extends Block {
 			return;
 		}
 		
+		String name = null;
 		UIComponent component = builder.findComponentInPage(iwc, pageKey, instanceId);
 		if (component instanceof PresentationObject) {
 			name = ((PresentationObject) component).getBuilderName(iwc);
+		}
+		else {
+			name = component.getClass().getSimpleName();
 		}
 		
 		localizedText = iwrb.getLocalizedString("no_properties_for_this_module", localizedText);
@@ -84,7 +88,7 @@ public class EditModuleBlock extends Block {
 		
 		// Header
 		Layer header = new Layer();
-		header.add(new Heading1(name));
+		header.add(new Heading1(StringUtil.isEmpty(name) ? iwrb.getLocalizedString("unkown_module", "Unkown module") : name));
 		header.setId("editModuleHeader");
 		container.add(header);
 		

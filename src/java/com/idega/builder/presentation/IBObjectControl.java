@@ -6,10 +6,14 @@
  */
 package com.idega.builder.presentation;
 
+import java.util.Arrays;
+
 import javax.faces.component.UIComponent;
 
+import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -117,17 +121,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		}
 		else {
 			//TODO make this localizable and remove getBuilderName from PO
-			String className = this.object.getClass().getName();
-			int indexOfDot = className.lastIndexOf(".");
-			String objectName = null;
-			if (indexOfDot!=-1) {
-				objectName = className.substring(indexOfDot+1,className.length());
-			}
-			else {
-				objectName = className;
-			}
-			
-			text = new Span(new Text(objectName));
+			text = new Span(new Text(this.object.getClass().getSimpleName()));
 		}
 		if (moduleFromCurrentPage) {
 			StringBuffer tooltip = new StringBuffer(iwrb.getLocalizedString("move", "Move")).append(" :: ");
@@ -185,55 +179,40 @@ public class IBObjectControl extends PresentationObjectContainer {
 			item.setStyleClass("deleteModule");
 			item.add(new Span(new Text(iwrb.getLocalizedString("delete", "Delete"))));
 			list.add(item);
-			/*StringBuffer title = new StringBuffer(iwrb.getLocalizedString("delete", "Delete")).append(" :: ");
-			title.append(iwrb.getLocalizedString("delete_module", "Delete module"));
-			Image deleteImage = iwb.getImage("del_16.png", title.toString(), 16, 16);*/
 			StringBuffer action = new StringBuffer("deleteModule('").append(containerId).append(separator).append(instanceId);
 			action.append(separator).append(item.getId()).append("');");
 			item.setOnClick(action.toString());
-			/*deleteImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);
-			buttonsLayer.add(deleteImage);*/
 			
 			//	Copy module
 			item = new ListItem();
 			item.setStyleClass("copyModule");
 			item.add(new Span(new Text(iwrb.getLocalizedString("copy", "Copy"))));
 			list.add(item);
-			/*title = new StringBuffer(iwrb.getLocalizedString("copy", "Copy")).append(" :: ");
-			title.append(iwrb.getLocalizedString("copy_module", "Copy module"));
-			Image copyModule = iwb.getImage("copy_16.png", title.toString(), 16, 16);
-			copyModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);*/
 			action = new StringBuffer("copyThisModule('").append(containerId).append(separator).append(instanceId).append("');");
 			item.setOnClick(action.toString());
-			//buttonsLayer.add(copyModule);
 			
 			//	Cut module
 			item = new ListItem();
 			item.setStyleClass("cutModule");
 			item.add(new Span(new Text(iwrb.getLocalizedString("cut", "Cut"))));
 			list.add(item);
-			/*title = new StringBuffer(iwrb.getLocalizedString("cut", "Cut")).append(" :: ");
-			title.append(iwrb.getLocalizedString("cut_module", "Cut module"));
-			Image cutModule = iwb.getImage("cut_16.png", title.toString(), 16, 16);
-			cutModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);*/
 			action = new StringBuffer("cutThisModule('").append(item.getId()).append(separator).append(containerId).append(separator);
 			action.append(instanceId).append("');");
 			item.setOnClick(action.toString());
-			//buttonsLayer.add(cutModule);
 			
 			//	Module properties
 			item = new ListItem();
 			item.setStyleClass("propertiesModule");
 			list.add(item);
-			/*title = new StringBuffer(iwrb.getLocalizedString("module_properties", "Properties")).append(" :: ");
-			title.append(iwrb.getLocalizedString("set_module_properties", "Set module properties"));
-			Image propertiesImage = iwb.getImage("prefs_16.png", title.toString(), 16, 16);
-			propertiesImage.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);*/
 			Link link = new Link(new Span(new Text(iwrb.getLocalizedString("module_properties", "Properties"))));
 			link.setMarkupAttribute("rel", "moodalbox");
 			link.setStyleClass("modulePropertiesLinkStyleClass");
+			link.setStyleClass("modulePropertiesButtonInitialized");
+			link.setURL(BuilderLogic.getInstance().getUriToObject(EditModuleBlock.class, Arrays.asList(
+					new AdvancedProperty(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, instanceId),
+					new AdvancedProperty(BuilderConstants.IB_PAGE_PARAMETER_FOR_EDIT_MODULE_BLOCK, pageKey)
+			)));
 			item.add(link);
-			//buttonsLayer.add(link);
 			
 			HiddenInput regionIdHidden = new HiddenInput("regionId", this.parentKey);
 			buttonsLayer.add(regionIdHidden);

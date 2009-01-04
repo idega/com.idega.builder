@@ -138,12 +138,6 @@ function registerBuilderActions() {
 	
 	addEventsToBuilderElements();
 	
-	$$('div.moduleContainer').each(function(element) {
-		var layer = new Element('div');
-		layer.addClass('moduleWrapper');
-		$(layer).inject(element, 'top');
-	});
-	
 	$$('div.regionLabel').each(function(element) {
 		if (element.getStyle('display') != 'none') {
 			element.setStyle('display', 'none');
@@ -422,6 +416,10 @@ function showComponentInfoImage(element) {
 	var link = getFirstElementFromList(container.getElementsByTagName('a'));
 	if (link == null) {
 		return false;
+	}
+	if (jQuery(link).hasClass('modulePropertiesButtonInitialized')) {
+		MOOdalBox.register(link);
+		return;
 	}
 	
 	if (container.style.visibility == '') {
@@ -1283,7 +1281,9 @@ function pasteCopiedModule(id) {
 }
 
 function showMessageForUnloadingPage() {
-	showLoadingMessage(LOADING_LABEL);
+	if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+		showLoadingMessage(LOADING_LABEL);
+	}
 }
 
 function cutThisModule(id, containerId, instanceId) {
