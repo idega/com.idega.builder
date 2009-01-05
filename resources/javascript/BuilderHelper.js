@@ -138,6 +138,12 @@ function registerBuilderActions() {
 	
 	addEventsToBuilderElements();
 	
+	$$('div.moduleContainer').each(function(element) {
+		var layer = new Element('div');
+		layer.addClass('moduleWrapper');
+		$(layer).inject(element, 'top');
+	});
+	
 	$$('div.regionLabel').each(function(element) {
 		if (element.getStyle('display') != 'none') {
 			element.setStyle('display', 'none');
