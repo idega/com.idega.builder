@@ -1,5 +1,5 @@
 /*
- * $Id: PageCacher.java,v 1.25 2007/11/01 14:03:16 valdas Exp $
+ * $Id: PageCacher.java,v 1.26 2009/01/14 15:07:19 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -13,11 +13,14 @@ package com.idega.builder.business;
  *  The instance of this class holds an manages a cache of Builder pages that are instances
  * of CachedBuilderPage.<br>
  * 
- *  Last modified: $Date: 2007/11/01 14:03:16 $ by $Author: valdas $
+ *  Last modified: $Date: 2009/01/14 15:07:19 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.ejb.FinderException;
@@ -146,6 +149,12 @@ public class PageCacher
 				else if (icPage.getIsFormattedInJSP()){
 					bPage= new JspPage(key);
 				}
+				else if (icPage.getIsFormattedInFacelet()){
+					bPage= new FaceletPage(key);
+				}
+				else if (icPage.getIsFormattedInIBXML2()){
+					bPage= new IBXML2FaceletPage(key);
+				}
 				bPage.setICPage(icPage);
 				//bPage.setPageKey(key);
 				setPage(key, bPage);
@@ -265,5 +274,26 @@ public class PageCacher
 	
 	protected IWCacheManager2 getCacheManager(){
 		return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication());
+	}
+	
+	public Iterator<CachedBuilderPage> getAllPages(){
+		ICPageHome pHome;
+		Collection<CachedBuilderPage> allPages = new ArrayList<CachedBuilderPage>();
+		try {
+			pHome = (ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class);
+			Collection pages = pHome.findAllPagesAndTemplates();
+			
+			for (Iterator iterator = pages.iterator(); iterator.hasNext();) {
+				ICPage page = (ICPage) iterator.next();
+				String key = page.getPageKey();
+				allPages.add(getCachedBuilderPage(key));
+			}
+			
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return allPages.iterator();
 	}
 }

@@ -87,5 +87,11 @@
       <groupId>com.idega.block.platform</groupId>
       <artifactId>com.idega.block.login</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jtidy</groupId>
+      <artifactId>jtidy</artifactId>
+      <version>4aug2000r7-dev-m1.0</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

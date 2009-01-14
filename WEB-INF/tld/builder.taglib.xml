@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+  
+<facelet-taglib>
+
+	<namespace>http://xmlns.idega.com/com.idega.builder</namespace>
+	
+	<tag>
+		<tag-name>page</tag-name>
+  		<handler-class>com.idega.builder.facelets.BuilderPageTagHandler</handler-class>
+	</tag>
+	
+	<tag>
+  		<tag-name>region</tag-name>
+  		<handler-class>com.idega.builder.facelets.RegionTagHandler</handler-class>
+   </tag>
+
+	<tag>
+  		<tag-name>module</tag-name>
+  		<handler-class>com.idega.builder.facelets.ModuleTagHandler</handler-class>
+  	</tag>
+
+	<tag>
+  		<tag-name>property</tag-name>
+  		<handler-class>com.idega.builder.facelets.PropertyTagHandler</handler-class>
+  	</tag>
+  	
+  	<tag>
+  		<tag-name>name</tag-name>
+  		<handler-class>com.idega.builder.facelets.PropertyNameTagHandler</handler-class>
+  	</tag>
+  	
+  	<tag>
+  		<tag-name>value</tag-name>
+  		<handler-class>com.idega.builder.facelets.PropertyValueTagHandler</handler-class>
+  	</tag>
+  	
+  	 <tag>
+  		<tag-name>type</tag-name>
+  		<handler-class>com.idega.builder.facelets.PropertyTypeTagHandler</handler-class>
+  	</tag>
+  	
+  	<tag>
+  		<tag-name>ibxml</tag-name>
+  		<handler-class>com.idega.builder.facelets.IBXMLTagHandler</handler-class>
+  	</tag>
+  	
+  	<tag>
+  		<tag-name>xml</tag-name>
+  		<handler-class>com.idega.builder.facelets.IBXMLTagHandler</handler-class>
+  	</tag>
+  	
+  	<tag>
+  		<tag-name>objectcontrol</tag-name>
+  		<component>
+	    	<component-type>IBObjectControl2</component-type>
+  		</component>
+  	</tag>
+
+  	<tag>
+  		<tag-name>regioncontrol</tag-name>
+  		<component>
+	    	<component-type>IBRegionControl</component-type>
+  		</component>  	</tag>
+	
+</facelet-taglib>

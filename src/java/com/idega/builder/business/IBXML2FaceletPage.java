@@ -1,5 +1,5 @@
 /*
- * $Id: JspPage.java,v 1.13 2009/01/14 15:07:18 tryggvil Exp $
+ * $Id: IBXML2FaceletPage.java,v 1.1 2009/01/14 15:07:21 tryggvil Exp $
  * Created on 17.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,60 +16,33 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.logging.Logger;
 
+import com.idega.builder.facelets.FaceletsUtil;
 import com.idega.core.view.ViewNodeBase;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
-import com.idega.util.StringHandler;
+import com.idega.xml.XMLDocument;
+import com.idega.xml.XMLElement;
 
 
 /**
  * <p>
- * This is an implementation for a a "JSP" based Builder page that is rendered through JSF.<br/>
- * This means that the page is based on a JSP page and the rendering is dispatched to the 
- * Servlet/JSP container (e.g. Tomcat) for processing the rendering.
+ * This is an implementation for a a "Facelet" based Builder page that is rendered through JSF.<br/>
+ * This means that the page is based on a Facelet page and the rendering is dispatched to the 
+ * Facelets view handler for processing the rendering.
  * </p>
- *  Last modified: $Date: 2009/01/14 15:07:18 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2009/01/14 15:07:21 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.1 $
  */
-public class JspPage extends CachedBuilderPage {
+public class IBXML2FaceletPage extends IBXMLPage {
 	
 	/**
 	 * Comment for <code>serialVersionUID</code>
 	 */
 	private static final long serialVersionUID = -1115066670523521567L;
-	private static final String BUILDERPAGE_PREFIX = "builderpage_";
-	private static final int BUILDERPAGE_PREFIX_LENGTH = BUILDERPAGE_PREFIX.length();
-	private static final String JSP_PAGE_EXTENSION_WITH_DOT = ".jsp";
-	private static final int JSP_PAGE_EXTENSION_WITH_DOT_LENGTH = JSP_PAGE_EXTENSION_WITH_DOT.length();
-	
-	/**
-	 * Returns page key if the view id represents a JSPPage else null. 
-	 * 
-	 * @param viewId
-	 * @return
-	 */
-	public static String getPageKey(String viewId) {
-		// we are looking for something like "/jsps/builderpage_12.jsp"
-		// quick check at the beginning
-		if (! viewId.endsWith(JSP_PAGE_EXTENSION_WITH_DOT)) {
-			// no jsp page at all
-			return null;
-		}
-		int startIndex = viewId.lastIndexOf(BUILDERPAGE_PREFIX);
-		if (startIndex < 0) {
-			// jsp page but not a builder page
-			return null;
-		}
-		startIndex += BUILDERPAGE_PREFIX_LENGTH;
-		int endIndex = viewId.length() - JSP_PAGE_EXTENSION_WITH_DOT_LENGTH;
-		String key = viewId.substring(startIndex, endIndex);
-		if (StringHandler.isNaturalNumber(key)) {
-			return key;
-		}
-		return null;
-	}
+
 	
 	public String getURIWithContextPath() {
 		/*String parentUri = getParent().getURI();
@@ -80,45 +53,45 @@ public class JspPage extends CachedBuilderPage {
 		return super.getURIWithContextPath();
 		
 	}
-	private static Logger log = Logger.getLogger(JspPage.class.getName());
+	private static Logger log = Logger.getLogger(IBXML2FaceletPage.class.getName());
 	
 		private boolean isLoadedToDisk=false;
-		private static File jspTmpDir;
+		private static File diskTempDir;
 		private String resourceURI;
 	
-		public JspPage(String pageId){
+		public IBXML2FaceletPage(String pageId){
 			super(pageId);
 			super.setResourceBased(true);
 		}
 		
 		protected void readPageStream(InputStream pageStream){
-			File jspTmpDirectory = getJSPTmpDirectory();
-			File jspFile = new File(jspTmpDirectory,getJSPFileName());
+			File jspTmpDirectory = getDiskTempDirectory();
+			File jspFile = new File(jspTmpDirectory,getFileNameOnDisk());
 			streamToFile(pageStream,jspFile);
 			setLoadedToDisk(true);
 		}
 		
-		private String getJSPFileName(){
-			StringBuffer buffer = new StringBuffer(BUILDERPAGE_PREFIX);
-			buffer.append(getPageKey()).append(JSP_PAGE_EXTENSION_WITH_DOT);
+		private String getFileNameOnDisk(){
+			StringBuffer buffer = new StringBuffer(FaceletsUtil.BUILDERPAGE_PREFIX);
+			buffer.append(getPageKey()).append(FaceletsUtil.FACELET_PAGE_EXTENSION_WITH_DOT);
 			return buffer.toString();
 		}
 		
-		private String getJspFilesFolderName(){
-			return "jsps";
+		private String getDiskFilesFolderName(){
+			return FaceletsUtil.PAGES_DEFAULT_FOLDER;
 		}
 
-		private File getJSPTmpDirectory(){
-			if(jspTmpDir==null){
+		private File getDiskTempDirectory(){
+			if(diskTempDir==null){
 				IWMainApplication iwma = this.getIWMainApplication();
 				String appRealPath = iwma.getApplicationRealPath();
 				File appRealDir = new File(appRealPath);
-				jspTmpDir = new File(appRealDir,getJspFilesFolderName());
-				if(!jspTmpDir.exists()){
-					jspTmpDir.mkdir();
+				diskTempDir = new File(appRealDir,getDiskFilesFolderName());
+				if(!diskTempDir.exists()){
+					diskTempDir.mkdir();
 				}
 			}
-			return jspTmpDir;
+			return diskTempDir;
 		}
 		
 		private void streamToFile(InputStream pageStream,File jspFile){
@@ -185,7 +158,7 @@ public class JspPage extends CachedBuilderPage {
 		
 		public String getResourceURI(){
 			if(this.resourceURI==null){
-				this.resourceURI="/"+getJspFilesFolderName()+"/"+getJSPFileName();
+				this.resourceURI="/"+getDiskFilesFolderName()+"/"+getFileNameOnDisk();
 			}
 			return this.resourceURI;
 		}
@@ -199,7 +172,7 @@ public class JspPage extends CachedBuilderPage {
 					templateReference="template=\""+templateKey+"\"";
 				}
 			}
-			String source = "<?xml version=\"1.0\"?>\n<jsp:root xmlns:jsp=\"http://java.sun.com/JSP/Page\"\nxmlns:h=\"http://java.sun.com/jsf/html\"\nxmlns:jsf=\"http://java.sun.com/jsf/core\"\nxmlns:builder=\"http://xmlns.idega.com/com.idega.builder\"\n version=\"1.2\">\n<jsp:directive.page contentType=\"text/html\" pageEncoding=\"UTF-8\"/>\n<jsf:view>\n<builder:page id=\"builderpage_"+getPageKey()+"\" "+templateReference+">\n</builder:page>\n</jsf:view>\n</jsp:root>";
+			String source = "<?xml version=\"1.0\"?>\n<page xmlns=\"http://xmlns.idega.com/com.idega.builder\" id=\"builderpage_"+getPageKey()+"\" "+templateReference+">\n</page>";
 			try {
 				setSourceFromString(source);
 			}
@@ -211,7 +184,54 @@ public class JspPage extends CachedBuilderPage {
 		}
 		
 		public ViewNodeBase getViewNodeBase(){
-			return ViewNodeBase.JSP;
+			IWContext iwc = IWContext.getCurrentInstance();
+			if(isBuilderEditMode(iwc)){
+				return ViewNodeBase.COMPONENT;
+			}
+			else{
+				return ViewNodeBase.FACELET;
+			}
+		}
+
+		
+		public XMLElement getPageRootElement() {
+			//return getRootElement();
+			return super.getPageRootElement();
+		}
+		
+		protected XMLElement getPageElement(XMLElement root) {
+			XMLElement pageXML = root.getChild(IBXMLConstants.PAGE_STRING,FaceletsUtil.BUILDER_NAMESPACE);
+			return pageXML;
+		}
+		
+		@Override
+		public void setPageAsEmptyPage(String type, String template) {
+			XMLElement _rootElement = new XMLElement(IBXMLConstants.ROOT_STRING,FaceletsUtil.BUILDER_NAMESPACE);
+			setRootElement(_rootElement);
+			//XMLElement pageElement = new XMLElement(IBXMLConstants.PAGE_STRING,FaceletsUtil.BUILDER_NAMESPACE);
+			XMLElement pageElement = new XMLElement(IBXMLConstants.PAGE_STRING,FaceletsUtil.BUILDER_NAMESPACE);
+			//setRootElement(pageElement);
+			if (type == null) {
+				type = IBXMLConstants.PAGE_TYPE_PAGE;
+			}
+
+			if ((type.equals(TYPE_DRAFT)) || (type.equals(TYPE_PAGE)) || (type.equals(TYPE_TEMPLATE)) || (type.equals(TYPE_DPT_TEMPLATE)) || (type.equals(TYPE_DPT_PAGE))) {
+				pageElement.setAttribute(IBXMLConstants.PAGE_TYPE, type);
+				setType(type);
+			}
+			else {
+				pageElement.setAttribute(IBXMLConstants.PAGE_TYPE, TYPE_PAGE);
+				setType(type);
+			}
+
+			if (template != null) {
+				pageElement.setAttribute(IBXMLConstants.TEMPLATE_STRING, template);
+			}
+
+			this.setXMLDocument(new XMLDocument(pageElement));
+			
+			_rootElement.addContent(pageElement);
+			setPopulatedPage(getBuilderLogic().getIBXMLReader().getPopulatedPage(this));
 		}
 		
 }

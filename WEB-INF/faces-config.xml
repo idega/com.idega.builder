@@ -15,7 +15,33 @@
 		<component-class>com.idega.builder.presentation.IBTemplateChooser</component-class>
 	</component>
     
-    	<managed-bean>
+    <component>
+		<component-type>IBObjectControl</component-type>
+		<component-class>com.idega.builder.presentation.IBObjectControl</component-class>
+	</component>
+
+    <component>
+		<component-type>IBObjectControl2</component-type>
+		<component-class>com.idega.builder.presentation.IBObjectControl2</component-class>
+	</component>
+	
+	<component>
+		<component-type>IBRegionControl</component-type>
+		<component-class>com.idega.builder.presentation.IBRegionControl</component-class>
+	</component>
+	
+	<component>
+		<component-type>IBTemplateChooser</component-type>
+		<component-class>com.idega.builder.presentation.IBTemplateChooser</component-class>
+	</component>
+    
+    
+    <component>
+	    <component-type>BuilderPage</component-type>
+		<component-class>com.idega.builder.presentation.BuilderPage</component-class>
+	</component>
+    
+    <managed-bean>
 		<managed-bean-name>simpleTemplateCreationBean</managed-bean-name>
 		<managed-bean-class>com.idega.builder.bean.SimpleTemplateCreationManagedBean</managed-bean-class>
 		<managed-bean-scope>request</managed-bean-scope>

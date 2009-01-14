@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLPage.java,v 1.73 2008/12/15 13:10:59 laddi Exp $
+ * $Id: IBXMLPage.java,v 1.74 2009/01/14 15:07:18 tryggvil Exp $
  * Created in 2001 by Tryggvi Larusson
  *
  * Copyright (C) 2001-2004 Idega Software hf. All Rights Reserved.
@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.idega.builder.data.IBPageBMPBean;
+import com.idega.core.accesscontrol.business.PagePermissionObject;
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.component.data.ICObjectInstance;
@@ -45,10 +46,10 @@ import com.idega.xml.XMLParser;
  * An instance of this class reads pages of format IBXML from the database and returns
  * the elements/modules/applications it contains.
  *
- *  Last modified: $Date: 2008/12/15 13:10:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2009/01/14 15:07:18 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.73 $
+ * @version $Revision: 1.74 $
  */
 public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentBasedPage{
 
@@ -306,7 +307,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		return true;
 	}
 	
-	private void setXMLDocument(XMLDocument document) {
+	protected void setXMLDocument(XMLDocument document) {
 		this.xmlDocument = document;
 		this.rootElement = document.getRootElement();
 	}
@@ -411,6 +412,12 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			return getRootElement().getChild(IBXMLConstants.PAGE_STRING);
 		}
 		return null;
+	}
+	
+
+	protected XMLElement getPageElement(XMLElement root) {
+		XMLElement pageXML = root.getChild(IBXMLConstants.PAGE_STRING);
+		return pageXML;
 	}
 
 	/**
@@ -524,14 +531,13 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * Gets a new Page instance with all Builder and Access control checks:
 	 */
 	public Page getPage(IWContext iwc) {
-	    boolean builderView = false;
-      if (getBuilderLogic().isBuilderApplicationRunning(iwc)) {
-      	builderView = true;
-      }
-	    return getPage(builderView,iwc);
+	    return getPageBuilderChecked(iwc);
 	}
 	
-	private boolean hasEditPermissions(IWContext iwc, Page page) {
+	public boolean hasEditPermissions(IWContext iwc) {
+	//private boolean hasEditPermissions(IWContext iwc, Page page) {
+		
+		PagePermissionObject page = new PagePermissionObject(getPageKey());
 		if (iwc.hasEditPermission(page)) {
 			return true;
 		}
@@ -550,15 +556,16 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	/**
 	 *
 	 */
-	public Page getPage(boolean builderEditView,IWContext iwc) {
+	public Page getPageBuilderChecked(IWContext iwc) {
 		try {
+			
 			boolean permissionview = false;
 			if (iwc.isParameterSet("ic_pm") && iwc.isSuperAdmin()) {
 				permissionview = true;
 			}
 			Page page = getNewPage(iwc);
 			
-			if (!page.isHideBuilder() && builderEditView && hasEditPermissions(iwc, page)) {
+			if (!page.isHideBuilder() && isBuilderEditMode(iwc)) {
 				return (getBuilderLogic().getBuilderTransformed(getPageKey(), page, iwc));
 			}
 			else if (permissionview) {
@@ -587,6 +594,14 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 		}
 	}
 	
+	public boolean isBuilderEditMode(IWContext iwc) {
+	    boolean builderEditView = false;
+	    if (getBuilderLogic().isBuilderApplicationRunning(iwc)) {
+	    	builderEditView = true;
+	    }
+		return(builderEditView && hasEditPermissions(iwc));
+	}
+
 	public Page getNewPageCloned(){
 		return (Page) this.getPopulatedPage().clone();
 	}

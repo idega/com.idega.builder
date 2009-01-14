@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.363 2008/12/17 16:15:16 civilis Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.364 2009/01/14 15:07:19 tryggvil Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -44,6 +44,7 @@ import org.jdom.output.XMLOutputter;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdminToolbarSession;
 import com.idega.builder.bean.AdvancedProperty;
+import com.idega.builder.facelets.BuilderFaceletConverter;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.AdminToolbar;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
@@ -147,7 +148,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2008/12/17 16:15:16 $ by $Author: civilis $
+ * Last modified: $Date: 2009/01/14 15:07:19 $ by $Author: tryggvil $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -192,11 +193,13 @@ public class BuilderLogic implements Singleton {
 	private static Instantiator instantiator = new Instantiator() { @Override
 	public Object getInstance() { return new BuilderLogic();}};
 
-	public String PAGE_FORMAT_IBXML="IBXML";
-	public String PAGE_FORMAT_HTML="HTML";
-	public String PAGE_FORMAT_JSP_1_2="JSP_1_2";
+	public static final String PAGE_FORMAT_IBXML="IBXML";
+	public static final String PAGE_FORMAT_HTML="HTML";
+	public static final String PAGE_FORMAT_JSP_1_2="JSP_1_2";
+	public static final String PAGE_FORMAT_FACELET="FACELET";
+	public static final String PAGE_FORMAT_IBXML2="IBXML2";
 	
-	private String[] pageFormats = {this.PAGE_FORMAT_IBXML,this.PAGE_FORMAT_HTML,this.PAGE_FORMAT_JSP_1_2};
+	private String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_IBXML2,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2,PAGE_FORMAT_FACELET};
 	
 	//private volatile Web2Business web2 = null;
 	private IWSlideService slideService = null;
@@ -283,46 +286,7 @@ public class BuilderLogic implements Singleton {
 		IWBundle iwb = getBuilderBundle();
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		
-		AddResource adder = AddResourceFactory.getInstance(iwc);
-		
-		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
-		
-		//	JavaScript
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_ENGINE_SCRIPT);
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_UTIL_SCRIPT);
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
-		try {
-			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	MooTools
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		try {
-			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxScriptFilePath(false));		//	MOOdalBox
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getReflectionForMootoolsScriptFilePath());	//	Reflection
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsScript());				//	MooTabs
-		
-		//	JavaScript actions
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderActions);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderDragDropActions);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', showOrHideModulePasteIcons);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', intializeMoodalboxInBuilder);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('resize', intializeMoodalboxInBuilder);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('beforeunload', showMessageForUnloadingPage);");
-		
-		//	CSS
-		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, iwb.getVirtualPathWithFileNameString("style/builder.css"));	//	Builder
-		try {
-			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());						//	MoodalBox
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsStyle());							//	MooTabs
+		addResourcesForBuilderEditMode(iwc, iwb);							//	MooTabs
 		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
@@ -413,6 +377,55 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		return (page);
+	}
+
+	public void addResourcesForBuilderEditMode(IWContext iwc){
+		IWBundle builderBundle = iwc.getIWMainApplication().getBundle("com.idega.builder");
+		addResourcesForBuilderEditMode(iwc,builderBundle);
+	}
+	
+	public void addResourcesForBuilderEditMode(IWContext iwc,
+			IWBundle builderBundle) {
+		AddResource adder = AddResourceFactory.getInstance(iwc);
+		
+		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
+		
+		//	JavaScript
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_ENGINE_SCRIPT);
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_UTIL_SCRIPT);
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, builderBundle.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, builderBundle.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
+		try {
+			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	MooTools
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		try {
+			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxScriptFilePath(false));		//	MOOdalBox
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getReflectionForMootoolsScriptFilePath());	//	Reflection
+		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsScript());				//	MooTabs
+		
+		//	JavaScript actions
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderActions);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderDragDropActions);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', showOrHideModulePasteIcons);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', intializeMoodalboxInBuilder);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('resize', intializeMoodalboxInBuilder);");
+		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('beforeunload', showMessageForUnloadingPage);");
+		
+		//	CSS
+		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, builderBundle.getVirtualPathWithFileNameString("style/builder.css"));	//	Builder
+		try {
+			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());						//	MoodalBox
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsStyle());
 	}
 
 	private Layer getLabelMarker(String instanceId, String parentKey) {
@@ -935,6 +948,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean setPageSource(IWContext iwc,String pageFormat,String stringSourceMarkup){
 		String pageKey = getCurrentIBPage(iwc);
+		
 		return setPageSource(pageKey,pageFormat,stringSourceMarkup);
 	}
 	
@@ -946,6 +960,14 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean setPageSource(String pageKey,String pageFormat,String stringSourceMarkup){
 		try{
+			if(pageFormat!=null && pageFormat.equals(PAGE_FORMAT_FACELET)||pageFormat.equals(PAGE_FORMAT_IBXML2)){
+				CachedBuilderPage page = getCachedBuilderPage(pageKey);
+				BuilderFaceletConverter converter = new BuilderFaceletConverter(page,pageFormat,stringSourceMarkup);
+				converter.convert();
+				stringSourceMarkup = converter.getConvertedMarkupString();
+			}
+			
+			
 			getPageCacher().storePage(pageKey,pageFormat,stringSourceMarkup);
 			return true;
 		}
@@ -2317,8 +2339,10 @@ public class BuilderLogic implements Singleton {
 	public Map getPageFormatsSupportedAndDescription(){
 		Map<String, String> map = new HashMap<String, String>();
 		map.put(this.PAGE_FORMAT_IBXML,"Builder (IBXML)");
+		map.put(this.PAGE_FORMAT_IBXML2,"Builder Facelet (IBXML2)");
 		map.put(this.PAGE_FORMAT_HTML,"HTML");
 		map.put(this.PAGE_FORMAT_JSP_1_2,"JSP 1.2");
+		map.put(this.PAGE_FORMAT_FACELET,"Facelet");
 		return map;
 	}
 	

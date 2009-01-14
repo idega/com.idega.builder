@@ -5,6 +5,7 @@
  http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	version="2.4">
 
+	<!-- Legacy Servlets - These have since platform 3 been replaced with the FacesServlet -->
 	<servlet>
 		<display-name>IBMainServlet</display-name>
 		<servlet-name>IBMainServlet</servlet-name>
@@ -21,7 +22,6 @@
 		</servlet-class>
 		<load-on-startup>-1</load-on-startup>
 	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>IBMainServlet</servlet-name>
 		<url-pattern>/servlet/builder</url-pattern>
@@ -51,5 +51,12 @@
 		<servlet-name>IBIFrameServlet</servlet-name>
 		<url-pattern>/servlet/IBIFrameServlet</url-pattern>
 	</servlet-mapping>
+	
+	
+	<!-- Plug in the Builder Facelets Decorator -->
+ 	<context-param>
+ 		<param-name>facelets.DECORATORS</param-name>
+		<param-value>com.idega.builder.facelets.BuilderTagDecorator</param-value>
+	</context-param>
 
 </web-app>

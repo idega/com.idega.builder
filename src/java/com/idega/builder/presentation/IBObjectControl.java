@@ -38,7 +38,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 	private Layer contentLayer = null;
 	private Layer containerLayer = null;
 	
-	private PresentationObjectContainer parent;
+	private UIComponent parent;
 	private String parentKey;
 	private UIComponent object;
 	private boolean isPresentationObject = false;
@@ -51,7 +51,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 	
-	public IBObjectControl(UIComponent obj, PresentationObjectContainer parent, String parentKey, IWContext iwc, int index, boolean lastModuleInRegion,
+	public IBObjectControl(UIComponent obj, UIComponent parent, String parentKey, IWContext iwc, int index, boolean lastModuleInRegion,
 			boolean moduleFromCurrentPage) {
 		this.parent = parent;
 		this.object = obj;
@@ -65,6 +65,30 @@ public class IBObjectControl extends PresentationObjectContainer {
 		add(obj);
 	}
 	
+	public boolean isPresentationObject() {
+		return isPresentationObject;
+	}
+
+	public void setPresentationObject(boolean isPresentationObject) {
+		this.isPresentationObject = isPresentationObject;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public boolean isLastModuleInRegion() {
+		return lastModuleInRegion;
+	}
+
+	public void setLastModuleInRegion(boolean lastModuleInRegion) {
+		this.lastModuleInRegion = lastModuleInRegion;
+	}
+
 	private void init(IWContext iwc) {
 		IWBundle iwb = getBundle(iwc);
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
@@ -281,8 +305,14 @@ public class IBObjectControl extends PresentationObjectContainer {
 		
 		obj.setStyleClass("addedBuilderModule");
 		this.contentLayer.add(obj);
-		obj.setParentObject(this.parent);
-		obj.setLocation(this.parent.getLocation());
+		if(this.parent instanceof PresentationObjectContainer){
+			PresentationObjectContainer parentContainer = (PresentationObjectContainer)parent;
+			obj.setParentObject(parentContainer);
+			obj.setLocation(parentContainer.getLocation());
+		}
+		else{
+			obj.setParent(this.parent);
+		}
 		
 	}
 

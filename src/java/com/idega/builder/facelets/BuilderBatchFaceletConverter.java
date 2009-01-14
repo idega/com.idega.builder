@@ -1,0 +1,62 @@
+package com.idega.builder.facelets;
+
+import java.util.Iterator;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.CachedBuilderPage;
+import com.idega.builder.business.PageCacher;
+
+@Scope("singleton")
+@Service(BuilderBatchFaceletConverter.beanIdentifier)
+public class BuilderBatchFaceletConverter {
+	
+	public static final String beanIdentifier = "builderBatchFaceletConverter";
+
+	BuilderLogic bLogic = BuilderLogic.getInstance();
+	
+	public void convertAllPagesToFaceletsLegacy(){		
+		PageCacher cacher = bLogic.getPageCacher();
+		Iterator<CachedBuilderPage> iter = cacher.getAllPages();
+		while(iter.hasNext()){
+			CachedBuilderPage page = iter.next();
+			try {
+				if(page.getPageFormat().equals(BuilderLogic.PAGE_FORMAT_IBXML)){
+					String pageKey = page.getPageKey();
+					BuilderFaceletConverter converter = new BuilderFaceletConverter(page,BuilderLogic.PAGE_FORMAT_IBXML2);
+					converter.convert();
+					String convertedContent = converter.getConvertedMarkupString();
+					cacher.storePage(pageKey, BuilderLogic.PAGE_FORMAT_IBXML2, convertedContent);
+					cacher.flagPageInvalid(pageKey);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void convertAllPagesToFaceletsCompliant(){
+		PageCacher cacher = bLogic.getPageCacher();
+		Iterator<CachedBuilderPage> iter = cacher.getAllPages();
+		while(iter.hasNext()){
+			CachedBuilderPage page = iter.next();
+			try {
+				if(page.getPageFormat().equals(BuilderLogic.PAGE_FORMAT_IBXML)||page.getPageFormat().equals(BuilderLogic.PAGE_FORMAT_HTML)){
+					String pageKey = page.getPageKey();
+					BuilderFaceletConverter converter = new BuilderFaceletConverter(page,BuilderLogic.PAGE_FORMAT_FACELET);
+					converter.convert();
+					String convertedContent = converter.getConvertedMarkupString();
+					cacher.storePage(pageKey, BuilderLogic.PAGE_FORMAT_FACELET, convertedContent);
+					cacher.flagPageInvalid(pageKey);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}

@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.17 2007/10/17 15:09:25 valdas Exp $
+ * $Id: CachedBuilderPage.java,v 1.18 2009/01/14 15:07:19 tryggvil Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -204,7 +204,9 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			if (stream == null) {
 				return;
 			}
+			ensureReferencedPagesLoaded(ibpage);
 			readPageStream(stream);
+
 			if (ibpage.isPage()) {
 				setType(TYPE_PAGE);
 			}
@@ -253,6 +255,16 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 	}
 	
+	protected void ensureReferencedPagesLoaded(ICPage ibpage) {
+		//Ensuring that referenced templates are loaded before us
+		String templateKey = ibpage.getTemplateKey();
+		if(templateKey!=null){
+			if(!templateKey.equals("-1")){
+				CachedBuilderPage page = getPageCacher().getCachedBuilderPage(templateKey);
+			}
+		}
+	}
+
 	/**
 	 * <p>
 	 * Method for getting a reference to the inputstream for reading the page.

@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.10 2008/12/13 21:01:41 eiki Exp $
+ * $Id: IBXMLReader.java,v 1.11 2009/01/14 15:07:18 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -109,7 +109,7 @@ public class IBXMLReader {
 			System.err.println("IBXML Root element is null");
 			return null;
 		}
-		XMLElement pageXML = root.getChild(IBXMLConstants.PAGE_STRING);
+		XMLElement pageXML = ibxml.getPageElement(root);
 		List pageAttr = pageXML.getAttributes();
 		Iterator attr = pageAttr.iterator();
 
@@ -373,7 +373,8 @@ public class IBXMLReader {
 				Iterator childrenIt = children.iterator();
 
 				while (childrenIt.hasNext()) {
-					parseElement((XMLElement) childrenIt.next(), (PresentationObjectContainer) newRegionParent, ibxml);
+					XMLElement element = (XMLElement)childrenIt.next();
+					parseElement(element , (PresentationObjectContainer) newRegionParent, ibxml);
 				}
 			}
 		}
@@ -538,15 +539,17 @@ public class IBXMLReader {
 			//else if(icObjectInstanceId!=null){
 			//else if
 			
-			setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);	
-			
-			
-			//TODO JSF Compat IS this necesery?
-			//This is a hack to refresh the property cache so that we don't get old properties.
-			//(this is used in JSF state restoring for PresentationObjects)
-			String objectCacheKey = BuilderLogic.getInstance().getInstanceId(firstUICInstance);
-			PropertyCache.getInstance().clearPropertiesForKey(objectCacheKey);
+			if(firstUICInstance!=null){
+				setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);	
+				
+				
+				//TODO JSF Compat IS this necesery?
+				//This is a hack to refresh the property cache so that we don't get old properties.
+				//(this is used in JSF state restoring for PresentationObjects)
+				String objectCacheKey = BuilderLogic.getInstance().getInstanceId(firstUICInstance);
+				PropertyCache.getInstance().clearPropertiesForKey(objectCacheKey);
 			//////
+			}
 			
 			//TODO are there any similar UIComponent containers we need to check for?
 			if (firstUICInstance instanceof PresentationObjectContainer) {
