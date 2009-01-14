@@ -18,6 +18,7 @@ public class FaceletsUtil {
 	public static final XMLNamespace BUILDER_NAMESPACE=new XMLNamespace("http://xmlns.idega.com/com.idega.builder");
 	
 	public static String getRewrittenTemplateReference(CachedBuilderPage page,String templateId) {
+		//TODO: Implement conversion based on PageURI
 		return "/facelets/builderpage_" + templateId + ".xhtml";
 	}
 	
