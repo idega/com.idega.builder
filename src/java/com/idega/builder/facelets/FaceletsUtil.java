@@ -4,6 +4,16 @@ import com.idega.builder.business.CachedBuilderPage;
 import com.idega.util.StringHandler;
 import com.idega.xml.XMLNamespace;
 
+/**
+ * <p>
+ * Utility Class for the Facelets Builder implmementation
+ * </p>
+ * 
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
+ * 
+ * Last modified: $Date: 2009/01/14 15:36:57 $ by $Author: tryggvil $
+ * @version $Id: FaceletsUtil.java,v 1.3 2009/01/14 15:36:57 tryggvil Exp $
+ */
 public class FaceletsUtil {
 	/**
 	 * Comment for <code>serialVersionUID</code>
