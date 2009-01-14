@@ -18,8 +18,8 @@ import com.sun.facelets.tag.TagHandler;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/01/14 15:07:18 $ by $Author: tryggvil $
- * @version 1.0
+ * Last modified: $Date: 2009/01/14 15:35:25 $ by $Author: tryggvil $
+ * @version $Id: IBXMLTagHandler.java,v 1.2 2009/01/14 15:35:25 tryggvil Exp $
  */
 public class IBXMLTagHandler extends TagHandler{
 

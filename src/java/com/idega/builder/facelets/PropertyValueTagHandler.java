@@ -15,12 +15,13 @@ import com.sun.facelets.tag.TextHandler;
 
 /**
  * <p>
- * Class handle the root tag in IBXML
+ * Implementation of the "value" tag in the IBXML page format
+ * as a Facelets Tag handler
  * </p>
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/01/14 15:07:18 $ by $Author: tryggvil $
+ * Last modified: $Date: 2009/01/14 15:35:25 $ by $Author: tryggvil $
  * @version 1.0
  */
 public class PropertyValueTagHandler extends TagHandler{

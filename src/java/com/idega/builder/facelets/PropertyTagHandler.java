@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyTagHandler.java,v 1.1 2009/01/14 15:07:18 tryggvil Exp $
+ * $Id: PropertyTagHandler.java,v 1.2 2009/01/14 15:35:25 tryggvil Exp $
  * Created on 15.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,11 +30,15 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
 /**
+ * <p>
+ * Implementation of the "property" tag in the IBXML page format
+ * as a Facelets Tag handler
+ * </p>
  * 
- *  Last modified: $Date: 2009/01/14 15:07:18 $ by $Author: tryggvil $
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.1 $
+ * Last modified: $Date: 2009/01/14 15:35:25 $ by $Author: tryggvil $
+ * @version $Id: PropertyTagHandler.java,v 1.2 2009/01/14 15:35:25 tryggvil Exp $
  */
 public class PropertyTagHandler extends TagHandler{
 

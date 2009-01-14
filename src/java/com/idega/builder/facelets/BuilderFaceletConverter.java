@@ -26,13 +26,13 @@ import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLParser;
 /**
  * <p>
- * Class to convert IBXML and HTML to the new Facelet formats.
+ * Class to convert one IBXML and HTML page to the new Facelet formats.
  * </p>
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/01/14 15:07:18 $ by $Author: tryggvil $
- * @version 1.0
+ * Last modified: $Date: 2009/01/14 15:36:08 $ by $Author: tryggvil $
+ * @version $Id: BuilderFaceletConverter.java,v 1.3 2009/01/14 15:36:08 tryggvil Exp $
  */
 public class BuilderFaceletConverter {
 

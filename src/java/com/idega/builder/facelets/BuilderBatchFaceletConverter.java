@@ -16,8 +16,8 @@ import com.idega.builder.business.PageCacher;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/01/14 15:32:14 $ by $Author: tryggvil $
- * @version 1.0
+ * Last modified: $Date: 2009/01/14 15:35:24 $ by $Author: tryggvil $
+ * @version $Id: BuilderBatchFaceletConverter.java,v 1.3 2009/01/14 15:35:24 tryggvil Exp $
  */
 @Scope("singleton")
 @Service(BuilderBatchFaceletConverter.beanIdentifier)

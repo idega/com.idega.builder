@@ -44,11 +44,15 @@ import com.sun.facelets.tag.jsf.core.FacetHandler;
 import com.sun.facelets.util.FacesAPI;
 
 /**
- * Implementation of the tag logic used in the JSF specification. This is your
- * golden hammer for wiring UIComponents to Facelets.
+ * <p>
+ * Implementation of the "page" tag in the IBXML page format
+ * as a Facelets Tag handler
+ * </p>
  * 
- * @author Jacob Hookom
- * @version $Id: BuilderPageTagHandler.java,v 1.1 2009/01/14 15:07:18 tryggvil Exp $
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
+ * 
+ * Last modified: $Date: 2009/01/14 15:35:25 $ by $Author: tryggvil $
+ * @version $Id: BuilderPageTagHandler.java,v 1.2 2009/01/14 15:35:25 tryggvil Exp $
  */
 public class BuilderPageTagHandler extends MetaTagHandler {
     private final static Logger log = Logger
