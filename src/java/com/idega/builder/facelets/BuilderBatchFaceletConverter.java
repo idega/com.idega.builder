@@ -9,6 +9,16 @@ import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.CachedBuilderPage;
 import com.idega.builder.business.PageCacher;
 
+/**
+ * <p>
+ * Class to convert the Whole Builder Tree to the new Facelet formats
+ * </p>
+ * 
+ * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
+ * 
+ * Last modified: $Date: 2009/01/14 15:32:14 $ by $Author: tryggvil $
+ * @version 1.0
+ */
 @Scope("singleton")
 @Service(BuilderBatchFaceletConverter.beanIdentifier)
 public class BuilderBatchFaceletConverter {
