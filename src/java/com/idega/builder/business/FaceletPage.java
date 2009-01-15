@@ -21,10 +21,10 @@ import com.idega.util.CoreConstants;
  * This means that the page is based on a Facelet page and the rendering is dispatched to the 
  * Facelets view handler for processing the rendering.
  * </p>
- *  Last modified: $Date: 2009/01/14 15:07:21 $ by $Author: tryggvil $
+ *  Last modified: $Date: 2009/01/15 08:50:01 $ by $Author: tryggvil $
  * 
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FaceletPage extends CachedBuilderPage {
 	
@@ -51,7 +51,6 @@ public class FaceletPage extends CachedBuilderPage {
 	
 		public FaceletPage(String pageId){
 			super(pageId);
-			super.setResourceBased(true);
 		}
 		
 		protected void readPageStream(InputStream pageStream){
@@ -173,6 +172,10 @@ public class FaceletPage extends CachedBuilderPage {
 			
 		}
 		
+		/**
+		 * The ViewNodeBase is here overrided to plug in the the main ViewHandler
+		 * to dispatch the JSF rendering to the Facelets ViewHandler.
+		 */
 		public ViewNodeBase getViewNodeBase(){
 			return ViewNodeBase.FACELET;
 		}
