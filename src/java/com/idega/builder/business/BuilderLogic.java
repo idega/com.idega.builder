@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.364 2009/01/14 15:07:19 tryggvil Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.365 2009/01/19 13:10:17 anton Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -92,6 +92,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWApplicationContextFactory;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWCacheManager;
+import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
@@ -148,7 +149,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/01/14 15:07:19 $ by $Author: tryggvil $
+ * Last modified: $Date: 2009/01/19 13:10:17 $ by $Author: anton $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4064,7 +4065,6 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String getFullPageUrlByPageType(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-		
 		User usr = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getFullPageUrlByPageType(usr, iwc, pageType, checkFirstlyNearestPages);
 	}
@@ -4078,6 +4078,22 @@ public class BuilderLogic implements Singleton {
 			pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
 		else
 			pageUri = getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
+		
+		serverURL = serverURL.endsWith(CoreConstants.SLASH) ? serverURL.substring(0, serverURL.length()-1) : serverURL;
+		
+		String fullURL = new StringBuilder(serverURL)
+		.append(pageUri.startsWith(CoreConstants.SLASH) ? CoreConstants.EMPTY : CoreConstants.SLASH)
+		.append(pageUri)
+		.toString();
+		
+		return fullURL;
+	}
+	
+	public String getFullPageUrlByPageType(User user, String pageType, boolean checkFirstlyNearestPages) {
+		String serverURL = getIWMainApplication().getSettings().getProperty(IWConstants.SERVER_URL_PROPERTY_NAME);
+		String pageUri;
+		
+		pageUri = getPageUri(user, pageType, checkFirstlyNearestPages);
 		
 		serverURL = serverURL.endsWith(CoreConstants.SLASH) ? serverURL.substring(0, serverURL.length()-1) : serverURL;
 		
@@ -4128,6 +4144,46 @@ public class BuilderLogic implements Singleton {
 		else {
 			logger.info("Using start page as user's start page for search: " + startPage.getId());
 		}
+		if (startPage == null) {
+			logger.warning("Didn't find page for search!");
+			return null;
+		}
+
+		logger.info("Start page for search: " + startPage.getId());
+		
+		ICTreeNode parentNode = startPage.getParentNode();
+		Collection<ICTreeNode> children = null;
+		if (parentNode == null) {
+			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page ant it's children
+			children.add(startPage);
+		}
+		else {
+			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
+		}
+		
+		ICPage nearestPage = getPageByPageType(children, pageType);
+		return nearestPage;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User currentUser, String pageType) {
+		ICPage startPage = null;
+		
+		if (currentUser != null) {
+			//	Trying to get nearest page to user's home page
+			startPage = currentUser.getHomePage();
+			if (startPage == null) {
+				int homePageId = currentUser.getHomePageID();
+				if (homePageId != -1) {
+					try {
+						startPage = getICPage(String.valueOf(homePageId));
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
 		if (startPage == null) {
 			logger.warning("Didn't find page for search!");
 			return null;
@@ -4219,6 +4275,37 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return iwc.getIWMainApplication().getTranslatedURIWithContext(uri);
+	}
+	
+	protected String getPageUri(User user, String pageType, boolean checkFirstlyNearestPages) {
+		ICPage icPage = null;
+		String messageForException = "No page found by page type: " + pageType;
+		
+		if (checkFirstlyNearestPages) {
+			icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(user, pageType);
+		}
+		
+		if (icPage == null) {
+			Collection<ICPage> icpages = getPages(pageType);
+			
+			if (icpages == null || icpages.isEmpty()) {
+				throw new RuntimeException(messageForException);
+			}
+			
+			icPage = icpages.iterator().next();
+		}
+		
+		if (icPage == null) {
+			throw new RuntimeException(messageForException);
+		}
+		
+		String uri = icPage.getDefaultPageURI();
+		
+		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
+			uri = CoreConstants.PAGES_URI_PREFIX + uri;
+		}
+		
+		return getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
 	
 	protected Collection<ICPage> getPages(String pageSubType) {
@@ -4352,5 +4439,9 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		return IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale());
+	}
+	
+	private IWMainApplication getIWMainApplication() {
+		return IWMainApplication.getDefaultIWMainApplication();
 	}
 }
