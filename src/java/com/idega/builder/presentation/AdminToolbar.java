@@ -3,6 +3,8 @@
  */
 package com.idega.builder.presentation;
 
+import java.util.Arrays;
+
 import javax.faces.context.FacesContext;
 
 import com.idega.block.login.presentation.Login2;
@@ -28,10 +30,10 @@ import com.idega.util.expression.ELUtil;
  * <p>
  * TODO laddi Describe Type AdminToolbar
  * </p>
- *  Last modified: $Date: 2009/01/04 10:33:57 $ by $Author: valdas $
+ *  Last modified: $Date: 2009/01/26 12:47:26 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class AdminToolbar extends PresentationObjectTransitional {
 
@@ -45,12 +47,16 @@ public class AdminToolbar extends PresentationObjectTransitional {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Web2Business business = ELUtil.getInstance().getBean(Web2Business.class);
 		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/admin-core.css"));
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, business.getBundleURIToJQueryLib());
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_ENGINE_SCRIPT);
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, CoreConstants.DWR_UTIL_SCRIPT);
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, "/dwr/interface/AdminToolbarSession.js");
-		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, iwc.getIWMainApplication().getBundle(CoreConstants.CORE_IW_BUNDLE_IDENTIFIER)
-																									.getVirtualPathWithFileNameString("javascript/AdminCore.js"));
+		String[] jsFiles = new String[] {
+			business.getBundleURIToJQueryLib(),
+			
+			CoreConstants.DWR_ENGINE_SCRIPT,
+			CoreConstants.DWR_UTIL_SCRIPT,
+			"/dwr/interface/AdminToolbarSession.js",
+			
+			iwc.getIWMainApplication().getBundle(CoreConstants.CORE_IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("javascript/AdminCore.js")
+		};
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(jsFiles));
 		
 		Layer layer = new Layer();
 		layer.setID("adminTopLayer");
