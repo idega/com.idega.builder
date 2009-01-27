@@ -1,0 +1,198 @@
+    <document>
+	<properties>
+		<title>Builder changes</title>
+		<author email='tryggvi@idega.com'>Tryggvi Larusson</author>
+	</properties>
+	<body>
+		<release date='2009-01-27' description='First 4.1.x Release' version='4.1.0'>
+          <action type='add' dev='tryggvil'>First 4.1.x Release</action>
+        </release>
+        <release date='2008-07-16' version='3.1.17'>
+      		<action type='update' dev='laddi'>
+				Added a check for mysterious nullpointer exception when building page tree.
+      		</action>
+    	</release>
+	
+		<release date='2008-05-21' version='3.1.16'>
+      		<action type='update' dev='laddi'>
+				Fixed so that the uploaded file is removed from session after successful submit (FormEmailer).
+      		</action>
+    	</release>
+	
+		<release date='2007-08-07' version='3.1.15'>
+      		<action type='update' dev='valdas'>
+				Made method (to get instanceId of UIComponent) accessible through BuilderService
+      		</action>
+    	</release>
+	
+		<release date='2007-07-12' version='3.1.14'>
+      		<action type='update' dev='valdas'>
+				Added parameter to clean or not rendered UIComponent (in BuilderLogic)
+      		</action>
+    	</release>
+	
+		<release date='2007-07-11' version='3.1.13'>
+      		<action type='update' dev='valdas'>
+				Backed DWR to 1.1
+      		</action>
+    	</release>
+
+		<release date='2007-07-11' version='3.1.12'>
+	      <action type='fix' dev='thomas'>
+			BuilderLogic could not handle url's with anchors (that http://hello/mypage#foo)
+	      </action>
+	    </release>
+	
+		<release date='2007-07-05' version='3.1.11'>
+	      <action type='add' dev='valdas'>
+			Added methodto find UIComponent in a Page.
+	      </action>
+	    </release>
+	    
+		<release date='2007-07-04' version='3.1.10'>
+	      <action type='add' dev='valdas'>
+			Added methods to render single UIComponent based instance to String or Document (org.jdom.Document)
+	      </action>
+	    </release>
+
+		<release date='2007-06-16' version='3.1.9'>
+	      <action type='update' dev='eiki'>
+			Updated DWR to 2.0.1
+	      </action>
+	    </release>
+	    
+		<release date='2007-06-15' version='3.1.8'>
+			<action type='update' dev='sigtryggur'>
+				Added better printouts when loading of modules fails when parsing page ibxml.
+			</action>
+		</release>
+
+		<release date='2007-06-04' version='3.1.7'>
+			<action type='update' dev='civilis'>
+				The basic ability to catch spambots added to FormEmailer.
+			</action>
+		</release>
+		
+		<release date='2007-05-31' version='3.1.6'>
+			<action type='update' dev='eiki'>
+				Added syntax coloring support to the source view
+			</action>
+		</release>
+		
+		<release date='2007-05-20' version='3.1.5'>
+			<action type='add' dev='gimmi'>
+				DPTCrawlableContainer
+			</action>
+		</release>
+
+		<release date='2007-05-07' version='3.1.4'>
+			<action type='fix' dev='thomas'>
+				page cache was not invalidated when storing updated page
+			</action>
+		</release>
+
+		<release date='2007-03-28' version='3.1.3'>
+			<action type='update' dev='eiki'>
+				Updated slide to versions 3.1.3 and 2.2pre1.iwbuild5 and
+				core and content
+			</action>
+		</release>
+
+
+		<release date='2006-07-20' version='3.1.2'>
+			<action type='fix' dev='gimmi'>
+				Fixed a bug with the importing of pages
+			</action>
+			<action type='add' dev='gimmi'>
+				Added page format and uri to the export/import process
+			</action>
+		</release>
+
+		<release date='2006-07-20' version='3.1.1'>
+			<action type='fix' dev='gimmi'>
+				Reimplemented exporting pages
+			</action>
+			<action type='update' dev='gimmi'>
+				Updated to Core.v3.1.5
+			</action>
+		</release>
+
+		<release date='2006-06-19' version='3.1.0'>
+			<action type='update' dev='tryggvil'>
+				New version to be included in ePlatform 3.1 Release.
+			</action>
+			<action type='update' dev='tryggvil'>
+				JSF UIComponents are now supported inside Builder pages
+				just like older style idegaWeb Block and Element
+				components.
+			</action>
+			<action type='update' dev='tryggvil'>
+				Experimental support for storing Builder Pages as
+				version controlled documents in the Slide WebDAV
+				repository.
+			</action>
+			<action type='fix' dev='tryggvil'>
+				Performance optimizations and caching when dealing with
+				database access on reload of Builder application and
+				pages.
+			</action>
+			<action type='update' dev='tryggvil'>
+				Builder Page structure is now initialized when first
+				going into the Builder.
+			</action>
+			<action type='update' dev='tryggvil'>
+				IBXML Document format slightly changed to use UUID's as
+				id attributes to be more portable.
+			</action>
+			<action type='update' dev='tryggvil'>
+				Caching updated to use newer IWCacheManager2
+			</action>
+		</release>
+		<release date='2005-09-15' version='1.4.3'>
+			<action type='update' dev='thomas'>
+				Declaration of version based on core 3.0.6.
+			</action>
+		</release>
+		<release date='2005-05-25' version='1.4.2'>
+			<action type='update' dev='tryggvil'>
+				Declaration of version based on core 3.0.4.
+			</action>
+		</release>
+		<release date='2005-04-06' version='1.4.1'>
+			<action type='update' dev='tryggvil'>
+				Declaration of version based on core 3.0.4.
+			</action>
+		</release>
+
+		<release date='2005-03-10' version='1.4.0'>
+			<action type='update' dev='tryggvil'>
+				Declaration of version for use in new systems that are
+				based on JSF.
+			</action>
+		</release>
+
+		<release date='2005-01-14' version='1.3.0'>
+			<action type='update' dev='tryggvil'>
+				Declaration of version for use in old style systems
+				before a 3.0 release is declared.
+			</action>
+		</release>
+
+		<release date='2004-09-07' version='1.1'>
+			<action type='update' dev='tryggvil'>
+				Declaring a 1.1 version before much of the maven
+				refactoring is done.
+			</action>
+			          <!--     
+				<action dev="tryggvil" type="fix" issue="JIRA-XXX">
+				Corrected bug blah blah.
+				</action>              
+				<action dev="vmassol" type="remove" due-to="John Doe" due-to-email="john@doe.com">
+				Removed blah blah.
+				</action>
+			
+          -->
+		</release>
+	</body>
+</document>
+
