@@ -30,10 +30,10 @@ import com.idega.util.expression.ELUtil;
  * <p>
  * TODO laddi Describe Type AdminToolbar
  * </p>
- *  Last modified: $Date: 2009/01/26 12:47:26 $ by $Author: valdas $
+ *  Last modified: $Date: 2009/01/27 13:43:21 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class AdminToolbar extends PresentationObjectTransitional {
 
@@ -43,6 +43,11 @@ public class AdminToolbar extends PresentationObjectTransitional {
 	@Override
 	protected void initializeComponent(FacesContext context) {
 		IWContext iwc = IWContext.getIWContext(context);
+		
+		String mainId = "adminTopLayer";
+		if (iwc.getViewRoot().findComponent(mainId) != null) {
+			return;
+		}
 		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Web2Business business = ELUtil.getInstance().getBean(Web2Business.class);
@@ -59,7 +64,7 @@ public class AdminToolbar extends PresentationObjectTransitional {
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(jsFiles));
 		
 		Layer layer = new Layer();
-		layer.setID("adminTopLayer");
+		layer.setID(mainId);
 		add(layer);
 		
 		Login2 login = new Login2();
