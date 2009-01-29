@@ -39,7 +39,6 @@
 
 .isEditAdmin .moduleContainer:hover {	
 	/*cursor: default;*/	
-	border: 1px #000 dotted;
 	/*margin: 1px;*/
 	background-color: #eee;
 }
@@ -711,6 +710,7 @@ div#simple_properties_box {
 .isEditAdmin .addableRegion {
 	position: relative;
 	min-height: 20px;
+	height: auto !important;
 	border: 1px #aaa dotted;
 }
 
