@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.365 2009/01/19 13:10:17 anton Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.366 2009/01/30 07:36:34 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -149,7 +149,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/01/19 13:10:17 $ by $Author: anton $
+ * Last modified: $Date: 2009/01/30 07:36:34 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4359,7 +4359,7 @@ public class BuilderLogic implements Singleton {
 		return rendered;
 	}
 	
-	public RenderedComponent getRenderedComponentById(String uuid, String uri) {
+	public RenderedComponent getRenderedComponentById(String uuid, String uri, List<AdvancedProperty> properties) {
 		if (StringUtil.isEmpty(uuid)) {
 			logger.log(Level.WARNING, "Unknown UUID!");
 			return getRenderedInstanciatedComponent(null, null);
@@ -4396,6 +4396,8 @@ public class BuilderLogic implements Singleton {
 		if (component == null) {
 			logger.log(Level.SEVERE, "Didn't find component by uuid ('" + uuid + "') in page: " + pageKey);
 		}
+		
+		setPropertiesForObjectInstance(component, properties);
 
 		return getRenderedInstanciatedComponent(iwc, component);
 	}
@@ -4420,17 +4422,23 @@ public class BuilderLogic implements Singleton {
 			return getRenderedInstanciatedComponent(null, null);
 		}
 		
-		if (!ListUtil.isEmpty(properties)) {
-			for (AdvancedProperty property: properties) {
-				try {
-					MethodInvoker.getInstance().invokeMethodWithParameter(component, property.getId(), property.getValue());
-				} catch (Exception e) {
-					logger.log(Level.WARNING, "Error invoking method '" + property.getId() + "' with value: " + property.getValue(), e);
-				}
-			}
-		}
+		setPropertiesForObjectInstance(component, properties);
 		
 		return getRenderedInstanciatedComponent(CoreUtil.getIWContext(), component);
+	}
+	
+	private void setPropertiesForObjectInstance(Object o, List<AdvancedProperty> properties) {
+		if (o == null || ListUtil.isEmpty(properties)) {
+			return;
+		}
+		
+		for (AdvancedProperty property: properties) {
+			try {
+				MethodInvoker.getInstance().invokeMethodWithParameter(o, property.getId(), property.getValue());
+			} catch (Exception e) {
+				logger.log(Level.WARNING, "Error invoking method '" + property.getId() + "' with value: " + property.getValue(), e);
+			}
+		}
 	}
 	
 	public List<com.idega.core.component.business.ComponentProperty> getComponentProperties(IWContext iwc, String instanceId) {
