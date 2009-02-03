@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.368 2009/02/03 11:23:44 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.369 2009/02/03 11:57:04 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -149,7 +149,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/02/03 11:23:44 $ by $Author: valdas $
+ * Last modified: $Date: 2009/02/03 11:57:04 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3714,10 +3714,6 @@ public class BuilderLogic implements Singleton {
 			componentHTML = getCleanedHtmlContent(componentHTML, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
 		
-		// Removing <?xml version... />
-		Matcher xmlMatcher = getXmlEncodingReplacementPattern().matcher(componentHTML);
-		componentHTML = xmlMatcher.replaceAll(CoreConstants.EMPTY);
-		
 		//	Removing <!--... ms-->
 		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(componentHTML);
 		componentHTML = commentsMatcher.replaceAll(CoreConstants.EMPTY);
@@ -3732,8 +3728,8 @@ public class BuilderLogic implements Singleton {
 		componentHTML = componentHTML.replaceAll("&Ouml;", "&#246;");
 		componentHTML = componentHTML.replaceAll("&nbsp;", "&#160;");
 		componentHTML = componentHTML.replaceAll("&iacute;", "&#237;");
-		componentHTML = componentHTML.replaceAll("&lt;", "&#60;");
-		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
+//		componentHTML = componentHTML.replaceAll("&lt;", "&#60;");
+//		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
 		
 		if (StringUtil.isEmpty(componentHTML)) {
 			return null;
@@ -3774,13 +3770,17 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return null;
 		}
-			
+		
+		// Removing <?xml version... />
+		Matcher commentsMatcher = getXmlEncodingReplacementPattern().matcher(htmlContent);
+		htmlContent = commentsMatcher.replaceAll(CoreConstants.EMPTY);
+		
 		return htmlContent;
 	}
 	
 	private Pattern getXmlEncodingReplacementPattern() {
 		if (xmlEncodingReplacementPattern == null) {
-			xmlEncodingReplacementPattern = Pattern.compile("<.+?xml.+>");
+			xmlEncodingReplacementPattern = Pattern.compile("&lt.+?xml.+&gt;");
 		}
 		return xmlEncodingReplacementPattern;
 	}
