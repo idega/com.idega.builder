@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.367 2009/02/02 10:40:10 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.368 2009/02/03 11:23:44 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -149,7 +149,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/02/02 10:40:10 $ by $Author: valdas $
+ * Last modified: $Date: 2009/02/03 11:23:44 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3584,7 +3584,7 @@ public class BuilderLogic implements Singleton {
 		}
 
 		if (cleanCode) {
-			rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, true);
+			rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
 		}
 		
 		if (jsSources != null || jsActions != null || cssSources != null) {
@@ -3732,6 +3732,8 @@ public class BuilderLogic implements Singleton {
 		componentHTML = componentHTML.replaceAll("&Ouml;", "&#246;");
 		componentHTML = componentHTML.replaceAll("&nbsp;", "&#160;");
 		componentHTML = componentHTML.replaceAll("&iacute;", "&#237;");
+		componentHTML = componentHTML.replaceAll("&lt;", "&#60;");
+		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
 		
 		if (StringUtil.isEmpty(componentHTML)) {
 			return null;
@@ -3739,7 +3741,7 @@ public class BuilderLogic implements Singleton {
 
 		Document componentXML = XmlUtil.getJDOMXMLDocument(componentHTML);
 		if (componentXML == null && !cleanCode) {
-			logger.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed.");
+			logger.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed to create document from:\n" + componentHTML);
 			return getXMLDocumentFromComponentHTML(componentHTML, true, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
 		return componentXML;
@@ -3784,9 +3786,9 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	private Pattern getDoctypeReplacementPattern() {
-		
-		if(doctypeReplacementPattern == null)
+		if (doctypeReplacementPattern == null) {
 			doctypeReplacementPattern = Pattern.compile("<!DOCTYPE[^>]*>");
+		}
 		
 		return doctypeReplacementPattern;
 	}
