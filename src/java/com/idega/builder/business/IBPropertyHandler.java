@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.80 2008/10/23 11:43:58 laddi Exp $
+ * $Id: IBPropertyHandler.java,v 1.81 2009/02/07 14:32:55 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,6 +65,8 @@ import com.idega.repository.data.SingletonRepository;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
+import com.idega.util.PresentationUtil;
+import com.idega.util.StringUtil;
 import com.idega.util.caching.Cache;
 import com.idega.util.reflect.MethodFinder;
 /**
@@ -279,15 +281,34 @@ public class IBPropertyHandler implements Singleton{
 			return (null);
 		}
 	}
-	/**
 	
-	 *
+	private String getHandlerClassForJsfModule(String moduleClassName) {
+		if (StringUtil.isEmpty(moduleClassName)) {
+			return null;
+		}
+		
+		ComponentInfo info = ComponentRegistry.getInstance(IWMainApplication.getDefaultIWMainApplication()).getComponentByClassName(moduleClassName);
+		if (info == null) {
+			return null;
+		}
+		
+		for (ComponentProperty property: info.getProperties()) {
+			if (!StringUtil.isEmpty(property.getHandlerClass())) {
+				return property.getHandlerClass();
+			}
+		}
+		
+		return null;
+	}
 	
-	 */
-	public PresentationObject getHandlerInstance(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String name, String stringValue, boolean oldGenerationChooser) throws Exception {
+	private PresentationObject getHandlerInstance(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String name,
+			String stringValue, boolean oldGenerationChooser, String componentClassName) throws Exception {
 		String handlerClass = getMethodParameterProperty(iwc, ICObjectInstanceID, methodIdentifier, parameterIndex, METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
-		if (handlerClass.equals(CoreConstants.EMPTY)) {
-			return (null);
+		if (StringUtil.isEmpty(handlerClass)) {
+			handlerClass = getHandlerClassForJsfModule(componentClassName);
+			if (StringUtil.isEmpty(handlerClass)) {
+				return null;
+			}
 		}
 		ICPropertyHandler handler = getPropertyHandler(handlerClass);
 		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc, oldGenerationChooser, ICObjectInstanceID, methodIdentifier);
@@ -295,7 +316,9 @@ public class IBPropertyHandler implements Singleton{
 		if (!oldGenerationChooser && handlerPresentation instanceof AbstractChooser) {
 			AbstractChooser chooser = (AbstractChooser) handlerPresentation;
 			if (chooser.getChooserHelperVarName() != null) {
-				chooser.add(new StringBuffer("<script type=\"text/javascript\">var ").append(chooser.getChooserHelperVarName()).append(" = new ChooserHelper();</script>").toString());
+				chooser.add(PresentationUtil.getJavaScriptAction(PresentationUtil.getJavaScriptLinesLoadedLazily(CoreUtil.getResourcesForChooser(iwc),
+					new StringBuilder("if (!").append(chooser.getChooserHelperVarName()).append(") var ").append(chooser.getChooserHelperVarName())
+						.append(" = new ChooserHelper();").toString())));
 			}
 		}
 
@@ -364,10 +387,11 @@ public class IBPropertyHandler implements Singleton{
 	/**
 	 *
 	 */	
-	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class parameterClass, String name, String stringValue) {
+	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class<?> parameterClass,
+			String name, String stringValue) {
 		PresentationObject obj = null;
 		try {
-			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue, true);
+			obj = getHandlerInstance(iwc, ICObjectInstanceID, propertyName, parameterIndex, name, stringValue, true, null);
 		}
 		catch (Exception e) {
 		}
@@ -484,7 +508,7 @@ public class IBPropertyHandler implements Singleton{
 		
 		PresentationObject obj = null;
 		try {
-			obj = getHandlerInstance(iwc, properties.getObjectInstanceId(), propertyName, parameterIndex, name, stringValue, false);
+			obj = getHandlerInstance(iwc, properties.getObjectInstanceId(), propertyName, parameterIndex, name, stringValue, false, properties.getModuleClassName());
 		}
 		catch (Exception e) {
 		}

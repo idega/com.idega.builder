@@ -99,7 +99,8 @@ public class SetModulePropertyBlock extends Block {
 			item.add(label);
 			
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,	new PropertyHandlerBean(instanceId,
-					propertyName, name, value, CoreConstants.BUILDER_PORPERTY_SETTER_STYLE_CLASS, parameterClass, i, needsReload, isMultiValue, parameters.length));
+					propertyName, name, value, CoreConstants.BUILDER_PORPERTY_SETTER_STYLE_CLASS, parameterClass, i, needsReload, isMultiValue, parameters.length,
+					presObjClass.getName()));
 			
 			handlerBox.setMarkupAttribute("jsfcomponent", IBPropertyHandler.getInstance().isJsfComponent(iwc, presObjClass.getName()));
 			item.add(handlerBox);
