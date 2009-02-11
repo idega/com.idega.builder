@@ -25,6 +25,7 @@ div#adminTopLayer .login {
 div#adminTopLayer .login form {
 	margin: 0;
 	padding: 0;
+	width: auto;
 }
 
 div#adminTopLayer div.login p {
@@ -82,8 +83,9 @@ div#adminTopLayer ul li {
 	width: 58px;
 	padding-top: 37px;
 	text-align: center;
+	text-shadow: none;
 	height: 13px;
-	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	color: #fff !important;
 	border-left: 1px transparent solid;
 	border-right: 1px transparent solid;
@@ -149,17 +151,21 @@ div#adminTopLayer ul li.adminThemesMode .modeHelper {
 }
 
 div#adminTopLayer ul li .modeHelper h1 {
-	padding: 0;
-	margin-bottom: 6px;
-	font-size: 11px;
-	color: #fff;
-	font-weight: bold;
+	padding: 0 !important;
+	margin-bottom: 6px !important;
+	margin-top: 0 !important;
+	font-size: 11px !important;
+	color: #fff !important;
+	font-weight: bold !important;
+	letter-spacing: normal !important;
+	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 }
 
 div#adminTopLayer ul li .modeHelper p {
-	margin: 0;
-	color: #ccc;
-	line-height: 1.2em;
+	margin: 0 !important;
+	color: #ccc !important;
+	line-height: 1.2em !important;
+	float: none !important;
 }
 
 div#themeSlider {
