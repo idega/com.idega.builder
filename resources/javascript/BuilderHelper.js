@@ -134,7 +134,7 @@ function registerBuilderActions() {
 	var errorHanlder = function() {
 		reloadPage();
 	}
-	DWREngine.setErrorHandler(errorHanlder);
+	dwr.engine.setErrorHandler(errorHanlder);
 	
 	addEventsToBuilderElements();
 	
@@ -920,7 +920,7 @@ function saveModuleProperty(event, element) {
 			value = element.getProperty('value');
 		}
 		else {
-			value = DWRUtil.getValue(element);
+			value = dwr.util.getValue(element);
 		}
 		values.push(value);
 	}
@@ -1010,14 +1010,14 @@ function getModulePropertyFromElement(element) {
 				}
 			}
 			else {
-				value = DWRUtil.getValue(element);
+				value = dwr.util.getValue(element);
 			}
 		}
 	}
 	
 	//	Select
 	if (element.tagName == 'select' || element.tagName == 'SELECT') {
-		value = DWRUtil.getValue(element);
+		value = dwr.util.getValue(element);
 	}
 	
 	if (value == '') {
