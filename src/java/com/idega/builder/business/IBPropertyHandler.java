@@ -1,5 +1,5 @@
 /*
- * $Id: IBPropertyHandler.java,v 1.81 2009/02/07 14:32:55 valdas Exp $
+ * $Id: IBPropertyHandler.java,v 1.82 2009/03/16 08:42:39 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -282,8 +282,8 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	
-	private String getHandlerClassForJsfModule(String moduleClassName) {
-		if (StringUtil.isEmpty(moduleClassName)) {
+	private String getHandlerClassForJsfModule(String moduleClassName, String methodIdentifier) {
+		if (StringUtil.isEmpty(moduleClassName) || StringUtil.isEmpty(methodIdentifier)) {
 			return null;
 		}
 		
@@ -293,7 +293,7 @@ public class IBPropertyHandler implements Singleton{
 		}
 		
 		for (ComponentProperty property: info.getProperties()) {
-			if (!StringUtil.isEmpty(property.getHandlerClass())) {
+			if (methodIdentifier.equals(property.getName()) && !StringUtil.isEmpty(property.getHandlerClass())) {
 				return property.getHandlerClass();
 			}
 		}
@@ -305,7 +305,7 @@ public class IBPropertyHandler implements Singleton{
 			String stringValue, boolean oldGenerationChooser, String componentClassName) throws Exception {
 		String handlerClass = getMethodParameterProperty(iwc, ICObjectInstanceID, methodIdentifier, parameterIndex, METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
 		if (StringUtil.isEmpty(handlerClass)) {
-			handlerClass = getHandlerClassForJsfModule(componentClassName);
+			handlerClass = getHandlerClassForJsfModule(componentClassName, methodIdentifier);
 			if (StringUtil.isEmpty(handlerClass)) {
 				return null;
 			}
