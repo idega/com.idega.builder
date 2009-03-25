@@ -7,15 +7,18 @@ import java.util.Arrays;
 
 import javax.faces.context.FacesContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.idega.block.login.presentation.Login2;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdminToolbarSession;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.core.accesscontrol.business.StandardRoles;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWBaseComponent;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
-import com.idega.presentation.PresentationObjectTransitional;
 import com.idega.presentation.text.Heading1;
 import com.idega.presentation.text.ListItem;
 import com.idega.presentation.text.Lists;
@@ -27,19 +30,21 @@ import com.idega.util.expression.ELUtil;
 
 
 /**
- * <p>
- * TODO laddi Describe Type AdminToolbar
- * </p>
- *  Last modified: $Date: 2009/01/27 13:43:21 $ by $Author: valdas $
+ *	Creates toolbar for super administrators for switching page into different modes: builder, content, themes or preview
+ *
+ *  Last modified: $Date: 2009/03/25 15:11:03 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
-public class AdminToolbar extends PresentationObjectTransitional {
+public class AdminToolbar extends IWBaseComponent {
 
-	/* (non-Javadoc)
-	 * @see com.idega.presentation.PresentationObjectTransitional#initializeComponent(javax.faces.context.FacesContext)
-	 */
+	@Autowired
+	private Web2Business web2;
+	
+	@Autowired
+	private AdminToolbarSession adminToolbarSettings;
+	
 	@Override
 	protected void initializeComponent(FacesContext context) {
 		IWContext iwc = IWContext.getIWContext(context);
@@ -49,11 +54,14 @@ public class AdminToolbar extends PresentationObjectTransitional {
 			return;
 		}
 		
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-		Web2Business business = ELUtil.getInstance().getBean(Web2Business.class);
-		PresentationUtil.addStyleSheetToHeader(iwc, getBundle(iwc).getVirtualPathWithFileNameString("style/admin-core.css"));
+		ELUtil.getInstance().autowire(this);
+		
+		IWBundle bundle = getBundle(context, getBundleIdentifier());
+		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
+
+		PresentationUtil.addStyleSheetToHeader(iwc, bundle.getVirtualPathWithFileNameString("style/admin-core.css"));
 		String[] jsFiles = new String[] {
-			business.getBundleURIToJQueryLib(),
+			web2.getBundleURIToJQueryLib(),
 			
 			CoreConstants.DWR_ENGINE_SCRIPT,
 			CoreConstants.DWR_UTIL_SCRIPT,
@@ -129,9 +137,8 @@ public class AdminToolbar extends PresentationObjectTransitional {
 		previewHelp.add(paragraph);
 		preview.add(previewHelp);
 		
-		AdminToolbarSession session = ELUtil.getInstance().getBean(AdminToolbarSession.class);
-		if (session.getMode() != null) {
-			String mode = session.getMode();
+		if (adminToolbarSettings.getMode() != null) {
+			String mode = adminToolbarSettings.getMode();
 			if (mode.equals("isThemesAdmin")) {
 				themes.setStyleClass("selected");
 			}
@@ -152,10 +159,6 @@ public class AdminToolbar extends PresentationObjectTransitional {
 		}		
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
-	 */
-	@Override
 	public String getBundleIdentifier() {
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
