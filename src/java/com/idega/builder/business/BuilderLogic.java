@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.369 2009/02/03 11:57:04 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.370 2009/03/25 15:10:10 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -149,7 +149,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/02/03 11:57:04 $ by $Author: valdas $
+ * Last modified: $Date: 2009/03/25 15:10:10 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -293,19 +293,18 @@ public class BuilderLogic implements Singleton {
 		page.setID("DnDPage");
 		
 		//Begin with transforming the objects on a normal Page object (constructed from IBXML)
-		List list = page.getChildren();
-		if (list != null) {
-			ListIterator iter = list.listIterator();
+		List<UIComponent> list = page.getChildren();
+		if (!ListUtil.isEmpty(list)) {
 			PresentationObjectContainer parent = page;
-			while (iter.hasNext()) {
-				int index = iter.nextIndex();
-				UIComponent item = (UIComponent) iter.next();
+			int index = 0;
+			for (UIComponent item: list) {
 				getTransformedObject(page,pageKey, item, index, parent, "-1", iwc);
+				index++;
 			}
 		}
 		
 		if (iwc.getRequestURI().indexOf("/workspace/") == -1 && iwc.getRequestURI().indexOf("/pages") != -1 && (iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR))) {
-			page.add(new AdminToolbar());
+			page.getChildren().add(new AdminToolbar());
 			page.setStyleClass("isAdmin");
 			
 			AdminToolbarSession session = ELUtil.getInstance().getBean(AdminToolbarSession.class);
