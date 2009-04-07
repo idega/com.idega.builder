@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.21 2009/04/07 23:32:51 eiki Exp $
+ * $Id: CachedBuilderPage.java,v 1.22 2009/04/07 23:54:02 eiki Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,8 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import org.apache.webdav.lib.WebdavResource;
 
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
@@ -279,8 +281,12 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		if(webdavUri!=null){
 			try {
 				IWSlideService service = (IWSlideService) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(),IWSlideService.class);
-				InputStream stream = service.getInputStream(webdavUri);
-				return stream;
+				//InputStream stream = service.getInputStream(webdavUri);
+				
+				WebdavResource file = service.getWebdavResourceAuthenticatedAsRoot(webdavUri);
+				
+				//return stream;
+				return file.getMethodData();
 			}
 			catch (Exception e) {
 				System.err.println("Error getting file: " + webdavUri);
