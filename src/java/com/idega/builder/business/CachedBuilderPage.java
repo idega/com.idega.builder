@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.18 2009/01/14 15:07:19 tryggvil Exp $
+ * $Id: CachedBuilderPage.java,v 1.19 2009/04/07 11:21:19 laddi Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -276,8 +276,8 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		String webdavUri = icPage.getWebDavUri();
 		if(webdavUri!=null){
 			try {
-				IWSlideSession session = (IWSlideSession) IBOLookup.getSessionInstance(IWContext.getInstance(),IWSlideSession.class);
-				InputStream stream = session.getInputStream(webdavUri);
+				IWSlideService service = (IWSlideService) IBOLookup.getServiceInstance(IWContext.getInstance(),IWSlideService.class);
+				InputStream stream = service.getInputStream(webdavUri);
 				return stream;
 			}
 			catch (Exception e) {
