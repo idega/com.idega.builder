@@ -1,5 +1,5 @@
 /*
- * $Id: CachedBuilderPage.java,v 1.20 2009/04/07 12:15:56 laddi Exp $
+ * $Id: CachedBuilderPage.java,v 1.21 2009/04/07 23:32:51 eiki Exp $
  *
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,8 @@ import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
 import com.idega.exception.PageDoesNotExist;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWService;
 import com.idega.presentation.IWContext;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
@@ -276,8 +278,8 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		String webdavUri = icPage.getWebDavUri();
 		if(webdavUri!=null){
 			try {
-				IWSlideSession session = (IWSlideSession) IBOLookup.getSessionInstance(IWContext.getInstance(),IWSlideSession.class);
-				InputStream stream = session.getInputStream(webdavUri, true);
+				IWSlideService service = (IWSlideService) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(),IWSlideService.class);
+				InputStream stream = service.getInputStream(webdavUri);
 				return stream;
 			}
 			catch (Exception e) {
