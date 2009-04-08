@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.371 2009/04/06 09:52:21 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.372 2009/04/08 09:38:07 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -149,7 +149,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/04/06 09:52:21 $ by $Author: valdas $
+ * Last modified: $Date: 2009/04/08 09:38:07 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4069,7 +4069,7 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public String getFullPageUrlByPageType(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-		User usr = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
+		User usr = iwc == null ? null : iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getFullPageUrlByPageType(usr, iwc, pageType, checkFirstlyNearestPages);
 	}
 	
