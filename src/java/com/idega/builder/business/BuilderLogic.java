@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.372 2009/04/08 09:38:07 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.373 2009/04/09 11:43:28 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -8,7 +8,6 @@ package com.idega.builder.business;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,8 +30,6 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.render.RenderKitFactory;
 
-import org.apache.myfaces.renderkit.html.util.AddResource;
-import org.apache.myfaces.renderkit.html.util.AddResourceFactory;
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
 import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
@@ -149,7 +146,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/04/08 09:38:07 $ by $Author: valdas $
+ * Last modified: $Date: 2009/04/09 11:43:28 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -384,48 +381,47 @@ public class BuilderLogic implements Singleton {
 		addResourcesForBuilderEditMode(iwc,builderBundle);
 	}
 	
-	public void addResourcesForBuilderEditMode(IWContext iwc,
-			IWBundle builderBundle) {
-		AddResource adder = AddResourceFactory.getInstance(iwc);
-		
+	public void addResourcesForBuilderEditMode(IWContext iwc, IWBundle builderBundle) {
 		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
 		
 		//	JavaScript
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_ENGINE_SCRIPT);
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, CoreConstants.DWR_UTIL_SCRIPT);
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, "/dwr/interface/BuilderEngine.js");
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, builderBundle.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"));
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, builderBundle.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"));
 		try {
-			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleURIToMootoolsLib());				//	MooTools
-		} catch (RemoteException e) {
+			PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
+					CoreConstants.DWR_ENGINE_SCRIPT,
+					CoreConstants.DWR_UTIL_SCRIPT,
+					"/dwr/interface/BuilderEngine.js",
+					builderBundle.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"),
+					builderBundle.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"),
+					web2.getBundleURIToMootoolsLib(),
+					web2.getMoodalboxScriptFilePath(false),
+					web2.getReflectionForMootoolsScriptFilePath(),
+					web2.getBundleUriToMootabsScript()
+			));
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		try {
-			adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxScriptFilePath(false));		//	MOOdalBox
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getReflectionForMootoolsScriptFilePath());	//	Reflection
-		adder.addJavaScriptAtPosition(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsScript());				//	MooTabs
 		
 		//	JavaScript actions
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', getBuilderInitInfo);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderActions);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', registerBuilderDragDropActions);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', showOrHideModulePasteIcons);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('domready', intializeMoodalboxInBuilder);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('resize', intializeMoodalboxInBuilder);");
-		adder.addInlineScriptAtPosition(iwc, AddResource.BODY_END, "window.addEvent('beforeunload', showMessageForUnloadingPage);");
+		PresentationUtil.addJavaScriptActionsToBody(iwc, Arrays.asList(
+				"window.addEvent('domready', getBuilderInitInfo);",
+				"window.addEvent('domready', registerBuilderActions);",
+				"window.addEvent('domready', registerBuilderDragDropActions);",
+				"window.addEvent('domready', showOrHideModulePasteIcons);",
+				"window.addEvent('domready', intializeMoodalboxInBuilder);",
+				"window.addEvent('resize', intializeMoodalboxInBuilder);",
+				"window.addEvent('beforeunload', showMessageForUnloadingPage);"
+		));
 		
 		//	CSS
-		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, builderBundle.getVirtualPathWithFileNameString("style/builder.css"));	//	Builder
 		try {
-			adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getMoodalboxStyleFilePath());						//	MoodalBox
-		} catch (RemoteException e) {
+			PresentationUtil.addStyleSheetsToHeader(iwc, Arrays.asList(
+					builderBundle.getVirtualPathWithFileNameString("style/builder.css"),
+					web2.getMoodalboxStyleFilePath(),
+					web2.getBundleUriToMootabsStyle()
+			));
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		adder.addStyleSheet(iwc, AddResource.HEADER_BEGIN, web2.getBundleUriToMootabsStyle());
 	}
 
 	private Layer getLabelMarker(String instanceId, String parentKey) {
