@@ -32,10 +32,10 @@ import com.idega.util.expression.ELUtil;
 /**
  *	Creates toolbar for super administrators for switching page into different modes: builder, content, themes or preview
  *
- *  Last modified: $Date: 2009/03/25 15:11:03 $ by $Author: valdas $
+ *  Last modified: $Date: 2009/04/09 12:36:46 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AdminToolbar extends IWBaseComponent {
 
@@ -59,17 +59,22 @@ public class AdminToolbar extends IWBaseComponent {
 		IWBundle bundle = getBundle(context, getBundleIdentifier());
 		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 
-		PresentationUtil.addStyleSheetToHeader(iwc, bundle.getVirtualPathWithFileNameString("style/admin-core.css"));
-		String[] jsFiles = new String[] {
-			web2.getBundleURIToJQueryLib(),
-			
-			CoreConstants.DWR_ENGINE_SCRIPT,
-			CoreConstants.DWR_UTIL_SCRIPT,
-			"/dwr/interface/AdminToolbarSession.js",
-			
-			iwc.getIWMainApplication().getBundle(CoreConstants.CORE_IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("javascript/AdminCore.js")
-		};
-		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(jsFiles));
+		//	CSS
+		PresentationUtil.addStyleSheetsToHeader(iwc, Arrays.asList(
+				bundle.getVirtualPathWithFileNameString("style/builder.css"),
+				bundle.getVirtualPathWithFileNameString("style/admin-core.css")
+		));
+
+		//	JavaScript
+		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
+				web2.getBundleURIToJQueryLib(),
+				
+				CoreConstants.DWR_ENGINE_SCRIPT,
+				CoreConstants.DWR_UTIL_SCRIPT,
+				"/dwr/interface/AdminToolbarSession.js",
+				
+				iwc.getIWMainApplication().getBundle(CoreConstants.CORE_IW_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("javascript/AdminCore.js")
+		));
 		
 		Layer layer = new Layer();
 		layer.setID(mainId);
