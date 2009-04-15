@@ -2,8 +2,7 @@
 
 <projectDescription>
   <name>com.idega.builder</name>
-  <comment>
-  </comment>
+  <comment></comment>
   <projects>
     <project>com.idega.core</project>
     <project>com.idega.slide</project>
@@ -13,8 +12,7 @@
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>
-      <arguments>
-      </arguments>
+      <arguments></arguments>
     </buildCommand>
   </buildSpec>
   <natures>
