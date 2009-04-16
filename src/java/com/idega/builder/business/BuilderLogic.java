@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.373 2009/04/09 11:43:28 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.374 2009/04/16 08:42:53 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -146,7 +146,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/04/09 11:43:28 $ by $Author: valdas $
+ * Last modified: $Date: 2009/04/16 08:42:53 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4389,9 +4389,7 @@ public class BuilderLogic implements Singleton {
 			logger.log(Level.SEVERE, "Didn't find component by uuid ('" + uuid + "') in page: " + pageKey);
 		}
 		
-		setPropertiesForObjectInstance(component, properties);
-
-		return getRenderedInstanciatedComponent(iwc, component);
+		return getRenderedComponent(component, properties);
 	}
 	
 	public RenderedComponent getRenderedComponentByClassName(String className, List<AdvancedProperty> properties) {
@@ -4411,6 +4409,14 @@ public class BuilderLogic implements Singleton {
 		}
 		else {
 			logger.log(Level.WARNING, "Instance of '" + className + "' is not UIComponent!");
+			return getRenderedInstanciatedComponent(null, null);
+		}
+		
+		return getRenderedComponent(component, properties);
+	}
+	
+	public RenderedComponent getRenderedComponent(UIComponent component, List<AdvancedProperty> properties) {
+		if (component == null) {
 			return getRenderedInstanciatedComponent(null, null);
 		}
 		

@@ -562,6 +562,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 		return getBuilderLogic().getRenderedComponentByClassName(className, properties);
 	}
 	
+	public RenderedComponent getRenderedComponent(UIComponent component, List<AdvancedProperty> properties) {
+		return getBuilderLogic().getRenderedComponent(component, properties);
+	}
+	
 	public String getUriToPagePermissionsWindow(List<AdvancedProperty> parameters) {
 		return getBuilderLogic().getUriToObject(IBPermissionWindow.class, parameters);
 	}
