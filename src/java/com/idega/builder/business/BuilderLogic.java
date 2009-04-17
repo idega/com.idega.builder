@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.374 2009/04/16 08:42:53 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.375 2009/04/17 10:46:05 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -129,6 +129,7 @@ import com.idega.util.PresentationUtil;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
+import com.idega.util.URIUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.util.reflect.MethodInvoker;
@@ -146,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/04/16 08:42:53 $ by $Author: valdas $
+ * Last modified: $Date: 2009/04/17 10:46:05 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3370,15 +3371,18 @@ public class BuilderLogic implements Singleton {
 		return getUriToObject(addModuleClass, parameters);
 	}
 	
-	public String getUriToObject(Class<?> objectClass) {
+	public String getUriToObject(Class<? extends UIComponent> objectClass) {
 		if (objectClass == null) {
 			return null;
 		}
 		
-		return getUriToObject(objectClass.getName());
+		URIUtil uri = new URIUtil(IWMainApplication.getDefaultIWMainApplication().getPublicObjectInstanciatorURI(objectClass));
+		uri.setParameter("uiObject", Boolean.TRUE.toString());
+		
+		return uri.getUri();
 	}
 	
-	public String getUriToObject(Class<?> objectClass, List<AdvancedProperty> parameters) {
+	public String getUriToObject(Class<? extends UIComponent> objectClass, List<AdvancedProperty> parameters) {
 		String baseUri = getUriToObject(objectClass);
 		if (StringUtil.isEmpty(baseUri)) {
 			return null;
@@ -3388,23 +3392,15 @@ public class BuilderLogic implements Singleton {
 			return baseUri;
 		}
 		
-		StringBuffer params = new StringBuffer();
-		AdvancedProperty prop = null;
-		for (int i = 0; i < parameters.size(); i++) {
-			prop = parameters.get(i);
-			params.append(CoreConstants.AMP).append(prop.getId()).append(CoreConstants.EQ).append(prop.getValue());
+		URIUtil uri = new URIUtil(baseUri);
+		
+		for (AdvancedProperty parameter: parameters) {
+			if (!StringUtil.isEmpty(parameter.getId()) && !StringUtil.isEmpty(parameter.getValue())) {
+				uri.setParameter(parameter.getId(), parameter.getValue());
+			}
 		}
 		
-		return new StringBuffer(baseUri).append(params.toString()).toString();
-	}
-	
-	public String getUriToObject(String className) {
-		if (className == null) {
-			return null;
-		}
-		StringBuffer uri = new StringBuffer("/servlet/ObjectInstanciator?").append(IWMainApplication.classToInstanciateParameter);
-		uri.append("=").append(className);
-		return uri.toString();
+		return uri.getUri();
 	}
 	
 	public boolean removeBlockObjectFromCache(String cacheKey) {
