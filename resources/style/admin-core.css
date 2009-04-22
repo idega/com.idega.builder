@@ -26,6 +26,10 @@ div#adminTopLayer .login form {
 	margin: 0;
 	padding: 0;
 	width: auto;
+	position: relative;
+	left: 0;
+	top: 0;
+	width: auto;
 }
 
 div#adminTopLayer div.login p {
@@ -179,7 +183,7 @@ div#themeSlider {
 	border-radius: 10px;
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
-	z-index: 99998;
+	z-index: 2;
 }
 
 div#themeSlider div.themesSlider {
