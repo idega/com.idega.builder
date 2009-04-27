@@ -1,3 +1,5 @@
+var BuilderHelper = {};
+
 var ADD_NEW_COMPONENT_WINDOW_LINK = '/servlet/ObjectInstanciator?idegaweb_instance_class=com.idega.builder.presentation.AddModuleBlock';
 var EDIT_COMPONENT_WINDOW_LINK = '/servlet/ObjectInstanciator?idegaweb_instance_class=com.idega.builder.presentation.EditModuleBlock';
 
@@ -172,7 +174,7 @@ function addEventsToBuilderElements() {
 	$$('div.moduleContainer').each(
 		function(element) {
 			element.addEvent('mouseenter', function() {
-				if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+				if (BuilderHelper.isCurrentModeBuilderMode()) {
 					try {
 						showComponentInfoImage(element);
 						showModuleContainerTop(element);
@@ -186,7 +188,7 @@ function addEventsToBuilderElements() {
     $$('div.regionInfoImageContainer').each(
     	function(element) {
 			element.addEvent('click', function() {
-				if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+				if (BuilderHelper.isCurrentModeBuilderMode()) {
 					setRegionAndModuleContentId(element);
 				}
 			});
@@ -201,7 +203,7 @@ function addEventsToBuilderElements() {
 			
 			element.addEvents({
 				'blur': function(e) {
-					if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+					if (BuilderHelper.isCurrentModeBuilderMode()) {
 						if (element.type == 'text' || element.type == 'password') {
 							e = new Event(e);
 							saveModuleProperty(e, element);
@@ -210,7 +212,7 @@ function addEventsToBuilderElements() {
 					}
 				},
 				'keyup': function(e) {
-					if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+					if (BuilderHelper.isCurrentModeBuilderMode()) {
 						element.setProperty('valuechanged', true);
 						e = new Event(e);
 						saveModuleProperty(e, element);
@@ -218,7 +220,7 @@ function addEventsToBuilderElements() {
 					}
 				},
 				'click': function(e) {
-					if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+					if (BuilderHelper.isCurrentModeBuilderMode()) {
 						if (element.type == 'radio' || element.type == 'checkbox') {
 							element.setProperty('valuechanged', true);
 						}
@@ -235,7 +237,7 @@ function addEventsToBuilderElements() {
 			element.removeEvents('change');
 			
 			element.addEvent('change', function(e) {
-				if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+				if (BuilderHelper.isCurrentModeBuilderMode()) {
 					element.setProperty('valuechanged', true);
 					e = new Event(e);
 					saveModuleProperty(e, element);
@@ -283,7 +285,7 @@ function addActionsForArticleButton(element) {
 	element.removeEvents('click');	//	Do not want to duplicate events
 	
 	element.addEvent('click', function() {
-		if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+		if (BuilderHelper.isCurrentModeBuilderMode()) {
 			addConcreteModule(element);
 		}
 	});
@@ -1287,7 +1289,7 @@ function pasteCopiedModule(id) {
 }
 
 function showMessageForUnloadingPage() {
-	if (AdminCoreHelper.modes.builder == AdminCoreHelper.currentMode) {
+	if (BuilderHelper.isCurrentModeBuilderMode()) {
 		showLoadingMessage(LOADING_LABEL);
 	}
 }
@@ -1405,4 +1407,28 @@ function createTabsWithMootabs(id) {
 function openSelectAndAddModuleWindow(id, uri) {
 	setPropertiesForAddModule(id);
 	MOOdalBox.open(uri, '', 'moodalbox');
+}
+
+BuilderHelper.isCurrentModeBuilderMode = function() {
+	var builderMode = BuilderHelper.getBuilderMode();
+	var currentMode = typeof AdminCoreHelper == 'undefined' ? '' : AdminCoreHelper.currentMode;
+	return currentMode == builderMode;
+}
+
+BuilderHelper.getBuilderMode = function() {
+	return typeof AdminCoreHelper == 'undefined' ? 'isEditAdmin' : AdminCoreHelper.modes.builder;
+}
+
+BuilderHelper.initializeBuilder = function(mode) {
+	if (mode == null) {
+		return;
+	}
+	
+	if (mode == BuilderHelper.getBuilderMode()) {
+		getBuilderInitInfo();
+		registerBuilderActions();
+		registerBuilderDragDropActions();
+		intializeMoodalboxInBuilder();
+		showOrHideModulePasteIcons();
+	}
 }

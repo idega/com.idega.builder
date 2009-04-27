@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.375 2009/04/17 10:46:05 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.376 2009/04/27 14:54:14 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -37,7 +35,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdminToolbarSession;
 import com.idega.builder.bean.AdvancedProperty;
@@ -147,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/04/17 10:46:05 $ by $Author: valdas $
+ * Last modified: $Date: 2009/04/27 14:54:14 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -170,7 +170,6 @@ public class BuilderLogic implements Singleton {
 	public static final String ACTION_PASTE = "ACTION_PASTE";
 	public static final String ACTION_PASTE_ABOVE = "ACTION_PASTE_ABOVE";
 	public static final String ACTION_LIBRARY = "ACTION_LIBRARY";
-	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 	/**  
 	 *This is the key that holds the page in the builder session
 	 **/
@@ -189,8 +188,12 @@ public class BuilderLogic implements Singleton {
 	private Pattern commentinHtmlReplacementPattern;
 	private Pattern xmlEncodingReplacementPattern = null;
 	
-	private static Instantiator instantiator = new Instantiator() { @Override
-	public Object getInstance() { return new BuilderLogic();}};
+	private static Instantiator instantiator = new Instantiator() {
+		@Override
+		public Object getInstance() {
+			return new BuilderLogic();
+		}
+	};
 
 	public static final String PAGE_FORMAT_IBXML="IBXML";
 	public static final String PAGE_FORMAT_HTML="HTML";
@@ -203,6 +206,11 @@ public class BuilderLogic implements Singleton {
 	//private volatile Web2Business web2 = null;
 	private IWSlideService slideService = null;
 	private XMLOutputter outputter = null;
+	
+	@Autowired
+	private Web2Business web2;
+	@Autowired
+	private JQuery jQuery;
 	
 	protected BuilderLogic() {
 		// empty
@@ -278,6 +286,19 @@ public class BuilderLogic implements Singleton {
 		}
 	}*/
 
+	private String getBuilderSessionMode() {
+		AdminToolbarSession session = null;
+		try {
+			session = ELUtil.getInstance().getBean(AdminToolbarSession.class);
+		} catch(Exception e) {
+			logger.log(Level.WARNING, "Error getting bean: " + AdminToolbarSession.class, e);
+		}
+		if (session == null) {
+			return null;
+		}
+		return session.getMode();
+	}
+	
 	/**
 	 *  	 *
 	 */
@@ -285,7 +306,8 @@ public class BuilderLogic implements Singleton {
 		IWBundle iwb = getBuilderBundle();
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
 		
-		addResourcesForBuilderEditMode(iwc, iwb);							//	MooTabs
+		String builderMode = getBuilderSessionMode();
+		addResourcesForBuilderEditMode(iwc, iwb, builderMode);
 		
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
@@ -301,13 +323,13 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		
-		if (iwc.getRequestURI().indexOf("/workspace/") == -1 && iwc.getRequestURI().indexOf("/pages") != -1 && (iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR))) {
+		if (iwc.getRequestURI().indexOf("/workspace/") == -1 && iwc.getRequestURI().indexOf("/pages") != -1 &&
+				(iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR))) {
 			page.getChildren().add(new AdminToolbar());
 			page.setStyleClass("isAdmin");
 			
-			AdminToolbarSession session = ELUtil.getInstance().getBean(AdminToolbarSession.class);
-			if (session.getMode() != null) {
-				page.setStyleClass(session.getMode());
+			if (builderMode != null) {
+				page.setStyleClass(builderMode);
 			}
 		}
 		else if (iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR)) {
@@ -328,10 +350,8 @@ public class BuilderLogic implements Singleton {
 				page.add(marker);
 			}
 			if (page instanceof HtmlPage) {
-				HtmlPage hPage = (HtmlPage)page;
-				Set regions = hPage.getRegionIds();
-				for (Iterator iter = regions.iterator(); iter.hasNext();) {
-					String regionKey = (String) iter.next();
+				HtmlPage hPage = (HtmlPage) page;
+				for (String regionKey: hPage.getRegionIds()) {
 					addModuleUri = getUriToAddModuleWindow(regionKey);
 					Layer marker = getLabelMarker(regionKey, regionKey);
 					addButtonsLayer(marker, addModuleUri, regionKey, iwrb, marker.getId());
@@ -346,9 +366,7 @@ public class BuilderLogic implements Singleton {
 				mayAddButtonsInPage=false;
 				if(page instanceof HtmlPage){
 					HtmlPage hPage = (HtmlPage)page;
-					Set regions = hPage.getRegionIds();
-					for (Iterator iter = regions.iterator(); iter.hasNext();) {
-						String regionKey = (String) iter.next();
+					for (String regionKey: hPage.getRegionIds()) {
 						Text regionText = new Text(regionKey);
 						regionText.setFontColor("red");
 						hPage.add(regionText,regionKey);
@@ -378,12 +396,26 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public void addResourcesForBuilderEditMode(IWContext iwc){
-		IWBundle builderBundle = iwc.getIWMainApplication().getBundle("com.idega.builder");
-		addResourcesForBuilderEditMode(iwc,builderBundle);
+		IWBundle builderBundle = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER);
+		addResourcesForBuilderEditMode(iwc, builderBundle, getBuilderSessionMode());
 	}
 	
-	public void addResourcesForBuilderEditMode(IWContext iwc, IWBundle builderBundle) {
-		Web2Business web2 = ELUtil.getInstance().getBean(Web2Business.class);
+	private Web2Business getWeb2Business() {
+		if (web2 == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+		return web2;
+	}
+	
+	private JQuery getJQUery() {
+		if (jQuery == null) {
+			ELUtil.getInstance().autowire(this);
+		}
+		return jQuery;
+	}
+	
+	private void addResourcesForBuilderEditMode(IWContext iwc, IWBundle builderBundle, String mode) {
+		Web2Business web2 = getWeb2Business();
 		
 		//	JavaScript
 		try {
@@ -403,12 +435,9 @@ public class BuilderLogic implements Singleton {
 		}
 		
 		//	JavaScript actions
+		mode = mode == null ? CoreConstants.EMPTY : mode;
 		PresentationUtil.addJavaScriptActionsToBody(iwc, Arrays.asList(
-				"window.addEvent('domready', getBuilderInitInfo);",
-				"window.addEvent('domready', registerBuilderActions);",
-				"window.addEvent('domready', registerBuilderDragDropActions);",
-				"window.addEvent('domready', showOrHideModulePasteIcons);",
-				"window.addEvent('domready', intializeMoodalboxInBuilder);",
+				new StringBuilder("window.addEvent('domready', function() { BuilderHelper.initializeBuilder('").append(mode).append("'); });").toString(),
 				"window.addEvent('resize', intializeMoodalboxInBuilder);",
 				"window.addEvent('beforeunload', showMessageForUnloadingPage);"
 		));
@@ -457,15 +486,15 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public Page getPermissionTransformed(int groupId, Page page, IWContext iwc) {
-		List<String> groupIds = new Vector<String>();
-		groupIds.add(Integer.toString(groupId));
+		List<Integer> groupIds = new ArrayList<Integer>();
+		groupIds.add(groupId);
 		try {
 			List groups = AccessControl.getPermissionGroups(((com.idega.core.data.GenericGroupHome) com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId));
 			if (groups != null) {
 				Iterator iter = groups.iterator();
 				while (iter.hasNext()) {
 					com.idega.core.data.GenericGroup item = (GenericGroup) iter.next();
-					groupIds.add(Integer.toString(item.getID()));
+					groupIds.add(item.getID());
 				}
 			}
 		}
@@ -473,21 +502,18 @@ public class BuilderLogic implements Singleton {
 			// empty block
 		}
 
-		List list = page.getChildren();
-		if (list != null) {
-			ListIterator iter = list.listIterator();
-			while (iter.hasNext()) {
-				int index = iter.nextIndex();
-				Object item = iter.next();
-				if (item instanceof PresentationObject) {
-					filterForPermission(groupIds, (PresentationObject) item, page, index, iwc);
-				}
+		int index = 0;
+		for (UIComponent item: page.getChildren()) {
+			if (item instanceof PresentationObject) {
+				filterForPermission(groupIds, (PresentationObject) item, page, index, iwc);
 			}
+			index++;
 		}
+
 		return page;
 	}
 
-	private void filterForPermission(List groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc) {
+	private void filterForPermission(List<Integer> groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc) {
 		if (!iwc.hasViewPermission(groupIds, obj)) {
 			logger.severe(obj + ": removed");
 			parentObject.getChildren().remove(index);
@@ -2054,12 +2080,11 @@ public class BuilderLogic implements Singleton {
 		if (xml != null) {
 			if (!xml.getName().equals(name)) {
 				xml.setName(name);
-				java.util.Map tree = PageTreeNode.getTree(iwc);
+				Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(iwc);
 				if (tree != null) {
 					String currentId = getCurrentIBPage(iwc);
 					if (currentId != null) {
-						Integer id = new Integer(currentId);
-						PageTreeNode node = (PageTreeNode) tree.get(id);
+						PageTreeNode node = tree.get(Integer.valueOf(currentId));
 						if (node != null) {
 							node.setNodeName(name);
 						}
@@ -2336,13 +2361,13 @@ public class BuilderLogic implements Singleton {
 	 * </p>
 	 * @return
 	 */
-	public Map getPageFormatsSupportedAndDescription(){
+	public Map<String, String> getPageFormatsSupportedAndDescription(){
 		Map<String, String> map = new HashMap<String, String>();
-		map.put(this.PAGE_FORMAT_IBXML,"Builder (IBXML)");
-		map.put(this.PAGE_FORMAT_IBXML2,"Builder Facelet (IBXML2)");
-		map.put(this.PAGE_FORMAT_HTML,"HTML");
-		map.put(this.PAGE_FORMAT_JSP_1_2,"JSP 1.2");
-		map.put(this.PAGE_FORMAT_FACELET,"Facelet");
+		map.put(PAGE_FORMAT_IBXML,"Builder (IBXML)");
+		map.put(PAGE_FORMAT_IBXML2,"Builder Facelet (IBXML2)");
+		map.put(PAGE_FORMAT_HTML,"HTML");
+		map.put(PAGE_FORMAT_JSP_1_2,"JSP 1.2");
+		map.put(PAGE_FORMAT_FACELET,"Facelet");
 		return map;
 	}
 	
@@ -2351,7 +2376,7 @@ public class BuilderLogic implements Singleton {
 	 * @return
 	 */
 	public String getDefaultPageFormat(){
-		return this.PAGE_FORMAT_IBXML;
+		return PAGE_FORMAT_IBXML;
 	}
 
 	/**
@@ -2372,9 +2397,6 @@ public class BuilderLogic implements Singleton {
 		}
 		title.append(" :: ").append(iwrb.getLocalizedString(BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_KEY,
 				BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_VALUE));
-		/*Image addModule = getBuilderBundle().getImage("add_16.png", title.toString(), 16, 16);
-		addModule.setOnClick(new StringBuffer("setPropertiesForAddModule('").append(labelMarkerContainerId).append("');").toString());
-		addModule.setStyleClass(BuilderConstants.IMAGE_WITH_TOOLTIPS_STYLE_CLASS);*/
 		
 		// Link for MOOdalBox
 		Link link = new Link(new Text(iwrb.getLocalizedString("add", "Add")), "javascript:void(0);");
@@ -2390,10 +2412,8 @@ public class BuilderLogic implements Singleton {
 		title = new StringBuffer(iwrb.getLocalizedString("article_module", "Article")).append(" :: ");
 		title.append(iwrb.getLocalizedString("add_article_module", "Add article module"));
 		title.append(getLabelToRegion(iwrb, label));
-		/*Image addArticle = getBuilderBundle().getImage("add_article.png", title.toString(), 16, 16);
-		addArticle.setStyleClass("add_article_module_to_region_image");*/
 		Span addArticle = new Span(new Text(iwrb.getLocalizedString("text", "Text")));
-		addArticle.setToolTip(title.toString());
+		addArticle.setTitle(title.toString());
 		addArticle.setStyleClass("add_article_module_to_region_image");
 		
 		ICObject article = null;
@@ -2422,7 +2442,7 @@ public class BuilderLogic implements Singleton {
 		StringBuffer pasteAction = new StringBuffer("pasteCopiedModule('").append(pasteButtonContainer.getId()).append("');");
 		//pasteImage.setOnClick(pasteAction.toString());
 		Span paste = new Span(new Text(iwrb.getLocalizedString("paste", "Paste")));
-		paste.setToolTip(title.toString());
+		paste.setTitle(title.toString());
 		paste.setOnClick(pasteAction.toString());
 		//pasteButtonContainer.add(pasteImage);
 		pasteButtonContainer.add(paste);
@@ -2604,10 +2624,8 @@ public class BuilderLogic implements Singleton {
 			newComponent = component.getClass().newInstance();
 			newComponent.setId(instanceId);
 			PropertyCache.getInstance().setAllCachedPropertiesOnInstance(instanceId, newComponent);
-			List childrenList = component.getChildren();
-			Iterator childrenListIterator = childrenList.iterator();
-			while (childrenListIterator.hasNext()) {
-				UIComponent childComponent = (UIComponent) childrenListIterator.next();
+			List<UIComponent> childrenList = component.getChildren();
+			for (UIComponent childComponent: childrenList) {
 				UIComponent newChildComponent = getCopyOfUIComponentFromIBXML(childComponent);
 				if (newChildComponent != null) {
 					newComponent.getChildren().add(newChildComponent);
@@ -2708,9 +2726,8 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	public IWBundle getBuilderBundle(){
-		return IWMainApplication.getDefaultIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		return IWMainApplication.getDefaultIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER);
 	}
-	
 	
 	public boolean isFirstBuilderRun(){
 		ICDomain domain =  getCurrentDomain();
@@ -2798,18 +2815,6 @@ public class BuilderLogic implements Singleton {
 		}
 	}
 	
-//	protected Web2Business getWeb2Business(){
-//		
-//		try {
-//			return (Web2Business) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), Web2Business.class);
-//		}
-//		catch (IBOLookupException e) {
-//			e.printStackTrace();
-//		}	
-//		
-//		return null;
-//	}
-	
 	/**
 	 * Saving page structure after moving (drag & drop) tree nodes
 	 * @param IDs Tree nodes' IDs
@@ -2827,16 +2832,12 @@ public class BuilderLogic implements Singleton {
 		
 		return IBPageUpdater.addLocalizedPageName(id, ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()), newName);
 	}
-		
-//	public Collection getTopLevelPages(IWContext iwc){
-//		return DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
-//	}
-
+	
 	public Collection getTopLevelTemplates(IWContext iwc){
 		return DomainTree.getDomainTree(iwc).getTemplatesNode().getChildren();		
 	}
-//	public Collection getSortedTopLevelPages(IWContext iwc){
-	public Collection getTopLevelPages(IWContext iwc){
+
+	public Collection<PageTreeNode> getTopLevelPages(IWContext iwc){
 		Collection<PageTreeNode> coll = DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
 		
 		List <PageTreeNode>unsortedNodes = new ArrayList <PageTreeNode> (coll);
@@ -4314,16 +4315,12 @@ public class BuilderLogic implements Singleton {
 		RenderedComponent rendered = new RenderedComponent();
 		rendered.setErrorMessage("Ooops... Some error occurred rendering component...");
 		
-		Web2Business web2 = null;
-		try {
-			web2 = ELUtil.getInstance().getBean(Web2Business.SPRING_BEAN_IDENTIFIER);
-		} catch(Exception e) {
-			logger.log(Level.SEVERE, "Error getting bean: " + Web2Business.class.getName(), e);
-		}
-		if (web2 != null) {
+		Web2Business web2 = getWeb2Business();
+		JQuery jQuery = getJQUery();
+		if (web2 != null && jQuery != null) {
 			List<String> resources = new ArrayList<String>();
 			resources.add(web2.getBundleUriToHumanizedMessagesStyleSheet());
-			resources.add(web2.getBundleURIToJQueryLib());
+			resources.add(jQuery.getBundleURIToJQueryLib());
 			resources.add(web2.getBundleUriToHumanizedMessagesScript());
 			rendered.setResources(resources);
 		}
