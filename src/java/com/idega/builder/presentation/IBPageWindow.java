@@ -9,6 +9,7 @@
  */
 package com.idega.builder.presentation;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPropertyHandler;
@@ -30,7 +31,6 @@ public class IBPageWindow extends IWAdminWindow {
   protected static final String PAGE_CHOOSER_NAME     = IBPropertyHandler.PAGE_CHOOSER_NAME;
   protected static final String TEMPLATE_CHOOSER_NAME = IBPropertyHandler.TEMPLATE_CHOOSER_NAME;
   protected static final String PAGE_TYPE             = "ib_page_type";
-  protected static final String IW_BUNDLE_IDENTIFIER  = "com.idega.builder";
   protected static final String PAGE_FORMAT = "ib_page_format";
 
   public IBPageWindow() {
@@ -112,7 +112,8 @@ public class IBPageWindow extends IWAdminWindow {
   /**
    *
    */
-  public String getBundleIdentifier() {
-    return IW_BUNDLE_IDENTIFIER;
+  @Override
+public String getBundleIdentifier() {
+    return BuilderConstants.IW_BUNDLE_IDENTIFIER;
   }
 }

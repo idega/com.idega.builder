@@ -10,7 +10,7 @@ import javax.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.idega.block.login.presentation.Login2;
-import com.idega.block.web2.business.Web2Business;
+import com.idega.block.web2.business.JQuery;
 import com.idega.builder.bean.AdminToolbarSession;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.core.accesscontrol.business.StandardRoles;
@@ -32,15 +32,15 @@ import com.idega.util.expression.ELUtil;
 /**
  *	Creates toolbar for super administrators for switching page into different modes: builder, content, themes or preview
  *
- *  Last modified: $Date: 2009/04/09 12:36:46 $ by $Author: valdas $
+ *  Last modified: $Date: 2009/04/27 14:52:25 $ by $Author: valdas $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class AdminToolbar extends IWBaseComponent {
 
 	@Autowired
-	private Web2Business web2;
+	private JQuery jQuery;
 	
 	@Autowired
 	private AdminToolbarSession adminToolbarSettings;
@@ -67,7 +67,7 @@ public class AdminToolbar extends IWBaseComponent {
 
 		//	JavaScript
 		PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
-				web2.getBundleURIToJQueryLib(),
+				jQuery.getBundleURIToJQueryLib(),
 				
 				CoreConstants.DWR_ENGINE_SCRIPT,
 				CoreConstants.DWR_UTIL_SCRIPT,

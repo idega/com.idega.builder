@@ -1,5 +1,5 @@
 /*
- *  $Id: IBApplication.java,v 1.105 2008/12/05 07:00:14 valdas Exp $
+ *  $Id: IBApplication.java,v 1.106 2009/04/27 14:52:25 valdas Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,8 +13,11 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
+
 import javax.faces.context.FacesContext;
+
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.CachedBuilderPage;
@@ -75,7 +78,6 @@ public class IBApplication extends IWApplication {
 	// unused private final static String ACTION_HELP = "help";
 	protected static boolean noCurtain = false;
 	// unused private static String URL = "";
-	public final static String IB_BUNDLE_IDENTIFIER = "com.idega.builder";
 	//private final static String CONTENT_PREVIEW_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=preview";
 	//private final static String CONTENT_EDIT_URL = com.idega.idegaweb.IWMainApplication.BUILDER_SERVLET_URL + "?view=builder";
 	/**
@@ -183,6 +185,7 @@ public class IBApplication extends IWApplication {
 	 *
 	 *@param  iwc  Description of the Parameter
 	 */
+	@Override
 	public void main(IWContext iwc) {
 		startIBApplication(iwc);
 		
@@ -251,6 +254,7 @@ public class IBApplication extends IWApplication {
 			IWContext iwc = IWContext.getInstance();
 			initFrames(iwc);
 		}
+		@Override
 		public void main(IWContext iwc){
 			//initFrames(iwc);
 		}
@@ -273,19 +277,23 @@ public class IBApplication extends IWApplication {
 			setScrolling(3, false);
 		}
 		
+		@Override
 		public void print(IWContext iwc) throws Exception{
 			//debug:
 			super.print(iwc);
 		}
 		
+		@Override
 		public void encodeBegin(FacesContext context) throws IOException{
 			//debug:
 			super.encodeBegin(context);
 		}
+		@Override
 		public void encodeChildren(FacesContext context) throws IOException{
 			//debug:
 			super.encodeChildren(context);
 		}
+		@Override
 		public void encodeEnd(FacesContext context) throws IOException{
 			//debug:
 			super.encodeEnd(context);
@@ -306,6 +314,7 @@ public class IBApplication extends IWApplication {
 		 *
 		 *@param  iwc  Description of the Parameter
 		 */
+		@Override
 		public void main(IWContext iwc) {
 			this.setAllMargins(0);
 			setBackgroundColor("#0E2456");
@@ -313,9 +322,9 @@ public class IBApplication extends IWApplication {
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 			add(table);
-			Image image = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/logo.gif");
+			Image image = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getImage("shared/banner/logo.gif");
 			table.add(image, 1, 1);
-			Image image2 = iwc.getIWMainApplication().getBundle(IB_BUNDLE_IDENTIFIER).getImage("shared/banner/top_image.gif");
+			Image image2 = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getImage("shared/banner/top_image.gif");
 			table.add(image2, 2, 1);
 			table.setWidth("100%");
 			table.setHeight("100%");
@@ -343,6 +352,7 @@ public class IBApplication extends IWApplication {
 		 *
 		 *@param  iwc  Description of the Parameter
 		 */
+		@Override
 		public void main(IWContext iwc) {
 			setStyles();
 
@@ -435,6 +445,7 @@ public class IBApplication extends IWApplication {
 		 *
 		 *@param  iwc  Description of the Parameter
 		 */
+		@Override
 		public void main(IWContext iwc) {
 			setStyles();
 			boolean startupInProgress = startupInProgress(iwc);
@@ -517,6 +528,7 @@ public class IBApplication extends IWApplication {
 		 *
 		 *@param  iwc  Description of the Parameter
 		 */
+		@Override
 		public void main(IWContext iwc) {
 			startLeftMenu(iwc);
 			setAlignment("left");
@@ -582,7 +594,6 @@ public class IBApplication extends IWApplication {
 	 */
 	public static class IBToolBar extends IWApplicationComponent {
 		private static final String STYLE_CLASS_TOOLBAR_BUTTON = "toolbarButton";
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 */
 		public IBToolBar() {
@@ -590,6 +601,7 @@ public class IBApplication extends IWApplication {
 		/**
 		 *@param  iwc  Description of the Parameter
 		 */
+		@Override
 		public void main(IWContext iwc) {
 			/*      if (!startupInProgress) {
 				//super.setOnLoad("parent.parent.frames['"+IB_LEFT_MENU_FRAME+"'].location.reload();parent.frames['"+IB_CONTENT_FRAME+"'].location.reload()");
@@ -795,11 +807,9 @@ public class IBApplication extends IWApplication {
 			script.addFunction("jumpMenu", "function jumpMenu(targ,selObj,restore){ eval(targ+\".location='\"+selObj.options[selObj.selectedIndex].value+\"'\"); if (restore) selObj.selectedIndex=0; }");
 			getParentPage().setAssociatedScript(script);
 			String url = prefix + buffer.toString();
-			List locales = ICLocaleBusiness.getListOfLocalesJAVA();
+			List<Locale> locales = ICLocaleBusiness.getListOfLocalesJAVA();
 			DropdownMenu down = new DropdownMenu(LocaleSwitcher.languageParameterString);
-			Iterator iter = locales.iterator();
-			while (iter.hasNext()) {
-				Locale item = (Locale) iter.next();
+			for (Locale item: locales) {
 				down.addMenuElement(url + item.toString(), item.getDisplayLanguage());
 			}
 			//IWMainApplication.getBuilderServletURI()
@@ -854,8 +864,9 @@ public class IBApplication extends IWApplication {
 /**
 		 *@return    The bundleIdentifier value
 		 */
+		@Override
 		public String getBundleIdentifier() {
-			return (IW_BUNDLE_IDENTIFIER);
+			return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 		}
 	}
 	/**
@@ -863,7 +874,6 @@ public class IBApplication extends IWApplication {
 	 *@created    11. mars 2002
 	 */
 	public static class IBStatusBar extends IWApplicationComponent {
-		private final static String IW_BUNDLE_IDENTIFIER = IB_BUNDLE_IDENTIFIER;
 		/**
 		 */
 		public IBStatusBar() {
@@ -871,6 +881,7 @@ public class IBApplication extends IWApplication {
 		/**
 		 *@param  iwc  Description of the Parameter
 		 */
+		@Override
 		public void main(IWContext iwc) {
 			IWBundle _iwrb = getBundle(iwc);
 			String controlParameter = "builder_controlparameter";
@@ -973,10 +984,10 @@ public class IBApplication extends IWApplication {
 				}
 				String name = null;
 				if (id != null && !id.equals("")) {
-					java.util.Map tree = PageTreeNode.getTree(iwc);
+					Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(iwc);
 					Integer pageId = new Integer(id);
 					if (tree != null) {
-						PageTreeNode node = (PageTreeNode) tree.get(pageId);
+						PageTreeNode node = tree.get(pageId);
 						if (node != null) {
 							name = Text.NON_BREAKING_SPACE + node.getLocalizedNodeName(iwc);
 						}
@@ -984,7 +995,7 @@ public class IBApplication extends IWApplication {
 					if (name == null) {
 						tree = PageTreeNode.getTree(iwc);
 						if (tree != null) {
-							PageTreeNode node = (PageTreeNode) tree.get(pageId);
+							PageTreeNode node = tree.get(pageId);
 							if (node != null) {
 								name = Text.NON_BREAKING_SPACE + node.getLocalizedNodeName(iwc);
 							}
@@ -1051,8 +1062,9 @@ public class IBApplication extends IWApplication {
 		/**
 		 *@return    The bundleIdentifier value
 		 */
+		@Override
 		public String getBundleIdentifier() {
-			return (IW_BUNDLE_IDENTIFIER);
+			return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 		}
 	}
 }

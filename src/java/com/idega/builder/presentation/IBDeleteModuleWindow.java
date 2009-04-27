@@ -28,7 +28,6 @@ public class IBDeleteModuleWindow extends IBAdminWindow {
 	private static final String COOKIE_NAME = "not_again";
 	private static final String IB_DELETE_CONFIRM = "ib_del_confirm";
 	private static final String IB_DELETE_CLOSE = "ib_del_close";
-	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 
 	public IBDeleteModuleWindow() {
 		setWidth(240);
@@ -36,6 +35,7 @@ public class IBDeleteModuleWindow extends IBAdminWindow {
 		setScrollbar(false);
 	}
 
+	@Override
 	public void main(IWContext iwc) {
 		if (iwc.isParameterSet(IB_DELETE_CLOSE)) {
 			close();
@@ -77,7 +77,7 @@ public class IBDeleteModuleWindow extends IBAdminWindow {
 	}
 
 	public PresentationObject getConfirmBox(IWContext iwc) {
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(
 				iwc);
 		Table t = new Table(1, 3);
 		t.setCellpadding(6);
@@ -105,7 +105,8 @@ public class IBDeleteModuleWindow extends IBAdminWindow {
 		return f;
 	}
 
+	@Override
 	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 }

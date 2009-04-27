@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.myfaces.component.html.ext.HtmlInputTextarea;
 
 import com.idega.block.web2.business.Web2Business;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.HtmlTemplateGrabber;
 import com.idega.core.builder.data.ICPage;
@@ -31,7 +32,6 @@ import com.idega.webface.WFUtil;
  * @version 1.0
  */
 public class IBSourceView extends Window {
-	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
 	private static final String SOURCE_PARAMETER = "ib_page_source";
 	private static final String IB_SOURCE_ACTION = "ib_page_source_action";
 	private static final String IB_PAGE_FORMAT = "ib_page_fomat";
@@ -42,6 +42,7 @@ public class IBSourceView extends Window {
 		setHeight(600);
 	}
 
+	@Override
 	public void main(IWContext iwc) {
 		setPrintScriptSourcesDirectly(false);
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
@@ -200,7 +201,8 @@ public class IBSourceView extends Window {
 		return BuilderLogic.getInstance();
 	}
 	
+	@Override
 	public String getBundleIdentifier(){
-		return IW_BUNDLE_IDENTIFIER;
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 }

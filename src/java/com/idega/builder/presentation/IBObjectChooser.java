@@ -6,7 +6,7 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.component.data.ICObject;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
@@ -38,13 +38,15 @@ public class IBObjectChooser extends AbstractChooser {
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.ui.AbstractChooser#getChooserWindowClass()
 	 */
+	@Override
 	public Class getChooserWindowClass() {
 		return IBObjectChooserWindow.class;
 	}
 	
+	@Override
 	public void main(IWContext iwc){
 		this.empty();
-		IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+		IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER);
 		setChooseButtonImage(iwb.getImage("open.gif","Choose"));
 	  }
 	  
@@ -66,7 +68,8 @@ public class IBObjectChooser extends AbstractChooser {
 	 }
 	 
 
-	 public void setValue(Object file){
+	 @Override
+	public void setValue(Object file){
 		setSelectedObject((ICObject)file);
 	 }
 	 

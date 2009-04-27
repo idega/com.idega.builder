@@ -2,7 +2,7 @@
  * Created on Nov 27, 2003
  */
 /*
- * $Id: StyledIBPageChooserWindow.java,v 1.5 2006/04/09 11:43:35 laddi Exp $
+ * $Id: StyledIBPageChooserWindow.java,v 1.6 2009/04/27 14:52:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,7 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWLocation;
 import com.idega.idegaweb.IWResourceBundle;
@@ -56,13 +56,14 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 	/**
 	 *
 	 */
+	@Override
 	public void displaySelection(IWContext iwc) {
 		if (iwc.isParameterSet("from_editor")) {
 			addScript();
 			this.fromEditor = true;
 		}
 		
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		setTitle(iwrb.getLocalizedString("select_page", "Select page"));
 		addTitle(iwrb.getLocalizedString("select_page", "Select page"), TITLE_STYLECLASS);
 		setStyles();

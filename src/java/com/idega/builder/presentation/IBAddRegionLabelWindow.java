@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddRegionLabelWindow.java,v 1.7 2008/12/05 07:00:12 valdas Exp $
+ * $Id: IBAddRegionLabelWindow.java,v 1.8 2009/04/27 14:52:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,8 +36,6 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
 	private static final String ACTION_LABEL = BuilderLogic.ACTION_LABEL;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
 
-	private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
-
 	public IBAddRegionLabelWindow() {
 		setWidth(250);
 		setHeight(100);
@@ -48,6 +46,7 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
 		addTitle(iwrb.getLocalizedString("add_region_label", "Add region label"));
@@ -110,7 +109,8 @@ public class IBAddRegionLabelWindow extends IBAdminWindow {
 	/**
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
 	 */
+	@Override
 	public String getBundleIdentifier() {
-		return (IW_BUNDLE_IDENTIFIER);
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: IBAddModuleWindow.java,v 1.55 2008/12/05 07:00:12 valdas Exp $
+ * $Id: IBAddModuleWindow.java,v 1.56 2009/04/27 14:52:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,7 +50,6 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	private static final String IB_PARENT_PARAMETER = BuilderLogic.IB_PARENT_PARAMETER;
 	private static final String IB_PAGE_PARAMETER = BuilderConstants.IB_PAGE_PARAMETER;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
-	private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
 	private static final String INTERNAL_CONTROL_PARAMETER = "ib_adminwindow_par";
 
 	public static final String ELEMENT_LIST = "element_builder_list";
@@ -78,8 +77,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	/**
 	 *
 	 */
+	@Override
 	public void main(IWContext iwc) throws Exception {
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		super.addTitle(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
 		//button = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage("shared/properties/button.gif");
@@ -329,8 +329,9 @@ public class IBAddModuleWindow extends IBAdminWindow {
 	/**
 	 *
 	 */
+	@Override
 	public String getBundleIdentifier() {
-		return (IW_BUNDLE_IDENTIFIER);
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 
 	public static void removeAttributes(IWContext iwc) {

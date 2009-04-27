@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.IBPageExportBusiness;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.PageTreeNode;
@@ -58,8 +59,9 @@ public class IBPageExporterWindow extends IBPageWindow {
 	
 	private IBPageExportBusiness pageExportBusiness = null;
 	
+	@Override
 	public String getBundleIdentifier() {
-    return IW_BUNDLE_IDENTIFIER;
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
   }
 	
   public IBPageExporterWindow() {
@@ -69,7 +71,8 @@ public class IBPageExporterWindow extends IBPageWindow {
     setResizable(true);
   }
 
-  public void main(IWContext iwc) throws Exception {
+  @Override
+public void main(IWContext iwc) throws Exception {
   	setTitle("PageExporter");
   	String action = parseAction(iwc);
 		IWResourceBundle resourceBundle = getResourceBundle(iwc);

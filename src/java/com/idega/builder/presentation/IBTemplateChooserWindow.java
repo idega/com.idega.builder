@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooserWindow.java,v 1.16 2006/02/20 11:02:40 laddi Exp $
+ * $Id: IBTemplateChooserWindow.java,v 1.17 2009/04/27 14:52:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -32,7 +32,7 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
    */
   public IBTemplateChooserWindow() {
     /**
-     * @todo Setja inn IWResourceBundle hérna í staðinn fyrir þessa texta.
+     * @todo Setja inn IWResourceBundle hï¿½rna ï¿½ staï¿½inn fyrir ï¿½essa texta.
      */
     setTitle("Template chooser");
     setWidth(_width);
@@ -44,8 +44,9 @@ public class IBTemplateChooserWindow extends AbstractChooserWindow {
   /**
    *
    */
-  public void displaySelection(IWContext iwc) {
-    IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+  @Override
+public void displaySelection(IWContext iwc) {
+    IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("select_template","Select template"),IWConstants.BUILDER_FONT_STYLE_TITLE);
     setStyles();
 

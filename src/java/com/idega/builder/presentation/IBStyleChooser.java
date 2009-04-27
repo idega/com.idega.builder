@@ -1,6 +1,6 @@
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.AbstractChooser;
@@ -27,12 +27,14 @@ public class IBStyleChooser extends AbstractChooser {
     setInputStyle(style);
   }
 
-  public void main(IWContext iwc){
-    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+  @Override
+public void main(IWContext iwc){
+    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER);
     setChooseButtonImage(iwb.getImage("open.gif","Choose"));
   }
 
-  public Class getChooserWindowClass() {
+  @Override
+public Class getChooserWindowClass() {
     return IBStyleChooserWindow.class;
   }
 

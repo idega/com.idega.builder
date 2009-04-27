@@ -1,5 +1,5 @@
 /*
- * $Id: IBTemplateChooser.java,v 1.19 2007/10/11 11:28:20 valdas Exp $
+ * $Id: IBTemplateChooser.java,v 1.20 2009/04/27 14:52:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
@@ -43,15 +43,17 @@ public class IBTemplateChooser extends AbstractChooser {
   /**
    *
    */
-  public void main(IWContext iwc) {
-    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+  @Override
+public void main(IWContext iwc) {
+    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER);
     setChooseButtonImage(iwb.getImage("choose.png", "Choose"));
   }
 
   /**
    *
    */
-  public Class getChooserWindowClass() {
+  @Override
+public Class getChooserWindowClass() {
 	  if (isUseOldLogic()) {
 		  return IBTemplateChooserWindow.class;
 	  }

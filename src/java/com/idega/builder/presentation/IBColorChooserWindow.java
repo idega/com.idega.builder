@@ -2,7 +2,7 @@ package com.idega.builder.presentation;
 
 import java.util.Iterator;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
@@ -44,6 +44,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		this.setScrollbar(false);
 	}
 
+	@Override
 	public void displaySelection(IWContext iwc) {
 		addTitle("Color chooser", IWConstants.BUILDER_FONT_STYLE_TITLE);
 		getParameters(iwc);
@@ -66,7 +67,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 	}
 
 	private PresentationObject drawForm(IWContext iwc) {
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
 		IWColor color = new IWColor(0, 0, 0);
 		IWColor iwColor = null;

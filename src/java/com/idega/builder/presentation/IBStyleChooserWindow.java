@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -41,6 +41,7 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 		setHeight(450);
 	}
 
+	@Override
 	public void displaySelection(IWContext iwc) {
 		addTitle("Style chooser", IWConstants.BUILDER_FONT_STYLE_TITLE);
 
@@ -60,7 +61,7 @@ public class IBStyleChooserWindow extends AbstractChooserWindow {
 	}
 
 	private void drawForm(IWContext iwc) {
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
 		Form form = new Form();
 		Table formTable = new Table(1, 3);

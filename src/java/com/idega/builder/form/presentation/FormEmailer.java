@@ -1,6 +1,8 @@
 package com.idega.builder.form.presentation;
 
 import java.io.File;
+
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.handler.IBGenericFormHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
@@ -22,8 +24,6 @@ import com.idega.presentation.ui.SubmitButton;
 public class FormEmailer extends Block {
 
 	private IBGenericFormHandler handler;
-
-	private static final String BUILDER_BUNDLE_IDENTIFIER = "com.idega.builder";
 
 	private String emailServer;
 
@@ -59,6 +59,7 @@ public class FormEmailer extends Block {
 		this.handler = new IBGenericFormHandler();
 	}
 	
+	@Override
 	public void main(IWContext iwc) {
 		
 		if(isSpambot(iwc)) {
@@ -286,6 +287,7 @@ public class FormEmailer extends Block {
 		this.senderEmailParameter = parameterName;
 	}
 
+	@Override
 	public Object clone() {
 		Object newObject = super.clone();
 		FormEmailer newEmailer = (FormEmailer) newObject;
@@ -295,8 +297,9 @@ public class FormEmailer extends Block {
 		return newObject;
 	}
 
+	@Override
 	public String getBundleIdentifier() {
-		return BUILDER_BUNDLE_IDENTIFIER;
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 
 	public void setSendReceipt(boolean sendReceipt) {

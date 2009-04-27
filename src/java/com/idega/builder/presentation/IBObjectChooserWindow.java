@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;
 import com.idega.core.component.data.ICObjectHome;
@@ -52,8 +52,9 @@ public class IBObjectChooserWindow extends AbstractChooserWindow {
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.ui.AbstractChooserWindow#displaySelection(com.idega.presentation.IWContext)
 	 */
+	@Override
 	public void displaySelection(IWContext iwc) {
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		addTitle(iwrb.getLocalizedString("select_object", "Select object"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
 		debugParameters(iwc);

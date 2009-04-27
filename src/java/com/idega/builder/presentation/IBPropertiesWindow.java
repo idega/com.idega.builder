@@ -1,7 +1,6 @@
 package com.idega.builder.presentation;
 
 import com.idega.builder.business.BuilderConstants;
-import com.idega.builder.business.BuilderLogic;
 import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
@@ -148,7 +147,7 @@ public void main(IWContext iwc) throws Exception{
       table.setCellpaddingAndCellspacing(0);
       table.setWidth(Table.HUNDRED_PERCENT);
       add(table);
-    	IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+    	IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
       Image b1 = iwrb.getLocalizedImageButton("close","CLOSE");
       b1.setOnClick("javascript:doClose()");

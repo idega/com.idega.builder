@@ -1,5 +1,5 @@
 /*
- * $Id: IBPageChooserWindow.java,v 1.18 2006/04/09 11:43:34 laddi Exp $
+ * $Id: IBPageChooserWindow.java,v 1.19 2009/04/27 14:52:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.builder.presentation;
 
-import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWLocation;
 import com.idega.idegaweb.IWResourceBundle;
@@ -52,13 +52,14 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 	/**
 	 *
 	 */
+	@Override
 	public void displaySelection(IWContext iwc) {
 		if (iwc.isParameterSet("from_editor")) {
 			addScript();
 			this.fromEditor = true;
 		}
 		
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		addTitle(iwrb.getLocalizedString("select_page", "Select page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
 

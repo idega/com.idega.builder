@@ -1,5 +1,5 @@
 /*
- * $Id: IBLockRegionWindow.java,v 1.13 2008/12/05 07:00:12 valdas Exp $
+ * $Id: IBLockRegionWindow.java,v 1.14 2009/04/27 14:52:25 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,7 +35,6 @@ public class IBLockRegionWindow extends IBAdminWindow {
 	private static final String IB_CONTROL_PARAMETER = ICBuilderConstants.IB_CONTROL_PARAMETER;
 	private static final String ACTION_LOCK = BuilderLogic.ACTION_LOCK_REGION;
 	private static final String ACTION_UNLOCK = BuilderLogic.ACTION_UNLOCK_REGION;
-	private static final String IW_BUNDLE_IDENTIFIER = BuilderLogic.IW_BUNDLE_IDENTIFIER;
 	private static final String IB_LABEL_PARAMETER = BuilderLogic.IB_LABEL_PARAMETER;
 
 	public IBLockRegionWindow() {
@@ -45,6 +44,7 @@ public class IBLockRegionWindow extends IBAdminWindow {
 		setResizable(false);
 	}
 
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
 		setTitle(iwrb.getLocalizedString("lock_region_window", "Lock region window"));
@@ -124,10 +124,12 @@ public class IBLockRegionWindow extends IBAdminWindow {
 		BuilderLogic.getInstance().unlockRegion(pageKey, parentID, label);
 	}
 
+	@Override
 	public String getBundleIdentifier() {
-		return (IW_BUNDLE_IDENTIFIER);
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 	
+	@Override
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}

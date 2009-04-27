@@ -236,7 +236,7 @@ public class IBPermissionWindow extends Window {
 		}
 		needCancelButton = !isComponentInFrame;
 		
-		this.iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		this.iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		setTitle(this.iwrb.getLocalizedString("ib_permission_window", "Permissions"));
 		// System.out.println("_PARAMETERSTRING_PERMISSION_CATEGORY:
 		// "+iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY)+" and

@@ -1,6 +1,6 @@
 /*
 
- * $Id: IBDeletePageWindow.java,v 1.22 2006/06/02 10:27:56 tryggvil Exp $
+ * $Id: IBDeletePageWindow.java,v 1.23 2009/04/27 14:52:25 valdas Exp $
 
  *
 
@@ -16,6 +16,7 @@
 
  */
 package com.idega.builder.presentation;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.DomainTree;
 import com.idega.builder.business.IBPageHelper;
@@ -36,18 +37,19 @@ import com.idega.presentation.ui.SubmitButton;
  */
 public class IBDeletePageWindow extends IWAdminWindow
 {
-	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.builder";
+
 	public IBDeletePageWindow()
 	{
 		setWidth(240);
 		setHeight(140);
 		setScrollbar(false);
 	}
+	@Override
 	public void main(IWContext iwc) throws Exception
 	{
 		boolean okToDelete = false;
 		boolean okToDeleteChildren = true;
-		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		Form form = new Form();
 		setTitle(iwrb.getLocalizedString("delete_page", "Delete page"));
 		addTitle(iwrb.getLocalizedString("delete_page", "Delete page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
@@ -124,9 +126,10 @@ public class IBDeletePageWindow extends IWAdminWindow
 			form.add(table);
 		}
 	}
+	@Override
 	public String getBundleIdentifier()
 	{
-		return IW_BUNDLE_IDENTIFIER;
+		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
 	}
 	
 	protected BuilderLogic getBuilderLogic(){

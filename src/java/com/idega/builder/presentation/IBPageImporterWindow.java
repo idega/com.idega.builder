@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.IBPageHelper;
 import com.idega.builder.business.IBPageImportBusiness;
 import com.idega.business.IBOLookup;
@@ -61,7 +62,7 @@ public class IBPageImporterWindow extends IBPageWindow {
 	
 	@Override
 	public String getBundleIdentifier() {
-    return IW_BUNDLE_IDENTIFIER;
+    return BuilderConstants.IW_BUNDLE_IDENTIFIER;
   }
 	
   public IBPageImporterWindow() {

@@ -50,10 +50,11 @@ public class IBPropertiesWindowList extends Page {
 		}
 	}
 
+	@Override
 	public void main(IWContext iwc) throws Exception {
-		this.button = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage(
+		this.button = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getImage(
 				"shared/properties/button.gif");
-		this.hoverButton = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getImage(
+		this.hoverButton = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getImage(
 				"shared/properties/button_hvr.gif");
 		String ic_object_id = getUsedICObjectInstanceID(iwc);
 		setStyles();
