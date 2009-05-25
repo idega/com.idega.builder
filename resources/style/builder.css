@@ -754,11 +754,9 @@ div#simple_properties_box {
 .regionLabel {
 	position: absolute;
 	z-index: 100;
-	margin-bottom: 3px;
 	overflow: hidden;
-	bottom: -21px;
-	left: -1px;
-	display: none;
+	bottom: 0px;
+	left: 0px;
 }
 
 .isEditAdmin .addableRegion:hover > .regionLabel {
@@ -767,13 +765,12 @@ div#simple_properties_box {
 
 .regionLabel .builderButtons {
 	border: 1px #666 dotted;
+	border-bottom: 0;
+	border-left: 0;
 	background-color: #ccc;
-	border-bottom-right-radius: 3px;
-	border-bottom-left-radius: 3px;
-	-moz-border-radius-bottomleft: 3px;
-	-webkit-border-bottom-left-radius: 3px;
-	-moz-border-radius-bottomright: 3px;
-	-webkit-border-bottom-right-radius: 3px;
+	border-top-right-radius: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-right-radius: 3px;
 	padding: 0;
 	float: left;
 	text-transform: lowercase;
