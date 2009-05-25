@@ -48,23 +48,6 @@
 	opacity: 1;
 }
 
-.moduleWrapper {
-	display: none;
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	background-color: #ccc;
-	z-index: 2;
-	opacity: .5;
-}
-
-.isEditAdmin .moduleContainer:hover .moduleWrapper {
-	display: block;
-	cursor: move !important;
-}
-
 .moduleHandle {
 	background-color: #D7DBE7;
 	border-bottom: 1px #000000 solid;	
@@ -709,8 +692,6 @@ div#simple_properties_box {
 /* Button layer */
 .isEditAdmin .addableRegion {
 	position: relative;
-	min-height: 20px;
-	border: 1px #aaa dotted;
 	padding-bottom: 20px;
 }
 
@@ -728,13 +709,9 @@ div#simple_properties_box {
 
 .isEditAdmin .addableRegion .addableRegionLabel {
 	display: block;
+	margin: -1px;
+	margin-bottom: 0;
 	border: 1px #aaa solid;
-	position: absolute;
-	border-radius: 3px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	top: -10px;
-	right: 3px;
 	line-height: 18px !important;
 	padding: 0 6px !important;
 	font-size: 10px !important;
@@ -759,7 +736,7 @@ div#simple_properties_box {
 	left: 0px;
 }
 
-.isEditAdmin .addableRegion:hover > .regionLabel {
+.isEditAdmin .addableRegion .regionLabel {
 	display: block !important;
 }
 
