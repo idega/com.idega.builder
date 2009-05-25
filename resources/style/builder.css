@@ -758,6 +758,7 @@ div#simple_properties_box {
 	overflow: hidden;
 	bottom: -21px;
 	left: -1px;
+	display: none;
 }
 
 .isEditAdmin .addableRegion:hover > .regionLabel {
@@ -796,17 +797,17 @@ div.builderButtons div.builderButton a {
 	border: 0 !important;
 	color: #000 !important;
 	text-decoration: none !important;
-padding-left: 12px !important;
-display: block;
+	padding-left: 12px !important;
+	display: block;
 }
 
 div.builderButtons div.builderButton a.addModuleLinkStyleClass {
-background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/add.png) left no-repeat !important;
+	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/add.png) left no-repeat !important;
 }
 
 div.builderButtons div.builderButton span.add_article_module_to_region_image {
-background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/text.png) left no-repeat !important;
-padding-left: 12px;
+	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/text.png) left no-repeat !important;
+	padding-left: 12px;
 }
 
 div.builderButtons div.builderButton img {
