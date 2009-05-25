@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.376 2009/04/27 14:54:14 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.377 2009/05/25 12:20:57 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -147,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/04/27 14:54:14 $ by $Author: valdas $
+ * Last modified: $Date: 2009/05/25 12:20:57 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -4136,7 +4136,7 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 		if (startPage == null) {
-			logger.warning("Didn't find page for search!");
+			logger.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + currentUser);
 			return null;
 		}
 		
