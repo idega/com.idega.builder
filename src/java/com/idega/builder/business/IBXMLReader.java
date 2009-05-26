@@ -1,5 +1,5 @@
 /*
- * $Id: IBXMLReader.java,v 1.11 2009/01/14 15:07:18 tryggvil Exp $
+ * $Id: IBXMLReader.java,v 1.12 2009/05/26 15:53:05 valdas Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -517,8 +517,11 @@ public class IBXMLReader {
 						String pageKey = ibxml.getPageKey();
 						icObjectInstance = getICObjectInstanceFromComponentId(componentId,className,pageKey);
 						
-						Class objectClass = icObjectInstance.getObject().getObjectClass();
-						firstUICInstance = (UIComponent)objectClass.newInstance();
+						ICObject icObject = icObjectInstance.getObject();
+						if (icObject != null) {
+							Class<? extends UIComponent> objectClass = icObject.getObjectClass();
+							firstUICInstance = objectClass.newInstance();
+						}
 					}
 					catch(Exception e){
 						e.printStackTrace();
