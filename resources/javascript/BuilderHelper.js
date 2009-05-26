@@ -133,15 +133,19 @@ function hideNewestPasteIcons(useSlideOut) {
 }
 
 function registerBuilderActions() {
-	var errorHanlder = function() {
+	var errorHandler = function() {
 		reloadPage();
 	}
-	dwr.engine.setErrorHandler(errorHanlder);
+	dwr.engine.setErrorHandler(errorHandler);
 	
 	addEventsToBuilderElements();
 	
+	$$('div#region_labelpageHeader, div#region_labelsite_title, div#region_labelsite_slogan, div#region_labellogo, div#region_labelsidebar_title, div#region_labelcontentContainer, div#region_labelsidebarContainer, div#region_labelfooter, div#region_labelsite_title1').each(function(element) {
+		element.addClass('hiddenInView');
+	});
+	
 	$$('div.regionLabel').each(function(element) {
-		if (element.getStyle('display') != 'none') {
+		if (!element.hasClass('hiddenInView')) {
 			element.setStyle('display', 'none');
 
 			var parent = element.getParent();
@@ -258,12 +262,7 @@ function addEventsToBuilderElements() {
 		}
 	);
 	
-	$$('img.add_article_module_to_region_image').each(
-		function(element) {
-			addActionsForArticleButton(element);
-		}
-	);
-	$$('span.add_article_module_to_region_image').each(
+	$$('div.add_article_module_to_region_image').each(
 		function(element) {
 			addActionsForArticleButton(element);
 		}

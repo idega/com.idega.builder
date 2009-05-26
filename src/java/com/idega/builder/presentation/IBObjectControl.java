@@ -132,7 +132,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		buttonsLayer.setStyleClass("regionInfoImageContainer");
 		
 		containerLayer.add(nameLayer);
-		containerLayer.add(buttonsLayer);
+		nameLayer.add(buttonsLayer);
 		
 		if (this.object == null) {
 			return;
@@ -247,9 +247,6 @@ public class IBObjectControl extends PresentationObjectContainer {
 		if (lastModuleInRegion) {
 			this.containerLayer.add(getDropAreaLayer(false, iwc));	//	The last module in region
 		}
-		
-		//	The box always is around everything
-		this.containerLayer.add(new CSSSpacer());
 	}
 	
 	private Layer getDropAreaLayer(boolean topArea, IWContext iwc) {

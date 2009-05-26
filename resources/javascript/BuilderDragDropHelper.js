@@ -3,7 +3,7 @@ var PARENT_CONTAINER_ID = null;
 var CLONE = null;
 
 function registerBuilderDragDropActions() {
-	$$('div.moduleName, div.moduleWrapper').each(
+	$$('span.moduleNameTooltip').each(
 		function(element) {
 			registerDragAndDropActionsForModuleNameElement(element);
 		}

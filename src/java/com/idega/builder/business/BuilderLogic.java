@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.377 2009/05/25 12:20:57 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.378 2009/05/26 07:30:50 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -147,7 +147,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/05/25 12:20:57 $ by $Author: valdas $
+ * Last modified: $Date: 2009/05/26 07:30:50 $ by $Author: laddi $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -2399,7 +2399,7 @@ public class BuilderLogic implements Singleton {
 				BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_VALUE));
 		
 		// Link for MOOdalBox
-		Link link = new Link(new Text(iwrb.getLocalizedString("add", "Add")), "javascript:void(0);");
+		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("add", "Add"))), "javascript:void(0);");
 		link.setToolTip(title.toString());
 		link.setOnClick(new StringBuilder("openSelectAndAddModuleWindow('").append(labelMarkerContainerId).append("', '").append(uri).append("');").toString());
 		link.setStyleClass("addModuleLinkStyleClass");
@@ -2413,8 +2413,8 @@ public class BuilderLogic implements Singleton {
 		title.append(iwrb.getLocalizedString("add_article_module", "Add article module"));
 		title.append(getLabelToRegion(iwrb, label));
 		Span addArticle = new Span(new Text(iwrb.getLocalizedString("text", "Text")));
-		addArticle.setTitle(title.toString());
-		addArticle.setStyleClass("add_article_module_to_region_image");
+		addArticleContainer.setTitle(title.toString());
+		addArticleContainer.setStyleClass("add_article_module_to_region_image");
 		
 		ICObject article = null;
 		try {
@@ -2442,8 +2442,8 @@ public class BuilderLogic implements Singleton {
 		StringBuffer pasteAction = new StringBuffer("pasteCopiedModule('").append(pasteButtonContainer.getId()).append("');");
 		//pasteImage.setOnClick(pasteAction.toString());
 		Span paste = new Span(new Text(iwrb.getLocalizedString("paste", "Paste")));
-		paste.setTitle(title.toString());
-		paste.setOnClick(pasteAction.toString());
+		pasteButtonContainer.setTitle(title.toString());
+		pasteButtonContainer.setOnClick(pasteAction.toString());
 		//pasteButtonContainer.add(pasteImage);
 		pasteButtonContainer.add(paste);
 		pasteButtonContainer.setStyleClass("pasteModuleIconContainer");
