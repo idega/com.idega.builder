@@ -130,6 +130,7 @@
 	margin: 0 !important;
 	text-transform: lowercase;
 	margin-left: 2px !important;
+	padding: 0 !important;
 }
 
 .regionInfoImageContainer ol li.propertiesModule {
@@ -809,4 +810,8 @@ div.builderButtons div.builderButton img {
 	border-top: 1px #e6e6e6 solid;
 	background-color: #fff;
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
+}
+
+a.regionButton img {
+	width: auto !important;
 }
