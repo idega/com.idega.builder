@@ -2,11 +2,11 @@ package com.idega.builder.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.faces.component.UIComponent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jdom.Document;
 
 import com.idega.builder.business.BuilderConstants;
@@ -32,12 +32,13 @@ import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
+import com.idega.util.StringUtil;
 import com.idega.xml.XMLElement;
 
 public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	
 	private static final long serialVersionUID = -4806588458269035118L;
-	private static final Log log = LogFactory.getLog(BuilderEngineBean.class);
+	private static final Logger LOGGER = Logger.getLogger(BuilderEngineBean.class.getName());
 	
 	private CutModuleBean cutModule = null;
 	
@@ -57,7 +58,15 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(new StringBuffer(bundle.getResourcesPath()).append("/add.png").toString());								// 3
 		info.add(new StringBuffer(bundle.getResourcesPath()).append("/information.png").toString());						// 4
 		info.add(iwrb.getLocalizedString("no_ids_inserting_module", "Error occurred while inserting selected module!"));	// 5
-		info.add(BuilderLogic.getInstance().getPageKeyByURI(uri, iwc.getDomain()));											// 6
+		
+		String pageKey = null;
+		try {
+			pageKey = BuilderLogic.getInstance().getPageKeyByURI(uri, iwc.getDomain());
+		} catch(Exception e) {
+			LOGGER.log(Level.WARNING, "Error getting page key for uri: " + uri, e);
+		}
+		info.add(StringUtil.isEmpty(pageKey) ? String.valueOf(-1) : pageKey);												// 6
+		
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
 		info.add(iwrb.getLocalizedString("create_simple_template.Region", "Region"));										// 8
 		info.add(BuilderLogic.getInstance().getUriToObject(EditModuleBlock.class));											// 9
@@ -289,7 +298,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		try {
 			return BuilderLogic.getInstance().moveModule(instanceId, pageKey, formerParentId, newParentId, neighbourInstanceId, insertAbove);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Error moving module: " + instanceId + " for page: " + pageKey, e);
 			return false;
 		}
 	}
@@ -337,7 +346,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		try {
 			objectClass = RefactorClassRegistry.forName(className);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING, "Class not found: " + className, e);
 			return null;
 		}
 
@@ -345,7 +354,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		try {
 			o = objectClass.newInstance();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING, "Error getting instance for: " + objectClass.getName(), e);
 			return null;
 		}
 		UIComponent component = null;
@@ -353,7 +362,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			component = (UIComponent) o;
 		}
 		else {
-			log.error("Unknown object: " + o);
+			LOGGER.warning("Unknown object: " + o);
 			return null;
 		}
 		
@@ -391,7 +400,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		try {
 			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Error getting " + IWSlideSession.class.getSimpleName(), e);
 			return null;
 		}
 		return session;

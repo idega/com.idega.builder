@@ -14,19 +14,13 @@ function registerBuilderDragDropActions() {
 			registerForDropSingleElement(element);
 		}
 	);
-	
-	/*$$('span.moduleNameTooltip').each(
-		function(element) {
-			initToolTipForElement(element);
-		}
-	);*/
 }
 
 function registerDragAndDropActionsForModuleNameElement(element) {
 	element.addEvent('mousedown', function(e) {
 		e = new Event(e).stop();
 
-		ORIGINAL = element.getParent();
+		ORIGINAL = element.getParent().getParent();
 		PARENT_CONTAINER_ID = ORIGINAL.getParent().clone().id;
 		CLONE = ORIGINAL.clone();
 		CLONE.setStyles(ORIGINAL.getCoordinates());
@@ -54,6 +48,9 @@ function registerForDropSingleElement(element) {
 			var pageKey = ORIGINAL.getProperty('pageid');
 			var formerParentId = ORIGINAL.getProperty('parentid');
 			var newParentId = moduleContainer.getProperty('parentid');
+			if (newParentId == null) {
+				newParentId = element.getProperty('parentid');
+			}
 			var changingRegions = !(formerParentId == newParentId);
 			var insertAbove = dropArea == 'true';
 			var neighbourInstanceId = moduleContainer.getProperty('instanceid');
