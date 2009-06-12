@@ -1,11 +1,10 @@
 /*
- * $Id: BuilderLogic.java,v 1.378 2009/05/26 07:30:50 laddi Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.379 2009/06/12 10:51:16 valdas Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
 package com.idega.builder.business;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -147,7 +146,7 @@ import com.idega.xml.XMLElement;
  * 
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
  * 
- * Last modified: $Date: 2009/05/26 07:30:50 $ by $Author: laddi $
+ * Last modified: $Date: 2009/06/12 10:51:16 $ by $Author: valdas $
  * @version 1.0
  */
 public class BuilderLogic implements Singleton {
@@ -3727,7 +3726,7 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 
-		Document componentXML = XmlUtil.getJDOMXMLDocument(componentHTML);
+		Document componentXML = XmlUtil.getJDOMXMLDocument(componentHTML, false);
 		if (componentXML == null && !cleanCode) {
 			logger.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed to create document from:\n" + componentHTML);
 			return getXMLDocumentFromComponentHTML(componentHTML, true, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
@@ -3755,11 +3754,12 @@ public class BuilderLogic implements Singleton {
 		cleaner.setOmitComments(omitComments);
 		cleaner.setOmitXmlDeclaration(true);
 		cleaner.setUseCdataForScriptAndStyle(false);
+		
 		try {
 			cleaner.clean();
-			htmlContent = cleaner.getPrettyXmlAsString();
-		} catch (IOException e) {
-			e.printStackTrace();
+			htmlContent = XmlUtil.getPrettyJDOMDocument(XmlUtil.getJDOMXMLDocument(cleaner.getPrettyXmlAsString(), false));
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Error cleaning content", e);
 			return null;
 		}
 		
