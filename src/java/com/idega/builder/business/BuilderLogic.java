@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderLogic.java,v 1.207.2.7 2007/07/12 13:52:48 valdas Exp $ Copyright
+ * $Id: BuilderLogic.java,v 1.207.2.8 2009/06/22 12:06:14 laddi Exp $ Copyright
  * (C) 2001 Idega hf. All Rights Reserved. This software is the proprietary
  * information of Idega hf. Use is subject to license terms.
  */
@@ -28,6 +28,7 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.builder.presentation.IBAddRegionLabelWindow;
 import com.idega.builder.presentation.IBCopyModuleWindow;
@@ -79,8 +80,11 @@ import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.util.FileUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
+import com.idega.util.StringUtil;
+import com.idega.util.URIUtil;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -2263,4 +2267,37 @@ public class BuilderLogic implements Singleton {
 		return component;
 	}
 
+	public String getUriToObject(Class objectClass) {
+		if (objectClass == null) {
+			return null;
+		}
+		
+		URIUtil uri = new URIUtil(IWMainApplication.getDefaultIWMainApplication().getPublicObjectInstanciatorURI(objectClass));
+		uri.setParameter("uiObject", Boolean.TRUE.toString());
+		
+		return uri.getUri();
+	}
+	
+	public String getUriToObject(Class objectClass, List parameters) {
+		String baseUri = getUriToObject(objectClass);
+		if (StringUtil.isEmpty(baseUri)) {
+			return null;
+		}
+		
+		if (parameters == null || ListUtil.isEmpty(parameters)) {
+			return baseUri;
+		}
+		
+		URIUtil uri = new URIUtil(baseUri);
+		
+		Iterator iterator = parameters.iterator();
+		while (iterator.hasNext()) {
+			AdvancedProperty parameter = (AdvancedProperty) iterator.next();
+			if (!StringUtil.isEmpty(parameter.getId()) && !StringUtil.isEmpty(parameter.getValue())) {
+				uri.setParameter(parameter.getId(), parameter.getValue());
+			}
+		}
+		
+		return uri.getUri();
+	}
 }

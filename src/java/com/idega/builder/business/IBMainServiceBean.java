@@ -4,6 +4,7 @@
 package com.idega.builder.business;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -212,4 +213,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService,B
 		return getBuilderLogic().getInstanceId(object);
 	}
 
+	public String getUriToObject(Class objectClass, List parameters) {
+		return getBuilderLogic().getUriToObject(objectClass, parameters);
+	}
 }

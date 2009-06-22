@@ -38,7 +38,7 @@ public class ComponentPropertyHandler implements Singleton {
      void setReflectionProperty(UIComponent instance,String methodIdentifier,List stringValues){
       Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier,instance.getClass());
       if(method==null){
-        throw new RuntimeException("Method: "+methodIdentifier+" not found");
+        throw new RuntimeException("Method: "+methodIdentifier+" not found in class: " + instance.getClass().toString());
       }
       setReflectionProperty(instance,method,stringValues);
      }
