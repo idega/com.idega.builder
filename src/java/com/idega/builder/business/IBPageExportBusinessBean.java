@@ -95,7 +95,7 @@ public class IBPageExportBusinessBean extends IBOServiceBean implements IBPageEx
   		// add parent page
   		ICTreeNode nodeTree = page.getParentNode();
   		if (nodeTree != null) {
-  			Integer additionalPageId = new Integer(nodeTree.getNodeID());
+  			Integer additionalPageId = new Integer(nodeTree.getId());
   			additionalPageIds.add(additionalPageId);
   		}
   		// add template 

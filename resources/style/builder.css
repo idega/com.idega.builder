@@ -84,6 +84,8 @@
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	position: relative;
+	height: 15px;
+	overflow: hidden;
 }
 
 .isEditAdmin .moduleName, .isEditAdmin .moduleFromOtherPageName {
@@ -563,6 +565,11 @@ div#simple_properties_box {
 	float: right;
 }
 
+#module_properties ol {
+	padding: 16px;
+	margin: 0;
+}
+
 .moduleProperty, .modulePropertyIsSet {
 	font-family: "Lucida Grande", "Lucida Sans", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 	margin-bottom: 6px;
@@ -814,4 +821,24 @@ div.builderButtons div.builderButton img {
 
 a.regionButton img {
 	width: auto !important;
+}
+
+div.modulePropertyItem img.chooserStyle {
+	margin-left: 2px;
+	margin-top: 2px;
+}
+
+div#chooser_presentation_object {
+	border: 1px #A0A0A0 solid;
+	background-color: #fff;
+	clear: both;
+	margin-top: 4px;
+	padding: 4px 8px;
+	height: 160px;
+	overflow: auto;
+	font-size: 11px;
+}
+
+div#chooser_presentation_object td img {
+	vertical-align: middle;
 }

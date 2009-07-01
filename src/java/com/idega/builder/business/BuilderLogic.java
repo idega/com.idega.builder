@@ -373,21 +373,32 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 			
+			Layer buttonsLayer = null;
 			if(mayAddButtonsInPage){
 				String parentKey = Integer.toString(-1);
 				String regionKey = "page";
 				addModuleUri = getUriToAddModuleWindow(regionKey);
 				Layer marker = getLabelMarker(parentKey, regionKey);
-				addButtonsLayer(marker, addModuleUri, regionKey, iwrb, marker.getId());
+				buttonsLayer = addButtonsLayer(marker, addModuleUri, regionKey, iwrb, marker.getId());
 				page.add(marker);
 			}
 			
 			if (page.getIsTemplate()){
 				if (page.isLocked()){
-					page.add(getLockedIcon(Integer.toString(-1), iwc, null));
+					if (buttonsLayer != null) {
+						buttonsLayer.add(getLockedIcon(Integer.toString(-1), iwc, null));
+					}
+					else {
+						page.add(getLockedIcon(Integer.toString(-1), iwc, null));
+					}
 				}
 				else{
-					page.add(getUnlockedIcon(Integer.toString(-1), iwc));
+					if (buttonsLayer != null) {
+						buttonsLayer.add(getUnlockedIcon(Integer.toString(-1), iwc));
+					}
+					else {
+						page.add(getUnlockedIcon(Integer.toString(-1), iwc));
+					}
 				}
 			}
 		}
@@ -628,16 +639,16 @@ public class BuilderLogic implements Singleton {
 						}
 						else {
 							Layer marker = getLabelMarker(instanceId, regionLabel);
-							addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
+							Layer buttons = addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
 							container.add(marker);
 							
 							if (curr.getIsTemplate()) {
-								marker.add(getLabelIcon(instanceId, iwc, regionLabel));
+								buttons.add(getLabelIcon(instanceId, iwc, regionLabel));
 								if (container.isLocked()){
-									marker.add(getLockedIcon(instanceId, iwc, regionLabel));
+									buttons.add(getLockedIcon(instanceId, iwc, regionLabel));
 								}
 								else{
-									marker.add(getUnlockedIcon(instanceId, iwc));
+									buttons.add(getUnlockedIcon(instanceId, iwc));
 								}
 							}
 							
@@ -646,16 +657,16 @@ public class BuilderLogic implements Singleton {
 					}
 					else {
 						Layer marker = getLabelMarker(instanceId, regionLabel);
-						addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
+						Layer buttons = addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
 						container.add(marker);
 						
 						if (curr.getIsTemplate()) {
 							marker.add(getLabelIcon(instanceId, iwc, regionLabel));
 							if (container.isLocked()){
-								marker.add(getLockedIcon(instanceId, iwc, regionLabel));
+								buttons.add(getLockedIcon(instanceId, iwc, regionLabel));
 							}
 							else{
-								marker.add(getUnlockedIcon(instanceId, iwc));
+								buttons.add(getUnlockedIcon(instanceId, iwc));
 							}
 						}
 						
@@ -734,30 +745,30 @@ public class BuilderLogic implements Singleton {
 					}
 					else {
 						Layer marker = getLabelMarker(newParentKey, regionLabel);
-						addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
+						Layer buttons = addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
 						tab.add(marker, x, y);
 						if (currentPage.getIsTemplate()) {
 							marker.add(getLabelIcon(newParentKey, iwc, regionLabel));
 							if (tab.isLocked(x, y)){
-								marker.add(getLockedIcon(newParentKey, iwc, regionLabel));
+								buttons.add(getLockedIcon(newParentKey, iwc, regionLabel));
 							}
 							else{
-								marker.add(getUnlockedIcon(newParentKey, iwc));
+								buttons.add(getUnlockedIcon(newParentKey, iwc));
 							}
 						}
 					}
 				}
 				else {
 					Layer marker = getLabelMarker(newParentKey, regionLabel);
-					addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
+					Layer buttons = addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
 					tab.add(marker, x, y);
 					if (currentPage.getIsTemplate()) {
 						marker.add(getLabelIcon(newParentKey, iwc, regionLabel));
 						if (tab.isLocked(x, y)){
-							marker.add(getLockedIcon(newParentKey, iwc, regionLabel));
+							buttons.add(getLockedIcon(newParentKey, iwc, regionLabel));
 						}
 						else{
-							marker.add(getUnlockedIcon(newParentKey, iwc));
+							buttons.add(getUnlockedIcon(newParentKey, iwc));
 						}
 					}
 					
@@ -2381,7 +2392,7 @@ public class BuilderLogic implements Singleton {
 	/**
 	 *
 	 */
-	private void addButtonsLayer(Layer parent, String uri, String label, IWResourceBundle iwrb, String labelMarkerContainerId) {
+	private Layer addButtonsLayer(Layer parent, String uri, String label, IWResourceBundle iwrb, String labelMarkerContainerId) {
 		Layer buttons = new Layer();
 		buttons.setStyleClass("builderButtons");
 		
@@ -2447,6 +2458,8 @@ public class BuilderLogic implements Singleton {
 		pasteButtonContainer.add(paste);
 		pasteButtonContainer.setStyleClass("pasteModuleIconContainer");
 		buttons.add(pasteButtonContainer);
+		
+		return buttons;
 	}
 	
 	private String getLabelToRegion(IWResourceBundle iwrb, String regionLabel) {
@@ -2460,9 +2473,14 @@ public class BuilderLogic implements Singleton {
 	 *
 	 */
 	public PresentationObject getLockedIcon(String parentKey, IWContext iwc, String label){
-		Image lockImage = getBuilderBundle().getImage("las_close.gif", "Unlock region");
-		Link link = new Link(lockImage);
-		link.setStyleClass("regionButton");
+		IWBundle iwb = getBuilderBundle();
+		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+
+		Layer layer = new Layer();
+		layer.setStyleClass("builderButton");
+		layer.setStyleClass("lockedRegion");
+		
+		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("unlock_region", "Unlock region"))));
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_UNLOCK_REGION);
@@ -2471,30 +2489,44 @@ public class BuilderLogic implements Singleton {
 		if(label!=null){
 			link.setToolTip(label);
 		}
-		return (link);
+		layer.add(link);
+		
+		return layer;
 	}
 
 	/**
 	 *
 	 */
 	public PresentationObject getUnlockedIcon(String parentKey, IWContext iwc){
-		Image lockImage = getBuilderBundle().getImage("las_open.gif", "Lock region");
-		Link link = new Link(lockImage);
-		link.setStyleClass("regionButton");
+		IWBundle iwb = getBuilderBundle();
+		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+
+		Layer layer = new Layer();
+		layer.setStyleClass("builderButton");
+		layer.setStyleClass("unlockedRegion");
+		
+		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("lock_region", "Lock region"))));
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LOCK_REGION);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
-		return (link);
+		layer.add(link);
+		
+		return layer;
 	}
 	
 	/**
 	 *
 	 */
 	public PresentationObject getLabelIcon(String parentKey, IWContext iwc, String label){
-		Image labelImage = getBuilderBundle().getImage("label.gif", "Put label on region");
-		Link link = new Link(labelImage);
-		link.setStyleClass("regionButton");
+		IWBundle iwb = getBuilderBundle();
+		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+
+		Layer layer = new Layer();
+		layer.setStyleClass("builderButton");
+		layer.setStyleClass("labelButton");
+		
+		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("set_label", "Put label on region"))));
 		link.setWindowToOpen(IBAddRegionLabelWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LABEL);
