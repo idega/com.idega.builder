@@ -7,6 +7,7 @@ package com.idega.builder.business;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -118,6 +119,7 @@ import com.idega.servlet.filter.BaseFilter;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.user.bean.PropertiesBean;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
@@ -4145,18 +4147,7 @@ public class BuilderLogic implements Singleton {
 		ICPage startPage = null;
 		
 		if (currentUser != null) {
-			//	Trying to get nearest page to user's home page
-			startPage = currentUser.getHomePage();
-			if (startPage == null) {
-				int homePageId = currentUser.getHomePageID();
-				if (homePageId != -1) {
-					try {
-						startPage = getICPage(String.valueOf(homePageId));
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			startPage = getUsersHomePage(currentUser);
 		}
 		
 		if (startPage == null) {
@@ -4187,22 +4178,12 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User currentUser, String pageType) {
+	public ICPage getNearestPageForUserHomePage(User currentUser, String pageType) {
 		ICPage startPage = null;
 		
 		if (currentUser != null) {
 			//	Trying to get nearest page to user's home page
-			startPage = currentUser.getHomePage();
-			if (startPage == null) {
-				int homePageId = currentUser.getHomePageID();
-				if (homePageId != -1) {
-					try {
-						startPage = getICPage(String.valueOf(homePageId));
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
+			startPage = getUsersHomePage(currentUser);
 		}
 		
 		if (startPage == null) {
@@ -4224,6 +4205,26 @@ public class BuilderLogic implements Singleton {
 		
 		ICPage nearestPage = getPageByPageType(children, pageType);
 		return nearestPage;
+	}
+
+	public ICPage getUsersHomePage(User user) {
+		ICPage startPage = null;
+		try {
+			UserBusiness userBiz = IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), UserBusiness.class);
+			startPage = userBiz.getHomePageForUser(user);
+		
+		}
+		catch (IBOLookupException e1) {
+			e1.printStackTrace();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return startPage;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -4303,7 +4304,7 @@ public class BuilderLogic implements Singleton {
 		String messageForException = "No page found by page type: " + pageType;
 		
 		if (checkFirstlyNearestPages) {
-			icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(user, pageType);
+			icPage = getNearestPageForUserHomePage(user, pageType);
 		}
 		
 		if (icPage == null) {

@@ -633,4 +633,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 			String pageType, boolean checkFirstlyNearestPages) {
 		return getBuilderLogic().getFullPageUrlByPageType(user, iwc, pageType, checkFirstlyNearestPages);
 	}
+	
+	public ICPage getUsersHomePage(User user){
+		return getBuilderLogic().getUsersHomePage(user);
+	}
 }
