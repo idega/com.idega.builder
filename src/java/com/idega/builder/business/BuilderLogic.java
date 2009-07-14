@@ -4198,7 +4198,10 @@ public class BuilderLogic implements Singleton {
 			if(startPage!=null){
 				Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
 				searchTops.add(startPage);
-				searchTops.addAll(startPage.getChildren());
+				Collection children = startPage.getChildren();
+				if(!ListUtil.isEmpty(children)){
+					searchTops.addAll(children);
+				}
 				nearestPage = getPageByPageType(searchTops, pageType);
 			}
 		}
