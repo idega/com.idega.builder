@@ -4143,67 +4143,71 @@ public class BuilderLogic implements Singleton {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User currentUser, IWContext iwc, String pageType) {
+	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User user, IWContext iwc, String pageType) {
 		ICPage startPage = null;
+		ICPage nearestPage = null;
 		
-		if (currentUser != null) {
-			startPage = getUsersHomePage(currentUser);
-		}
-		
-		if (startPage == null) {
-			//	Trying to get nearest page to current page
-			try {
-				startPage = getICPage(String.valueOf(iwc.getCurrentIBPageID()));
-			} catch(Exception e) {
-				e.printStackTrace();
+		if (user != null) {
+			nearestPage = getNearestPageForUserHomePage(user,pageType);
+			if(nearestPage!=null){
+				return nearestPage;
 			}
 		}
+		
+		//	Trying to get nearest page to current page
+		try {
+			startPage = getICPage(String.valueOf(iwc.getCurrentIBPageID()));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
 		if (startPage == null) {
-			logger.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + currentUser);
+			logger.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + user);
 			return null;
 		}
 		
 		ICTreeNode parentNode = startPage.getParentNode();
 		Collection<ICTreeNode> children = null;
 		if (parentNode == null) {
-			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page ant it's children
+			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page and its children
 			children.add(startPage);
 		}
 		else {
 			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
 		}
 		
-		ICPage nearestPage = getPageByPageType(children, pageType);
+		nearestPage = getPageByPageType(children, pageType);
 		return nearestPage;
 	}
-	
+	/**
+	 * Only searches the users main home page and below that for the pagetype
+	 * @param currentUser
+	 * @param pageType
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public ICPage getNearestPageForUserHomePage(User currentUser, String pageType) {
+	public ICPage getNearestPageForUserHomePage(User user, String pageType) {
 		ICPage startPage = null;
+		ICPage nearestPage = null;
 		
-		if (currentUser != null) {
+		if (user != null) {
 			//	Trying to get nearest page to user's home page
-			startPage = getUsersHomePage(currentUser);
+			startPage = getUsersHomePage(user);
+			
+			if(startPage!=null){
+				Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
+				searchTops.add(startPage);
+				searchTops.addAll(startPage.getChildren());
+				nearestPage = getPageByPageType(searchTops, pageType);
+			}
 		}
 		
 		if (startPage == null) {
-			logger.warning("Didn't find start page for search: " + pageType + ", user: " + currentUser);
+			logger.warning("Didn't find start page for search: " + pageType + ", user: " + user);
 			return null;
 		}
-
-		logger.info("Start page for search: " + startPage.getId());
-		
-		ICTreeNode parentNode = startPage.getParentNode();
-		Collection<ICTreeNode> children = null;
-		if (parentNode == null) {
-			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page ant it's children
-			children.add(startPage);
-		}
-		else {
-			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
-		}
-		
-		ICPage nearestPage = getPageByPageType(children, pageType);
+				
 		return nearestPage;
 	}
 
@@ -4276,6 +4280,7 @@ public class BuilderLogic implements Singleton {
 			
 		}
 		
+		//last resort find the first page of that type
 		if (icPage == null) {
 			Collection<ICPage> icpages = getPages(pageType);
 			
