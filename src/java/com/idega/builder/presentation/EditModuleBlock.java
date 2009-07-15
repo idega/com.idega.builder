@@ -68,7 +68,9 @@ public class EditModuleBlock extends Block {
 		}
 		
 		String name = null;
+		iwc.getRequest().setAttribute(BuilderConstants.TRANSFORM_PAGE_TO_BUILDER_PAGE_ATTRIBUTE, Boolean.FALSE);
 		UIComponent component = builder.findComponentInPage(iwc, pageKey, instanceId);
+		iwc.getRequest().removeAttribute(BuilderConstants.TRANSFORM_PAGE_TO_BUILDER_PAGE_ATTRIBUTE);
 		if (component instanceof PresentationObject) {
 			name = ((PresentationObject) component).getBuilderName(iwc);
 		}
