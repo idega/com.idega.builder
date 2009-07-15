@@ -43,4 +43,6 @@ public class BuilderConstants {
 
 	public static final String CURRENT_COMPONENT_IS_IN_FRAME = "currentComponentIsInFrame";
 	public static final String BUILDER_MODULE_PROPERTY_HAS_BOOLEAN_TYPE_ATTRIBUTE = "builderModulePropertyHasBooleanTypeAttribute";
+	
+	public static final String TRANSFORM_PAGE_TO_BUILDER_PAGE_ATTRIBUTE = "transformPageToBuilderPage";
 }

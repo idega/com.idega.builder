@@ -565,7 +565,12 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			}
 			Page page = getNewPage(iwc);
 			
-			if (!page.isHideBuilder() && isBuilderEditMode(iwc)) {
+			boolean transformPage = Boolean.TRUE;
+			Object o = iwc.getRequest().getAttribute(BuilderConstants.TRANSFORM_PAGE_TO_BUILDER_PAGE_ATTRIBUTE);
+			if (o instanceof Boolean) {
+				transformPage = (Boolean) o;
+			}
+			if (!page.isHideBuilder() && isBuilderEditMode(iwc) && transformPage) {
 				return (getBuilderLogic().getBuilderTransformed(getPageKey(), page, iwc));
 			}
 			else if (permissionview) {
