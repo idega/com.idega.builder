@@ -126,9 +126,11 @@ public class IWBundleStarter implements IWBundleStartable {
 			
 			Collection<String> roles = new ArrayList<String>();
 			roles.add(StandardRoles.ROLE_KEY_BUILDER);
+			
 			DefaultViewNode builderAppNode = new DefaultViewNode(CoreConstants.BUILDER_APPLICATION, workspaceNode);
 			builderAppNode.setName("#{localizedStrings['com.idega.builder']['builder']}");
 			builderAppNode.setAuthorizedRoles(roles);
+			builderAppNode.setVisibleInMenus(false);
 			
 			FramedApplicationViewNode builderNode = new FramedApplicationViewNode("builder", workspaceNode);
 			builderNode.setAuthorizedRoles(roles);
