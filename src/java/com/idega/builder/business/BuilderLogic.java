@@ -3757,14 +3757,21 @@ public class BuilderLogic implements Singleton {
 //		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
 		
 		if (StringUtil.isEmpty(componentHTML)) {
+			logger.warning("HTML code is empty!");
 			return null;
 		}
 
-		Document componentXML = XmlUtil.getJDOMXMLDocument(componentHTML, false);
+		Document componentXML = null;
+		try {
+			componentXML = XmlUtil.getJDOMXMLDocument(componentHTML, false);
+		} catch(Exception e) {
+			logger.log(Level.SEVERE, "Error getting XML document from HTML code:\n" + componentHTML, e);
+		}
 		if (componentXML == null && !cleanCode) {
 			logger.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed to create document from:\n" + componentHTML);
 			return getXMLDocumentFromComponentHTML(componentHTML, true, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
+		
 		return componentXML;
 	}
 	
