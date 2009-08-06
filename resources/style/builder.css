@@ -164,7 +164,7 @@
 }
 
 .regionInfoImageContainer li.propertiesModule {
-	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/clipboard.gif) !important;
+	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/checkbox.gif) !important;
 }
 
 .modulePropertiesLinkStyleClass {
@@ -776,6 +776,10 @@ div.builderButtons div.builderButton.add_article_module_to_region_image {
 
 div.builderButtons div.builderButton.pasteModuleIconContainer {
 	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/paste.gif) left no-repeat !important;
+}
+
+div.builderButtons div.builderButton.labelButton {
+	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/field_textarea.gif) left no-repeat !important;
 }
 
 div.builderButtons div.builderButton img {

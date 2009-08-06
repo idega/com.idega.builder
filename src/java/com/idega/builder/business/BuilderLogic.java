@@ -2537,7 +2537,9 @@ public class BuilderLogic implements Singleton {
 		if(label!=null){
 			link.setToolTip(label);
 		}
-		return (link);
+		layer.add(link);
+		
+		return (layer);
 	}
 
 	public PresentationObject getCutIcon(String key, String parentKey, IWContext iwc){
