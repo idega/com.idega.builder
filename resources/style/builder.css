@@ -782,6 +782,14 @@ div.builderButtons div.builderButton.labelButton {
 	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/field_textarea.gif) left no-repeat !important;
 }
 
+div.builderButtons div.builderButton.lockedRegion {
+	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/lock.gif) left no-repeat !important;
+}
+
+div.builderButtons div.builderButton.unlockedRegion {
+	background: url(/idegaweb/bundles/com.idega.builder.bundle/resources/style/images/unlock.gif) left no-repeat !important;
+}
+
 div.builderButtons div.builderButton img {
 	right: 0 !important;
 }
