@@ -7,7 +7,6 @@ package com.idega.builder.business;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -4228,16 +4227,10 @@ public class BuilderLogic implements Singleton {
 		try {
 			UserBusiness userBiz = IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), UserBusiness.class);
 			startPage = userBiz.getHomePageForUser(user);
-		
-		}
-		catch (IBOLookupException e1) {
-			e1.printStackTrace();
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
+		} catch (FinderException e) {
+			logger.warning("Homepage was not found for user: " + user);
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Error getting homepage for user: " + user, e);
 		}
 		
 		return startPage;
