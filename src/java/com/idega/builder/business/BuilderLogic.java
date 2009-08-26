@@ -186,7 +186,6 @@ public class BuilderLogic implements Singleton {
 	
 	private Pattern doctypeReplacementPattern;
 	private Pattern commentinHtmlReplacementPattern;
-	private Pattern xmlEncodingReplacementPattern = null;
 	
 	private static Instantiator instantiator = new Instantiator() {
 		@Override
@@ -3620,6 +3619,9 @@ public class BuilderLogic implements Singleton {
 			}
 			rendered = getRenderedComponentWithDynamicResources(getXMLDocumentFromComponentHTML(rendered, false, omitDocTypeDeclaration, omitHtmlEnvelope,
 					false), cssSources, jsSources, jsActions, addCSSDirectly instanceof Boolean ? (Boolean) addCSSDirectly : false);
+			if (cleanCode) {
+				rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
+			}
 		}
 		
 		return rendered;
@@ -3805,18 +3807,11 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		// Removing <?xml version... />
-		Matcher commentsMatcher = getXmlEncodingReplacementPattern().matcher(htmlContent);
-		htmlContent = commentsMatcher.replaceAll(CoreConstants.EMPTY);
+		htmlContent = StringHandler.replace(htmlContent, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n", CoreConstants.EMPTY);
+		htmlContent = StringHandler.replace(htmlContent, "&lt;", "<");
+		htmlContent = StringHandler.replace(htmlContent, "&gt;", ">");
 		
 		return htmlContent;
-	}
-	
-	private Pattern getXmlEncodingReplacementPattern() {
-		if (xmlEncodingReplacementPattern == null) {
-			xmlEncodingReplacementPattern = Pattern.compile("&lt.+?xml.+&gt;");
-		}
-		return xmlEncodingReplacementPattern;
 	}
 	
 	private Pattern getDoctypeReplacementPattern() {
