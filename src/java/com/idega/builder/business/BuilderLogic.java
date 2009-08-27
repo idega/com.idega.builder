@@ -3416,6 +3416,18 @@ public class BuilderLogic implements Singleton {
 		return uri.getUri();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public String getUriToObject(String objectClassName, List<AdvancedProperty> parameters) {
+		Class<? extends UIComponent> objectClass = null;
+		try {
+			objectClass = (Class<? extends UIComponent>) Class.forName(objectClassName);
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Error creating class from: " + objectClassName, e);
+		}
+		
+		return getUriToObject(objectClass, parameters);
+	}
+	
 	public String getUriToObject(Class<? extends UIComponent> objectClass, List<AdvancedProperty> parameters) {
 		String baseUri = getUriToObject(objectClass);
 		if (StringUtil.isEmpty(baseUri)) {
