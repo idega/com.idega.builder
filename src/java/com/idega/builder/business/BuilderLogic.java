@@ -186,6 +186,7 @@ public class BuilderLogic implements Singleton {
 	
 	private Pattern doctypeReplacementPattern;
 	private Pattern commentinHtmlReplacementPattern;
+	private List<Pattern> xmlEncodingReplacementPatterns = null;
 	
 	private static Instantiator instantiator = new Instantiator() {
 		@Override
@@ -3819,11 +3820,22 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 		
-		htmlContent = StringHandler.replace(htmlContent, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n", CoreConstants.EMPTY);
-		htmlContent = StringHandler.replace(htmlContent, "&lt;", "<");
-		htmlContent = StringHandler.replace(htmlContent, "&gt;", ">");
+		// Removing <?xml version... />
+		for (Pattern pattern: getXmlEncodingReplacementPatterns()) {
+			Matcher patternMatcher = pattern.matcher(htmlContent);
+			htmlContent = patternMatcher.replaceAll(CoreConstants.EMPTY);
+		}
 		
 		return htmlContent;
+	}
+	
+	private List<Pattern> getXmlEncodingReplacementPatterns() {
+		if (xmlEncodingReplacementPatterns == null) {
+			xmlEncodingReplacementPatterns = Arrays.asList(
+					Pattern.compile("&lt.+?xml.+&gt;")
+			);
+		}
+		return xmlEncodingReplacementPatterns;
 	}
 	
 	private Pattern getDoctypeReplacementPattern() {
