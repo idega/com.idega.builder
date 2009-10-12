@@ -437,7 +437,7 @@ public class BuilderLogic implements Singleton {
 					builderBundle.getVirtualPathWithFileNameString("javascript/BuilderHelper.js"),
 					builderBundle.getVirtualPathWithFileNameString("javascript/BuilderDragDropHelper.js"),
 					web2.getBundleURIToMootoolsLib(),
-					web2.getMoodalboxScriptFilePath(false),
+					web2.getMoodalboxScriptFilePath(Boolean.TRUE),
 					web2.getReflectionForMootoolsScriptFilePath(),
 					web2.getBundleUriToMootabsScript()
 			));
@@ -448,7 +448,7 @@ public class BuilderLogic implements Singleton {
 		//	JavaScript actions
 		mode = mode == null ? CoreConstants.EMPTY : mode;
 		PresentationUtil.addJavaScriptActionsToBody(iwc, Arrays.asList(
-				new StringBuilder("window.addEvent('domready', function() { BuilderHelper.initializeBuilder('").append(mode).append("'); });").toString(),
+				new StringBuilder("window.addEvent('load', function() { BuilderHelper.initializeBuilder('").append(mode).append("'); });").toString(),
 				"window.addEvent('resize', intializeMoodalboxInBuilder);",
 				"window.addEvent('beforeunload', showMessageForUnloadingPage);"
 		));
@@ -3816,7 +3816,7 @@ public class BuilderLogic implements Singleton {
 			cleaner.clean();
 			htmlContent = XmlUtil.getPrettyJDOMDocument(XmlUtil.getJDOMXMLDocument(cleaner.getPrettyXmlAsString(), false));
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error cleaning content", e);
+			logger.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
 			return null;
 		}
 		
