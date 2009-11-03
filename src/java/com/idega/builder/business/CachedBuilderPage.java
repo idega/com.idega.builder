@@ -31,11 +31,11 @@ import com.idega.core.view.ViewNode;
 import com.idega.data.IDOLookup;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWService;
 import com.idega.presentation.IWContext;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreConstants;
+import com.idega.util.StringUtil;
 
 /**
  * An abstract class that represents a cached instance of a Builder page.
@@ -278,26 +278,34 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	 */
 	protected InputStream getPageInputStream(ICPage icPage){
 		String webdavUri = icPage.getWebDavUri();
-		if(webdavUri!=null){
-			try {
-				IWSlideService service = (IWSlideService) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(),IWSlideService.class);
-				//InputStream stream = service.getInputStream(webdavUri);
-				
-				WebdavResource file = service.getWebdavResourceAuthenticatedAsRoot(webdavUri);
-				
-				//return stream;
-				return file.getMethodData();
-			}
-			catch (Exception e) {
-				System.err.println("Error getting file: " + webdavUri);
-				throw new RuntimeException(e);
-			}
-		}
-		else{
-			//older method, read it from ICFile
+		if (StringUtil.isEmpty(webdavUri)) {
+			//	Older method, read it from ICFile
 			return icPage.getPageValue();
 		}
-		//throw new RuntimeException("Page InputStream cannot be read");
+		
+		IWSlideService service = null;
+		try {
+			service = IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), IWSlideService.class);
+		} catch (Exception e) {
+			throw new RuntimeException("Error getting " + IWSlideService.class, e);
+		}
+		
+		InputStream stream = null;
+		try {
+			stream = service.getInputStream(webdavUri);
+		} catch (Exception e) {}
+		
+		if (stream == null) {
+			try {
+				WebdavResource file = service.getWebdavResourceAuthenticatedAsRoot(webdavUri);
+				stream = file.getMethodData();
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Error getting file: " + webdavUri, e);
+			}
+		}
+		
+		return stream;
 	}
 	
 	/**
@@ -462,6 +470,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	}
 	
 	
+	@Override
 	public String toString() {
 		String s = getSourceAsString();
 		if(s!=null){
@@ -471,6 +480,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			return super.toString();
 		}
 	}
+	@Override
 	public String getName() {
 		String sName = super.getName();
 		if(sName==null){
@@ -510,6 +520,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		}
 	}
 
+	@Override
 	public void setName(String name) {
 		try {
 			ICPage page = getICPage();
@@ -532,6 +543,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	}
 	
 	
+	@Override
 	public String getURI(){
 		
 		ViewNode parent = getParent();
@@ -544,6 +556,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		return theReturn;
 	}
 	
+	@Override
 	public String getURIWithContextPath(){
 		
 		ViewNode parent = getParent();
