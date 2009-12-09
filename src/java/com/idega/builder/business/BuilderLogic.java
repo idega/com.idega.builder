@@ -581,10 +581,10 @@ public class BuilderLogic implements Singleton {
 		boolean isPresentationObject = obj instanceof  PresentationObject;
 		
 		//Some very special cases, added the boolean to make it faster
-		if (isPresentationObject && obj instanceof Image) {
+		/*if (isPresentationObject && obj instanceof Image) {
 			obj = transformImage(pageKey, obj, iwc);
 		}
-		else if ( isPresentationObject && ((PresentationObject)obj).isContainer()) {
+		else*/ if ( isPresentationObject && ((PresentationObject)obj).isContainer()) {
 			if (obj instanceof Table) {
 				getTransformedTable(currentPage, pageKey, obj, iwc, clipboardEmpty);
 			}
