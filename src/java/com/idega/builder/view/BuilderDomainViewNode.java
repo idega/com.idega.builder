@@ -59,6 +59,7 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 		return this.builderPageViewHandler;
 	}*/
 	
+	@Override
 	public void setViewHandler(ViewHandler viewHandler) {
 		//this.builderPageViewHandler=viewHandler;
 		super.setViewHandler(viewHandler);
@@ -67,6 +68,7 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 	/* (non-Javadoc)
 	 * @see com.idega.core.view.DefaultViewNode#loadChild(java.lang.String)
 	 */
+	@Override
 	protected ViewNode loadChild(String childId) {
 		//return super.loadChild(childId);
 		ViewNode node =  getPageCacher().getCachedBuilderPage(childId);
@@ -87,7 +89,8 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 		return getBuilderLogic().getPageCacher();
 	}
 	
-	protected Map getChildrenMap(){
+	@Override
+	protected Map<String, ViewNode> getChildrenMap(){
 		return getPageCacher().getPageCacheMap();
 	}
 	
@@ -103,11 +106,13 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 		return defaultChild;
 	}
 	
+	@Override
 	public UIComponent createComponent(FacesContext context){
 		ViewNode defaultChild = getDefaultNode(context);
 		return defaultChild.createComponent(context);
 	}
 	
+	@Override
 	public boolean isComponentBased(){
 		FacesContext context = FacesContext.getCurrentInstance();
 		ViewNode defaultChild = getDefaultNode(context);
@@ -121,6 +126,7 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 		return defaultChild.getViewNodeBase();
 	}
 	
+	@Override
 	public String getResourceURI(){
 		FacesContext context = FacesContext.getCurrentInstance();
 		ViewNode defaultChild = getDefaultNode(context);
@@ -128,6 +134,7 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 	}
 	
 	
+	@Override
 	public ViewNode getChild(String childViewId) {
 		//parse the url:
 		if(isPageId(childViewId)){

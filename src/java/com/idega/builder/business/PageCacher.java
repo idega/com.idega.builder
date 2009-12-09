@@ -221,22 +221,14 @@ public class PageCacher
 	    return getXML(key);
 	  }
 	}*/
-	private Object setPage(String key, ViewNode page)
-	{
-		//flagPageValid(key, true);
+	private Object setPage(String key, ViewNode page) {
 		return getPageCacheMap().put(key, page);
 	}
-	public Map getPageCacheMap()
-	{
-		//return this.pageCache;
+	
+	public Map<String, ViewNode> getPageCacheMap() {
 		return getCacheManager().getCache(getCacheName());
 	}
-	/**
-	 * <p>
-	 * TODO tryggvil describe method getCacheName
-	 * </p>
-	 * @return
-	 */
+
 	private String getCacheName() {
 		return CACHE_NAME;
 	}
@@ -281,10 +273,10 @@ public class PageCacher
 		Collection<CachedBuilderPage> allPages = new ArrayList<CachedBuilderPage>();
 		try {
 			pHome = (ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class);
-			Collection pages = pHome.findAllPagesAndTemplates();
+			Collection<ICPage> pages = pHome.findAllPagesAndTemplates();
 			
-			for (Iterator iterator = pages.iterator(); iterator.hasNext();) {
-				ICPage page = (ICPage) iterator.next();
+			for (Iterator<ICPage> iterator = pages.iterator(); iterator.hasNext();) {
+				ICPage page = iterator.next();
 				String key = page.getPageKey();
 				allPages.add(getCachedBuilderPage(key));
 			}
