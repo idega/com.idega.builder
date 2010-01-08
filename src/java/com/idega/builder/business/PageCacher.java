@@ -226,7 +226,7 @@ public class PageCacher
 	}
 	
 	public Map<String, ViewNode> getPageCacheMap() {
-		return getCacheManager().getCache(getCacheName());
+		return getCacheManager().getCache(getCacheName(), 10000, Boolean.FALSE, Boolean.TRUE);
 	}
 
 	private String getCacheName() {
