@@ -1008,6 +1008,10 @@ public class IBXMLWriter {
 			}
 		}
 		boolean removeSuccess = parent.removeContent(child);
+		if (!removeSuccess) {
+			parent = child.getParent();
+			removeSuccess = parent == null ? false : parent.removeContent(child);
+		}
 		return removeSuccess;
 	}
 
