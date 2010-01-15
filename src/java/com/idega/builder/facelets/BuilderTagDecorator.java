@@ -1,11 +1,6 @@
 package com.idega.builder.facelets;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sun.facelets.tag.Tag;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagDecorator;
 
 public class BuilderTagDecorator implements TagDecorator {

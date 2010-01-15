@@ -106,7 +106,7 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 	
 				try {
 					if(getSimpleTemplateIdentifier() != null){
-						getBuilderLogic().getPageCacher().storePage(getSimpleTemplateIdentifier(),getBuilderLogic().PAGE_FORMAT_JSP_1_2,stringSourceMarkup);
+						getBuilderLogic().getPageCacher().storePage(getSimpleTemplateIdentifier(),BuilderLogic.PAGE_FORMAT_JSP_1_2,stringSourceMarkup);
 					} else {
 						throw new AbortProcessingException("Page identifier is null. Most likely explaination is that creating new page failed");
 					}
@@ -250,13 +250,13 @@ public class SimpleTemplateCreationManagedBean implements ActionListener {
 		if(parentICPage != null){
 		
 			String parentPageFormat = parentICPage.getFormat();
-			if(getBuilderLogic().PAGE_FORMAT_HTML.equals(parentPageFormat)){
+			if(BuilderLogic.PAGE_FORMAT_HTML.equals(parentPageFormat)){
 				//Parent is HTML template
 				//Page parentPage = getBuilderLogic().getPage(parentIdentifier,iwc);
 				
-			} else if(getBuilderLogic().PAGE_FORMAT_IBXML.equals(parentPageFormat)){
+			} else if(BuilderLogic.PAGE_FORMAT_IBXML.equals(parentPageFormat)){
 				//Parent is IBXML template
-			} else if(getBuilderLogic().PAGE_FORMAT_JSP_1_2.equals(parentPageFormat)){
+			} else if(BuilderLogic.PAGE_FORMAT_JSP_1_2.equals(parentPageFormat)){
 				//Parent is JSP 1.2 template
 			}
 			

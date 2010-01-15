@@ -76,7 +76,7 @@ public class HtmlTemplateGrabber {
 		// BuilderLogic.getInstance().getIBXMLPage(pageKey).
 		ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(new Integer(
 				this.pageKey));
-		ibpage.setFormat(BuilderLogic.getInstance().PAGE_FORMAT_HTML);
+		ibpage.setFormat(BuilderLogic.PAGE_FORMAT_HTML);
 		OutputStream outStream = ibpage.getPageValueForWrite();
 		Reader input = new BufferedReader(iReader);
 		Writer output = new OutputStreamWriter(outStream, CoreConstants.ENCODING_UTF8);

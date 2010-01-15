@@ -264,7 +264,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		String templateKey = ibpage.getTemplateKey();
 		if(templateKey!=null){
 			if(!templateKey.equals("-1")){
-				CachedBuilderPage page = getPageCacher().getCachedBuilderPage(templateKey);
+				getPageCacher().getCachedBuilderPage(templateKey);
 			}
 		}
 	}

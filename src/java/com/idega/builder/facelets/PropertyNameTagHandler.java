@@ -2,7 +2,6 @@ package com.idega.builder.facelets;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import javax.el.ELException;
 import javax.faces.FacesException;

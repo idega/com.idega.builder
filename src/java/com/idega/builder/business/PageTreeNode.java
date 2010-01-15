@@ -63,45 +63,47 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	private int _order = -1;
 	private transient IWApplicationContext applicationContext;
 	private boolean _isCategory = false;
+	private boolean _isHidden = false;
 	//protected ICPage _page;
 	private transient Map pageNames;
 	private Integer parentId;
 
 	protected PageTreeNode(int id, String name) {
-		this(id, name, -1, false);
+		this(id, name, -1, false, false);
 	}
 	
 	protected PageTreeNode(Integer pageId, String name) {
-		this(pageId.intValue(), name, -1, false);
+		this(pageId.intValue(), name, -1, false, false);
 	}
 	
 	protected PageTreeNode(Integer pageId, String name, int order) {
-		this(pageId.intValue(), name, order, false);
+		this(pageId.intValue(), name, order, false, false);
 	}
 	
 	protected PageTreeNode(int id, String name, int order) {
-		this(id, name, order, false);
+		this(id, name, order, false, false);
 	}
 
-	protected PageTreeNode(Integer id, String name, boolean isCategory) {
-		this(id.intValue(), name, -1, isCategory);
+	protected PageTreeNode(Integer id, String name, boolean isCategory, boolean isHidden) {
+		this(id.intValue(), name, -1, isCategory, isHidden);
 	}
 	
-	protected PageTreeNode(int id, String name, boolean isCategory) {
-		this(id, name, -1, isCategory);
+	protected PageTreeNode(int id, String name, boolean isCategory, boolean isHidden) {
+		this(id, name, -1, isCategory, isHidden);
 	}
 
-	protected PageTreeNode(Integer pageId, String name, int order, boolean isCategory) {
-		this(pageId.intValue(),name,order,isCategory);
+	protected PageTreeNode(Integer pageId, String name, int order, boolean isCategory, boolean isHidden) {
+		this(pageId.intValue(),name,order,isCategory, isHidden);
 	}
 	
-	protected PageTreeNode(int id, String name, int order, boolean isCategory) {
+	protected PageTreeNode(int id, String name, int order, boolean isCategory, boolean isHidden) {
 		this._id = id;
 		this._name = name;
 		this.childPageIds = new ArrayList();
 		//this._extra = null;
 		this._order = order;
 		this._isCategory = isCategory;
+		this._isHidden = isHidden;
 	}
 
 	/**
@@ -138,6 +140,8 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 		this.parentId = clonedNode.parentId;
 		this.childPageIds = clonedNode.childPageIds;
 		this._order = clonedNode._order;
+		this._isCategory = clonedNode._isCategory;
+		this._isHidden = clonedNode._isHidden;
 		
 		//this._extra = node._extra;
 		this.setPageNames(clonedNode.getPageNames());
@@ -247,10 +251,10 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				PageTreeNode node = null;
 				int order = pages.getTreeOrder();
 				if (order == -1) {
-					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName(), pages.isCategory());
+					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName(), pages.isCategory(), pages.isHidePageInMenu());
 				}
 				else {
-					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName(), order, pages.isCategory());
+					node = new PageTreeNode((Integer)pages.getPrimaryKey(), pages.getName(), order, pages.isCategory(), pages.isHidePageInMenu());
 				}
 				//node.setPage(pages);
 				node.setPageNames((Map) pageNames.get(pages.getPrimaryKey()));
@@ -698,6 +702,10 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	 */
 	public boolean isCategory() {
 		return this._isCategory;
+	}
+	
+	public boolean isHiddenInMenu() {
+		return this._isHidden;
 	}
 	
 	public String getId(){

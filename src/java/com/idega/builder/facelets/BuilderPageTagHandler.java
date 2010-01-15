@@ -62,7 +62,10 @@ public class BuilderPageTagHandler extends MetaTagHandler {
     private final String componentType;
     private final TagAttribute id;
     private String rendererType;
+    
+	@SuppressWarnings("unused")
 	private TagAttribute componentClass;
+	
 	private String type;
 	
 	private TagAttribute template;

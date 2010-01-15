@@ -321,7 +321,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 	
 	public String getIBXMLFormat() {
-		return getBuilderLogic().PAGE_FORMAT_IBXML;
+		return BuilderLogic.PAGE_FORMAT_IBXML;
 	}
 	
 	public String[] getPropertyValues(IWMainApplication iwma, String pageKey, String instanceId, String propertyName, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {

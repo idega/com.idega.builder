@@ -161,7 +161,7 @@ public class IBCreatePageWindow extends IBPageWindow {
 			String description = (String) formats.get(format);
 			formatsMenu.addMenuElement(format,description);
 		}
-		formatsMenu.setSelectedElement(BuilderLogic.getInstance().PAGE_FORMAT_IBXML);
+		formatsMenu.setSelectedElement(BuilderLogic.PAGE_FORMAT_IBXML);
 		tab.add(formatsMenu, 2, row++);
 
 		SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "submit");

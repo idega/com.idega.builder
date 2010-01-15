@@ -25,9 +25,9 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	 * Comment for <code>serialVersionUID</code>
 	 */
 	private static final long serialVersionUID = -4666056246854621035L;
-	public final static String FORMAT_IBXML=BuilderLogic.getInstance().PAGE_FORMAT_IBXML;
-	public final static String FORMAT_HTML=BuilderLogic.getInstance().PAGE_FORMAT_HTML;
-	public final static String FORMAT_JSP_1_2=BuilderLogic.getInstance().PAGE_FORMAT_JSP_1_2;
+	public final static String FORMAT_IBXML=BuilderLogic.PAGE_FORMAT_IBXML;
+	public final static String FORMAT_HTML=BuilderLogic.PAGE_FORMAT_HTML;
+	public final static String FORMAT_JSP_1_2=BuilderLogic.PAGE_FORMAT_JSP_1_2;
 	
 	
 	/*private final static String ENTITY_NAME = "IB_PAGE";
