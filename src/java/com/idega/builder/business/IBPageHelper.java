@@ -424,7 +424,7 @@ public class IBPageHelper implements Singleton  {
 					page.setDomainId(domainId);
 					page.store();
 					
-					DomainTree.clearCache(creatorContext.getApplicationContext());
+					DomainTree.clearCache(creatorContext == null ? IWMainApplication.getDefaultIWApplicationContext() : creatorContext.getApplicationContext());
 				}
 			}
 		}

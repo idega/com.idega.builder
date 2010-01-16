@@ -256,8 +256,8 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public Collection getTopLevelPages(IWContext iwc){
 		return getBuilderLogic().getTopLevelPages(iwc);
 	}
-	public Collection getTopLevelTemplates(IWContext iwc){
-		return getBuilderLogic().getTopLevelTemplates(iwc);		
+	public Collection getTopLevelTemplates(IWApplicationContext iwac){
+		return getBuilderLogic().getTopLevelTemplates(iwac);		
 	}
 	
 	public String getTemplateKey() {

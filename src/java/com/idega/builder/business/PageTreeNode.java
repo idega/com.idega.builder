@@ -589,8 +589,8 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 	/**
 	 * Gets the tree and preloads it and stores in cache
 	 */
-	public static Map<Integer, PageTreeNode> getTree(IWApplicationContext iwc) {
-		return getTree(iwc,true);
+	public static Map<Integer, PageTreeNode> getTree(IWApplicationContext iwac) {
+		return getTree(iwac,true);
 	}
 	
 	/**

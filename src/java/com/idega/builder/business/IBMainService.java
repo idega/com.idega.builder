@@ -122,11 +122,6 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	public Collection getTopLevelPages(IWContext iwc);
 
 	/**
-	 * @see com.idega.builder.business.IBMainServiceBean#getTopLevelTemplates
-	 */
-	public Collection getTopLevelTemplates(IWContext iwc);
-
-	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#getTemplateKey
 	 */
 	public String getTemplateKey();
@@ -140,11 +135,6 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#getHTMLTemplateKey
 	 */
 	public String getHTMLTemplateKey();
-
-	/**
-	 * @see com.idega.builder.business.IBMainServiceBean#getTree
-	 */
-	public Map getTree(IWContext iwc);
 
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#getTopLevelTemplateId

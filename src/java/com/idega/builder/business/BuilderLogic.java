@@ -94,7 +94,6 @@ import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
-import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.CSSSpacer;
 import com.idega.presentation.HtmlPage;
@@ -1046,14 +1045,13 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public ICDomain getCurrentDomain(){
-		//IWApplicationContext iwac = IWMainApplication.getDefaultIWApplicationContext();
 		IWApplicationContext iwac = IWApplicationContextFactory.getCurrentIWApplicationContext();
-		if(iwac == null){
-			try {
-				iwac = IWContext.getInstance();
-			} catch (UnavailableIWContext e) {
-				e.printStackTrace();
-			}
+		if (iwac == null) {
+			iwac = CoreUtil.getIWContext();
+		}
+		if (iwac == null) {
+			logger.warning("Using default IWApplicationContext to get current domain!");
+			iwac = IWMainApplication.getDefaultIWApplicationContext();
 		}
 		
 		return getCurrentDomain(iwac);
@@ -2867,8 +2865,8 @@ public class BuilderLogic implements Singleton {
 		return IBPageUpdater.addLocalizedPageName(id, ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()), newName);
 	}
 	
-	public Collection getTopLevelTemplates(IWContext iwc){
-		return DomainTree.getDomainTree(iwc).getTemplatesNode().getChildren();		
+	public Collection getTopLevelTemplates(IWApplicationContext iwac) {
+		return DomainTree.getDomainTree(iwac).getTemplatesNode().getChildren();		
 	}
 
 	public Collection<PageTreeNode> getTopLevelPages(IWContext iwc){
