@@ -929,7 +929,7 @@ function saveValuesForModule(values, moduleId, propertyName, needsReload, opened
 		return false;
 	}
 	if (values.length != parametersCount) {
-		return false;	//	Too less or to much values
+		return false;	//	Too less or too much values
 	}
 	
 	showLoadingMessage(SAVING_LABEL);
@@ -993,18 +993,22 @@ function getModulePropertyFromElement(element) {
 						var negative = sameNameElements[1];
 						if (positive.checked) {
 							value = positive.value;
-						}
-						else if (negative.checked) {
+						} else if (negative.checked) {
 							value = negative.value;
 						}
-						else {
-							value = 'N';	//	Nothing checked
+						
+						if (value == null) {
+							if (!existsElementInArray(EXTRACTED_VALUES, positive.name)) {
+								EXTRACTED_VALUES.push(positive.name);
+								return 'N';	//	Nothing selected in other inputs
+							}
+						} else {
+							EXTRACTED_VALUES.push(positive.name);
+							return value;
 						}
-						EXTRACTED_VALUES.push(positive.name);
 					}
 				}
-			}
-			else {
+			} else {
 				value = dwr.util.getValue(element);
 			}
 		}
@@ -1018,6 +1022,7 @@ function getModulePropertyFromElement(element) {
 	if (value == '') {
 		value = null;
 	}
+	
 	return value;
 }
 
