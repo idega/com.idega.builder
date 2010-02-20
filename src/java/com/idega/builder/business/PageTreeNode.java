@@ -22,6 +22,7 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import com.idega.builder.data.IBPageName;
 import com.idega.core.builder.business.BuilderService;
@@ -764,12 +765,12 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 			return null;
 		if (node.getChildCount() == 0)
 			return node;
+		
 		List<PageTreeNode> sortedNodes = new ArrayList<PageTreeNode>();
 		List<PageTreeNode> unsortedNodes = new ArrayList<PageTreeNode>(node.getChildren());
 		List<PageTreeNode> nodesLeft = new ArrayList<PageTreeNode>();
 
-		List sortedNodesIds = new ArrayList();
-		
+		List<Integer> sortedNodesIds = new ArrayList<Integer>();
 		try {
 			for(int i = 0; i < unsortedNodes.size(); i++){
 				sortedNodes.add(null);
@@ -777,17 +778,19 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 
 			for (int i = 0; i < unsortedNodes.size(); i++) {
 				PageTreeNode childNode = unsortedNodes.get(i);
+				if (childNode == null) {
+					Logger.getLogger(this.getClass().getName()).warning("There is null in unsorted pages collection: " + unsortedNodes);
+					continue;
+				}
+				
 				if ((childNode.getOrder() > 0) && (childNode.getOrder() <= sortedNodes.size())){
-//			if ((childNode.getOrder() > 0)){
 					if (sortedNodes.get(childNode.getOrder() - 1) == null){				
 						sortedNodes.set(childNode.getOrder() - 1, childNode);
-					}
-					else{
+					} else {
 						nodesLeft.add(childNode);
 						unsortedNodes.set(i, null);		
 					}
-				}
-				else{
+				} else {
 					nodesLeft.add(childNode);
 					unsortedNodes.set(i, null);		
 				}
@@ -805,7 +808,6 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 					try {
 						bservice = BuilderServiceFactory.getBuilderService(this.applicationContext);
 					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					ICPage page = bservice.getICPage(childNode.getId());
@@ -818,7 +820,6 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 						childNode = sortedNodes.get(i);
 						sortedNodesIds.add(Integer.valueOf(childNode.getId()));
 					} catch (NumberFormatException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					if (sortedNodes.get(i).getChildCount() != 0)
@@ -826,7 +827,6 @@ public class PageTreeNode implements ICTreeNode,Serializable {
 				
 			}
 		} catch (IDOStoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return node;
 		}	
