@@ -14,7 +14,6 @@ import com.idega.builder.bean.AdvancedProperty;
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.builder.business.ICBuilderConstants;
-import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -153,7 +152,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 			text.setStyleClass("moduleNameTooltip");
 		}
 		nameLayer.add(text);
-		if (!moduleFromCurrentPage) {
+		/*if (!moduleFromCurrentPage) {
 			ICPage foreignPage = BuilderLogic.getInstance().findPageForModule(iwc, BuilderLogic.getInstance().getInstanceId(this.object));
 			if (foreignPage != null) {
 				String linkText = iwrb.getLocalizedString("link_to_edit_page", "Click here to edit this module");
@@ -162,7 +161,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 				goToForeignPage.setToolTip(linkText);
 				nameLayer.add(goToForeignPage);
 			}
-		}
+		}*/
 		
 		String instanceId = BuilderLogic.getInstance().getInstanceId(this.object);
 		if (instanceId == null) {
