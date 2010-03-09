@@ -108,9 +108,9 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		setApplicationContext(iwc);
 		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(iwc);
 		PageTreeNode node = tree.get(new Integer(id));
-		if (node != null) {
+		/*if (node != null) {
 			node = fixTreeOrder(node);
-		}
+		}*/
 		if (node != null) {
 			copyNode(node);
 		}
