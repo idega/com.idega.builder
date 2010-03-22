@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.idega.builder.form.data.Field;
 import com.idega.presentation.IWContext;
 /**
  * Title:        idegaWeb Generic Form Handler
@@ -91,6 +91,41 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 			}
 		}
 		return buffer.toString();
+	}
+
+	
+	/**
+	 * Formats the output of the form with descriptions in front of values and newlines between values
+	 */
+	public List processFormToFieldList(IWContext iwc) {
+		List list = new ArrayList();
+		int count = this.parameterNames.size();
+		for (int j = 0; j < count; j++) {
+			String paramName = (String) this.parameterNames.get(j);
+			String[] paramValues = iwc.getParameterValues(paramName);
+			if (paramValues != null) {
+				Field field = null;
+				if (paramValues.length == 1) {
+					String currentDiplayedVal = getProcessedValueForDisplay(iwc, paramName, paramValues[0]);
+					field = new Field(paramName, currentDiplayedVal);
+				}
+				else {
+					StringBuffer values = new StringBuffer();
+					for (int i = 0; i < paramValues.length; i++) {
+						String currentDiplayedVal = getProcessedValueForDisplay(iwc, paramName, paramValues[i]);
+						if (i != 0) {
+							values.append(",");
+						}
+						values.append(currentDiplayedVal);
+					}
+					field = new Field(paramName, values.toString());
+				}
+				
+				list.add(field);
+			}
+		}
+		
+		return list;
 	}
 	
 	public String getParameterValue(IWContext iwc, String parameterName) {

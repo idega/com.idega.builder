@@ -13,6 +13,11 @@ import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 
+import java.util.List;
+import com.idega.builder.form.business.EmailedFormBusiness;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+
 /**
  * Title: idegaWeb Builder Description: idegaWeb Builder is a framework for
  * building and rapid development of dynamic web applications Copyright:
@@ -54,6 +59,12 @@ public class FormEmailer extends Block {
 	private static String TEXT_SESSION_KEY = "IB_FORMEMAILER_TEXT";
 
 	private static String UPLOADED_FILENAME_SESSION_KEY = "IB_FORMEMAILER_FILE";
+
+	//new 20.2.2009 - Save form to table
+	private boolean saveForm = false;
+	private String formType = null;
+	private String fieldList = null;
+	
 
 	public FormEmailer() {
 		this.handler = new IBGenericFormHandler();
@@ -110,6 +121,13 @@ public class FormEmailer extends Block {
 		else {
 			try {
 				sendEmail(iwc);
+				if (this.saveForm) {
+					List fieldValues = this.handler.processFormToFieldList(iwc);
+					if (fieldValues != null && !fieldValues.isEmpty()) {
+						getEmailedFormBusiness(iwc).insertFormEntries(this.formType, this.fieldList, fieldValues, uploadFile);
+					}
+				}
+
 				String successfully = iwrb.getLocalizedString("formemailer.successfully", "Email sent successfully");
 				add(successfully);
 			}
@@ -183,6 +201,9 @@ public class FormEmailer extends Block {
 			String uploadedFileName = (String) iwc.getSessionAttribute(UPLOADED_FILENAME_SESSION_KEY);
 			if (uploadedFileName != null) {
 				uploadFile = new File(uploadedFileName);
+				if (uploadFile.isDirectory()) {
+					uploadFile = null;
+				}
 			}
 		}
 		catch (Exception e) {
@@ -256,6 +277,16 @@ public class FormEmailer extends Block {
 	}
 
 	public void setToAddRecievedParameter(String paramName, String description, String type) {
+		if (this.fieldList == null) {
+			fieldList = new String(paramName);
+		} else {
+			StringBuffer buffer = new StringBuffer(fieldList);
+			buffer.append(";");
+			buffer.append(paramName);
+			
+			this.fieldList = buffer.toString();
+		}
+
 		this.handler.addProcessedParameter(paramName, description, type);
 	}
 
@@ -306,6 +337,22 @@ public class FormEmailer extends Block {
 		this.sendReceipt = sendReceipt;
 	}
 
+	public void setSaveForm(boolean saveForm) {
+		this.saveForm = saveForm;
+	}
+	
+	public boolean getSaveForm() {
+		return this.saveForm;
+	}
+	
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+	public String getFormType() {
+		return this.formType;
+	}
+	
 	public boolean getSendReceipt() {
 		return this.sendReceipt;
 	}
@@ -342,4 +389,9 @@ public class FormEmailer extends Block {
 	public void setSpambotCatchTimeup(Integer spambot_catch_timeout) {
 		this.spambot_catch_timeup = spambot_catch_timeout;
 	}
+	
+	private EmailedFormBusiness getEmailedFormBusiness(IWContext iwc) throws IBOLookupException {
+		return (EmailedFormBusiness) IBOLookup.getServiceInstance(iwc, EmailedFormBusiness.class);
+	}
+
 }
