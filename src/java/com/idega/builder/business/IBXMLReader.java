@@ -513,8 +513,9 @@ public class IBXMLReader {
 				makeSureObjectExists(className);
 				
 				if(componentId!=null){
+					String pageKey = "";
 					try{
-						String pageKey = ibxml.getPageKey();
+						pageKey = ibxml.getPageKey();
 						icObjectInstance = getICObjectInstanceFromComponentId(componentId,className,pageKey);
 						
 						ICObject icObject = icObjectInstance.getObject();
@@ -524,7 +525,7 @@ public class IBXMLReader {
 						}
 					}
 					catch(Exception e){
-						e.printStackTrace();
+						System.err.println("[IBXMLReader] " + e.getMessage() + ": pageKey=" + pageKey + ";icObjectInstanceID=" + icObjectInstance);
 					}
 				}
 				
