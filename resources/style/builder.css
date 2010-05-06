@@ -805,6 +805,10 @@ div.builderButtons div.builderButton img {
 	font-size: 16px;
 }
 
+#mb_center #mb_contents {
+	color: #000 !important;
+}
+
 #mb_center .mootabs_title {
 	padding-left: 6px;
 	height: 25px;
