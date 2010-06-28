@@ -37,7 +37,7 @@ public class IBPropertiesWindow extends FrameSet{
 
    private final static String HEADER_TEXT_PARAMETER = "ib_prop_win_header";
    
-   private static boolean moduleInLightBox;
+   static boolean moduleInLightBox;
 
 public IBPropertiesWindow() {
   super.setWidth(600);
