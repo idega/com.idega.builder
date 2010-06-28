@@ -63,12 +63,11 @@ public class BuilderPageTagHandler extends MetaTagHandler {
     private final TagAttribute id;
     private String rendererType;
     
-	@SuppressWarnings("unused")
-	private TagAttribute componentClass;
+	private final TagAttribute componentClass;
 	
 	private String type;
 	
-	private TagAttribute template;
+	private final TagAttribute template;
 
 
     //public ModuleTagHandler(ComponentConfig config) {
@@ -277,7 +276,8 @@ public class BuilderPageTagHandler extends MetaTagHandler {
         return ctx.generateUniqueId(this.tagId);
     }
 
-    protected MetaRuleset createMetaRuleset(Class type){
+    @Override
+	protected MetaRuleset createMetaRuleset(Class type){
         MetaRuleset m = super.createMetaRuleset(type);
         
         // ignore standard component attributes

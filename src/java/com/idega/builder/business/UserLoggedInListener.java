@@ -11,7 +11,7 @@ import com.idega.core.accesscontrol.business.ServletFilterChainInterruptExceptio
 import com.idega.core.accesscontrol.business.StandardRoles;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
+import com.idega.user.data.bean.User;
 
 
 /**
