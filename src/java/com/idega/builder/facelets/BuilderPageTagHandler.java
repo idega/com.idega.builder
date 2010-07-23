@@ -63,8 +63,6 @@ public class BuilderPageTagHandler extends MetaTagHandler {
     private final TagAttribute id;
     private String rendererType;
     
-	private final TagAttribute componentClass;
-	
 	private String type;
 	
 	private final TagAttribute template;
@@ -78,7 +76,6 @@ public class BuilderPageTagHandler extends MetaTagHandler {
         //this.rendererType = config.getRendererType();
         this.id = this.getAttribute("id");
         this.binding = this.getAttribute("binding");
-        this.componentClass = this.getAttribute("class");
         this.template = this.getAttribute("template");
         TagAttribute atype = this.getAttribute("type");
         if(atype!=null){
