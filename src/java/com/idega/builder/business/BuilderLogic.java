@@ -3591,17 +3591,17 @@ public class BuilderLogic implements Singleton {
 			
 			Object o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
 			if (o instanceof List) {
-				jsSources = (List) o;
+				jsSources = (List<String>) o;
 			}
 			
 			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
 			if (o instanceof List) {
-				jsActions = (List) o;
+				jsActions = (List<String>) o;
 			}
 			
 			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
 			if (o instanceof List) {
-				cssSources = (List) o;
+				cssSources = (List<String>) o;
 			}
 		} catch (Exception e){
 			e.printStackTrace();
@@ -3631,7 +3631,7 @@ public class BuilderLogic implements Singleton {
 			rendered = getRenderedComponentWithDynamicResources(getXMLDocumentFromComponentHTML(rendered, false, omitDocTypeDeclaration, omitHtmlEnvelope,
 					false), cssSources, jsSources, jsActions, addCSSDirectly instanceof Boolean ? (Boolean) addCSSDirectly : false);
 			if (cleanCode) {
-				rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
+				rendered = getCleanedFromXmlDeclaration(rendered);
 			}
 		}
 		
@@ -3812,19 +3812,28 @@ public class BuilderLogic implements Singleton {
 		
 		try {
 			cleaner.clean();
-			htmlContent = XmlUtil.getPrettyJDOMDocument(XmlUtil.getJDOMXMLDocument(cleaner.getPrettyXmlAsString(), false));
+			htmlContent = cleaner.getPrettyXmlAsString();
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
 			return null;
 		}
 		
+		return getCleanedFromXmlDeclaration(htmlContent);
+	}
+	
+	private String getCleanedFromXmlDeclaration(String htmlContent) {
 		// Removing <?xml version... />
 		for (Pattern pattern: getXmlEncodingReplacementPatterns()) {
 			Matcher patternMatcher = pattern.matcher(htmlContent);
 			htmlContent = patternMatcher.replaceAll(CoreConstants.EMPTY);
 		}
 		
-		return htmlContent;
+		String xmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+		if (htmlContent.indexOf(xmlDeclaration) != -1) {
+			htmlContent = StringHandler.replace(htmlContent, xmlDeclaration, CoreConstants.EMPTY);
+		}
+		
+		return htmlContent.trim();
 	}
 	
 	private List<Pattern> getXmlEncodingReplacementPatterns() {
