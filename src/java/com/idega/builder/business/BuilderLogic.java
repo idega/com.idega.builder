@@ -75,7 +75,6 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
-import com.idega.core.data.GenericGroup;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.view.ViewManager;
@@ -118,7 +117,9 @@ import com.idega.slide.business.IWSlideService;
 import com.idega.slide.business.IWSlideSession;
 import com.idega.user.bean.PropertiesBean;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.dao.GroupDAO;
 import com.idega.user.data.User;
+import com.idega.user.data.bean.Group;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
@@ -200,7 +201,7 @@ public class BuilderLogic implements Singleton {
 	public static final String PAGE_FORMAT_FACELET="FACELET";
 	public static final String PAGE_FORMAT_IBXML2="IBXML2";
 	
-	private String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_IBXML2,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2,PAGE_FORMAT_FACELET};
+	private final String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_IBXML2,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2,PAGE_FORMAT_FACELET};
 	
 	//private volatile Web2Business web2 = null;
 	private IWSlideService slideService = null;
@@ -499,11 +500,14 @@ public class BuilderLogic implements Singleton {
 		List<Integer> groupIds = new ArrayList<Integer>();
 		groupIds.add(groupId);
 		try {
-			List groups = AccessControl.getPermissionGroups(((com.idega.core.data.GenericGroupHome) com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId));
+			GroupDAO dao = ELUtil.getInstance().getBean(GroupDAO.class);
+			Group group = dao.findGroup(new Integer(groupId));
+
+			List groups = AccessControl.getPermissionGroups(group);
 			if (groups != null) {
 				Iterator iter = groups.iterator();
 				while (iter.hasNext()) {
-					com.idega.core.data.GenericGroup item = (GenericGroup) iter.next();
+					Group item = (Group) iter.next();
 					groupIds.add(item.getID());
 				}
 			}

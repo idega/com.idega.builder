@@ -63,12 +63,9 @@ public class BuilderPageTagHandler extends MetaTagHandler {
     private final TagAttribute id;
     private String rendererType;
     
-	@SuppressWarnings("unused")
-	private TagAttribute componentClass;
-	
 	private String type;
 	
-	private TagAttribute template;
+	private final TagAttribute template;
 
 
     //public ModuleTagHandler(ComponentConfig config) {
@@ -79,7 +76,6 @@ public class BuilderPageTagHandler extends MetaTagHandler {
         //this.rendererType = config.getRendererType();
         this.id = this.getAttribute("id");
         this.binding = this.getAttribute("binding");
-        this.componentClass = this.getAttribute("class");
         this.template = this.getAttribute("template");
         TagAttribute atype = this.getAttribute("type");
         if(atype!=null){
@@ -277,7 +273,8 @@ public class BuilderPageTagHandler extends MetaTagHandler {
         return ctx.generateUniqueId(this.tagId);
     }
 
-    protected MetaRuleset createMetaRuleset(Class type){
+    @Override
+	protected MetaRuleset createMetaRuleset(Class type){
         MetaRuleset m = super.createMetaRuleset(type);
         
         // ignore standard component attributes
