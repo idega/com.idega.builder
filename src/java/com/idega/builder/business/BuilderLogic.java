@@ -2452,7 +2452,7 @@ public class BuilderLogic implements Singleton {
 		//pasteImage.setOnClick(pasteAction.toString());
 		Span paste = new Span(new Text(iwrb.getLocalizedString("paste", "Paste")));
 		pasteButtonContainer.setTitle(title.toString());
-		pasteButtonContainer.setOnClick(pasteAction.toString());
+		pasteButtonContainer.setMarkupAttributeMultivalued("onclick", pasteAction.toString());
 		//pasteButtonContainer.add(pasteImage);
 		pasteButtonContainer.add(paste);
 		pasteButtonContainer.setStyleClass("pasteModuleIconContainer");
