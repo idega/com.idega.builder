@@ -1,5 +1,6 @@
 package com.idega.builder.presentation;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +13,6 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.component.business.ICObjectBusiness;
-import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -28,12 +28,13 @@ import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
+import com.idega.user.data.bean.Group;
 import com.idega.util.CoreConstants;
 import com.idega.util.PresentationUtil;
 
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company: idega
- * 
+ *
  * @author <a href="mailto:gummi@idega.is">Gu�mundur �g�st S�mundsson</a>
  * @version 1.0
  */
@@ -48,7 +49,7 @@ public class IBPermissionWindow extends Window {
 	private static final String SessionAddressPermissionMapOldValue = "ib_permission_hashtable_old_value";
 	private boolean collectOld = false;
 	private IWResourceBundle iwrb;
-	
+
 	private boolean needCancelButton = true;
 	private boolean componentIsInLightBox;
 
@@ -63,7 +64,7 @@ public class IBPermissionWindow extends Window {
 		String category = iwc.getParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
 		//if componentid is a uuid then convert it to icobjectid.
 		String identifier = null;
-		
+
 		Table frameTable = new Table(1, 4);
 		if (componentId != null && category != null) {
 			int intPermissionCategory = Integer.parseInt(category);
@@ -152,7 +153,7 @@ public class IBPermissionWindow extends Window {
 			right.selectAllOnSubmit();
 			right.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE + "width:130px");
 			Map hash = (Map) iwc.getSessionAttribute(IBPermissionWindow.SessionAddressPermissionMap);
-			List directGroups = null;
+			List<Group> directGroups = null;
 			if (hash != null && hash.get(permissionType) != null) {
 				directGroups = UserGroupBusiness.getGroups((String[]) hash.get(permissionType));
 				this.collectOld = false;
@@ -161,36 +162,34 @@ public class IBPermissionWindow extends Window {
 				directGroups = iwc.getAccessController().getAllowedGroups(intPermissionCategory, identifier,permissionType);
 				this.collectOld = true;
 			}
-			Iterator iter = null;
+			Iterator<Group> iter = null;
 			if (directGroups != null) {
-				iter = directGroups.iterator();
 				if (this.collectOld) {
-					List oldValueIDs = new Vector();
-					while (iter.hasNext()) {
-						Object item = iter.next();
-						String groupId = Integer.toString(((GenericGroup) item).getID());
-						right.addElement(groupId, ((GenericGroup) item).getName());
+					List<String> oldValueIDs = new ArrayList<String>();
+					for (iter = directGroups.iterator(); iter.hasNext();) {
+						Group item = iter.next();
+						String groupId = String.valueOf(item.getID());
+						right.addElement(groupId, item.getName());
 						oldValueIDs.add(groupId);
 					}
 					this.collectOldValues(iwc, oldValueIDs, permissionType);
 				}
 				else {
-					while (iter.hasNext()) {
-						Object item = iter.next();
-						String groupId = Integer.toString(((GenericGroup) item).getID());
-						right.addElement(groupId, ((GenericGroup) item).getName());
+					for (iter = directGroups.iterator(); iter.hasNext();) {
+						Group item = iter.next();
+						String groupId = String.valueOf(item.getID());
+						right.addElement(groupId, item.getName());
 					}
 				}
 			}
-			List notDirectGroups = iwc.getAccessController().getAllPermissionGroups();
+			List<Group> notDirectGroups = iwc.getAccessController().getAllPermissionGroups();
 			if (notDirectGroups != null) {
 				if (directGroups != null) {
 					notDirectGroups.removeAll(directGroups);
 				}
-				iter = notDirectGroups.iterator();
-				while (iter.hasNext()) {
-					Object item = iter.next();
-					left.addElement(Integer.toString(((GenericGroup) item).getID()), ((GenericGroup) item).getName());
+				for (iter = notDirectGroups.iterator(); iter.hasNext();) {
+					Group item = iter.next();
+					left.addElement(String.valueOf(item.getID()), item.getName());
 				}
 			}
 			// Submit
@@ -220,22 +219,22 @@ public class IBPermissionWindow extends Window {
 		myForm.setToShowLoadingOnSubmit(false);
 		myForm.maintainParameter(_PARAMETERSTRING_IDENTIFIER);
 		myForm.maintainParameter(_PARAMETERSTRING_PERMISSION_CATEGORY);
-		
+
 		if (iwc.isParameterSet(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX)) {
 			myForm.maintainParameter(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX);
 			componentIsInLightBox = Boolean.valueOf(iwc.getParameter(ICBuilderConstants.UI_COMPONENT_IS_IN_LIGHTBOX));
 		}
-		
+
 		boolean isComponentInFrame = false;
 		String componentInFrame = iwc.getParameter(BuilderConstants.CURRENT_COMPONENT_IS_IN_FRAME);
 		if (componentInFrame != null && Boolean.TRUE.toString().equals(componentInFrame)) {
 			myForm.maintainParameter(BuilderConstants.CURRENT_COMPONENT_IS_IN_FRAME);
 			isComponentInFrame = true;
-			
+
 			PresentationUtil.addStyleSheetToHeader(iwc, iwc.getIWMainApplication().getBundle(CoreConstants.WORKSPACE_BUNDLE_IDENTIFIER).getVirtualPathWithFileNameString("style/workspace.css"));
 		}
 		needCancelButton = !isComponentInFrame;
-		
+
 		this.iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		setTitle(this.iwrb.getLocalizedString("ib_permission_window", "Permissions"));
 		// System.out.println("_PARAMETERSTRING_PERMISSION_CATEGORY:
@@ -386,7 +385,7 @@ public class IBPermissionWindow extends Window {
 			}
 		}
 	}
-	
+
 	private BuilderLogic getBuilderLogic() {
 		return BuilderLogic.getInstance();
 	}
