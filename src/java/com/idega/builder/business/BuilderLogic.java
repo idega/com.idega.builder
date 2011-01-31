@@ -4236,6 +4236,13 @@ public class BuilderLogic implements Singleton {
 				if(!ListUtil.isEmpty(children)){
 					searchTops.addAll(children);
 				}
+				
+				ICTreeNode parent = startPage.getParentNode();
+				Collection siblings = parent != null ? parent.getChildren() : new ArrayList();
+				if(!ListUtil.isEmpty(siblings)){
+					searchTops.addAll(siblings);
+				}
+				
 				nearestPage = getPageByPageType(searchTops, pageType);
 			}
 		}
@@ -4280,7 +4287,7 @@ public class BuilderLogic implements Singleton {
 
 				children = page.getChildren();
 				if (!ListUtil.isEmpty(children)) {
-					return getPageByPageType(children, pageType);
+					getPageByPageType(children, pageType);
 				}
 			}
 			
