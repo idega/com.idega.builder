@@ -1,23 +1,24 @@
 package com.idega.builder.business;
 
-import com.idega.slide.business.IWSlideSession;
+import com.idega.user.data.bean.User;
 
 public class BuilderLogicWorker implements Runnable {
-	
+
 	private IBXMLPage page = null;
-	private IWSlideSession session = null;
-	
-	public BuilderLogicWorker(IBXMLPage page, IWSlideSession session) {
+	private User user = null;
+
+	public BuilderLogicWorker(IBXMLPage page, User user) {
 		this.page = page;
-		this.session = session;
+		this.user = user;
 	}
 
+	@Override
 	public void run() {
 		if (page == null) {
 			return;
 		}
 		try {
-			page.store(session);
+			page.store(user);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -28,13 +28,15 @@ import javax.faces.context.FacesContext;
 import javax.faces.render.RenderKitFactory;
 
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
-import org.htmlcleaner.HtmlCleaner;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
@@ -53,7 +55,6 @@ import com.idega.builder.presentation.IBPasteModuleWindow;
 import com.idega.builder.presentation.IBPermissionWindow;
 import com.idega.builder.presentation.IBPropertiesWindow;
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.business.chooser.helper.CalendarsChooserHelper;
 import com.idega.business.chooser.helper.GroupsChooserHelper;
 import com.idega.cal.bean.CalendarPropertiesBean;
@@ -69,6 +70,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.core.business.DefaultSpringBean;
 import com.idega.core.component.bean.RenderedComponent;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
@@ -109,12 +111,10 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.repository.RepositoryService;
 import com.idega.repository.data.Instantiator;
-import com.idega.repository.data.Singleton;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.servlet.filter.BaseFilter;
-import com.idega.slide.business.IWSlideService;
-import com.idega.slide.business.IWSlideSession;
 import com.idega.user.bean.PropertiesBean;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.dao.GroupDAO;
@@ -144,16 +144,19 @@ import com.idega.xml.XMLElement;
  * This class is the main "buisiness logic" class for the Builder.<br>
  * All interface actions are sent to this class and this class manages other helper classes such as PageCacher,IBXMLReader,IBXMLWriter etc.
  * </p>
- * 
+ *
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
- * 
+ *
  * Last modified: $Date: 2009/06/17 12:35:07 $ by $Author: valdas $
  * @version 1.0
  */
-public class BuilderLogic implements Singleton {
+
+@Service
+@Scope(BeanDefinition.SCOPE_SINGLETON)
+public class BuilderLogic extends DefaultSpringBean {
 
 	private static final Logger logger = Logger.getLogger(BuilderLogic.class.getName());
-	
+
 	private static final String PAGES_PREFIX = "/pages/";
 	public static final String IB_PARENT_PARAMETER = "ib_parent_par";
 	public static final String IB_LABEL_PARAMETER = "ib_label";
@@ -170,24 +173,24 @@ public class BuilderLogic implements Singleton {
 	public static final String ACTION_PASTE = "ACTION_PASTE";
 	public static final String ACTION_PASTE_ABOVE = "ACTION_PASTE_ABOVE";
 	public static final String ACTION_LIBRARY = "ACTION_LIBRARY";
-	/**  
+	/**
 	 *This is the key that holds the page in the builder session
 	 **/
 	private static final String SESSION_PAGE_KEY = "ib_page_id";
-	
+
 	public static final String SESSION_OBJECT_STATE = BuilderConstants.SESSION_OBJECT_STATE;
 	public static final String PRM_HISTORY_ID = BuilderConstants.PRM_HISTORY_ID;
 	public static final String IMAGE_ID_SESSION_ADDRESS = "ib_image_id";
 	public static final String IMAGE_IC_OBJECT_INSTANCE_SESSION_ADDRESS = "ic_object_id_image";
-	
+
 	private static final String IB_APPLICATION_RUNNING_SESSION = "ib_application_running";
 	//private static final String DEFAULT_PAGE = "1";
 	public static final String CLIPBOARD = "user_clipboard";
-	
+
 	private Pattern doctypeReplacementPattern;
 	private Pattern commentinHtmlReplacementPattern;
 	private List<Pattern> xmlEncodingReplacementPatterns = null;
-	
+
 	private static Instantiator instantiator = new Instantiator() {
 		@Override
 		public Object getInstance() {
@@ -200,18 +203,16 @@ public class BuilderLogic implements Singleton {
 	public static final String PAGE_FORMAT_JSP_1_2="JSP_1_2";
 	public static final String PAGE_FORMAT_FACELET="FACELET";
 	public static final String PAGE_FORMAT_IBXML2="IBXML2";
-	
+
 	private final String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_IBXML2,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2,PAGE_FORMAT_FACELET};
-	
-	//private volatile Web2Business web2 = null;
-	private IWSlideService slideService = null;
+
 	private XMLOutputter outputter = null;
-	
+
 	@Autowired
 	private Web2Business web2;
 	@Autowired
 	private JQuery jQuery;
-	
+
 	protected BuilderLogic() {
 		// empty
 	}
@@ -219,7 +220,7 @@ public class BuilderLogic implements Singleton {
 	public static BuilderLogic getInstance() {
 		return (BuilderLogic) SingletonRepository.getRepository().getInstance(BuilderLogic.class, instantiator);
 	}
-	
+
 	public static void unload()	{
 		SingletonRepository.getRepository().unloadInstance(BuilderLogic.class);
 	}
@@ -236,7 +237,7 @@ public class BuilderLogic implements Singleton {
 		return getPageCacher().getCachedBuilderPage(key);
 	}
 //	.getICPage()
-	
+
 	public ICPage getICPage(String key) {
 		return getPageCacher().getCachedBuilderPage(key).getICPage();
 	}
@@ -245,11 +246,11 @@ public class BuilderLogic implements Singleton {
 		return getPageCacher().getIBXML(pageKey);
 	}
 
-	
+
 	public Page getPage(String pageKey, IWContext iwc) {
 		return getPageCacher().getComponentBasedPage(pageKey).getPage(iwc);
 	}
-	
+
 	/*
 	public Page getPage(int id, boolean builderview, IWContext iwc) {
 		try {
@@ -298,20 +299,20 @@ public class BuilderLogic implements Singleton {
 		}
 		return session.getMode();
 	}
-	
+
 	/**
 	 *  	 *
 	 */
 	public Page getBuilderTransformed(String pageKey, Page page, IWContext iwc) {
 		IWBundle iwb = getBuilderBundle();
 		IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
-		
+
 		String builderMode = getBuilderSessionMode();
 		addResourcesForBuilderEditMode(iwc, iwb, builderMode);
-		
+
 		//if we want to use Sortable (javascript from the DnD library) someday
 		page.setID("DnDPage");
-		
+
 		//Begin with transforming the objects on a normal Page object (constructed from IBXML)
 		List<UIComponent> list = page.getChildren();
 		if (!ListUtil.isEmpty(list)) {
@@ -322,12 +323,12 @@ public class BuilderLogic implements Singleton {
 				index++;
 			}
 		}
-		
+
 		if (iwc.getRequestURI().indexOf("/workspace/") == -1 && iwc.getRequestURI().indexOf("/pages") != -1 &&
 				(iwc.hasRole(StandardRoles.ROLE_KEY_ADMIN) || iwc.hasRole(StandardRoles.ROLE_KEY_AUTHOR) || iwc.hasRole(StandardRoles.ROLE_KEY_EDITOR))) {
 			page.getChildren().add(new AdminToolbar());
 			page.setStyleClass("isAdmin");
-			
+
 			if (builderMode != null) {
 				page.setStyleClass(builderMode);
 			}
@@ -336,7 +337,7 @@ public class BuilderLogic implements Singleton {
 			page.setStyleClass("isContentAdmin");
 			page.setStyleClass("isEditAdmin");
 		}
-		
+
 		String addModuleUri = null;
 		//"-1" is identified as the top page object (parent)
 		if (page.getIsExtendingTemplate()) {
@@ -373,7 +374,7 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 			}
-			
+
 			Layer buttonsLayer = null;
 			if(mayAddButtonsInPage){
 				String parentKey = Integer.toString(-1);
@@ -383,7 +384,7 @@ public class BuilderLogic implements Singleton {
 				buttonsLayer = addButtonsLayer(marker, addModuleUri, regionKey, iwrb, marker.getId());
 				page.add(marker);
 			}
-			
+
 			if (page.getIsTemplate()){
 				if (page.isLocked()){
 					if (buttonsLayer != null) {
@@ -410,24 +411,24 @@ public class BuilderLogic implements Singleton {
 		IWBundle builderBundle = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER);
 		addResourcesForBuilderEditMode(iwc, builderBundle, getBuilderSessionMode());
 	}
-	
+
 	private Web2Business getWeb2Business() {
 		if (web2 == null) {
 			ELUtil.getInstance().autowire(this);
 		}
 		return web2;
 	}
-	
+
 	private JQuery getJQUery() {
 		if (jQuery == null) {
 			ELUtil.getInstance().autowire(this);
 		}
 		return jQuery;
 	}
-	
+
 	private void addResourcesForBuilderEditMode(IWContext iwc, IWBundle builderBundle, String mode) {
 		Web2Business web2 = getWeb2Business();
-		
+
 		//	JavaScript
 		try {
 			PresentationUtil.addJavaScriptSourcesLinesToHeader(iwc, Arrays.asList(
@@ -444,7 +445,7 @@ public class BuilderLogic implements Singleton {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		//	JavaScript actions
 		mode = mode == null ? CoreConstants.EMPTY : mode;
 		PresentationUtil.addJavaScriptActionsToBody(iwc, Arrays.asList(
@@ -452,7 +453,7 @@ public class BuilderLogic implements Singleton {
 				"window.addEvent('resize', intializeMoodalboxInBuilder);",
 				"window.addEvent('beforeunload', showMessageForUnloadingPage);"
 		));
-		
+
 		//	CSS
 		try {
 			PresentationUtil.addStyleSheetsToHeader(iwc, Arrays.asList(
@@ -468,14 +469,14 @@ public class BuilderLogic implements Singleton {
 	private Layer getLabelMarker(String instanceId, String parentKey) {
 		Layer marker = new Layer(Layer.DIV);
 		marker.setStyleClass("regionLabel");
-		
+
 		if (instanceId == null) {
 			Random generator = new Random();
 			marker.setId(new StringBuffer("region_label").append(generator.nextInt(Integer.MAX_VALUE)).toString());
 		}
 		else {
 			marker.setMarkupAttribute("instanceid", instanceId);
-			
+
 			Layer labelContainer = new Layer();
 			marker.add(labelContainer);
 			HiddenInput regionLabel = new HiddenInput("region_label", instanceId);
@@ -488,7 +489,7 @@ public class BuilderLogic implements Singleton {
 				marker.setId(new StringBuffer("region_label").append(instanceId).toString());
 			}
 		}
-		
+
 		if (parentKey != null) {
 			marker.add(new HiddenInput("parentKey", parentKey));
 		}
@@ -577,12 +578,12 @@ public class BuilderLogic implements Singleton {
 
 	public PresentationObject getTransformedObject(Page currentPage, String pageKey, UIComponent obj, int index, PresentationObjectContainer parent, String parentKey, IWContext iwc) {
 		IWResourceBundle iwrb = getBuilderBundle().getResourceBundle(iwc);
-		
+
 		XMLElement pasted = (XMLElement) iwc.getSessionAttribute(CLIPBOARD);
 		boolean clipboardEmpty = (pasted == null);
 		//We can either be working with pure UIComponents or PresentationObjects
 		boolean isPresentationObject = obj instanceof  PresentationObject;
-		
+
 		//Some very special cases, added the boolean to make it faster
 		/*if (isPresentationObject && obj instanceof Image) {
 			obj = transformImage(pageKey, obj, iwc);
@@ -607,18 +608,18 @@ public class BuilderLogic implements Singleton {
 						else {
 							String newParentKey = null;
 							//Ugly Hack of handling the regions inside HTML template based pages. This needs to change.
-							//TODO: Remove this instanceof case, to make that possible then the getICObjectInstanceID 
+							//TODO: Remove this instanceof case, to make that possible then the getICObjectInstanceID
 							//		method needs to be changed to return String
 							if(obj instanceof HtmlPageRegion){
 								HtmlPageRegion region = (HtmlPageRegion)obj;
-								//newParentKey is normally an ICObjectInstanceId or -1 to mark the top page 
+								//newParentKey is normally an ICObjectInstanceId or -1 to mark the top page
 								//but here we make a workaround.
 								newParentKey = region.getRegionId();
 							}
 							else{
 								newParentKey = getInstanceId(obj);
 							}
-							
+
 							getTransformedObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, newParentKey, iwc);
 						}
 					}
@@ -630,7 +631,7 @@ public class BuilderLogic implements Singleton {
 					if (instanceId == null) {
 						instanceId = obj.getId();
 					}
-					
+
 					String regionLabel = container.getLabel();
 					String addModuleUri = getUriToAddModuleWindow(regionLabel);
 					if (curr.getIsExtendingTemplate()) {
@@ -645,7 +646,7 @@ public class BuilderLogic implements Singleton {
 							Layer marker = getLabelMarker(instanceId, regionLabel);
 							Layer buttons = addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
 							container.add(marker);
-							
+
 							if (curr.getIsTemplate()) {
 								buttons.add(getLabelIcon(instanceId, iwc, regionLabel));
 								if (container.isLocked()){
@@ -655,15 +656,15 @@ public class BuilderLogic implements Singleton {
 									buttons.add(getUnlockedIcon(instanceId, iwc));
 								}
 							}
-							
-							
+
+
 						}
 					}
 					else {
 						Layer marker = getLabelMarker(instanceId, regionLabel);
 						Layer buttons = addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
 						container.add(marker);
-						
+
 						if (curr.getIsTemplate()) {
 							marker.add(getLabelIcon(instanceId, iwc, regionLabel));
 							if (container.isLocked()){
@@ -673,7 +674,7 @@ public class BuilderLogic implements Singleton {
 								buttons.add(getUnlockedIcon(instanceId, iwc));
 							}
 						}
-						
+
 					}
 				}
 			}
@@ -687,7 +688,7 @@ public class BuilderLogic implements Singleton {
 				} else if (index == (parent.getChildCount() - 1)) {
 					lastModuleInRegion = true;
 				}
-				
+
 				boolean objectFromCurrentPage = true;
 				try {
 					IBXMLPage page = getIBXMLPage(pageKey);
@@ -696,8 +697,8 @@ public class BuilderLogic implements Singleton {
 					e.printStackTrace();
 				}
 				transformed = new IBObjectControl(obj, parent, parentKey, iwc, index, lastModuleInRegion, objectFromCurrentPage);
-				
-				if (index < parent.getChildCount()) {	
+
+				if (index < parent.getChildCount()) {
 					parent.set(index, transformed);
 				}
 				else {
@@ -722,7 +723,7 @@ public class BuilderLogic implements Singleton {
 	 */
 	public PresentationObject getTransformedTable(Page currentPage, String pageKey, UIComponent obj, IWContext iwc, boolean clipboardEmpty) {
 		IWResourceBundle iwrb = getBuilderBundle().getResourceBundle(iwc);
-		
+
 		Table tab = (Table) obj;
 		int cols = tab.getColumns();
 		int rows = tab.getRows();
@@ -736,7 +737,7 @@ public class BuilderLogic implements Singleton {
 					id = id.replace(CoreConstants.DOT, CoreConstants.UNDER);
 					moc.setId(id);
 				}
-				
+
 				String regionLabel = tab.getLabel(x, y);
 				String addModuleUri = getUriToAddModuleWindow(regionLabel);
 				if (currentPage.getIsExtendingTemplate()) {
@@ -775,7 +776,7 @@ public class BuilderLogic implements Singleton {
 							buttons.add(getUnlockedIcon(newParentKey, iwc));
 						}
 					}
-					
+
 				}
 			}
 		}
@@ -853,8 +854,8 @@ public class BuilderLogic implements Singleton {
 		}
 		return -1;
 	}
-	
-	
+
+
 	/*public String getPageKeyByURIAndServerName(String requestURI,String serverName){
 		try{
 			return getPageKeyByURI(requestURI);
@@ -871,8 +872,8 @@ public class BuilderLogic implements Singleton {
 		}
 		return theReturn;
 	}*/
-	
-	
+
+
 	/**
 	 * Tries to find the uri in the cache of builder pages
 	 * @param requestURI
@@ -895,19 +896,19 @@ public class BuilderLogic implements Singleton {
 		}
 		return null;
 	}
-	
+
 	public String getPageKeyByURI(String requestURI,ICDomain domain){
 		return getExistingPageKeyByURI(requestURI,domain);
 	}
-	
-	
+
+
 	/**
 	 * Returns the key for the ICPage that the user has requested
 	 */
 	public String getCurrentIBPage(IWContext iwc) {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
-		
+
 		if(IWMainApplication.useNewURLScheme){
 		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
 			/*int indexOfPage = requestURI.indexOf("/pages/");
@@ -965,7 +966,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return theReturn;
 	}
-	
+
 	/**
 	 * Sets the IBpage Id to use in the builder session.
 	 * @param iwc
@@ -976,7 +977,7 @@ public class BuilderLogic implements Singleton {
 	    iwc.setSessionAttribute(SESSION_PAGE_KEY,pageKey);
 	}
 
-	
+
 	/**
 	 * Sets the source and pageFormat for current page and stores to the datastore
 	 * @param iwc IWContext to get the current page
@@ -985,10 +986,10 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean setPageSource(IWContext iwc,String pageFormat,String stringSourceMarkup){
 		String pageKey = getCurrentIBPage(iwc);
-		
+
 		return setPageSource(pageKey,pageFormat,stringSourceMarkup);
 	}
-	
+
 	/**
 	 * Sets the source and pageFormat for the page with key pageKey and stores to the datastore
 	 * @param pageKey
@@ -1003,8 +1004,8 @@ public class BuilderLogic implements Singleton {
 				converter.convert();
 				stringSourceMarkup = converter.getConvertedMarkupString();
 			}
-			
-			
+
+
 			getPageCacher().storePage(pageKey,pageFormat,stringSourceMarkup);
 			return true;
 		}
@@ -1013,8 +1014,8 @@ public class BuilderLogic implements Singleton {
 			return false;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets the source code (IBXML,HTML) as a String for the current page
 	 * @param iwc IWContext to get the current page
@@ -1025,7 +1026,7 @@ public class BuilderLogic implements Singleton {
 		String pageKey = getCurrentIBPage(iwc);
 		return getPageSource(pageKey);
 	}
-	
+
 	/**
 	 * Gets the source code (IBXML,HTML) as a String for the page with key pageKey
 	 * @param iwc IWContext to get the current page
@@ -1034,8 +1035,8 @@ public class BuilderLogic implements Singleton {
 	 */
 	public String getPageSource(String pageKey){
 		return getCachedBuilderPage(pageKey).toString();
-	}	
-	
+	}
+
 	CachedBuilderPage getCurrentCachedBuilderPage(IWContext iwc) {
 		String key = getCurrentIBPage(iwc);
 		if (key != null) {
@@ -1043,7 +1044,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return null;
 	}
-	
+
 	IBXMLPage getCurrentIBXMLPage(IWContext iwc) {
 		return (IBXMLPage)getCurrentCachedBuilderPage(iwc);
 	}
@@ -1057,10 +1058,10 @@ public class BuilderLogic implements Singleton {
 			logger.warning("Using default IWApplicationContext to get current domain!");
 			iwac = IWMainApplication.getDefaultIWApplicationContext();
 		}
-		
+
 		return getCurrentDomain(iwac);
 	}
-	
+
 	public ICDomain getCurrentDomain(IWApplicationContext iwac) {
 		try {
 			return iwac.getDomain();
@@ -1075,7 +1076,7 @@ public class BuilderLogic implements Singleton {
 		IWApplicationContext iwac = IWMainApplication.getDefaultIWApplicationContext();
 		return getCurrentDomainByServerName(iwac,serverName);
 	}
-	
+
 	public ICDomain getCurrentDomainByServerName(IWApplicationContext iwac,String serverName) {
 		try {
 			return iwac.getDomainByServerName(serverName);
@@ -1115,12 +1116,12 @@ public class BuilderLogic implements Singleton {
 		}
 		return false;
 	}
-	
+
 	public boolean removeModuleProperty(String pageKey, String moduleId, String propertyName) {
 		if (pageKey == null || moduleId == null || propertyName == null) {
 			return false;
 		}
-		
+
 		IWMainApplication iwma = null;
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
@@ -1132,18 +1133,18 @@ public class BuilderLogic implements Singleton {
 		if (iwma == null) {
 			return false;
 		}
-		
+
 		String[] values = getPropertyValues(iwma, pageKey, moduleId, propertyName, null, true);
 		if (values == null) {
 			return false;
 		}
 		boolean result = removeProperty(iwma, pageKey, moduleId, propertyName, values);
-		
+
 		if (result) {
 			removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
 			removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
 		}
-		
+
 		return result;
 	}
 
@@ -1168,7 +1169,7 @@ public class BuilderLogic implements Singleton {
 		String[] values = {propertyValue};
 		return setProperty(pageKey, instanceId, propertyName, values, iwma);
 	}
-	
+
 	/**
 	 * Returns true if properties changed, or error, else false
 	 */
@@ -1176,7 +1177,7 @@ public class BuilderLogic implements Singleton {
 		if (iwc == null || pageKey == null || instanceId == null || propertyName == null || properties == null) {
 			return false;
 		}
-		
+
 		String[] propertyValues = null;
 		boolean allowMultivalued = false;
 		try {
@@ -1184,7 +1185,7 @@ public class BuilderLogic implements Singleton {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		if (allowMultivalued) {
 			propertyValues = new String[properties.size()];
 			for (int i = 0; i < properties.size(); i++) {
@@ -1194,7 +1195,7 @@ public class BuilderLogic implements Singleton {
 		else {
 			propertyValues = modifyPropertyValuesRegardingParameterType(pageKey, instanceId, propertyName, properties);
 		}
-		
+
 		if (propertyValues == null) {
 			//	Can not set value(s), removing old value(s) if exist such
 			String values[] = getPropertyValues(iwc.getIWMainApplication(),pageKey, instanceId, propertyName, null, true);
@@ -1202,7 +1203,7 @@ public class BuilderLogic implements Singleton {
 				return removeAllBlockObjectsFromCache(iwc);
 			}
 		}
-		
+
 		if (setProperty(pageKey, instanceId, propertyName, propertyValues, iwc.getIWMainApplication())) {
 			removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
 			removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
@@ -1217,9 +1218,9 @@ public class BuilderLogic implements Singleton {
 	public boolean setProperty(String pageKey, String instanceId, String propertyName, String[] propertyValues, IWMainApplication iwma) {
 		try {
 			boolean allowMultivalued = isPropertyMultivalued(propertyName, instanceId, iwma, pageKey);
-			
+
 			IBXMLPage xml = getIBXMLPage(pageKey);
-			
+
 			if (getIBXMLWriter().setProperty(iwma, xml, instanceId, propertyName, propertyValues, allowMultivalued)) {
 				xml.store();
 				return (true);
@@ -1231,7 +1232,7 @@ public class BuilderLogic implements Singleton {
 			return (false);
 		}
 	}
-	
+
 	private String[] modifyPropertyValuesRegardingParameterType(String pageKey, String instanceId, String propertyName, List<AdvancedProperty> values) {
 		if (pageKey == null || instanceId == null || propertyName == null || values == null) {
 			return null;
@@ -1239,18 +1240,18 @@ public class BuilderLogic implements Singleton {
 		if (values.size() == 0) {
 			return null;
 		}
-		
+
 		String[] propertyValues = null;
-		
+
 		try {
 			Class<?> clazz = Class.forName(getModuleClassName(pageKey, instanceId));
 			Method method = getMethodFinder().getMethod(propertyName, clazz);
-			
+
 			Class<?>[] types = method.getParameterTypes();
-			
+
 			if (types != null && types.length > 0) {
 				//	TODO: add ability to register specific types handlers (e.g. handler for List etc)
-				
+
 				//	List
 				if(types[0].equals(List.class)) {
 					StringBuilder value = new StringBuilder();
@@ -1259,38 +1260,38 @@ public class BuilderLogic implements Singleton {
 						value.append(values.get(i).getValue())
 						.append(ICBuilderConstants.BUILDER_MODULE_PROPERTY_VALUES_SEPARATOR);
 					}
-					
+
 					return new String[] {value.toString()};
 				}
-				
+
 				//	PropertiesBean
 				if (types[0].equals(PropertiesBean.class)) {
 					GroupsChooserHelper helper = new GroupsChooserHelper();
 					return helper.getPropertyValue(values, true);
 				}
-				
+
 				//	CalendarPropertiesBean
 				if (types[0].equals(CalendarPropertiesBean.class)) {
 					CalendarsChooserHelper helper = new CalendarsChooserHelper();
 					return helper.getPropertyValue(values, false);
 				}
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		propertyValues = new String[values.size()];
 		for (int i = 0; i < values.size(); i++) {
 			propertyValues[i] = values.get(i).getValue();
 		}
 		return propertyValues;
 	}
-	
+
 	private MethodFinder getMethodFinder() {
 		return MethodFinder.getInstance();
 	}
-	
+
 	/**
 	 * Adds method with parameters to IBXMLPage
 	 * @param pageKey
@@ -1313,7 +1314,7 @@ public class BuilderLogic implements Singleton {
 		values.append(propValue);
 		return setProperty(pageKey, moduleId, propName, values.toString(), iwc.getIWMainApplication());
 	}
-	
+
 	public boolean addPropertyToModules(String pageKey, List<String> moduleIds, String propName, String propValue) {
 		if (moduleIds == null) {
 			return false;
@@ -1337,8 +1338,8 @@ public class BuilderLogic implements Singleton {
 			return (false);
 		}
 	}
-	
-	
+
+
 	/**
 	 * After deleting module, saves (if successfully deleted) IBXMLPage in other thread
 	 * @param pageKey
@@ -1347,7 +1348,7 @@ public class BuilderLogic implements Singleton {
 	 * @param session
 	 * @return
 	 */
-	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId, IWSlideSession session) {
+	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId, RepositoryService session) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1357,7 +1358,7 @@ public class BuilderLogic implements Singleton {
 		}
 		deleteBlock(instanceId, pageKey);
 		boolean result = getIBXMLWriter().deleteModule(page, parentObjectInstanceID, instanceId);
-		
+
 		if (result) {
 			return savePage(page, session);
 		}
@@ -1373,16 +1374,16 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		deleteBlock(instanceId, pageKey);
-		
+
 		if (getIBXMLWriter().deleteModule(xml, parentObjectInstanceID, instanceId)) {
 			xml.store();
 			return (true);
 		}
 		return (false);
 	}
-	
+
 	private boolean deleteBlock(String instanceId, String pageKey) {
 		try {
 			ICObjectInstance instance = getIBXMLReader().getICObjectInstanceFromComponentId(instanceId, null, pageKey);
@@ -1411,7 +1412,7 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		XMLElement element = xml.copyModule(instanceId);
 		if (element == null) {
 			return false;
@@ -1422,13 +1423,13 @@ public class BuilderLogic implements Singleton {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public boolean pasteModuleIntoRegion(IWContext iwc, String pageKey, String regionId, String regionLabel) {
 		String instanceId = putModuleIntoRegion(iwc, pageKey, regionId, regionLabel, true);
 		return instanceId != null;
 	}
-	
+
 	public String putModuleIntoRegion(IWContext iwc, String pageKey, String regionId, String regionLabel, boolean changeInstanceId) {
 		IBXMLPage page = null;
 		try {
@@ -1449,7 +1450,7 @@ public class BuilderLogic implements Singleton {
 		page.store();
 		return instanceId;
 	}
-	
+
 	public String moveModule(String pageKey, String formerPageKey, String formerParentId, String instanceId, String parentId, IWContext iwc) {
 		//	Page to put module into
 		IBXMLPage page = null;
@@ -1462,7 +1463,7 @@ public class BuilderLogic implements Singleton {
 		if (page == null) {
 			return null;
 		}
-		
+
 		//	Page to take module from
 		IBXMLPage formerPageForModule = page;
 		if (!pageKey.equals(formerPageKey)) {
@@ -1476,19 +1477,19 @@ public class BuilderLogic implements Singleton {
 		if (formerPageForModule == null) {
 			return null;
 		}
-		
+
 		//	Module's XML
 		XMLElement moduleXML = getIBXMLWriter().findModule(formerPageForModule, instanceId);
 		if (moduleXML == null) {
 			return null;
 		}
-		
+
 		//	Module container's XML
 		XMLElement parentXML = getIBXMLWriter().findModule(formerPageForModule, formerParentId);
 		if (parentXML == null) {
 			return null;
 		}
-		
+
 		//	Removing module from original page
 		boolean success = false;
 		try {
@@ -1499,12 +1500,12 @@ public class BuilderLogic implements Singleton {
 		if (!success) {
 			return null;
 		}
-		
+
 		//	Storing page module was taken from (current page will be stored later)
 		if (!pageKey.equals(formerPageKey)) {
 			formerPageForModule.store();
 		}
-		
+
 		//	Putting module in new region (and page (if needed))
 		return putModuleIntoRegion(iwc, pageKey, parentId, null, false);
 	}
@@ -1531,7 +1532,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return (false);
 	}
-	
+
 	public boolean pasteModuleBelow(IWUserContext iwc, String pageKey, String parentID, String objectID) {
 		IBXMLPage xml = null;
 		try {
@@ -1551,7 +1552,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return (false);
 	}
-	
+
 	/**
 	 * Copies, cuts and then pastes the module as the last item in a region
 	 * @param instanceId
@@ -1571,11 +1572,11 @@ public class BuilderLogic implements Singleton {
 		//find
 		XMLElement moduleXML =  getIBXMLWriter().findModule(page,instanceId);
 		XMLElement parentXML =  getIBXMLWriter().findModule(page,formerParentId);
-		
+
 		XMLElement moduleXMLCopy = (XMLElement)moduleXML.clone();
-		
+
 		if(moduleXML!=null && parentXML!=null){
-			//remove	
+			//remove
 			try {
 				returner = getIBXMLWriter().removeElement(parentXML,moduleXML,false);
 			}
@@ -1583,23 +1584,23 @@ public class BuilderLogic implements Singleton {
 				e.printStackTrace();
 				throw new Exception(e.getMessage());
 			}
-			
+
 			if(returner){
 				returner = getIBXMLWriter().insertElementLastIntoParentOrRegion(page, pageKey, regionId, regionLabel,moduleXMLCopy);
-			}		
-			
+			}
+
 			if(!returner){
 				return false;
 			}
-			
+
 			return page.store();
 		}
-		
+
 		return returner;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Copies, cuts and then pastes the module below another module
 	 * @param objectId
@@ -1608,12 +1609,12 @@ public class BuilderLogic implements Singleton {
 	 * @param newParentId
 	 * @param objectIdToPasteBelow
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String instanceIdToPasteBelow) throws Exception{
 		return moveModule(instanceId, pageKey, formerParentId, newParentId, instanceIdToPasteBelow, false);
 	}
-	
+
 	/**
 	 * Copies, cuts and then pastes the module above or below another module
 	 * @param instanceId
@@ -1627,36 +1628,36 @@ public class BuilderLogic implements Singleton {
 	 */
 	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove) throws Exception {
 		boolean result = false;
-		
+
 		//	Page
 		IBXMLPage page = getIBXMLPage(pageKey);
 		if (page == null) {
 			return false;
 		}
-		
+
 		//	Current XMLElement
 		XMLElement moduleXML =  getIBXMLWriter().findModule(page, instanceId);
 		if (moduleXML == null) {
 			return false;
 		}
-		
+
 		//	Parent container
 		XMLElement parentXML =  getIBXMLWriter().findModule(page, formerParentId);
 		if (parentXML == null) {
 			return false;
 		}
-		
+
 		//	Copy of current element
 		XMLElement moduleXMLCopy = (XMLElement) moduleXML.clone();
-		
-		//	Removes element from current region	
+
+		//	Removes element from current region
 		result = removeElement(parentXML, moduleXML, false);
 		if (!result) {
 			//	Module is in a region of some (parent) module
 			result = removeElement(getIBXMLWriter().findRegion(page, null,
 					new StringBuilder(IBXMLConstants.REGION_OF_MODULE_STRING).append(formerParentId).toString()), moduleXML, false);
 		}
-		
+
 		//	Finds real region
 		if (result) {
 			XMLElement newRegion = getIBXMLWriter().findRegion(page, newParentId, newParentId);
@@ -1681,14 +1682,14 @@ public class BuilderLogic implements Singleton {
 		else {
 			result = getIBXMLWriter().insertElementBelow(page, newParentId, moduleXMLCopy, neighbourInstanceId);
 		}
-		
+
 		if (!result) {
 			return false;
 		}
-		
+
 		return page.store();
 	}
-	
+
 	private boolean removeElement(XMLElement container, XMLElement elementToRemove, boolean removeInstanceId) {
 		if (container == null || elementToRemove == null) {
 			return false;
@@ -1701,7 +1702,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return false;
 	}
-	
+
 	public boolean lockRegion(String pageKey, String parentObjectInstanceID) {
 		IBXMLPage xml = null;
 		try {
@@ -1755,8 +1756,8 @@ public class BuilderLogic implements Singleton {
 		}
 		return (false);
 	}
-	
-	public String addNewModule(String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID, String label, IWSlideSession session) {
+
+	public String addNewModule(String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID, String label, RepositoryService session) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1764,12 +1765,12 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, regionId, newICObjectID, label);
 		if (id == null) {
 			return null;
 		}
-		
+
 		if (savePage(page, session)) {
 			return id;
 		}
@@ -1788,7 +1789,7 @@ public class BuilderLogic implements Singleton {
 			return false;
 		}
 		//TODO add handling for generic UIComponent adding
-		
+
 		String id = getIBXMLWriter().addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, label);
 		if (id == null) {
 			return false;
@@ -1796,7 +1797,7 @@ public class BuilderLogic implements Singleton {
 		xml.store();
 		return true;
 	}
-	
+
 	/**
 	 * After inserting new module IBXMLPage is saved (if successfully inserted module) in other thread
 	 * @param pageKey
@@ -1806,7 +1807,7 @@ public class BuilderLogic implements Singleton {
 	 * @param slideSession
 	 * @return
 	 */
-	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, IWSlideSession slideSession) {
+	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, RepositoryService slideSession) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1814,7 +1815,7 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		if (slideSession != null) {
 			//	Will check if can use thread
 			XMLElement region = null;
@@ -1837,18 +1838,18 @@ public class BuilderLogic implements Singleton {
 				slideSession = null;
 			}
 		}
-		
+
 		String id = getIBXMLWriter().addNewModule(page, pageKey, parentObjectInstanceID, newICObjectID, label);
 		if (id == null) {
 			return null;
 		}
-		
+
 		if (savePage(page, slideSession)) {
 			return id;
 		}
 		return null;
 	}
-	
+
 	protected boolean setPageSourceAsString(IBXMLPage page) {
 		XMLDocument doc = page.getXMLDocument();
 		if (doc == null) {
@@ -1869,21 +1870,21 @@ public class BuilderLogic implements Singleton {
 		}
 		return false;
 	}
-	
-	private boolean savePage(IBXMLPage page, IWSlideSession session) {
+
+	private boolean savePage(IBXMLPage page, RepositoryService session) {
 		if (page == null) {
 			return false;
 		}
 		if (session == null) {
 			return page.store();
 		}
-		
+
 		boolean existPageSource = true;
 		if (page.getSourceAsString() == null) {
 			existPageSource = setPageSourceAsString(page);
 		}
 		if (existPageSource) {
-			Thread saver = new Thread(new BuilderLogicWorker(page, session));
+			Thread saver = new Thread(new BuilderLogicWorker(page, getCurrentUser()));
 			saver.start();
 		}
 		else {
@@ -1891,7 +1892,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return true;
 	}
-	
+
 	public boolean addRegion(String pageKey, String label, String parentId, boolean storePage) {
 		IBXMLPage page = null;
 		try {
@@ -1928,7 +1929,7 @@ public class BuilderLogic implements Singleton {
 			return false;
 		}
 		xml.store();
-		return true;	
+		return true;
 	}
 
 	public Class<?> getObjectClass(int icObjectInstanceID) {
@@ -2022,13 +2023,13 @@ public class BuilderLogic implements Singleton {
 		return (false);
 	}
 
-	
+
 	public String getCurrentIBPageURL(IWContext iwc) {
 		String sPageId = getCurrentIBPage(iwc);
 		int pageId = Integer.parseInt(sPageId);
 		return getIBPageURL(iwc,pageId);
-	}	
-	
+	}
+
 	/**
 	 *  	 *
 	 */
@@ -2036,18 +2037,18 @@ public class BuilderLogic implements Singleton {
 		String pageKey = Integer.toString(ib_page_id);
 		return getIBPageURL(iwc, pageKey, false);
 	}
-	
+
 	public String getIBPageURL(IWApplicationContext iwc, String pageKey, boolean checkIfDeleted) {
 		if (IWMainApplication.useNewURLScheme) {
 			CachedBuilderPage page = getPageCacher().getCachedBuilderPage(pageKey);
 			if (page == null) {
 				return null;
 			}
-			
+
 			if (checkIfDeleted && page.getICPage().getDeleted()) {
 				return null;
 			}
-			
+
 			String pageUri = page.getPageUri();
 			if (pageUri != null) {
 				String returnUrl = iwc.getIWMainApplication().getBuilderPagePrefixURI()+pageUri;
@@ -2082,7 +2083,7 @@ public class BuilderLogic implements Singleton {
 
 	/**
 	 * Changes the name of the current page.
-	 * 
+	 *
 	 * @param name
 	 *          The new name for the page
 	 * @param iwc
@@ -2109,7 +2110,7 @@ public class BuilderLogic implements Singleton {
 
 	/**
 	 * Changes the template id for the current page.
-	 * 
+	 *
 	 * @param newTemplateId
 	 *          The new template id for the current page.
 	 * @param iwc
@@ -2121,13 +2122,13 @@ public class BuilderLogic implements Singleton {
 			xml.changeTemplateId(newTemplateId);
 		}
 	}
-	
+
 	/**
 	 * Changes the template id for the IBXMLPage.
-	 * 
+	 *
 	 * @parama pageKey
 	 * 			IBPage id
-	 * 
+	 *
 	 * @param newTemplateId
 	 *          The new template id for the current page.
 	 */
@@ -2194,7 +2195,7 @@ public class BuilderLogic implements Singleton {
 		page.store();
 		getPageCacher().flagPageInvalid(currentPageID);
 	}
-	
+
 	public void changeDPTCrawlableLinkedPageId(int moduleId, String currentPageID, String newLinkedPageId) {
 		IBXMLPage page = null;
 		try {
@@ -2220,7 +2221,7 @@ public class BuilderLogic implements Singleton {
 		ICDomain domain = getCurrentDomain(iwac);
 		return domain.getStartPageID();
 	}
-	
+
 	/**
 	 *  	 *
 	 */
@@ -2228,8 +2229,8 @@ public class BuilderLogic implements Singleton {
 		int id = getStartPageId(iwac);
 		return Integer.toString(id);
 	}
-	
-	
+
+
 	/**
 	 *  	 *
 	 */
@@ -2237,7 +2238,7 @@ public class BuilderLogic implements Singleton {
 		ICDomain domain = getCurrentDomainByServerName(serverName);
 		return domain.getStartPageID();
 	}
-	
+
 	/**
 	 *  	 *
 	 */
@@ -2267,7 +2268,7 @@ public class BuilderLogic implements Singleton {
 		//    url.append("=");
 
 		url.append(this.getIBPageURL(iwc, Integer.parseInt(ibpage)));
-		
+
 		if (url.toString().indexOf("http") == -1) {
 			url.insert(0, "http://");
 		}
@@ -2282,7 +2283,7 @@ public class BuilderLogic implements Singleton {
 	public void clearAllCachedPages() {
 		clearCaches(IWMainApplication.getDefaultIWApplicationContext());
 	}
-	
+
 	/**
 	 * Clears all caches
 	 */
@@ -2291,7 +2292,7 @@ public class BuilderLogic implements Singleton {
 		clearCaches(iwac);
 		PageTreeNode.clearTree(iwac);
 	}
-	
+
 	private void clearCaches(IWApplicationContext iwac) {
 		logger.info("Clearing all DomainTree Cache");
 		DomainTree.clearCache(iwac);
@@ -2305,7 +2306,7 @@ public class BuilderLogic implements Singleton {
 	public void invalidatePage(String pageKey){
 		getPageCacher().flagPageInvalid(pageKey);
 	}
-	
+
 	private PageCacher pageCacher;
 	/**
 	 * Return the singleton instance of PageCacher
@@ -2314,14 +2315,14 @@ public class BuilderLogic implements Singleton {
 	public PageCacher getPageCacher(){
 		if(this.pageCacher==null){
 			setPageCacher(new PageCacher());
-		}		
+		}
 		return this.pageCacher;
 	}
-	
+
 	public void setPageCacher(PageCacher pageCacherInstance){
 		this.pageCacher=pageCacherInstance;
 	}
-	
+
 	private IBPageHelper ibPageHelper;
 	/**
 	 * Return the singleton instance of IBPageHelper
@@ -2336,7 +2337,7 @@ public class BuilderLogic implements Singleton {
 	public void setIBPageHelper(IBPageHelper ibPageHelper){
 		this.ibPageHelper=ibPageHelper;
 	}
-	
+
 	private IBXMLWriter xmlWriter;
 	public IBXMLWriter getIBXMLWriter(){
 		if(this.xmlWriter==null){
@@ -2347,7 +2348,7 @@ public class BuilderLogic implements Singleton {
 	public void setIBXMLWriter(IBXMLWriter writer){
 		this.xmlWriter=writer;
 	}
-	
+
 	private IBXMLReader xmlReader;
 	public IBXMLReader getIBXMLReader(){
 		if(this.xmlReader==null){
@@ -2358,7 +2359,7 @@ public class BuilderLogic implements Singleton {
 	public void setIBXMLReader(IBXMLReader reader){
 		this.xmlReader=reader;
 	}
-	
+
 	/**
 	 * Return an array of the document formats that the Builder supports.
 	 * ('IBXML','HTML','JSP_1_2')
@@ -2367,7 +2368,7 @@ public class BuilderLogic implements Singleton {
 	public String[] getPageFormatsSupported(){
 		return this.pageFormats;
 	}
-	
+
 	/**
 	 * <p>
 	 * Returns a map with pageFormat as key and descripton as value
@@ -2383,7 +2384,7 @@ public class BuilderLogic implements Singleton {
 		map.put(PAGE_FORMAT_FACELET,"Facelet");
 		return map;
 	}
-	
+
 	/**
 	 * gets the default page format:
 	 * @return
@@ -2398,9 +2399,9 @@ public class BuilderLogic implements Singleton {
 	private Layer addButtonsLayer(Layer parent, String uri, String label, IWResourceBundle iwrb, String labelMarkerContainerId) {
 		Layer buttons = new Layer();
 		buttons.setStyleClass("builderButtons");
-		
+
 		parent.addAtBeginning(buttons);
-		
+
 		//	Add module button
 		Layer addModuleContainer = new Layer();
 		addModuleContainer.setStyleClass("builderButton");
@@ -2410,7 +2411,7 @@ public class BuilderLogic implements Singleton {
 		}
 		title.append(" :: ").append(iwrb.getLocalizedString(BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_KEY,
 				BuilderConstants.ADD_MODULE_TO_REGION_LOCALIZATION_VALUE));
-		
+
 		// Link for MOOdalBox
 		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("add", "Add"))), "javascript:void(0);");
 		link.setToolTip(title.toString());
@@ -2418,7 +2419,7 @@ public class BuilderLogic implements Singleton {
 		link.setStyleClass("addModuleLinkStyleClass");
 		addModuleContainer.add(link);
 		buttons.add(addModuleContainer);
-		
+
 		//	Add article button
 		Layer addArticleContainer = new Layer();
 		addArticleContainer.setStyleClass("builderButton");
@@ -2428,7 +2429,7 @@ public class BuilderLogic implements Singleton {
 		Span addArticle = new Span(new Text(iwrb.getLocalizedString("text", "Text")));
 		addArticleContainer.setTitle(title.toString());
 		addArticleContainer.setStyleClass("add_article_module_to_region_image");
-		
+
 		ICObject article = null;
 		try {
 			article = getICObjectHome().findByClassName(CoreConstants.getArticleItemViewerClass().getName());
@@ -2440,10 +2441,10 @@ public class BuilderLogic implements Singleton {
 			addArticle.setMarkupAttribute("icobjectclass", article.getClassName());
 			addArticle.setMarkupAttribute("regioncontainerid", labelMarkerContainerId);
 		}
-		
+
 		addArticleContainer.add(addArticle);
 		buttons.add(addArticleContainer);
-		
+
 		//	Paste module button
 		Layer pasteButtonContainer = new Layer();
 		pasteButtonContainer.setStyleClass("builderButton");
@@ -2461,10 +2462,10 @@ public class BuilderLogic implements Singleton {
 		pasteButtonContainer.add(paste);
 		pasteButtonContainer.setStyleClass("pasteModuleIconContainer");
 		buttons.add(pasteButtonContainer);
-		
+
 		return buttons;
 	}
-	
+
 	private String getLabelToRegion(IWResourceBundle iwrb, String regionLabel) {
 		if (regionLabel == null) {
 			return CoreConstants.EMPTY;
@@ -2482,7 +2483,7 @@ public class BuilderLogic implements Singleton {
 		Layer layer = new Layer();
 		layer.setStyleClass("builderButton");
 		layer.setStyleClass("lockedRegion");
-		
+
 		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("unlock_region", "Unlock region"))));
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -2493,7 +2494,7 @@ public class BuilderLogic implements Singleton {
 			link.setToolTip(label);
 		}
 		layer.add(link);
-		
+
 		return layer;
 	}
 
@@ -2507,17 +2508,17 @@ public class BuilderLogic implements Singleton {
 		Layer layer = new Layer();
 		layer.setStyleClass("builderButton");
 		layer.setStyleClass("unlockedRegion");
-		
+
 		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("lock_region", "Lock region"))));
 		link.setWindowToOpen(IBLockRegionWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
 		link.addParameter(ICBuilderConstants.IB_CONTROL_PARAMETER, BuilderLogic.ACTION_LOCK_REGION);
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		layer.add(link);
-		
+
 		return layer;
 	}
-	
+
 	/**
 	 *
 	 */
@@ -2528,7 +2529,7 @@ public class BuilderLogic implements Singleton {
 		Layer layer = new Layer();
 		layer.setStyleClass("builderButton");
 		layer.setStyleClass("labelButton");
-		
+
 		Link link = new Link(new Span(new Text(iwrb.getLocalizedString("set_label", "Put label on region"))));
 		link.setWindowToOpen(IBAddRegionLabelWindow.class);
 		link.addParameter(BuilderConstants.IB_PAGE_PARAMETER, getCurrentIBPage(iwc));
@@ -2539,7 +2540,7 @@ public class BuilderLogic implements Singleton {
 			link.setToolTip(label);
 		}
 		layer.add(link);
-		
+
 		return (layer);
 	}
 
@@ -2623,30 +2624,30 @@ public class BuilderLogic implements Singleton {
 		link.addParameter(BuilderLogic.IB_PARENT_PARAMETER, parentKey);
 		link.addParameter(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, key);
 		return (link);
-	}	
-	
-	
+	}
+
+
 	public ViewNode getBuilderPageRootViewNode(){
 		String BUILDER_PAGE_VIEW_ID="pages";
 		return ViewManager.getInstance(IWMainApplication.getDefaultIWMainApplication()).getApplicationRoot().getChild(BUILDER_PAGE_VIEW_ID);
 	}
-	
-	
+
+
 	public String getInstanceId(UIComponent object) {
 		String instanceId = null;
 		if (object instanceof PresentationObject) {
 			PresentationObject po = (PresentationObject) object;
 			instanceId = po.getXmlId();
 		}
-		
+
 		if (instanceId == null) {
 			//	set from the xml
 			instanceId = object.getId();
 		}
-		
+
 		return instanceId;
 	}
-	
+
 
 	/**
 	 * Gets a copy of a UIComponent by its instanceId (component.getId()) if it is found in the current pages ibxml
@@ -2678,7 +2679,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return newComponent;
 	}
-	
+
 /**
 	 * @param containerId
 	 * @return
@@ -2706,7 +2707,7 @@ public class BuilderLogic implements Singleton {
 		 	"   var formerParentId =  $('parentId_'+elementContainerId).value; \n" +
 		 	"   var newParentId = $('parentId_'+dropTargetId).value; \n" +
 		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
-		 	"	var query = 'method=moveModule&objectId='+elementInstanceId+'&pageKey='+currentPageKey+'&formerParentId='+formerParentId+'&newParentId='+newParentId+'&objectIdToPasteBelow='+dropTargetInstanceId;  \n" +	
+		 	"	var query = 'method=moveModule&objectId='+elementInstanceId+'&pageKey='+currentPageKey+'&formerParentId='+formerParentId+'&newParentId='+newParentId+'&objectIdToPasteBelow='+dropTargetInstanceId;  \n" +
 		 	//"   alert(query);" +
 		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
 		 	"			onComplete: function(request) { \n" +
@@ -2718,8 +2719,8 @@ public class BuilderLogic implements Singleton {
 		 	"				}else { alert(request.responseText); } \n" +
 		 	"			}, method: 'GET',asynchronous: true})" +
 
-		 	
-		 	
+
+
 		 	//OLD WAY that did not work for droppables within droppables after one drag.
 
 //			"	var elementHandleId = 'handle_'+elementContainerId;" +
@@ -2732,10 +2733,10 @@ public class BuilderLogic implements Singleton {
 			//"	element = null;" +
 			//Copy the script layer also!
 			//"   new Insertion['After']($(elementContainerId), '<div class=script id='+scriptLayerId+' >'+scriptLayer.innerHTML+' </div>');" +
-			
+
 		 	"}});";
 	}
-	
+
 	public String getModuleToRegionDroppableScript(String regionMarkerId, String pageKey, String regionId, String regionLabel, String acceptableStyleClasses, String hoverStyleClass, String webServiceURI) {
 
 		return "Droppables.add('"+regionMarkerId+"',{accept:['"+acceptableStyleClasses+"'],hoverclass:'"+hoverStyleClass+"'," +
@@ -2750,7 +2751,7 @@ public class BuilderLogic implements Singleton {
 		 	"   var regionId = '"+regionId+"'; \n" +
 		 	"   var regionLabel = '"+regionLabel+"'\n" +
 		 	"   var webServiceURI = '"+webServiceURI+"'\n"+
-		 	"	var query = 'method=moveModuleIntoRegion&instanceId='+elementInstanceId+'&formerParentId='+formerParentId+'&pageKey='+currentPageKey+'&regionId='+regionId+'&regionLabel='+regionLabel;  \n" +	
+		 	"	var query = 'method=moveModuleIntoRegion&instanceId='+elementInstanceId+'&formerParentId='+formerParentId+'&pageKey='+currentPageKey+'&regionId='+regionId+'&regionLabel='+regionLabel;  \n" +
 		 	"   	new Ajax.Request(webServiceURI+'?'+query, {  \n" +
 		 	"			onComplete: function(request) { \n" +
 		 	"				if(request.responseText.indexOf('iwbuilder-ok')>=0){ \n" +
@@ -2760,11 +2761,11 @@ public class BuilderLogic implements Singleton {
 		 	"			}, method: 'GET',asynchronous: true}) " +
 		 	"}});";
 	}
-	
+
 	public IWBundle getBuilderBundle(){
 		return IWMainApplication.getDefaultIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER);
 	}
-	
+
 	public boolean isFirstBuilderRun(){
 		ICDomain domain =  getCurrentDomain();
 		if(domain.getStartPageID()==-1){
@@ -2781,10 +2782,10 @@ public class BuilderLogic implements Singleton {
 	 * </p>
 	 * @param domain
 	 * @param frontPageName
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void initializeBuilderStructure(ICDomain domain, String frontPageName) throws Exception {
-	    
+
 		ICPageHome pageHome = getICPageHome();
 
 	    ICPage page = pageHome.create();
@@ -2814,7 +2815,7 @@ public class BuilderLogic implements Singleton {
 	    	xml.setTemplateId(page2.getPrimaryKey().toString());
 	    	xml.addPageUsingThisTemplate(page.getPrimaryKey().toString());
 	    }
-	    
+
 	    clearAllCachedPages();
 	}
 
@@ -2832,7 +2833,7 @@ public class BuilderLogic implements Singleton {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private ICObjectHome getICObjectHome() {
 		try {
 			return (ICObjectHome) IDOLookup.getHome(ICObject.class);
@@ -2841,7 +2842,7 @@ public class BuilderLogic implements Singleton {
 			return null;
 		}
 	}
-	
+
 	public int getICObjectId(String objectClass) {
 		try {
 			return getICObjectHome().findByClassName(objectClass).getID();
@@ -2850,7 +2851,7 @@ public class BuilderLogic implements Singleton {
 			return -1;
 		}
 	}
-	
+
 	/**
 	 * Saving page structure after moving (drag & drop) tree nodes
 	 * @param IDs Tree nodes' IDs
@@ -2859,32 +2860,32 @@ public class BuilderLogic implements Singleton {
 		IBPageHelper.getInstance().movePage(nodeId, newParentId, domain);
 		return true;
 	}
-	
-	public boolean changePageName(int id, String newName, IWContext iwc) {	
+
+	public boolean changePageName(int id, String newName, IWContext iwc) {
 		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWContext.getInstance());
 		PageTreeNode node = tree.get(id);
 		node.setNodeName(newName);
 		node.setLocalizedNodeName(iwc.getCurrentLocale().getLanguage(), newName, iwc);
-		
+
 		return IBPageUpdater.addLocalizedPageName(id, ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()), newName);
 	}
-	
+
 	public Collection getTopLevelTemplates(IWApplicationContext iwac) {
-		return DomainTree.getDomainTree(iwac).getTemplatesNode().getChildren();		
+		return DomainTree.getDomainTree(iwac).getTemplatesNode().getChildren();
 	}
 
 	public Collection<PageTreeNode> getTopLevelPages(IWContext iwc){
 		Collection<PageTreeNode> coll = DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
-		
+
 		List <PageTreeNode>unsortedNodes = new ArrayList <PageTreeNode> (coll);
 		List <PageTreeNode>sortedNodes = new ArrayList<PageTreeNode>();
 		List <PageTreeNode>nodesLeft = new ArrayList<PageTreeNode>();
-		
+
 		try {
 			for(int i = 0; i < coll.size(); i++){
 				sortedNodes.add(null);
 			}
-			
+
 			for (int i = 0; i < unsortedNodes.size(); i++) {
 				PageTreeNode node = unsortedNodes.get(i);
 //			if (node.getOrder() > 0){
@@ -2894,12 +2895,12 @@ public class BuilderLogic implements Singleton {
 					}
 					else{
 						nodesLeft.add(node);
-						unsortedNodes.set(i, null);		
-					}				
+						unsortedNodes.set(i, null);
+					}
 				}
 				else{
 					nodesLeft.add(node);
-					unsortedNodes.set(i, null);		
+					unsortedNodes.set(i, null);
 				}
 			}
 			int nodesLeftIndex = 0;
@@ -2915,7 +2916,7 @@ public class BuilderLogic implements Singleton {
 							if (page != null) {
 								page.setTreeOrder(i+1);
 								page.store();
-							}				
+							}
 						}
 					}
 				}
@@ -2932,8 +2933,8 @@ public class BuilderLogic implements Singleton {
 
 		return sortedNodes;
 	}
-	
-	
+
+
 //	public boolean wasMoved(String child, String parent){
 //		String oldParent = child.substring(0, child.length()-1);
 //		if (oldParent.equals(parent))
@@ -2944,9 +2945,9 @@ public class BuilderLogic implements Singleton {
 //		}
 //	}
 //	public void saveChanges(String child, String parent){
-//		
+//
 //	}
-	
+
 	public String getTopLevelTemplateId(Collection templates) {
 		String id = "-1";
 		if (templates == null) {
@@ -2966,25 +2967,25 @@ public class BuilderLogic implements Singleton {
 		}
 		return id;
 	}
-	
+
 	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
 		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
 	}
-	
+
 	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder) {
 		//return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, treeOrder);
 		return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, treeOrder);
 //		String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String orderTree
 	}
-	
+
 	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain) {
 		return getIBPageHelper().deletePage(pageId, deleteChildren, tree, userId, domain);
 	}
-	
+
 	public boolean checkDeletePage(String pageId, ICDomain domain) {
 		return getIBPageHelper().checkDeletePage(pageId, domain);
 	}
-	
+
 	public boolean changePageUriByTitle(String parentId, ICPage page, String pageTitle, int domainId) {
 		if (page == null || pageTitle == null) {
 			return false;
@@ -3011,14 +3012,14 @@ public class BuilderLogic implements Singleton {
 		}
 		return true;
 	}
-	
+
 	public boolean setPageUri(ICPage page, String pageUri, int domainId) {
 		if (page == null || pageUri == null) {
 			return false;
 		}
-		
+
 		pageUri = StringHandler.removeMultipleSlashes(pageUri);
-		
+
 		List<String> uriParts = null;
 		if (pageUri.indexOf(CoreConstants.SLASH) != -1) {
 			uriParts = Arrays.asList(pageUri.split(CoreConstants.SLASH));
@@ -3030,14 +3031,14 @@ public class BuilderLogic implements Singleton {
 		else {
 			pageUri = StringHandler.convertToUrlFriendly(pageUri);
 		}
-		
+
 		if (!pageUri.startsWith(CoreConstants.SLASH)) {
 			pageUri = new StringBuilder(CoreConstants.SLASH).append(pageUri).toString();
 		}
 		if (!pageUri.endsWith(CoreConstants.SLASH)) {
 			pageUri = new StringBuilder(pageUri).append(CoreConstants.SLASH).toString();
 		}
-		
+
 		String pageKey = page.getId();
 		ICPage pageWithSameUri = page;
 		String deleted = "deleted";
@@ -3055,7 +3056,7 @@ public class BuilderLogic implements Singleton {
 				}
 				index++;
 			}
-			
+
 			try {
 				pageWithSameUri = getICPageHome().findByUri(pageUri, domainId);
 			} catch (FinderException e) {
@@ -3065,14 +3066,14 @@ public class BuilderLogic implements Singleton {
 
 		page.setDefaultPageURI(pageUri);
 		page.store();
-		
+
 		return true;
 	}
-	
+
 	public boolean movePageToTopLevel(int pageID, IWContext iwc) {
 		return getIBPageHelper().movePageToTopLevel(pageID, iwc);
 	}
-	
+
 	/**
 	 * Finds the modules' ids
 	 * @param pageKey
@@ -3126,7 +3127,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return ids;
 	}
-	
+
 	public String getModuleClassName(String pageKey, String instanceId) {
 		if (pageKey == null || instanceId == null) {
 			return null;
@@ -3151,7 +3152,7 @@ public class BuilderLogic implements Singleton {
 		}
 		return className.getValue();
 	}
-	
+
 	/**
 	 * Checks if exact value is set to properties parameter
 	 * @param pageKey
@@ -3164,7 +3165,7 @@ public class BuilderLogic implements Singleton {
 		if (pageKey == null || moduleId == null || propertyName == null || propertyValue == null) {
 			return false;
 		}
-		
+
 		IBXMLPage xml = null;
 		try {
 			xml = getIBXMLPage(pageKey);
@@ -3187,7 +3188,7 @@ public class BuilderLogic implements Singleton {
 		if (value == null) {
 			return false;
 		}
-		
+
 		String realValue = value.getValue();
 		if (realValue == null) {
 			return false;
@@ -3203,10 +3204,10 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Finds exact value and removes from property value (attribute) string
 	 * @param pageKey
@@ -3218,7 +3219,7 @@ public class BuilderLogic implements Singleton {
 	public boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove) {
 		return removeValueFromModuleProperty(pageKey, moduleId, propertyName, valueToRemove, true);
 	}
-	
+
 	private boolean removeValueFromModuleProperty(String pageKey, String moduleId, String propertyName, String valueToRemove, boolean storePage) {
 		if (pageKey == null || moduleId == null || propertyName == null || valueToRemove == null) {
 			return false;
@@ -3260,7 +3261,7 @@ public class BuilderLogic implements Singleton {
 		if (propertyValues.length == 0) {
 			property.detach();
 		}
-		
+
 		StringBuffer newValue = new StringBuffer();
 		boolean foundValueToRemove = false;
 		boolean canAppendValue = true;
@@ -3285,13 +3286,13 @@ public class BuilderLogic implements Singleton {
 		else {
 			value.setValue(newValue.toString());
 		}
-		
+
 		if (storePage) {
 			xml.store();
 		}
 		return true;
 	}
-	
+
 	public boolean removeValueFromModuleProperty(String pageKey, List<String> moduleIds, String propertyName, String valueToRemove) {
 		if (moduleIds == null) {
 			return false;
@@ -3309,15 +3310,15 @@ public class BuilderLogic implements Singleton {
 	public int getTreeOrder(int id){
 		return IBPageHelper.getInstance().getTreeOrder(id);
 	}
-	
+
 	public void changeTreeOrder(int pageId, int change) {
 		IBPageHelper.getInstance().changeTreeOrder(pageId, change);
 	}
-	
+
 	public int setAsLastInLevel(boolean isTopLevel, String parentId){
 		return IBPageHelper.getInstance().setAsLastInLevel(isTopLevel, parentId);
 	}
-	
+
 	public String getExistingPageKeyByURI(String requestURI,ICDomain domain) {
 		// if the request contains an anchor like http://hello/pages/mypage#foo the requestURI is without an slash at the end
 		// that is http://hello/pages/mypage
@@ -3364,7 +3365,7 @@ public class BuilderLogic implements Singleton {
 		catch (NumberFormatException nfe) {
 			//the string is not a number:
 			//try to find the page in the cache first:
-			String pageKey = getPageKeyByURICached(requestURI);			
+			String pageKey = getPageKeyByURICached(requestURI);
 			if (pageKey != null) { // Should be null if not found, but if found - checking if page is valid
 				if (getPageCacher().isPageValid(pageKey)) {
 					return pageKey;
@@ -3380,7 +3381,7 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 	}
-	
+
 	private ICPage getICPageByURIFromDatabase(String uri) {
 		if (uri == null) {
 			return null;
@@ -3395,30 +3396,30 @@ public class BuilderLogic implements Singleton {
 		}
 		return null;
 	}
-	
+
 	private String getUriToAddModuleWindow(String regionName) {
 		Class<AddModuleBlock> addModuleClass = AddModuleBlock.class;
-		
+
 		if (regionName == null || CoreConstants.EMPTY.equals(regionName)) {
 			return getUriToObject(addModuleClass);
 		}
-		
+
 		List<AdvancedProperty> parameters = new ArrayList<AdvancedProperty>();
 		parameters.add(new AdvancedProperty(BuilderConstants.REGION_NAME, regionName));
 		return getUriToObject(addModuleClass, parameters);
 	}
-	
+
 	public String getUriToObject(Class<? extends UIComponent> objectClass) {
 		if (objectClass == null) {
 			return null;
 		}
-		
+
 		URIUtil uri = new URIUtil(IWMainApplication.getDefaultIWMainApplication().getPublicObjectInstanciatorURI(objectClass));
 		uri.setParameter("uiObject", Boolean.TRUE.toString());
-		
+
 		return uri.getUri();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public String getUriToObject(String objectClassName, List<AdvancedProperty> parameters) {
 		Class<? extends UIComponent> objectClass = null;
@@ -3427,35 +3428,35 @@ public class BuilderLogic implements Singleton {
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "Error creating class from: " + objectClassName, e);
 		}
-		
+
 		return getUriToObject(objectClass, parameters);
 	}
-	
+
 	public String getUriToObject(Class<? extends UIComponent> objectClass, List<AdvancedProperty> parameters) {
 		String baseUri = getUriToObject(objectClass);
 		if (StringUtil.isEmpty(baseUri)) {
 			return null;
 		}
-		
+
 		if (ListUtil.isEmpty(parameters)) {
 			return baseUri;
 		}
-		
+
 		URIUtil uri = new URIUtil(baseUri);
-		
+
 		for (AdvancedProperty parameter: parameters) {
 			if (!StringUtil.isEmpty(parameter.getId()) && !StringUtil.isEmpty(parameter.getValue())) {
 				uri.setParameter(parameter.getId(), parameter.getValue());
 			}
 		}
-		
+
 		return uri.getUri();
 	}
-	
+
 	public boolean removeBlockObjectFromCache(String cacheKey) {
 		return removeBlockObjectFromCache(CoreUtil.getIWContext(), cacheKey);
 	}
-	
+
 	public boolean removeBlockObjectFromCache(IWContext iwc, String cacheKey) {
 		if (iwc == null || cacheKey == null) {
 			return false;
@@ -3484,20 +3485,20 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	public boolean removeAllBlockObjectsFromCache(IWContext iwc) {
 		if (iwc == null) {
 			return false;
 		}
-		
+
 		IWCacheManager cache = iwc.getIWMainApplication().getIWCacheManager();
 		if (cache == null) {
 			return false;
 		}
-		
+
 		List <String> cacheKeys = new ArrayList<String>();
 		Map cached = cache.getCacheMap();
 		if (cached != null) {
@@ -3511,12 +3512,12 @@ public class BuilderLogic implements Singleton {
 		for (int i = 0; i < cacheKeys.size(); i++) {
 			cache.invalidateCache(cacheKeys.get(i));
 		}
-		
+
 		return true;
 	}
-	
+
 	public void renameRegion(String pageKey, String region_id, String region_label, String new_region_id, String new_region_label) {
-		
+
 		if (pageKey == null || region_id == null || new_region_id == null) {
 			throw new NullPointerException(
 					"Either is not provided: "+
@@ -3532,24 +3533,24 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		if (xml == null)
 			throw new NullPointerException("Page not found by key provided: "+pageKey);
-		
+
 		XMLElement region = getIBXMLWriter().findRegion(xml, region_label == null ? region_id : region_label, region_id);
-		
+
 		if(region == null)
 			throw new NullPointerException(
 					"Region not found by values provided: "+
 					"\nregion_id: "+region_id+
 					"\nregion_label: "+region_label
 			);
-		
+
 		region.setAttribute(IBXMLConstants.ID_STRING, new_region_id);
 		region.setAttribute(IBXMLConstants.LABEL_STRING, new_region_label == null ? new_region_id : new_region_label);
 		xml.store();
 	}
-	
+
 	/**
 	 * Renders single UIComponent
 	 * @param iwc
@@ -3560,14 +3561,14 @@ public class BuilderLogic implements Singleton {
 	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanCode) {
 		return getRenderedComponent(component, iwc, cleanCode, true, true);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public synchronized String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanCode, boolean omitDocTypeDeclaration,
 			boolean omitHtmlEnvelope) {
 		if (iwc == null || component == null) {
 			return null;
 		}
-		
+
 		iwc.setSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS, Boolean.TRUE);
 
 		HtmlBufferResponseWriterWrapper writer = null;
@@ -3580,29 +3581,29 @@ public class BuilderLogic implements Singleton {
 		if (writer == null) {
 			return null;
 		}
-		
+
 		if (iwc.getViewRoot() == null) {
 			UIViewRoot root = new UIViewRoot();
 			root.setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
 			iwc.setViewRoot(root);
 		}
-		
+
 		List<String> jsSources = null;
 		List<String> jsActions = null;
 		List<String> cssSources = null;
 		try {
 			RenderUtils.renderChild(iwc, component);
-			
+
 			Object o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
 			if (o instanceof List) {
 				jsSources = (List<String>) o;
 			}
-			
+
 			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
 			if (o instanceof List) {
 				jsActions = (List<String>) o;
 			}
-			
+
 			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
 			if (o instanceof List) {
 				cssSources = (List<String>) o;
@@ -3612,12 +3613,12 @@ public class BuilderLogic implements Singleton {
 			return null;
 		} finally {
 			iwc.removeSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS);
-			
+
 			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
 			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
 			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
 		}
-		
+
 		String rendered = writer.toString();
 		if (rendered == null) {
 			return null;
@@ -3626,7 +3627,7 @@ public class BuilderLogic implements Singleton {
 		if (cleanCode) {
 			rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
 		}
-		
+
 		if (jsSources != null || jsActions != null || cssSources != null) {
 			Object addCSSDirectly = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
 			if (addCSSDirectly != null) {
@@ -3638,23 +3639,23 @@ public class BuilderLogic implements Singleton {
 				rendered = getCleanedFromXmlDeclaration(rendered);
 			}
 		}
-		
+
 		return rendered;
 	}
-	
+
 	private String getRenderedComponentWithDynamicResources(Document component, List<String> cssSources, List<String> jsSources, List<String> jsActions,
 			boolean addCSSDirectly) {
 		if (component == null) {
 			return null;
 		}
-		
+
 		Element root = component.getRootElement();
 		if (root == null) {
 			return null;
 		}
-		
+
 		List<String> resourcesToLoad = new ArrayList<String>();
-		
+
 		//	CSS
 		if (!ListUtil.isEmpty(cssSources)) {
 			if (addCSSDirectly) {
@@ -3677,7 +3678,7 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 		}
-		
+
 		//	JavaScript sources
 		if (!ListUtil.isEmpty(jsSources) || !ListUtil.isEmpty(resourcesToLoad)) {
 			StringBuffer actionsInSingleFunction = null;
@@ -3689,7 +3690,7 @@ public class BuilderLogic implements Singleton {
 				actionsInSingleFunction.append("}");
 				jsActions.clear();
 			}
-			
+
 			if (!ListUtil.isEmpty(jsSources)) {
 				for (String jsResource: jsSources) {
 					if (!resourcesToLoad.contains(jsResource)) {
@@ -3697,7 +3698,7 @@ public class BuilderLogic implements Singleton {
 					}
 				}
 			}
-			
+
 			String action = PresentationUtil.getJavaScriptLinesLoadedLazily(resourcesToLoad, actionsInSingleFunction == null ? null :
 																															actionsInSingleFunction.toString());
 			Collection<Element> includeScriptsAndExecuteActions = new ArrayList<Element>(1);
@@ -3707,7 +3708,7 @@ public class BuilderLogic implements Singleton {
 			includeScriptsAndExecuteActions.add(mainAction);
 			root.addContent(includeScriptsAndExecuteActions);
 		}
-		
+
 		//	JavaScript actions
 		if (jsActions != null && !jsActions.isEmpty()) {
 			Collection<Element> actions = new ArrayList<Element>(jsActions.size());
@@ -3717,20 +3718,20 @@ public class BuilderLogic implements Singleton {
 				action.setText(jsAction);
 				actions.add(action);
 			}
-			
+
 			root.addContent(actions);
 		}
-		
+
 		return getJDOMOutputter().outputString(component);
 	}
-	
+
 	private XMLOutputter getJDOMOutputter() {
 		if (outputter == null) {
 			outputter = new XMLOutputter(Format.getPrettyFormat());
 		}
 		return outputter;
 	}
-	
+
 	/**
 	 * Renders single UIComponent and creates JDOM Document of rendered object
 	 * @param iwc
@@ -3741,22 +3742,22 @@ public class BuilderLogic implements Singleton {
 	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanCode) {
 		return getRenderedComponent(iwc, component, cleanCode, true, true);
 	}
-	
+
 	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope) {
 		return getXMLDocumentFromComponentHTML(getRenderedComponent(component, iwc, cleanCode, omitDocTypeDeclaration, omitHtmlEnvelope), false,
 				omitDocTypeDeclaration, omitHtmlEnvelope, true);
 	}
-	
+
 	private Document getXMLDocumentFromComponentHTML(String componentHTML, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
 			boolean omitComments) {
 		if (StringUtil.isEmpty(componentHTML)) {
 			return null;
 		}
-		
+
 		if (cleanCode) {
 			componentHTML = getCleanedHtmlContent(componentHTML, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
-		
+
 		//	Removing <!--... ms-->
 		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(componentHTML);
 		componentHTML = commentsMatcher.replaceAll(CoreConstants.EMPTY);
@@ -3764,7 +3765,7 @@ public class BuilderLogic implements Singleton {
 		//	Removing <!DOCTYPE .. >
 		Matcher docTypeMatcher = getDoctypeReplacementPattern().matcher(componentHTML);
 		componentHTML = docTypeMatcher.replaceAll(CoreConstants.EMPTY);
-			
+
 		//	Do not add any more replaceAll - HtmlCleaner should fix ALL problems
 		//	Replace symbols which can cause exceptions with SAXParser
 		componentHTML = componentHTML.replaceAll("&ouml;", "&#246;");
@@ -3773,7 +3774,7 @@ public class BuilderLogic implements Singleton {
 		componentHTML = componentHTML.replaceAll("&iacute;", "&#237;");
 //		componentHTML = componentHTML.replaceAll("&lt;", "&#60;");
 //		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
-		
+
 		if (StringUtil.isEmpty(componentHTML)) {
 			logger.warning("HTML code is empty!");
 			return null;
@@ -3789,31 +3790,31 @@ public class BuilderLogic implements Singleton {
 			logger.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed to create document from:\n" + componentHTML);
 			return getXMLDocumentFromComponentHTML(componentHTML, true, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
-		
+
 		return componentXML;
 	}
-	
+
 	public String getCleanedHtmlContent(InputStream htmlStream, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
 		return getCleanedHtmlContent(htmlStream, null, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 	}
-	
+
 	public String getCleanedHtmlContent(String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean omitComments) {
 		return getCleanedHtmlContent(null, htmlContent, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 	}
-	
+
 	private String getCleanedHtmlContent(InputStream htmlStream, String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
 			boolean omitComments) {
 		if (htmlStream == null && htmlContent == null) {
 			return null;
 		}
-		
+
 		HtmlCleaner cleaner = htmlStream == null ? new HtmlCleaner(htmlContent) : new HtmlCleaner(htmlStream);
 		cleaner.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
 		cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
 		cleaner.setOmitComments(omitComments);
 		cleaner.setOmitXmlDeclaration(true);
 		cleaner.setUseCdataForScriptAndStyle(false);
-		
+
 		try {
 			cleaner.clean();
 			htmlContent = cleaner.getPrettyXmlAsString();
@@ -3821,25 +3822,25 @@ public class BuilderLogic implements Singleton {
 			logger.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
 			return null;
 		}
-		
+
 		return getCleanedFromXmlDeclaration(htmlContent);
 	}
-	
+
 	private String getCleanedFromXmlDeclaration(String htmlContent) {
 		// Removing <?xml version... />
 		for (Pattern pattern: getXmlEncodingReplacementPatterns()) {
 			Matcher patternMatcher = pattern.matcher(htmlContent);
 			htmlContent = patternMatcher.replaceAll(CoreConstants.EMPTY);
 		}
-		
+
 		String xmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		if (htmlContent.indexOf(xmlDeclaration) != -1) {
 			htmlContent = StringHandler.replace(htmlContent, xmlDeclaration, CoreConstants.EMPTY);
 		}
-		
+
 		return htmlContent.trim();
 	}
-	
+
 	private List<Pattern> getXmlEncodingReplacementPatterns() {
 		if (xmlEncodingReplacementPatterns == null) {
 			xmlEncodingReplacementPatterns = Arrays.asList(
@@ -3848,27 +3849,27 @@ public class BuilderLogic implements Singleton {
 		}
 		return xmlEncodingReplacementPatterns;
 	}
-	
+
 	private Pattern getDoctypeReplacementPattern() {
 		if (doctypeReplacementPattern == null) {
 			doctypeReplacementPattern = Pattern.compile("<!DOCTYPE[^>]*>");
 		}
-		
+
 		return doctypeReplacementPattern;
 	}
-	
+
 	private Pattern getCommentRemplacementPattern() {
 		if (commentinHtmlReplacementPattern == null) {
 			commentinHtmlReplacementPattern = Pattern.compile("<!--\\d+ ms-->");
 		}
 		return commentinHtmlReplacementPattern;
 	}
-	
+
 	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] properties) {
 		if (pageKey == null || moduleId == null || propertyName == null || properties == null) {
 			return false;
 		}
-		
+
 		IWMainApplication application = null;
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
@@ -3880,32 +3881,32 @@ public class BuilderLogic implements Singleton {
 		if (application == null) {
 			return false;
 		}
-		
+
 		boolean result = setProperty(pageKey, moduleId, propertyName, properties, application);
-		
+
 		if (result) {
 			Object handler = iwc.getSessionAttribute(CoreConstants.HANDLER_PARAMETER);
 			if (handler instanceof ICPropertyHandler) {
 				iwc.removeSessionAttribute(CoreConstants.HANDLER_PARAMETER);
-				
+
 				((ICPropertyHandler) handler).onUpdate(properties, iwc);
 			}
-			
+
 			removeBlockObjectFromCache(iwc, BuilderConstants.SET_MODULE_PROPERTY_CACHE_KEY);
 			removeBlockObjectFromCache(iwc, BuilderConstants.EDIT_MODULE_WINDOW_CACHE_KEY);
 		}
-		
+
 		return result;
 	}
-	
+
 	public String generateResourcePath(String base, String scope, String fileName) {
-		IWSlideService service = getSlideService();
+		RepositoryService service = getRepositoryService();
 		StringBuffer path = new StringBuffer(getYearMonthPath(base)).append(BuilderConstants.SLASH);
 		path.append(service.createUniqueFileName(scope)).append(BuilderConstants.DOT);
 		path.append(fileName);
 		return path.toString();
 	}
-	
+
 	/**
 	 * Creates path (uri) based on base path and current time
 	 * @return
@@ -3915,7 +3916,7 @@ public class BuilderLogic implements Singleton {
 		path.append(getYearMonthPath());
 		return path.toString();
 	}
-	
+
 	/**
 	 * Creates path (uri) based on current time
 	 * @return
@@ -3926,38 +3927,26 @@ public class BuilderLogic implements Singleton {
 		path.append(now.getYear()).append(BuilderConstants.SLASH).append(now.getDateString("MM"));
 		return path.toString();
 	}
-	
-	private synchronized IWSlideService getSlideService() {
-		if (slideService == null) {
-			try {
-				slideService = (IWSlideService) IBOLookup.getServiceInstance(CoreUtil.getIWContext(), IWSlideService.class);
-			} catch (IBOLookupException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-		return slideService;
-	}
-	
+
 	public UIComponent findComponentInPage(IWContext iwc, String pageKey, String instanceId) {
 		if (pageKey == null || instanceId == null || iwc == null) {
 			return null;
 		}
-		
+
 		Page page = getPage(pageKey, iwc);
 		if (page == null) {
 			return null;
 		}
-		
+
 		return findComponentInList(page.getChildren(), instanceId);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private UIComponent findComponentInList(List<UIComponent> children, String instanceId) {
 		if (children == null || instanceId == null) {
 			return null;
 		}
-		
+
 		UIComponent component = null;
 		UIComponent componentFromCycle = null;
 		Map facets = null;
@@ -3970,7 +3959,7 @@ public class BuilderLogic implements Singleton {
 				foundComponent = true;
 			} else {
 				componentFromCycle = findComponentInList(component.getChildren(), instanceId);
-				
+
 				if (componentFromCycle == null) {
 					//	Didn't find in children's list, will check facets map
 					facets = component.getFacets();
@@ -3982,7 +3971,7 @@ public class BuilderLogic implements Singleton {
 						componentFromCycle = findComponentInList(cFromMap, instanceId);
 					}
 				}
-				
+
 				if (componentFromCycle != null) {
 					foundComponent = true;
 					component = componentFromCycle;
@@ -3994,30 +3983,30 @@ public class BuilderLogic implements Singleton {
 		}
 		return component;
 	}
-	
+
 	public Document getRenderedModule(String pageKey, String componentId, boolean cleanCode) {
 		if (pageKey == null || componentId == null) {
 			return null;
 		}
-		
+
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
 		}
-		
+
 		UIComponent component = findComponentInPage(iwc, pageKey, componentId);
 		if (component == null) {
 			return null;
 		}
-		
+
 		return getRenderedComponent(iwc, component, cleanCode);
 	}
-	
+
 	public boolean existsRegion(String pageKey, String label, String regionId) {
 		if (pageKey == null) {
 			return false;
 		}
-		
+
 		XMLElement region = null;
 		try {
 			region = getIBXMLWriter().findRegion(getIBXMLPage(pageKey), label, regionId);
@@ -4025,16 +4014,16 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		return region == null ? false : true;
 	}
-	
+
 	public boolean copyAllModulesFromRegionIntoRegion(String pageKey, String sourceRegionLabel, String destinationRegionId, String destinationRegionLabel,
-			IWSlideSession session) {
+			RepositoryService session) {
 		if (pageKey == null || sourceRegionLabel == null || destinationRegionId == null || destinationRegionLabel == null) {
 			return false;
 		}
-		
+
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -4049,13 +4038,13 @@ public class BuilderLogic implements Singleton {
 		if (sourceRegion == null) {
 			return false;
 		}
-		
+
 		//	TODO:	Find all modules, not just first level ones
 		List<XMLElement> modules = sourceRegion.getChildren(IBXMLConstants.MODULE_STRING);
 		if (modules == null) {
 			return false;
 		}
-		
+
 		String id = null;
 		Object o = null;
 		for (int i = 0; i < modules.size(); i++) {
@@ -4070,30 +4059,30 @@ public class BuilderLogic implements Singleton {
 				return false;
 			}
 		}
-		
+
 		if (savePage(page, session)) {
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	public ICPage findPageForModule(IWContext iwc, String instanceId) {
 		if (instanceId == null) {
 			return null;
 		}
-		
+
 		Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwc);
 		if (pages == null || pages.isEmpty()) {
 			return null;
 		}
-		
+
 		Iterator<PageTreeNode> allPages = pages.values().iterator();
 		ICPage page = null;
 		String pageId = null;
 		for (Iterator<PageTreeNode> it = allPages; it.hasNext();) {
 			pageId = it.next().getId();
-			
+
 			try {
 				page = getICPageHome().findByPrimaryKey(pageId);
 			} catch(Exception e) {
@@ -4109,10 +4098,10 @@ public class BuilderLogic implements Singleton {
 				}
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean reloadGroupsInCachedDomain(IWApplicationContext iwac, String serverName) {
 		try {
 			ICDomain mostlyCachedDomain = iwac.getDomain();
@@ -4129,82 +4118,82 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	public String getFullPageUrlByPageType(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
 		User usr = iwc == null ? null : iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getFullPageUrlByPageType(usr, iwc, pageType, checkFirstlyNearestPages);
 	}
-	
+
 	public String getFullPageUrlByPageType(User user, IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-		
+
 		String serverURL = iwc.getServerURL();
 		String pageUri;
-		
+
 		if(user == null)
 			pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
 		else
 			pageUri = getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
-		
+
 		serverURL = serverURL.endsWith(CoreConstants.SLASH) ? serverURL.substring(0, serverURL.length()-1) : serverURL;
-		
+
 		String fullURL = new StringBuilder(serverURL)
 		.append(pageUri.startsWith(CoreConstants.SLASH) ? CoreConstants.EMPTY : CoreConstants.SLASH)
 		.append(pageUri)
 		.toString();
-		
+
 		return fullURL;
 	}
-	
+
 	public String getFullPageUrlByPageType(User user, String pageType, boolean checkFirstlyNearestPages) {
 		String serverURL = getIWMainApplication().getSettings().getProperty(IWConstants.SERVER_URL_PROPERTY_NAME);
 		String pageUri;
-		
+
 		pageUri = getPageUri(user, pageType, checkFirstlyNearestPages);
-		
+
 		serverURL = serverURL.endsWith(CoreConstants.SLASH) ? serverURL.substring(0, serverURL.length()-1) : serverURL;
-		
+
 		String fullURL = new StringBuilder(serverURL)
 		.append(pageUri.startsWith(CoreConstants.SLASH) ? CoreConstants.EMPTY : CoreConstants.SLASH)
 		.append(pageUri)
 		.toString();
-		
+
 		return fullURL;
 	}
-	
+
 	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(IWContext iwc, String pageType) {
-		
+
 		User usr = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getNearestPageForUserHomePageOrCurrentPageByPageType(usr, iwc, pageType);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User user, IWContext iwc, String pageType) {
 		ICPage startPage = null;
 		ICPage nearestPage = null;
-		
+
 		if (user != null) {
 			nearestPage = getNearestPageForUserHomePage(user,pageType);
 			if(nearestPage!=null){
 				return nearestPage;
 			}
 		}
-		
+
 		//	Trying to get nearest page to current page
 		try {
 			startPage = getICPage(String.valueOf(iwc.getCurrentIBPageID()));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 		if (startPage == null) {
 			logger.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + user);
 			return null;
 		}
-		
+
 		ICTreeNode parentNode = startPage.getParentNode();
 		Collection<ICTreeNode> children = null;
 		if (parentNode == null) {
@@ -4214,7 +4203,7 @@ public class BuilderLogic implements Singleton {
 		else {
 			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
 		}
-		
+
 		nearestPage = getPageByPageType(children, pageType);
 		return nearestPage;
 	}
@@ -4228,11 +4217,11 @@ public class BuilderLogic implements Singleton {
 	public ICPage getNearestPageForUserHomePage(User user, String pageType) {
 		ICPage startPage = null;
 		ICPage nearestPage = null;
-		
+
 		if (user != null) {
 			//	Trying to get nearest page to user's home page
 			startPage = getUsersHomePage(user);
-			
+
 			if(startPage!=null){
 				Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
 				searchTops.add(startPage);
@@ -4243,12 +4232,12 @@ public class BuilderLogic implements Singleton {
 				nearestPage = getPageByPageType(searchTops, pageType);
 			}
 		}
-		
+
 		if (startPage == null) {
 			logger.warning("Didn't find start page for search: " + pageType + ", user: " + user);
 			return null;
 		}
-				
+
 		return nearestPage;
 	}
 
@@ -4262,21 +4251,21 @@ public class BuilderLogic implements Singleton {
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "Error getting homepage for user: " + user, e);
 		}
-		
+
 		return startPage;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private ICPage getPageByPageType(Collection<ICTreeNode> pages, String pageType) {
 		if (ListUtil.isEmpty(pages)) {
 			return null;
 		}
-		
+
 		ICPage page = null;
 		Collection<ICTreeNode> children = null;
 		for (ICTreeNode node: pages) {
 			page = getICPage(node.getId());
-			
+
 			if (page != null) {
 				if (pageType.equals(page.getSubType())) {
 					return page;
@@ -4287,107 +4276,107 @@ public class BuilderLogic implements Singleton {
 					return getPageByPageType(children, pageType);
 				}
 			}
-			
+
 		}
-		
+
 		return null;
 	}
-	
+
 	protected String getPageUri(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-		
+
 		User user = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
 	}
-	
+
 	protected String getPageUri(User user, IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
 		ICPage icPage = null;
 		String messageForException = "No page found by page type: " + pageType;
-		
+
 		if (checkFirstlyNearestPages) {
 
 			if(user == null) {
-				
+
 				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
-				
+
 			} else {
 				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(user, iwc, pageType);
 			}
-			
+
 		}
-		
+
 		//last resort find the first page of that type
 		if (icPage == null) {
 			Collection<ICPage> icpages = getPages(pageType);
-			
+
 			if (icpages == null || icpages.isEmpty()) {
 				throw new RuntimeException(messageForException);
 			}
-			
+
 			icPage = icpages.iterator().next();
 		}
-		
+
 		if (icPage == null) {
 			throw new RuntimeException(messageForException);
 		}
-		
+
 		String uri = icPage.getDefaultPageURI();
-		
+
 		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
 			uri = CoreConstants.PAGES_URI_PREFIX + uri;
 		}
-		
+
 		return iwc.getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
-	
+
 	protected String getPageUri(User user, String pageType, boolean checkFirstlyNearestPages) {
 		ICPage icPage = null;
 		String messageForException = "No page found by page type: " + pageType;
-		
+
 		if (checkFirstlyNearestPages) {
 			icPage = getNearestPageForUserHomePage(user, pageType);
 		}
-		
+
 		if (icPage == null) {
 			Collection<ICPage> icpages = getPages(pageType);
-			
+
 			if (icpages == null || icpages.isEmpty()) {
 				throw new RuntimeException(messageForException);
 			}
-			
+
 			icPage = icpages.iterator().next();
 		}
-		
+
 		if (icPage == null) {
 			throw new RuntimeException(messageForException);
 		}
-		
+
 		String uri = icPage.getDefaultPageURI();
-		
+
 		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
 			uri = CoreConstants.PAGES_URI_PREFIX + uri;
 		}
-		
+
 		return getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
-	
+
 	protected Collection<ICPage> getPages(String pageSubType) {
-		
+
 		try {
 			ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
 			@SuppressWarnings("unchecked")
 			Collection<ICPage> icpages = home.findBySubType(pageSubType, false);
-			
+
 			return icpages;
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException("Exception while resolving icpages by subType: "+pageSubType, e);
 		}
 	}
-	
+
 	private RenderedComponent getRenderedInstanciatedComponent(IWContext iwc, UIComponent component) {
 		RenderedComponent rendered = new RenderedComponent();
 		rendered.setErrorMessage("Ooops... Some error occurred rendering component...");
-		
+
 		Web2Business web2 = getWeb2Business();
 		JQuery jQuery = getJQUery();
 		if (web2 != null && jQuery != null) {
@@ -4397,11 +4386,11 @@ public class BuilderLogic implements Singleton {
 			resources.add(web2.getBundleUriToHumanizedMessagesScript());
 			rendered.setResources(resources);
 		}
-		
+
 		if (iwc == null) {
 			iwc = CoreUtil.getIWContext();
 		}
-		
+
 		String html = getRenderedComponent(component, iwc, true, true, true);
 		if (StringUtil.isEmpty(html)) {
 			if (iwc != null) {
@@ -4410,25 +4399,25 @@ public class BuilderLogic implements Singleton {
 			}
 			return rendered;
 		}
-		
+
 		rendered.setErrorMessage(null);
 		rendered.setHtml(html);
-		
+
 		return rendered;
 	}
-	
+
 	public RenderedComponent getRenderedComponentById(String uuid, String uri, List<AdvancedProperty> properties) {
 		if (StringUtil.isEmpty(uuid)) {
 			logger.log(Level.WARNING, "Unknown UUID!");
 			return getRenderedInstanciatedComponent(null, null);
 		}
-		
+
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			logger.log(Level.WARNING, "IWContext is unavailable");
 			return getRenderedInstanciatedComponent(null, null);
 		}
-		
+
 		String pageKey = null;
 		try {
 			pageKey = getPageKeyByURI(uri, iwc.getDomain());
@@ -4449,21 +4438,21 @@ public class BuilderLogic implements Singleton {
 			logger.log(Level.WARNING, "Unable to get page key!");
 			return getRenderedInstanciatedComponent(null, null);
 		}
-		
+
 		UIComponent component = findComponentInPage(iwc, pageKey, uuid);
 		if (component == null) {
 			logger.log(Level.SEVERE, "Didn't find component by uuid ('" + uuid + "') in page: " + pageKey);
 		}
-		
+
 		return getRenderedComponent(component, properties);
 	}
-	
+
 	public RenderedComponent getRenderedComponentByClassName(String className, List<AdvancedProperty> properties) {
 		UIComponent component = null;
 		if (StringUtil.isEmpty(className)) {
 			return getRenderedInstanciatedComponent(null, null);
 		}
-		
+
 		Object o = null;
 		try {
 			o = Class.forName(className).newInstance();
@@ -4477,25 +4466,25 @@ public class BuilderLogic implements Singleton {
 			logger.log(Level.WARNING, "Instance of '" + className + "' is not UIComponent!");
 			return getRenderedInstanciatedComponent(null, null);
 		}
-		
+
 		return getRenderedComponent(component, properties);
 	}
-	
+
 	public RenderedComponent getRenderedComponent(UIComponent component, List<AdvancedProperty> properties) {
 		if (component == null) {
 			return getRenderedInstanciatedComponent(null, null);
 		}
-		
+
 		setPropertiesForObjectInstance(component, properties);
-		
+
 		return getRenderedInstanciatedComponent(CoreUtil.getIWContext(), component);
 	}
-	
+
 	private void setPropertiesForObjectInstance(Object o, List<AdvancedProperty> properties) {
 		if (o == null || ListUtil.isEmpty(properties)) {
 			return;
 		}
-		
+
 		for (AdvancedProperty property: properties) {
 			try {
 				MethodInvoker.getInstance().invokeMethodWithParameter(o, property.getId(), property.getValue());
@@ -4504,15 +4493,15 @@ public class BuilderLogic implements Singleton {
 			}
 		}
 	}
-	
+
 	public List<com.idega.core.component.business.ComponentProperty> getComponentProperties(IWContext iwc, String instanceId) {
 		if (StringUtil.isEmpty(instanceId) || iwc == null) {
 			return null;
 		}
-		
+
 		return IBPropertyHandler.getInstance().getComponentProperties(instanceId, iwc.getIWMainApplication(), iwc.getCurrentLocale());
 	}
-	
+
 	private IWMainApplication getIWMainApplication() {
 		return IWMainApplication.getDefaultIWMainApplication();
 	}
