@@ -7,12 +7,12 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import com.idega.presentation.BuilderPageFacetMap;
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.TagHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagException;
+import javax.faces.view.facelets.TagHandler;
 
 /**
  * Tag handler to handle the "region" tag in the Builder.

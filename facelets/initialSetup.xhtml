@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html 	xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core"
+	    xmlns:wf="http://xmlns.idega.com/com.idega.webface"
+		xmlns:ws="http://xmlns.idega.com/com.idega.workspace"
+		xmlns:ic="http://xmlns.idega.com/com.idega.core">
+
+    <head>
+    
+    </head>
+    
+    <body>
+	    <f:view>
+			<ic:page id="builderinitialsetuppage" styleClass="ws_body centered">
+			<h:form id="builderinitialsetupform"><!-- acceptCharset="UTF-8" -->
+				<wf:wfblock id="builderinitialsetupblock" title="#{localizedStrings['com.idega.builder']['initialsetup']}">
+				<wf:container styleClass="wf_formitem" >
+					<h:outputLabel for="mainDomainName" id="mainDomainNameLabel" value="#{localizedStrings['com.idega.builder']['mainDomainName']}"/>
+					<h:inputText value="#{BuilderInitialSetup.domainName}" id="mainDomainName"/>
+				</wf:container>
+			
+				<wf:container styleClass="wf_formitem" >
+					<h:outputLabel for="frontPageName" id="frontPageNameLabel" value="#{localizedStrings['com.idega.builder']['frontPageName']}"/>
+					<h:inputText value="#{BuilderInitialSetup.frontPageName}" id="frontPageName"/>
+				</wf:container>
+				
+				<h:commandButton id="builderinitialsetup_store" action="#{BuilderInitialSetup.store}" value="#{localizedStrings['com.idega.builder']['save']}"/>
+				</wf:wfblock>
+			</h:form>
+			</ic:page>
+	    </f:view>
+	</body>
+</html>

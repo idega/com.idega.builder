@@ -23,11 +23,11 @@ import javax.faces.component.UIComponent;
 import com.idega.builder.business.IBXMLConstants;
 import com.idega.util.reflect.ComponentProperty;
 import com.idega.util.reflect.Property;
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 /**
  * <p>
@@ -40,7 +40,7 @@ import com.sun.facelets.tag.TagHandler;
  * Last modified: $Date: 2009/01/14 15:35:25 $ by $Author: tryggvil $
  * @version $Id: PropertyTagHandler.java,v 1.2 2009/01/14 15:35:25 tryggvil Exp $
  */
-public class PropertyTagHandler extends TagHandler{
+public class PropertyTagHandler extends LegacyTagHandler {
 
 	private String name;
 	private String value;

@@ -1,10 +1,10 @@
 package com.idega.builder.facelets;
 
 import com.idega.idegaweb.IWMainApplication;
-import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.Tag;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.jsf.ComponentConfig;
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.Tag;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.ComponentConfig;
 
 public class BuilderPageComponentConfig implements ComponentConfig {
 

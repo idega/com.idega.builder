@@ -7,11 +7,11 @@ import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagHandler;
-import com.sun.facelets.tag.TextHandler;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletException;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
+import javax.faces.view.facelets.TextHandler;
 
 /**
  * <p>
@@ -23,7 +23,7 @@ import com.sun.facelets.tag.TextHandler;
  * Last modified: $Date: 2009/01/14 15:07:18 $ by $Author: tryggvil $
  * @version 1.0
  */
-public class PropertyTypeTagHandler extends TagHandler{
+public class PropertyTypeTagHandler extends LegacyTagHandler {
 
 	String value;
 	

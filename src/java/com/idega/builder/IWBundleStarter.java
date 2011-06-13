@@ -134,12 +134,12 @@ public class IWBundleStarter implements IWBundleStartable {
 			
 			FramedApplicationViewNode builderNode = new FramedApplicationViewNode("builder", workspaceNode);
 			builderNode.setAuthorizedRoles(roles);
-			builderNode.setJspUri(starterBundle.getJSPURI("builderapp.jsp"));
+			builderNode.setFaceletUri(starterBundle.getFaceletURI("builderapp.xhtml"));
 			builderNode.setKeyboardShortcut(new KeyboardShortcut("2"));
 			builderNode.setVisibleInMenus(false);
 			
 			DefaultViewNode setupNode = new DefaultViewNode("initialsetup",builderNode);
-			setupNode.setJspUri(starterBundle.getJSPURI("initialSetup.jsp"));
+			setupNode.setFaceletUri(starterBundle.getFaceletURI("initialSetup.xhtml"));
 			setupNode.setName("#{localizedStrings['com.idega.builder']['initialsetup']}");
 			setupNode.setVisibleInMenus(false);
 			

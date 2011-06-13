@@ -1,7 +1,7 @@
 package com.idega.builder.facelets;
 
-import com.sun.facelets.tag.Tag;
-import com.sun.facelets.tag.TagDecorator;
+import javax.faces.view.facelets.Tag;
+import javax.faces.view.facelets.TagDecorator;
 
 public class BuilderTagDecorator implements TagDecorator {
 

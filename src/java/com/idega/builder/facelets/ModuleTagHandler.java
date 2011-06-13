@@ -28,24 +28,22 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.presentation.AdminToolbar;
 import com.idega.builder.presentation.IBObjectControl;
 import com.idega.presentation.IWContext;
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.LegacyValueBinding;
-import com.sun.facelets.tag.MetaRule;
-import com.sun.facelets.tag.MetaRuleset;
-import com.sun.facelets.tag.MetaTagHandler;
-import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.jsf.ComponentSupport;
-import com.sun.facelets.tag.jsf.EditableValueHolderRule;
-import com.sun.facelets.tag.jsf.core.FacetHandler;
-import com.sun.facelets.util.FacesAPI;
+import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.MetaRule;
+import javax.faces.view.facelets.MetaRuleset;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagException;
+
+import org.apache.myfaces.view.facelets.tag.MetaTagHandlerImpl;
+import org.apache.myfaces.view.facelets.tag.jsf.ComponentSupport;
+import org.apache.myfaces.view.facelets.tag.jsf.EditableValueHolderRule;
+import org.apache.myfaces.view.facelets.tag.jsf.core.FacetHandler;
 
 /**
  * <p>
@@ -58,7 +56,7 @@ import com.sun.facelets.util.FacesAPI;
  * Last modified: $Date: 2009/01/14 15:35:25 $ by $Author: tryggvil $
  * @version $Id: ModuleTagHandler.java,v 1.2 2009/01/14 15:35:25 tryggvil Exp $
  */
-public class ModuleTagHandler extends MetaTagHandler {
+public class ModuleTagHandler extends MetaTagHandlerImpl {
     private final static Logger log = Logger
             .getLogger("facelets.tag.component");
     
@@ -77,6 +75,10 @@ public class ModuleTagHandler extends MetaTagHandler {
         this.id = this.getAttribute("id");
         this.binding = this.getAttribute("binding");
         this.componentClass = this.getAttribute("class");
+        //bugfix - don't know if fetching "class" attribute is ever used or if it is working anywhere.
+        if(this.componentClass == null){
+        	this.componentClass = this.getAttribute("componentClass");
+        }
         ModuleComponentConfig conf = new ModuleComponentConfig(config,this.id.getValue(),this.componentClass.getValue());
         this.componentType=conf.getComponentType();
     }
@@ -244,24 +246,9 @@ public class ModuleTagHandler extends MetaTagHandler {
         if (this.binding != null) {
             ValueExpression ve = this.binding.getValueExpression(ctx,
                     Object.class);
-            if (FacesAPI.getVersion() >= 12) {
-                c = app.createComponent(ve, faces, this.componentType);
-                if (c != null) {
-                    // Make sure the component supports 1.2
-                    if (FacesAPI.getComponentVersion(c) >= 12) {
-                        c.setValueExpression("binding", ve);
-                    } else {
-                        ValueBinding vb = new LegacyValueBinding(ve);
-                        c.setValueBinding("binding", vb);
-                    }
-
-                }
-            } else {
-                ValueBinding vb = new LegacyValueBinding(ve);
-                c = app.createComponent(vb, faces, this.componentType);
-                if (c != null) {
-                    c.setValueBinding("binding", vb);
-                }
+            c = app.createComponent(ve, faces, this.componentType);
+            if (c != null) {
+                c.setValueExpression("binding", ve);
             }
         } else {
             c = app.createComponent(this.componentType);
@@ -294,7 +281,7 @@ public class ModuleTagHandler extends MetaTagHandler {
         // add auto wiring for attributes
         Class componentRuleClass;
 		try {
-			componentRuleClass = Class.forName("com.sun.facelets.tag.jsf.ComponentRule");
+			componentRuleClass = Class.forName("org.apache.myfaces.view.facelets.tag.jsf.ComponentRule");
 	        MetaRule rule = (MetaRule)componentRuleClass.newInstance();
 	        //m.addRule(ComponentRule.Instance);
 	        m.addRule(rule);
@@ -307,7 +294,7 @@ public class ModuleTagHandler extends MetaTagHandler {
         if (ActionSource.class.isAssignableFrom(type)) {
             //m.addRule(ActionSourceRule.Instance);
         	try{
-	            Class acomponentRuleClass = Class.forName("com.sun.facelets.tag.jsf.ActionSourceRule");
+	            Class acomponentRuleClass = Class.forName("org.apache.myfaces.view.facelets.tag.jsf.ActionSourceRule");
 	            MetaRule aRule = (MetaRule)acomponentRuleClass.newInstance();
 	            //m.addRule(ComponentRule.Instance);
 	            m.addRule(aRule);
@@ -319,7 +306,7 @@ public class ModuleTagHandler extends MetaTagHandler {
         if (ValueHolder.class.isAssignableFrom(type)) {
             //m.addRule(ValueHolderRule.Instance);
         	try{
-	            Class acomponentRuleClass = Class.forName("com.sun.facelets.tag.jsf.ValueHolderRule");
+	            Class acomponentRuleClass = Class.forName("org.apache.myfaces.view.facelets.tag.jsf.ValueHolderRule");
 	            MetaRule aRule = (MetaRule)acomponentRuleClass.newInstance();
 	            //m.addRule(ComponentRule.Instance);
 	            m.addRule(aRule);
