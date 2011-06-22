@@ -903,6 +903,17 @@ public class BuilderLogic implements Singleton {
 	public String getCurrentIBPage(IWContext iwc) {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
+		if (!requestURI.startsWith(PAGES_PREFIX)) {
+			requestURI = iwc.getReferer();
+			if (requestURI == null) {
+				requestURI = iwc.getRequestURI();
+			} else {
+				int pagesIndex = requestURI.indexOf(PAGES_PREFIX);
+				requestURI = pagesIndex < 0 ? iwc.getRequestURI() : requestURI.substring(pagesIndex);
+				int paramsIndex = requestURI.indexOf("/?");
+				requestURI = paramsIndex > 0 ? requestURI.substring(0, paramsIndex) : requestURI;
+			}
+		}
 		
 		if(IWMainApplication.useNewURLScheme){
 		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
@@ -930,7 +941,7 @@ public class BuilderLogic implements Singleton {
 			}*/
 			try{
 				ICDomain domain = iwc.getDomain();
-				return getPageKeyByURI(requestURI,domain);
+				return getPageKeyByURI(requestURI, domain);
 			}
 			catch(NumberFormatException nfe){
 				//nothing printed out
