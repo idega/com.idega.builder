@@ -9,9 +9,11 @@
  */
 package com.idega.builder.business;
 
+import javax.jcr.RepositoryException;
+import javax.jcr.observation.Event;
+import javax.jcr.observation.EventIterator;
+
 import com.idega.business.IBOServiceBean;
-import com.idega.slide.business.IWContentEvent;
-import com.idega.slide.business.IWSlideChangeListener;
 import com.idega.util.CoreConstants;
 
 
@@ -20,26 +22,34 @@ import com.idega.util.CoreConstants;
  * TODO tryggvil Describe Type BuilderSlideListener
  * </p>
  *  Last modified: $Date: 2008/07/11 07:31:00 $ by $Author: valdas $
- * 
+ *
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
  * @version $Revision: 1.6 $
  */
-public class BuilderSlideListenerBean extends IBOServiceBean implements IWSlideChangeListener {
-	
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
+public class BuilderSlideListenerBean extends IBOServiceBean implements BuilderSlideListener {
+
 	private static final long serialVersionUID = 2891763087583075763L;
 
-	public void onSlideChange(IWContentEvent contentEvent){
-		String uri = contentEvent.getContentEvent().getUri();
-		if (uri.startsWith(CoreConstants.PAGES_PATH) && uri.indexOf("idega_theme") == -1 && uri.indexOf("article_viewer_template") == -1 &&
-				uri.indexOf("idega_video_page") == -1 && uri.indexOf("egov") == -1) {
-			getBuilderLogic().clearAllCachedPages();
-		}
-	}
-	
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
+	}
+
+	@Override
+	public void onEvent(EventIterator events) {
+		if (events == null)
+			return;
+
+		try {
+			while (events.hasNext()) {
+				Event event = events.nextEvent();
+				String uri = event.getPath();
+				if (uri.startsWith(CoreConstants.PAGES_PATH) && uri.indexOf("idega_theme") == -1 && uri.indexOf("article_viewer_template") == -1 &&
+						uri.indexOf("idega_video_page") == -1 && uri.indexOf("egov") == -1) {
+					getBuilderLogic().clearAllCachedPages();
+				}
+			}
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}
 	}
 }

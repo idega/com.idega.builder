@@ -1,24 +1,26 @@
 /*
  * $Id: IBXMLWriter.java,v 1.18 2008/02/06 14:32:44 valdas Exp $
- * 
+ *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
- * 
+ *
  * This software is the proprietary information of Idega hf. Use is subject to
  * license terms.
- *  
+ *
  */
 package com.idega.builder.business;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import com.idega.business.IBOLookup;
+import javax.jcr.RepositoryException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.idega.business.IBOLookupException;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
@@ -29,9 +31,10 @@ import com.idega.core.idgenerator.business.UUIDGenerator;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.slide.business.IWSlideService;
+import com.idega.repository.RepositoryService;
 import com.idega.util.CoreConstants;
 import com.idega.util.bundles.BundleResourceResolver;
+import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -47,7 +50,16 @@ import com.idega.xml.XMLException;
 public class IBXMLWriter {
 
 	private Logger log = Logger.getLogger(IBXMLWriter.class.getName());
-	
+
+	@Autowired
+	private RepositoryService repositoryService;
+
+	private RepositoryService getRepositoryService() {
+		if (repositoryService == null)
+			ELUtil.getInstance().autowire(this);
+		return repositoryService;
+	}
+
 	/**
 	 * <p>
 	 * Constructor only used by BuilderLogic
@@ -57,7 +69,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	private XMLElement getPageRootElement(IBXMLAble xml) {
 		return xml.getPageRootElement();
@@ -87,14 +99,14 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public XMLElement findModule(IBXMLAble xml, String instanceId) {
 		return findXMLElementWithId(xml, instanceId);
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	private XMLElement findModule(IBXMLAble xml, String instanceId, XMLElement startElement) {
 		return findXMLElementInsideWithId(xml, instanceId, startElement);
@@ -118,7 +130,7 @@ public class IBXMLWriter {
 	/**
 	 * Finds recursively all elements with the id attribute set to 'id' Returns
 	 * null if nothing found.
-	 * 
+	 *
 	 * If name is null it searches all elements with any name
 	 */
 	private XMLElement findXMLElementInsideWithId(IBXMLAble xml, String id, XMLElement parentElement) {
@@ -129,14 +141,14 @@ public class IBXMLWriter {
 	/**
 	 * Recursively finds XMLElements down the tree where the attributeKey is of
 	 * value attributeKey and attributeValue is of value attributeKey.
-	 * 
+	 *
 	 * @param attributeKey
 	 *            value is e.g. 'id'
 	 * @param attributeValue
 	 *            value is e.g. '645'
-	 * 
+	 *
 	 * @return Returns null if nothing found.
-	 * 
+	 *
 	 * If name is null it searches all elements with any name
 	 */
 	private XMLElement findXMLElementInside(IBXMLAble xml, String attributeKey, String attributeValue, XMLElement parentElement) {
@@ -144,12 +156,12 @@ public class IBXMLWriter {
 		if (parentElement != null) {
 			list = parentElement.getChildren();
 		}
-		
+
 		//Hardcoded -1 for the top Page element
 		if ("-1".equals(attributeValue)) {
 			return getPageRootElement(xml);
 		}
-		
+
 		if (list != null) {
 			Iterator iter = list.iterator();
 			while (iter.hasNext()) {
@@ -313,7 +325,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	protected XMLElement findProperty(XMLElement parentElement, String propertyName) {
 		XMLElement elem = parentElement;
@@ -418,7 +430,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean removeProperty(IWMainApplication iwma, IBXMLAble xml, String instanceId,
 			String propertyName, String[] values) {
@@ -438,7 +450,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean setProperty(IWMainApplication iwma, IBXMLAble xml, String instanceId, String propertyName,
 			String propertyValue) {
@@ -527,15 +539,15 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	private XMLElement getNewProperty(String propertyName, Object[] propertyValues) {
-		
-		
+
+
 		boolean isMethodIdentifier = MethodFinder.getInstance().isMethodIdentifier(propertyName);
-		
+
 		XMLElement element = new XMLElement(IBXMLConstants.PROPERTY_STRING);
-		
+
 		if(isMethodIdentifier){
 			XMLElement name = new XMLElement(IBXMLConstants.NAME_STRING);
 			for (int i = 0; i < propertyValues.length; i++) {
@@ -563,14 +575,14 @@ public class IBXMLWriter {
 					strValue=","+propertyValues[i].toString();
 				}
 			}
-			
+
 			element.setAttribute(new XMLAttribute(IBXMLConstants.VALUE_STRING,strValue));
 		}
 		return element;
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	/*private boolean addNewModule(XMLElement parent, String pageKey, int newICObjectTypeID) {
 		//XMLElement parent = findModule(parentObjectInstanceID);
@@ -578,17 +590,17 @@ public class IBXMLWriter {
 			try {
 				ICObjectInstanceHome icoiHome = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
 				ICObjectHome icoHome = (ICObjectHome)IDOLookup.getHome(ICObject.class);
-				
+
 				ICObjectInstance instance = icoiHome.create();
 				instance.setICObjectID(newICObjectTypeID);
 				instance.setIBPageByKey(pageKey);
 				instance.store();
 				ICObject obj = icoHome.findByPrimaryKey(new Integer(newICObjectTypeID));
 				Class theClass = obj.getObjectClass();
-				
+
 				String uuid = instance.getUniqueId();
 				String xmlId = IBXMLReader.UUID_PREFIX+uuid;
-				
+
 				XMLElement newElement = new XMLElement(IBXMLConstants.MODULE_STRING);
 				XMLAttribute aId = new XMLAttribute(IBXMLConstants.ID_STRING, xmlId);
 				//XMLAttribute aIcObjectId = new XMLAttribute(XMLConstants.IC_OBJECT_ID_STRING,
@@ -611,7 +623,7 @@ public class IBXMLWriter {
 		}
 		return false;
 	}*/
-	
+
 	/**
 	 * Replaced private boolean addNewModule(XMLElement parent, String pageKey, int newICObjectTypeID)
 	 * returns UUID of inserted object or null if error occurred
@@ -622,18 +634,18 @@ public class IBXMLWriter {
 		try {
 			ICObjectInstanceHome icoiHome = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
 			ICObjectHome icoHome = (ICObjectHome)IDOLookup.getHome(ICObject.class);
-			
+
 			ICObjectInstance instance = icoiHome.create();
 			instance.setICObjectID(newICObjectTypeID);
 			instance.setIBPageByKey(pageKey);
 			instance.store();
-			
+
 			ICObject obj = icoHome.findByPrimaryKey(new Integer(newICObjectTypeID));
 			Class theClass = obj.getObjectClass();
-			
+
 			uuid = instance.getUniqueId();
 			String xmlId = new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
-			
+
 			result = addNewModule(xmlId, theClass, parent, pageKey, obj);
 		}
 		catch (Exception e) {
@@ -645,7 +657,7 @@ public class IBXMLWriter {
 		}
 		return null;
 	}
-	
+
 	private boolean addNewModule(String xmlId, Class theClass, XMLElement parent, String pageKey, ICObject obj) {
 		try {
 			XMLElement newElement = new XMLElement(IBXMLConstants.MODULE_STRING);
@@ -673,7 +685,7 @@ public class IBXMLWriter {
 	 */
 	private void onObjectAdd(XMLElement parent, XMLElement newElement, String pageKey, String newInstanceId, ICObject obj) {
 		if (obj.getClassName().equals(CoreConstants.getArticleItemViewerClass().getName())) {
-			
+
 			IBXMLPage xml = null;
 			try {
 				xml = BuilderLogic.getInstance().getIBXMLPage(pageKey);
@@ -682,10 +694,10 @@ public class IBXMLWriter {
 				return;
 			}
 			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
-			
+
 			String base = new StringBuffer(CoreConstants.CONTENT_PATH).append(CoreConstants.ARTICLE_CONTENT_PATH).toString();
 			String propertyValue = getBuilderLogic().generateResourcePath(base, CoreConstants.ARTICLE_FILENAME_SCOPE, CoreConstants.ARTICLE_FILENAME_SCOPE);
-			
+
 			setProperty(iwma, xml, newInstanceId, CoreConstants.ARTICLE_RESOURCE_PATH_PROPERTY_NAME, propertyValue);
 			setProperty(iwma, xml, newInstanceId, "showAuthor", "false");
 			setProperty(iwma, xml, newInstanceId, "showCreationDate", "false");
@@ -705,24 +717,18 @@ public class IBXMLWriter {
 			IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 			IWBundle bundle = obj.getBundle(iwma);
 			try {
-				IWSlideService slide = (IWSlideService) IBOLookup.getServiceInstance(iwma.getIWApplicationContext(), IWSlideService.class);
-				String config_uri_string = 
-					new StringBuffer("bundle://")
-					.append(bundle.getBundleIdentifier())
-					.append("/properties/services.xml")
-					.toString();
-				
+				String config_uri_string = new StringBuffer("bundle://").append(bundle.getBundleIdentifier()).append("/properties/services.xml").toString();
+
 				BundleResourceResolver resolver = new BundleResourceResolver(iwma);
 				URI config_uri = URI.create(config_uri_string);
-				
+
 				InputStream resource = resolver.resolve(config_uri).getInputStream();
-				slide.uploadFileAndCreateFoldersFromStringAsRoot("/files/cms/settings/", "video-services.xml", resource, null, true);
+				getRepositoryService().uploadFileAndCreateFoldersFromStringAsRoot("/files/cms/settings/", "video-services.xml", resource, null);
 				resource.close();
-				
 			} catch (IBOLookupException ile) {
 				//TODO
 //				throw new IBORuntimeException(ile);
-			} catch(RemoteException re) {
+			} catch(RepositoryException re) {
 				//TODO handling
 			} catch(IOException ioe) {
 				//TODO handling
@@ -731,14 +737,14 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean addLabel(IBXMLAble xml, int parentObjectInstanceId, int xpos, int ypos, String label) {
 		return (true);
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,
 			int xpos, int ypos, String label) {
@@ -748,11 +754,11 @@ public class IBXMLWriter {
 
 	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,	String regionId,
 			String label) {
-		
+
 		if(label==null || "null".equals(label)){
-			label = regionId; 
+			label = regionId;
 		}
-		
+
 		XMLElement region = findRegion(xml, label, regionId);
 		if (region == null) {
 			XMLElement parent = findModule(xml, parentObjectInstanceID);
@@ -762,7 +768,7 @@ public class IBXMLWriter {
 			else{
 				region = createRegion(regionId, label);
 			}
-			
+
 			if (parent != null&&region!=null) {
 				//This is in a page that is NOT extending a template (is a
 				// template itself)
@@ -789,7 +795,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, int newICObjectID,	String label) {
 		if (label == null) {
@@ -821,13 +827,13 @@ public class IBXMLWriter {
 			return addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, regionId, label);
 		}
 	}
-	
+
 	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID,	String label) {
 		return addNewModule(xml, pageKey, parentObjectInstanceID, newICObjectID, regionId, label);
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public String addNewModule(IBXMLAble xml, String pageKey, String parentObjectInstanceID,
 			ICObject newObjectType, String label) {
@@ -838,7 +844,7 @@ public class IBXMLWriter {
 	/**
 	 * Checks if the given element is empty, i.e. if it contains no child
 	 * elements.
-	 * 
+	 *
 	 * @param element
 	 * @return
 	 */
@@ -896,7 +902,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean lockRegion(IBXMLAble xml, String parentObjectInstanceID) {
 		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
@@ -930,7 +936,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean setAttribute(IBXMLAble xml, String parentObjectInstanceID, String attributeName,
 			String attributeValue) {
@@ -947,7 +953,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean unlockRegion(IBXMLAble xml, String parentObjectInstanceID) {
 		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
@@ -984,7 +990,7 @@ public class IBXMLWriter {
 		return removeElement(parent,child,true);
 	}
 	/**
-	 *  
+	 *
 	 */
 	public boolean removeElement(XMLElement parent, XMLElement child, boolean removeICObjectInstance) throws Exception {
 		List children = getChildElements(child);
@@ -1016,14 +1022,14 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	private List getChildElements(XMLElement parent) {
 		return parent.getChildren();
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean labelRegion(IBXMLAble xml, String parentObjectInstanceID, String label) {
 		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
@@ -1066,7 +1072,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean copyModule(IBXMLAble xml, String parentObjectInstanceID, String instanceId) {
 		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
@@ -1084,7 +1090,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	private boolean copyModule(XMLElement parent, XMLElement child) throws Exception {
 		List children = getChildElements(child);
@@ -1109,7 +1115,7 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public boolean addNewElement(IBXMLAble xml, String parentObjectInstanceID, XMLElement element) {
 		XMLElement parent = findModule(xml, parentObjectInstanceID);
@@ -1118,36 +1124,36 @@ public class IBXMLWriter {
 		}
 		return true;
 	}
-	
+
 	/**
-	 *  
+	 *
 	 */
 	public boolean insertElementAbove(IBXMLAble xml, String parentInstanceId, XMLElement elementToInsert, String instanceIdToInsertAbove) {
 		return insertElement(xml,null,parentInstanceId,instanceIdToInsertAbove,elementToInsert,true,false);
 	}
-	
+
 	public boolean insertElementBelow(IBXMLAble xml, String parentInstanceId, XMLElement elementToInsert, String instanceIdToInsertBelow) {
 		return insertElement(xml,null,parentInstanceId,instanceIdToInsertBelow,elementToInsert,false,false);
 	}
-	
+
 	public boolean pasteElementLastIntoParentOrRegion(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element) {
 		return insertElementLastIntoParentOrRegion(xml, pageKey, parentInstanceId, label, element, true);
 	}
-	
+
 	public boolean insertElementLastIntoParentOrRegion(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element) {
 		return insertElementLastIntoParentOrRegion(xml, pageKey, parentInstanceId, label, element, false);
 	}
-	
+
 	public boolean insertElementLastIntoParentOrRegion(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element, boolean changeInstanceId) {
 		String instanceId = insertElementLast(xml, pageKey, parentInstanceId, label, element, changeInstanceId);
 		return instanceId != null;
 	}
-	
+
 	public String insertElementLast(IBXMLAble xml, String pageKey, String parentInstanceId, String label, XMLElement element, boolean changeInstanceId) {
 		if (changeInstanceId) {
 			changeModuleIds(element, pageKey);
 		}
-		
+
 		XMLElement parent = findXMLElementWithId(xml, parentInstanceId);
 		if (parent != null) {
 			parent.addContent(element);
@@ -1159,29 +1165,29 @@ public class IBXMLWriter {
 				XMLElement region = new XMLElement(IBXMLConstants.REGION_STRING);
 				XMLAttribute id = new XMLAttribute(IBXMLConstants.ID_STRING, parentInstanceId);
 				region.setAttribute(id);
-				
+
 				String parentID = parentInstanceId.substring(0, index);
 				XMLElement regionParent = findModule(xml, parentID);
-				
+
 				if (label != null) {
 					XMLAttribute labelAttr = new XMLAttribute(IBXMLConstants.LABEL_STRING, label);
 					region.setAttribute(labelAttr);
 				}
-				
+
 				if (regionParent != null) {
 					regionParent.addContent(region);
 				}
 				else {
 					xml.getPageRootElement().addContent(region);
 				}
-				
+
 				region.addContent(element);
 				return getElementId(element);
 			}
 			else {
 				XMLElement region = findRegion(xml, label, parentInstanceId);
 				if (region == null) {
-					//add the region 
+					//add the region
 					region = createRegion(parentInstanceId, label);
 					//This is in a page that is extending a template
 					xml.getPageRootElement().addContent(region);
@@ -1191,7 +1197,7 @@ public class IBXMLWriter {
 			}
 		}
 	}
-	
+
 	private String getElementId(XMLElement element) {
 		if (element == null) {
 			return null;
@@ -1202,7 +1208,7 @@ public class IBXMLWriter {
 		}
 		return attribute.getValue();
 	}
-	
+
 	protected boolean addRegionToRootElement(IBXMLAble xml, String label, String parentId) {
 		XMLElement region = findRegion(xml, label, parentId);
 		if (region == null) {
@@ -1216,17 +1222,17 @@ public class IBXMLWriter {
 	public boolean pasteElementBelow(IBXMLAble xml, String pageKey, String parentObjectInstanceID,String objectId, XMLElement element) {
 		return pasteElement(xml, pageKey, parentObjectInstanceID,objectId, element, false);
 	}
-	
+
 	public boolean pasteElementAbove(IBXMLAble xml, String pageKey, String parentObjectInstanceID,String objectId, XMLElement element) {
 		return pasteElement(xml, pageKey, parentObjectInstanceID,objectId, element, true);
 	}
-	
+
 	public boolean pasteElement(IBXMLAble xml, String pageKey, String parentObjectInstanceID,String objectId, XMLElement elementToPaste, boolean pasteAbove){
 		return insertElement(xml, pageKey, parentObjectInstanceID, objectId, elementToPaste, pasteAbove,true);
 	}
-	
+
 	/**
-	 *  
+	 *
 	 */
 	public boolean insertElement(IBXMLAble xml, String pageKey, String parentObjectInstanceID,
 			String objectId, XMLElement element, boolean pasteAbove, boolean changeInstanceId) {
@@ -1266,8 +1272,8 @@ public class IBXMLWriter {
 						if(counter==index && !pasteAbove){
 							parent.addContent(element);
 						}
-						
-						
+
+
 					}
 				}
 			}
@@ -1280,15 +1286,15 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	private boolean changeModuleIds(XMLElement element, String pageKey) {
 		try {
 			XMLAttribute instanceIDAttribute = element.getAttribute(IBXMLConstants.ID_STRING);
-			
+
 			//only for backward compatability, we now only use the ID attribute with a UUID
 			XMLAttribute object_id = element.getAttribute(IBXMLConstants.IC_OBJECT_ID_STRING);
-			
+
 			if(object_id!=null){
 				//OLD WAY
 				//If a ic_object_id is found then try to generate a new ic_object_instance and take its uniqueId:
@@ -1311,17 +1317,17 @@ public class IBXMLWriter {
 				if(classNameXML!=null){
 					className = classNameXML.getValue();
 				}
-				
+
 				String newUuid = generator.generateId();
 				String newValue = IBXMLReader.UUID_PREFIX+newUuid;
 				instanceIDAttribute = new XMLAttribute(IBXMLConstants.ID_STRING, newValue);
-				
+
 				if(className!=null){
 					//making sure there creates a new ICObjectInstance record
 					getBuilderLogic().getIBXMLReader().getICObjectInstanceFromComponentId(newValue, className,pageKey);
 				}
 			}
-			
+
 			element.setAttribute(instanceIDAttribute);
 			List childs = element.getChildren(IBXMLConstants.MODULE_STRING);
 			if (childs != null) {
@@ -1373,12 +1379,12 @@ public class IBXMLWriter {
 	}
 
 	/**
-	 *  
+	 *
 	 */
 	public XMLElement copyModule(IBXMLAble xml, String id) {
 		return (findXMLElementWithId(xml, id));
 	}
-	
+
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}

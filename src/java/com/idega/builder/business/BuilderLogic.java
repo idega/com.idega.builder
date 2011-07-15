@@ -28,6 +28,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.render.RenderKitFactory;
 
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
+import org.htmlcleaner.CleanerProperties;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -112,6 +115,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.repository.RepositoryService;
+import com.idega.repository.RepositorySession;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.SingletonRepository;
 import com.idega.servlet.filter.BaseFilter;
@@ -1348,7 +1352,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	 * @param session
 	 * @return
 	 */
-	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId, RepositoryService session) {
+	public boolean deleteModule(String pageKey, String parentObjectInstanceID, String instanceId, RepositorySession session) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1757,7 +1761,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		return (false);
 	}
 
-	public String addNewModule(String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID, String label, RepositoryService session) {
+	public String addNewModule(String pageKey, String parentObjectInstanceID, String regionId, int newICObjectID, String label, RepositorySession session) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1807,7 +1811,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	 * @param slideSession
 	 * @return
 	 */
-	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, RepositoryService slideSession) {
+	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, RepositorySession slideSession) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1871,7 +1875,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		return false;
 	}
 
-	private boolean savePage(IBXMLPage page, RepositoryService session) {
+	private boolean savePage(IBXMLPage page, RepositorySession session) {
 		if (page == null) {
 			return false;
 		}
@@ -2870,16 +2874,16 @@ public class BuilderLogic extends DefaultSpringBean {
 		return IBPageUpdater.addLocalizedPageName(id, ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()), newName);
 	}
 
-	public Collection getTopLevelTemplates(IWApplicationContext iwac) {
+	public Collection<PageTreeNode> getTopLevelTemplates(IWApplicationContext iwac) {
 		return DomainTree.getDomainTree(iwac).getTemplatesNode().getChildren();
 	}
 
 	public Collection<PageTreeNode> getTopLevelPages(IWContext iwc){
 		Collection<PageTreeNode> coll = DomainTree.getDomainTree(iwc).getPagesNode().getChildren();
 
-		List <PageTreeNode>unsortedNodes = new ArrayList <PageTreeNode> (coll);
-		List <PageTreeNode>sortedNodes = new ArrayList<PageTreeNode>();
-		List <PageTreeNode>nodesLeft = new ArrayList<PageTreeNode>();
+		List<PageTreeNode>unsortedNodes = new ArrayList<PageTreeNode>(coll);
+		List<PageTreeNode>sortedNodes = new ArrayList<PageTreeNode>();
+		List<PageTreeNode>nodesLeft = new ArrayList<PageTreeNode>();
 
 		try {
 			for(int i = 0; i < coll.size(); i++){
@@ -3808,16 +3812,16 @@ public class BuilderLogic extends DefaultSpringBean {
 			return null;
 		}
 
-		HtmlCleaner cleaner = htmlStream == null ? new HtmlCleaner(htmlContent) : new HtmlCleaner(htmlStream);
-		cleaner.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
-		cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
-		cleaner.setOmitComments(omitComments);
-		cleaner.setOmitXmlDeclaration(true);
-		cleaner.setUseCdataForScriptAndStyle(false);
-
+		CleanerProperties props = new CleanerProperties();
+		props.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
+		props.setOmitHtmlEnvelope(omitHtmlEnvelope);
+		props.setOmitComments(omitComments);
+		props.setOmitXmlDeclaration(true);
+		props.setUseCdataForScriptAndStyle(false);
+		HtmlCleaner cleaner = new HtmlCleaner(props);
 		try {
-			cleaner.clean();
-			htmlContent = cleaner.getPrettyXmlAsString();
+			TagNode tagNode = htmlStream == null ? cleaner.clean(htmlContent) : cleaner.clean(htmlStream);
+			htmlContent = tagNode.getText().toString();
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
 			return null;
@@ -4019,7 +4023,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public boolean copyAllModulesFromRegionIntoRegion(String pageKey, String sourceRegionLabel, String destinationRegionId, String destinationRegionLabel,
-			RepositoryService session) {
+			RepositorySession session) {
 		if (pageKey == null || sourceRegionLabel == null || destinationRegionId == null || destinationRegionLabel == null) {
 			return false;
 		}

@@ -17,7 +17,6 @@ import com.idega.builder.business.IBXMLReader;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.EditModuleBlock;
 import com.idega.builder.presentation.SetModulePropertyBlock;
-import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.cache.IWCacheManager2;
@@ -28,37 +27,38 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.repository.RepositorySession;
 import com.idega.repository.data.RefactorClassRegistry;
-import com.idega.slide.business.IWSlideSession;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.StringUtil;
 import com.idega.xml.XMLElement;
 
 public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
-	
+
 	private static final long serialVersionUID = -4806588458269035118L;
 	private static final Logger LOGGER = Logger.getLogger(BuilderEngineBean.class.getName());
-	
+
 	private CutModuleBean cutModule = null;
-	
+
+	@Override
 	public List<String> getBuilderInitInfo(String uri) {
 		List<String> info = new ArrayList<String>();
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return info;
 		}
-		
+
 		IWBundle bundle = BuilderLogic.getInstance().getBuilderBundle();
 		IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
-		
+
 		info.add(BuilderLogic.getInstance().getUriToObject(AddModuleBlock.class));											// 0
 		info.add(iwrb.getLocalizedString("ib_addmodule_window", "Add a new Module"));										// 1
 		info.add(iwrb.getLocalizedString("set_module_properties", "Set module properties"));								// 2
 		info.add(new StringBuffer(bundle.getResourcesPath()).append("/add.png").toString());								// 3
 		info.add(new StringBuffer(bundle.getResourcesPath()).append("/information.png").toString());						// 4
 		info.add(iwrb.getLocalizedString("no_ids_inserting_module", "Error occurred while inserting selected module!"));	// 5
-		
+
 		String pageKey = null;
 		try {
 			pageKey = BuilderLogic.getInstance().getPageKeyByURI(uri, iwc.getDomain());
@@ -66,7 +66,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			LOGGER.log(Level.WARNING, "Error getting page key for uri: " + uri, e);
 		}
 		info.add(StringUtil.isEmpty(pageKey) ? String.valueOf(-1) : pageKey);												// 6
-		
+
 		info.add(iwrb.getLocalizedString("adding", "Adding..."));															// 7
 		info.add(iwrb.getLocalizedString("create_simple_template.Region", "Region"));										// 8
 		info.add(BuilderLogic.getInstance().getUriToObject(EditModuleBlock.class));											// 9
@@ -85,28 +85,30 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		info.add(iwrb.getLocalizedString("region", "region"));																// 22
 		info.add(bundle.getVirtualPathWithFileNameString("remove.png"));													// 23
 		info.add(iwrb.getLocalizedString("remove", "Remove"));																// 24
-		
+
 		return info;
 	}
-	
+
+	@Override
 	public String addModule(String pageKey, String containerId, String instanceId, int objectId, boolean useThread) {
 		if (pageKey == null || instanceId == null || objectId < 0) {
 			return null;
 		}
-		
+
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
 		}
-		
+
 		return addModule(iwc, pageKey, containerId, instanceId, objectId, useThread);
 	}
-	
+
+	@Override
 	public Document addSelectedModule(String pageKey, String instanceId, int objectId, String containerId, String className, int index, boolean useThread) {
 		if (pageKey == null || instanceId == null || objectId < 0 || className == null) {
 			return null;
 		}
-		
+
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
@@ -116,7 +118,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		if (component == null) {
 			return null;
 		}
-		
+
 		String uuid = addModule(iwc, pageKey, containerId, instanceId, objectId, useThread);
 		if (uuid == null) {
 			return null;
@@ -130,40 +132,42 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 				((PresentationObject) component).setICObjectInstanceID(oi.getID());
 			}
 		}
-		
+
 		Document transformedModule = getTransformedModule(pageKey, iwc, component, index, containerId);
-		IWSlideSession session = getSession(iwc);
+		RepositorySession session = getRepositorySession(iwc);
 		if (transformedModule != null && session != null) {
 			BuilderLogic.getInstance().clearAllCachedPages();	// Because IBXMLPage is saved using other thread, need to delete cache
 		}
-		
+
 		return transformedModule;
 	}
-	
+
+	@Override
 	public Document getRenderedModule(String pageKey, String uuid, int index, String parentId) {
 		if (pageKey == null || uuid == null) {
 			return null;
 		}
-		
+
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
 		}
-		
+
 		UIComponent component = BuilderLogic.getInstance().findComponentInPage(iwc, pageKey, uuid);
 		if (component == null) {
 			return null;
 		}
-		
+
 		return getTransformedModule(pageKey, iwc, component, index, parentId);
 	}
-	
+
+	@Override
 	public boolean deleteSelectedModule(String pageKey, String parentId, String instanceId) {
 		if (pageKey == null || parentId == null || instanceId == null) {
 			return false;
 		}
 		boolean result = false;
-		IWSlideSession session = getSession(CoreUtil.getIWContext());
+		RepositorySession session = getRepositorySession(CoreUtil.getIWContext());
 		synchronized (BuilderLogic.getInstance()) {
 			result = BuilderLogic.getInstance().deleteModule(pageKey, parentId, instanceId, session);
 		}
@@ -172,7 +176,8 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		}
 		return result;
 	}
-	
+
+	@Override
 	public Document getPropertyBox(String pageKey, String propertyName, String objectInstanceId) {
 		if (propertyName == null || objectInstanceId == null) {
 			return null;
@@ -184,21 +189,22 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		if (pageKey == null) {
 			pageKey = String.valueOf(iwc.getCurrentIBPageID());
 		}
-		
+
 		iwc.setApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER, pageKey);
 		iwc.setApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER, propertyName);
 		iwc.setApplicationAttribute(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER, objectInstanceId);
-		
+
 		PresentationObject propertyBox = new SetModulePropertyBlock();
 		Document renderedBox = BuilderLogic.getInstance().getRenderedComponent(iwc, propertyBox, false);
-		
+
 		iwc.removeApplicationAttribute(BuilderConstants.IB_PAGE_PARAMETER);
 		iwc.removeApplicationAttribute(BuilderConstants.METHOD_ID_PARAMETER);
 		iwc.removeApplicationAttribute(ICBuilderConstants.IC_OBJECT_INSTANCE_ID_PARAMETER);
-		
+
 		return renderedBox;
 	}
-	
+
+	@Override
 	public boolean setSimpleModuleProperty(String pageKey, String moduleId, String propertyName, String propertyValue) {
 		if (BuilderLogic.getInstance().setModuleProperty(pageKey, moduleId, propertyName, new String[] {propertyValue})) {
 			clearCacheIfNeeded(pageKey, moduleId);
@@ -206,7 +212,8 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		}
 		return false;
 	}
-	
+
+	@Override
 	public boolean setModuleProperty(String pageKey, String moduleId, String propertyName, String[] values) {
 		if (BuilderLogic.getInstance().setModuleProperty(pageKey, moduleId, propertyName, values)) {
 			clearCacheIfNeeded(pageKey, moduleId);
@@ -214,23 +221,25 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		}
 		return false;
 	}
-	
+
+	@Override
 	public Document reRenderObject(String pageKey, String instanceId) {
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return null;
 		}
-		
+
 		UIComponent object = BuilderLogic.getInstance().findComponentInPage(iwc, pageKey, instanceId);
 		if (object instanceof Table) {
 			Page page = BuilderLogic.getInstance().getPage(pageKey, iwc);
 			object = BuilderLogic.getInstance().getTransformedTable(page, pageKey, object, iwc, iwc.getSessionAttribute(BuilderLogic.CLIPBOARD) == null);
 		}
-		
+
 		boolean isJsfComponent = isModuleJsfType(pageKey, instanceId);
 		return BuilderLogic.getInstance().getRenderedComponent(iwc, object, isJsfComponent);
 	}
-	
+
+	@Override
 	public boolean copyModule(String pageKey, String parentId, String instanceId) {
 		if (pageKey == null || instanceId == null) {
 			return false;
@@ -239,12 +248,13 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		if (iwc == null) {
 			return false;
 		}
-		
+
 		cutModule = parentId == null ? null : new CutModuleBean(pageKey, parentId, instanceId);
-		
+
 		return BuilderLogic.getInstance().copyModule(iwc, pageKey, instanceId);
 	}
-	
+
+	@Override
 	public String[] isModuleInClipboard() {
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
@@ -260,7 +270,8 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		}
 		return ids;
 	}
-	
+
+	@Override
 	public Document pasteModule(String pageKey, String parentId, int modulesCount, boolean paste) {
 		if (pageKey == null || parentId == null) {
 			return null;
@@ -269,7 +280,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		if (iwc == null) {
 			return null;
 		}
-		
+
 		String instanceId = null;
 		if (paste) {
 			instanceId = BuilderLogic.getInstance().putModuleIntoRegion(iwc, pageKey, parentId, parentId, true);
@@ -278,23 +289,24 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			instanceId = BuilderLogic.getInstance().moveModule(pageKey, cutModule.getPageKey(), cutModule.getParentId(), cutModule.getInstanceId(), parentId, iwc);
 			cutModule = null;
 		}
-		
+
 		if (instanceId == null) {
 			return null;
 		}
-		
+
 		if (!paste) {
 			iwc.removeSessionAttribute(BuilderLogic.CLIPBOARD);
 		}
 
 		return getTransformedModule(pageKey, iwc, BuilderLogic.getInstance().findComponentInPage(iwc, pageKey, instanceId), (modulesCount + 1), parentId);
 	}
-	
+
+	@Override
 	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove) {
 		if (instanceId == null || pageKey == null || formerParentId == null || newParentId == null || neighbourInstanceId == null) {
 			return false;
 		}
-		
+
 		try {
 			return BuilderLogic.getInstance().moveModule(instanceId, pageKey, formerParentId, newParentId, neighbourInstanceId, insertAbove);
 		} catch (Exception e) {
@@ -302,30 +314,32 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			return false;
 		}
 	}
-	
+
+	@Override
 	public boolean removeProperty(String pageKey, String moduleId, String propertyName) {
 		if (BuilderLogic.getInstance().removeModuleProperty(pageKey, moduleId, propertyName)) {
 			clearCacheIfNeeded(pageKey, moduleId);
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
+	@Override
 	public boolean needReloadPropertyBox() {
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return false;
 		}
-		
+
 		Object parameter = iwc.getSessionAttribute(BuilderConstants.BUILDER_MODULE_PROPERTY_HAS_BOOLEAN_TYPE_ATTRIBUTE);
 		if (parameter instanceof Boolean) {
 			return (Boolean) parameter;
 		}
-		
+
 		return false;
 	}
-	
+
 	private Document getTransformedModule(String pageKey, IWContext iwc, UIComponent component, int index, String parentId) {
 		if (component == null) {
 			return null;
@@ -334,13 +348,13 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		if (currentPage == null) {
 			return null;
 		}
-		
+
 		PresentationObject transformed = BuilderLogic.getInstance().getTransformedObject(currentPage, pageKey, component, index, currentPage, parentId, iwc);
-		
+
 		boolean isJsfComponent = IBPropertyHandler.getInstance().isJsfComponent(iwc, component.getClass().getName());
 		return BuilderLogic.getInstance().getRenderedComponent(iwc, transformed, isJsfComponent);
 	}
-	
+
 	private UIComponent getComponentInstance(String className) {
 		Class<?> objectClass = null;
 		try {
@@ -365,21 +379,21 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			LOGGER.warning("Unknown object: " + o);
 			return null;
 		}
-		
+
 		return component;
 	}
-	
+
 	private String addModule(IWContext iwc, String pageKey, String containerId, String parentInstanceId, int objectId, boolean useThread) {
 		String uuid = null;
-		IWSlideSession session = null;
+		RepositorySession session = null;
 		if (useThread) {
-			session = getSession(iwc);
+			session = getRepositorySession(iwc);
 		}
-		
+
 		if (parentInstanceId.indexOf(CoreConstants.DOT) != -1) {
 			containerId = null;
 		}
-		
+
 		synchronized (BuilderLogic.getInstance()) {
 			uuid = BuilderLogic.getInstance().addNewModule(pageKey, parentInstanceId, objectId, containerId, session);
 		}
@@ -388,55 +402,38 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		}
 		return new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
 	}
-	
-	private IWSlideSession getSession(IWContext iwc) {
-		if (iwc == null) {
-			iwc = CoreUtil.getIWContext();
-			if (iwc == null) {
-				return null;
-			}
-		}
-		IWSlideSession session = null;
-		try {
-			session = (IWSlideSession) IBOLookup.getSessionInstance(iwc, IWSlideSession.class);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error getting " + IWSlideSession.class.getSimpleName(), e);
-			return null;
-		}
-		return session;
-	}
 
 	protected class CutModuleBean {
-		
+
 		private String pageKey = null;
 		private String parentId = null;
 		private String instanceId = null;
-		
+
 		protected  CutModuleBean(String pageKey, String parentId, String instanceId) {
 			this.pageKey = pageKey;
 			this.parentId = parentId;
 			this.instanceId = instanceId;
 		}
-		
+
 		protected String getPageKey() {
 			return pageKey;
 		}
-		
+
 		protected String getParentId() {
 			return parentId;
 		}
-		
+
 		protected String getInstanceId() {
 			return instanceId;
 		}
 	}
-	
+
 	private boolean isModuleJsfType(String pageKey, String instanceId) {
 		String className = BuilderLogic.getInstance().getModuleClassName(pageKey, instanceId);
 		IWContext iwc = CoreUtil.getIWContext();
 		return IBPropertyHandler.getInstance().isJsfComponent(iwc, className);
 	}
-	
+
 	private void clearCacheIfNeeded(String pageKey, String instanceId) {
 		if (isModuleJsfType(pageKey, instanceId)) {
 			IWContext iwc = CoreUtil.getIWContext();

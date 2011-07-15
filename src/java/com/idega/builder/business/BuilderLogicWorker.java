@@ -14,11 +14,11 @@ public class BuilderLogicWorker implements Runnable {
 
 	@Override
 	public void run() {
-		if (page == null) {
+		if (page == null || user == null) {
 			return;
 		}
 		try {
-			page.store(user);
+			page.store();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
