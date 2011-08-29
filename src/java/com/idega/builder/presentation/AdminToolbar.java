@@ -85,6 +85,7 @@ public class AdminToolbar extends IWBaseComponent {
 		layer.add(login);
 		
 		Lists list = new Lists();
+		list.setModernNavigation(Boolean.FALSE);
 		layer.add(list);
 		
 		ListItem themes = new ListItem();
