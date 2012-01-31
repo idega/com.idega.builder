@@ -1,9 +1,13 @@
 package com.idega.builder.form.presentation;
 
 import java.io.File;
+import java.util.List;
 
 import com.idega.builder.business.BuilderConstants;
+import com.idega.builder.form.business.EmailedFormBusiness;
 import com.idega.builder.handler.IBGenericFormHandler;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
 import com.idega.presentation.Block;
@@ -12,17 +16,13 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-
-import java.util.List;
-import com.idega.builder.form.business.EmailedFormBusiness;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
+import com.idega.util.SendMail;
 
 /**
  * Title: idegaWeb Builder Description: idegaWeb Builder is a framework for
  * building and rapid development of dynamic web applications Copyright:
  * Copyright (c) 2001 Company: idega
- * 
+ *
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson </a>
  * @version 1.0
  */
@@ -49,11 +49,11 @@ public class FormEmailer extends Block {
 	private boolean sendReceipt = false;
 
 	private String receiptEmailParameter;
-	
+
 	private String spambot_catch_dummy_parameter;
 	private String spambot_catch_time_parameter;
 	private Integer spambot_catch_timeup;
-	
+
 	private static String CONFIRM_PARAMETER = "ib_formem_conf";
 
 	private static String TEXT_SESSION_KEY = "IB_FORMEMAILER_TEXT";
@@ -64,15 +64,15 @@ public class FormEmailer extends Block {
 	private boolean saveForm = false;
 	private String formType = null;
 	private String fieldList = null;
-	
+
 
 	public FormEmailer() {
 		this.handler = new IBGenericFormHandler();
 	}
-	
+
 	@Override
 	public void main(IWContext iwc) {
-		
+
 		if(isSpambot(iwc)) {
 			add(
 				getBundle(iwc).getResourceBundle(iwc).getLocalizedString("formemailer.spambotdetected",
@@ -80,7 +80,7 @@ public class FormEmailer extends Block {
 			);
 			return;
 		}
-		
+
 		UploadFile uploadFile = iwc.getUploadedFile();
 		if (uploadFile != null) {
 			String uploadedFileName = uploadFile.getAbsolutePath();
@@ -187,7 +187,7 @@ public class FormEmailer extends Block {
 			// System.out.println("formText==null");
 			formText = iwrb.getLocalizedString("formemailer.error_no_email_body", "<<No email body found>>");
 		}
-		
+
 		if (this.emailToSendTo == null) {
 			String error3 = iwrb.getLocalizedString("formemailer.error3", "No email to send to");
 			throw new Exception(error3);
@@ -209,13 +209,12 @@ public class FormEmailer extends Block {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-			com.idega.util.SendMail.send(emailFrom, this.emailToSendTo, "", "", this.emailServer, this.subject, bodyText, uploadFile);
-		}
-		catch (Exception e) {
+			SendMail.send(emailFrom, this.emailToSendTo, "", "", null, this.emailServer, this.subject, bodyText, false, false, uploadFile);
+		} catch (Exception e) {
 			e.printStackTrace();
-			com.idega.util.SendMail.send(this.senderEmail, this.emailToSendTo, "", "", this.emailServer, this.subject, bodyText, uploadFile);
+			SendMail.send(this.senderEmail, this.emailToSendTo, "", "", null, this.emailServer, this.subject, bodyText, false, false, uploadFile);
 		}
 		if (this.sendReceipt) {
 			String receiptSubject = iwrb.getLocalizedString("formemailer.receiptSubject",
@@ -226,53 +225,50 @@ public class FormEmailer extends Block {
 			String emailReceiptTo = this.handler.getParameterValue(iwc, this.receiptEmailParameter);
 			if (emailReceiptTo != null) {
 				try {
-					com.idega.util.SendMail.send(this.emailToSendTo, emailReceiptTo, "", "", this.emailServer, receiptSubject,
-							receiptBody + "\n" + receiptSignature);
+					SendMail.send(this.emailToSendTo, emailReceiptTo, "", "", this.emailServer, receiptSubject,	receiptBody + "\n" + receiptSignature);
 				}
 				catch (Exception e) {
 					try {
-						com.idega.util.SendMail.send(emailFrom, emailReceiptTo, "", "", this.emailServer, receiptSubject,
-								receiptBody + "\n" + receiptSignature);
+						SendMail.send(emailFrom, emailReceiptTo, "", "", this.emailServer, receiptSubject, receiptBody + "\n" + receiptSignature);
 					}
 					catch (Exception e1) {
-						com.idega.util.SendMail.send(this.senderEmail, emailReceiptTo, "", "", this.emailServer, receiptSubject,
-								receiptBody + "\n" + receiptSignature);
+						SendMail.send(this.senderEmail, emailReceiptTo, "", "", this.emailServer, receiptSubject, receiptBody + "\n" + receiptSignature);
 					}
 				}
 			}
 		}
-		
+
 		cleanUpFromSession(iwc);
 	}
-	
+
 	protected boolean isSpambot(IWContext iwc) {
-		
+
 		if(getSpambotCatchDummyParameter() != null) {
-			
+
 			String dsc_par = handler.getParameterValue(iwc, getSpambotCatchDummyParameter());
-			
+
 			if(!"0".equals(dsc_par))
 				return true;
 		}
-		
+
 		if(getSpambotCatchTimeParameter() != null) {
-			
+
 			String sct_par = handler.getParameterValue(iwc, getSpambotCatchTimeParameter());
-			
+
 			if(sct_par == null)
 				return true;
-			
+
 			try {
 				int sct = Integer.parseInt(sct_par);
-				
+
 				if(sct < getSpambotCatchTimeup().intValue())
 					return true;
-				
+
 			} catch (Exception e) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -283,7 +279,7 @@ public class FormEmailer extends Block {
 			StringBuffer buffer = new StringBuffer(fieldList);
 			buffer.append(";");
 			buffer.append(paramName);
-			
+
 			this.fieldList = buffer.toString();
 		}
 
@@ -340,19 +336,19 @@ public class FormEmailer extends Block {
 	public void setSaveForm(boolean saveForm) {
 		this.saveForm = saveForm;
 	}
-	
+
 	public boolean getSaveForm() {
 		return this.saveForm;
 	}
-	
+
 	public void setFormType(String formType) {
 		this.formType = formType;
 	}
-	
+
 	public String getFormType() {
 		return this.formType;
 	}
-	
+
 	public boolean getSendReceipt() {
 		return this.sendReceipt;
 	}
@@ -389,7 +385,7 @@ public class FormEmailer extends Block {
 	public void setSpambotCatchTimeup(Integer spambot_catch_timeout) {
 		this.spambot_catch_timeup = spambot_catch_timeout;
 	}
-	
+
 	private EmailedFormBusiness getEmailedFormBusiness(IWContext iwc) throws IBOLookupException {
 		return (EmailedFormBusiness) IBOLookup.getServiceInstance(iwc, EmailedFormBusiness.class);
 	}
