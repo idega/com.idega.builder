@@ -11,6 +11,9 @@ package com.idega.builder.business;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.faces.component.UIComponent;
 import com.idega.repository.data.Instantiator;
 import com.idega.repository.data.Singleton;
@@ -38,7 +41,7 @@ public class ComponentPropertyHandler implements Singleton {
      void setReflectionProperty(UIComponent instance,String methodIdentifier,List stringValues){
       Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier,instance.getClass());
       if(method==null){
-        throw new RuntimeException("Method: "+methodIdentifier+" not found");
+    	  throw new RuntimeException("Method: "+methodIdentifier+" not found for component: " + instance.getClass().getName());
       }
       setReflectionProperty(instance,method,stringValues);
      }
