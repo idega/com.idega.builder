@@ -40,7 +40,7 @@ public class BuilderSlideListenerBean extends IBOServiceBean implements BuilderS
 			return;
 
 		try {
-			while (events.hasNext()) {
+			for (; events.hasNext();) {
 				Event event = events.nextEvent();
 				String uri = event.getPath();
 				if (uri.startsWith(CoreConstants.PAGES_PATH) && uri.indexOf("idega_theme") == -1 && uri.indexOf("article_viewer_template") == -1 &&
@@ -51,5 +51,15 @@ public class BuilderSlideListenerBean extends IBOServiceBean implements BuilderS
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getPath() {
+		return CoreConstants.PAGES_PATH;
+	}
+
+	@Override
+	public int getEventTypes() {
+		return Event.NODE_ADDED | Event.NODE_MOVED | Event.NODE_REMOVED;
 	}
 }
