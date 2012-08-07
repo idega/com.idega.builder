@@ -28,7 +28,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.render.RenderKitFactory;
 
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
-import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.jdom.Attribute;
@@ -159,7 +158,7 @@ import com.idega.xml.XMLElement;
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class BuilderLogic extends DefaultSpringBean {
 
-	private static final Logger logger = Logger.getLogger(BuilderLogic.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(BuilderLogic.class.getName());
 
 	private static final String PAGES_PREFIX = "/pages/";
 	public static final String IB_PARENT_PARAMETER = "ib_parent_par";
@@ -296,7 +295,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		try {
 			session = ELUtil.getInstance().getBean(AdminToolbarSession.class);
 		} catch(Exception e) {
-			logger.log(Level.WARNING, "Error getting bean: " + AdminToolbarSession.class, e);
+			LOGGER.log(Level.WARNING, "Error getting bean: " + AdminToolbarSession.class, e);
 		}
 		if (session == null) {
 			return null;
@@ -534,7 +533,7 @@ public class BuilderLogic extends DefaultSpringBean {
 
 	private void filterForPermission(List<Integer> groupIds, PresentationObject obj, PresentationObjectContainer parentObject, int index, IWContext iwc) {
 		if (!iwc.hasViewPermission(groupIds, obj)) {
-			logger.severe(obj + ": removed");
+			LOGGER.severe(obj + ": removed");
 			parentObject.getChildren().remove(index);
 			parentObject.getChildren().add(index, PresentationObject.NULL_CLONE_OBJECT);
 		}
@@ -1059,7 +1058,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			iwac = CoreUtil.getIWContext();
 		}
 		if (iwac == null) {
-			logger.warning("Using default IWApplicationContext to get current domain!");
+			LOGGER.warning("Using default IWApplicationContext to get current domain!");
 			iwac = IWMainApplication.getDefaultIWApplicationContext();
 		}
 
@@ -2298,7 +2297,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	private void clearCaches(IWApplicationContext iwac) {
-		logger.info("Clearing all DomainTree Cache");
+		LOGGER.info("Clearing all DomainTree Cache");
 		DomainTree.clearCache(iwac);
 		getPageCacher().flagAllPagesInvalid();
 	}
@@ -3430,7 +3429,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		try {
 			objectClass = (Class<? extends UIComponent>) Class.forName(objectClassName);
 		} catch (Exception e) {
-			logger.log(Level.WARNING, "Error creating class from: " + objectClassName, e);
+			LOGGER.log(Level.WARNING, "Error creating class from: " + objectClassName, e);
 		}
 
 		return getUriToObject(objectClass, parameters);
@@ -3780,7 +3779,7 @@ public class BuilderLogic extends DefaultSpringBean {
 //		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
 
 		if (StringUtil.isEmpty(componentHTML)) {
-			logger.warning("HTML code is empty!");
+			LOGGER.warning("HTML code is empty!");
 			return null;
 		}
 
@@ -3788,10 +3787,10 @@ public class BuilderLogic extends DefaultSpringBean {
 		try {
 			componentXML = XmlUtil.getJDOMXMLDocument(componentHTML, false);
 		} catch(Exception e) {
-			logger.log(Level.SEVERE, "Error getting XML document from HTML code:\n" + componentHTML, e);
+			LOGGER.log(Level.SEVERE, "Error getting XML document from HTML code:\n" + componentHTML, e);
 		}
 		if (componentXML == null && !cleanCode) {
-			logger.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed to create document from:\n" + componentHTML);
+			LOGGER.log(Level.INFO, "Trying with cleaned HTML code because uncleaned HTML code just failed to create document from:\n" + componentHTML);
 			return getXMLDocumentFromComponentHTML(componentHTML, true, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
 		}
 
@@ -3812,21 +3811,21 @@ public class BuilderLogic extends DefaultSpringBean {
 			return null;
 		}
 
-		CleanerProperties props = new CleanerProperties();
-		props.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
-		props.setOmitHtmlEnvelope(omitHtmlEnvelope);
-		props.setOmitComments(omitComments);
-		props.setOmitXmlDeclaration(true);
-		props.setUseCdataForScriptAndStyle(false);
-		HtmlCleaner cleaner = new HtmlCleaner(props);
+		HtmlCleaner cleaner = htmlStream == null ? new HtmlCleaner(htmlContent) : new HtmlCleaner(htmlStream);
+		cleaner.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
+		cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
+		cleaner.setOmitComments(omitComments);
+		cleaner.setOmitXmlDeclaration(true);
+		cleaner.setUseCdataForScriptAndStyle(false);
+		
 		try {
-			TagNode tagNode = htmlStream == null ? cleaner.clean(htmlContent) : cleaner.clean(htmlStream);
-			htmlContent = tagNode.getText().toString();
+			cleaner.clean();
+			htmlContent = cleaner.getPrettyXmlAsString();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
+			LOGGER.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
 			return null;
 		}
-
+		
 		return getCleanedFromXmlDeclaration(htmlContent);
 	}
 
@@ -3906,7 +3905,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	public String generateResourcePath(String base, String scope, String fileName) {
 		RepositoryService service = getRepositoryService();
 		StringBuffer path = new StringBuffer(getYearMonthPath(base)).append(BuilderConstants.SLASH);
-		path.append(service.createUniqueFileName(scope)).append(BuilderConstants.DOT);
+		path.append(service.createUniqueFileName(base, scope)).append(BuilderConstants.DOT);
 		path.append(fileName);
 		return path.toString();
 	}
@@ -4194,7 +4193,7 @@ public class BuilderLogic extends DefaultSpringBean {
 
 
 		if (startPage == null) {
-			logger.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + user);
+			LOGGER.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + user);
 			return null;
 		}
 
@@ -4238,7 +4237,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		}
 
 		if (startPage == null) {
-			logger.warning("Didn't find start page for search: " + pageType + ", user: " + user);
+			LOGGER.warning("Didn't find start page for search: " + pageType + ", user: " + user);
 			return null;
 		}
 
@@ -4251,9 +4250,9 @@ public class BuilderLogic extends DefaultSpringBean {
 			UserBusiness userBiz = IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), UserBusiness.class);
 			startPage = userBiz.getHomePageForUser(user);
 		} catch (FinderException e) {
-			logger.warning("Homepage was not found for user: " + user);
+			LOGGER.warning("Homepage was not found for user: " + user);
 		} catch (Exception e) {
-			logger.log(Level.WARNING, "Error getting homepage for user: " + user, e);
+			LOGGER.log(Level.WARNING, "Error getting homepage for user: " + user, e);
 		}
 
 		return startPage;
@@ -4412,13 +4411,13 @@ public class BuilderLogic extends DefaultSpringBean {
 
 	public RenderedComponent getRenderedComponentById(String uuid, String uri, List<AdvancedProperty> properties) {
 		if (StringUtil.isEmpty(uuid)) {
-			logger.log(Level.WARNING, "Unknown UUID!");
+			LOGGER.log(Level.WARNING, "Unknown UUID!");
 			return getRenderedInstanciatedComponent(null, null);
 		}
 
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
-			logger.log(Level.WARNING, "IWContext is unavailable");
+			LOGGER.log(Level.WARNING, "IWContext is unavailable");
 			return getRenderedInstanciatedComponent(null, null);
 		}
 
@@ -4426,26 +4425,26 @@ public class BuilderLogic extends DefaultSpringBean {
 		try {
 			pageKey = getPageKeyByURI(uri, iwc.getDomain());
 		} catch(Exception e) {
-			logger.log(Level.WARNING, "Error getting page key by uri: " + uri);
+			LOGGER.log(Level.WARNING, "Error getting page key by uri: " + uri);
 		}
 		if (StringUtil.isEmpty(pageKey)) {
 			try {
 				pageKey = getPageKeyByURI(iwc.getRequestURI(), iwc.getDomain());
 			} catch(Exception e) {
-				logger.log(Level.WARNING, "Error getting page key by uri: " + iwc.getRequestURI());
+				LOGGER.log(Level.WARNING, "Error getting page key by uri: " + iwc.getRequestURI());
 			}
 		}
 		if (StringUtil.isEmpty(pageKey)) {
 			pageKey = String.valueOf(iwc.getCurrentIBPageID());
 		}
 		if (StringUtil.isEmpty(pageKey)) {
-			logger.log(Level.WARNING, "Unable to get page key!");
+			LOGGER.log(Level.WARNING, "Unable to get page key!");
 			return getRenderedInstanciatedComponent(null, null);
 		}
 
 		UIComponent component = findComponentInPage(iwc, pageKey, uuid);
 		if (component == null) {
-			logger.log(Level.SEVERE, "Didn't find component by uuid ('" + uuid + "') in page: " + pageKey);
+			LOGGER.log(Level.SEVERE, "Didn't find component by uuid ('" + uuid + "') in page: " + pageKey);
 		}
 
 		return getRenderedComponent(component, properties);
@@ -4461,13 +4460,13 @@ public class BuilderLogic extends DefaultSpringBean {
 		try {
 			o = Class.forName(className).newInstance();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error creating instance of: " + className, e);
+			LOGGER.log(Level.SEVERE, "Error creating instance of: " + className, e);
 		}
 		if (o instanceof UIComponent) {
 			component = (UIComponent) o;
 		}
 		else {
-			logger.log(Level.WARNING, "Instance of '" + className + "' is not UIComponent!");
+			LOGGER.log(Level.WARNING, "Instance of '" + className + "' is not UIComponent!");
 			return getRenderedInstanciatedComponent(null, null);
 		}
 
@@ -4493,7 +4492,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			try {
 				MethodInvoker.getInstance().invokeMethodWithParameter(o, property.getId(), property.getValue());
 			} catch (Exception e) {
-				logger.log(Level.WARNING, "Error invoking method '" + property.getId() + "' with value: " + property.getValue(), e);
+				LOGGER.log(Level.WARNING, "Error invoking method '" + property.getId() + "' with value: " + property.getValue(), e);
 			}
 		}
 	}
