@@ -2,6 +2,7 @@ package com.idega.builder.facelets;
 
 import java.util.Iterator;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -13,21 +14,21 @@ import com.idega.builder.business.PageCacher;
  * <p>
  * Class to convert the Whole Builder Tree to the new Facelet formats
  * </p>
- * 
+ *
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
- * 
+ *
  * Last modified: $Date: 2009/01/14 15:35:24 $ by $Author: tryggvil $
  * @version $Id: BuilderBatchFaceletConverter.java,v 1.3 2009/01/14 15:35:24 tryggvil Exp $
  */
-@Scope("singleton")
+@Scope(BeanDefinition.SCOPE_SINGLETON)
 @Service(BuilderBatchFaceletConverter.beanIdentifier)
 public class BuilderBatchFaceletConverter {
-	
+
 	public static final String beanIdentifier = "builderBatchFaceletConverter";
 
 	BuilderLogic bLogic = BuilderLogic.getInstance();
-	
-	public void convertAllPagesToFaceletsLegacy(){		
+
+	public void convertAllPagesToFaceletsLegacy(){
 		PageCacher cacher = bLogic.getPageCacher();
 		Iterator<CachedBuilderPage> iter = cacher.getAllPages();
 		while(iter.hasNext()){
@@ -47,7 +48,7 @@ public class BuilderBatchFaceletConverter {
 			}
 		}
 	}
-	
+
 	public void convertAllPagesToFaceletsCompliant(){
 		PageCacher cacher = bLogic.getPageCacher();
 		Iterator<CachedBuilderPage> iter = cacher.getAllPages();
@@ -68,5 +69,5 @@ public class BuilderBatchFaceletConverter {
 			}
 		}
 	}
-	
+
 }
