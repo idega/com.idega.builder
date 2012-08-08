@@ -641,7 +641,7 @@ public class IBXMLWriter {
 			instance.store();
 
 			ICObject obj = icoHome.findByPrimaryKey(new Integer(newICObjectTypeID));
-			Class theClass = obj.getObjectClass();
+			Class<?> theClass = obj.getObjectClass();
 
 			uuid = instance.getUniqueId();
 			String xmlId = new StringBuffer(IBXMLReader.UUID_PREFIX).append(uuid).toString();
@@ -658,7 +658,7 @@ public class IBXMLWriter {
 		return null;
 	}
 
-	private boolean addNewModule(String xmlId, Class theClass, XMLElement parent, String pageKey, ICObject obj) {
+	private boolean addNewModule(String xmlId, Class<?> theClass, XMLElement parent, String pageKey, ICObject obj) {
 		try {
 			XMLElement newElement = new XMLElement(IBXMLConstants.MODULE_STRING);
 			XMLAttribute aId = new XMLAttribute(IBXMLConstants.ID_STRING, xmlId);
@@ -938,18 +938,14 @@ public class IBXMLWriter {
 	/**
 	 *
 	 */
-	public boolean setAttribute(IBXMLAble xml, String parentObjectInstanceID, String attributeName,
-			String attributeValue) {
+	public boolean setAttribute(IBXMLAble xml, String parentObjectInstanceID, String attributeName, String attributeValue) {
 		XMLElement parent = findXMLElementWithId(xml, parentObjectInstanceID);
 		if (parent != null) {
 			XMLAttribute attribute = new XMLAttribute(attributeName, attributeValue);
-			//      if (parent.getAttribute(attributeName) != null)
-			//        parent.removeAttribute(attributeName);
-			//      parent.addAttribute(attribute);
 			parent.setAttribute(attribute);
-			return (true);
+			return true;
 		}
-		return (false);
+		return false;
 	}
 
 	/**

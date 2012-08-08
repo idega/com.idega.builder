@@ -9,8 +9,8 @@
  */
 package com.idega.builder.business;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -25,30 +25,9 @@ import com.idega.data.IDOLookupException;
  */
 public class IBPageFinder {
 
-  public static List getAllPagesExtendingTemplate(int templateId) {
+  public static List<ICPage> getAllPagesExtendingTemplate(int templateId) {
     try {
-        /*try {
-            
-          ICPage page = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
-          StringBuffer sql = new StringBuffer("select * from ");
-          sql.append(page.getEntityName());
-          sql.append(" where ");
-          sql.append(com.idega.builder.data.IBPageBMPBean.getColumnTemplateID());
-          sql.append(" = ");
-          sql.append(templateId);
-          sql.append(" and (");
-          sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
-          sql.append(" is null or ");
-          sql.append(com.idega.builder.data.IBPageBMPBean.getColumnDeleted());
-          sql.append(" = 'N')");
-
-          return(EntityFinder.findAll(page,sql.toString()));
-        }
-        catch(SQLException e) {
-          return(null);
-        }
-        */
-          return new Vector(((ICPageHome)IDOLookup.getHome(ICPage.class)).findByTemplate(new Integer(templateId)));
+    	return new ArrayList<ICPage>(((ICPageHome) IDOLookup.getHome(ICPage.class)).findByTemplate(new Integer(templateId)));
     } catch (IDOLookupException e) {
         e.printStackTrace();
     } catch (FinderException e) {
