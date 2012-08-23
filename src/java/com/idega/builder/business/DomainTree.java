@@ -105,9 +105,9 @@ public class DomainTree extends DefaultTreeNode {
 					coll = getTemplateStartPages(this.domain);
 				}
 				java.util.Iterator it = coll.iterator();
-				int order = 0;
+				//int order = 0;
 				while (it.hasNext()) {
-					order++;
+					//order++;
 					com.idega.builder.data.IBStartPage startPage = (com.idega.builder.data.IBStartPage) it.next();
 					if (startPage.getPageId() != id) {
 						PageTreeNode node = new PageTreeNode(startPage.getPageId(), iwc);
