@@ -3756,13 +3756,11 @@ public class BuilderLogic implements Singleton {
 
 	private Document getXMLDocumentFromComponentHTML(String componentHTML, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
 			boolean omitComments) {
-		if (StringUtil.isEmpty(componentHTML)) {
+		if (StringUtil.isEmpty(componentHTML))
 			return null;
-		}
 
-		if (cleanCode) {
+		if (cleanCode)
 			componentHTML = getCleanedHtmlContent(componentHTML, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
-		}
 
 		//	Removing <!--... ms-->
 		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(componentHTML);
@@ -3780,7 +3778,9 @@ public class BuilderLogic implements Singleton {
 		componentHTML = componentHTML.replaceAll("&iacute;", "&#237;");
 //		componentHTML = componentHTML.replaceAll("&lt;", "&#60;");
 //		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
-
+		componentHTML = StringHandler.replace(componentHTML, "xf:itemset", "div");
+		componentHTML = StringHandler.replace(componentHTML, "xf:item", "div");
+		
 		if (StringUtil.isEmpty(componentHTML)) {
 			logger.warning("HTML code is empty!");
 			return null;
@@ -3835,14 +3835,17 @@ public class BuilderLogic implements Singleton {
 	private String getCleanedFromXmlDeclaration(String htmlContent) {
 		// Removing <?xml version... />
 		for (Pattern pattern: getXmlEncodingReplacementPatterns()) {
-			Matcher patternMatcher = pattern.matcher(htmlContent);
-			htmlContent = patternMatcher.replaceAll(CoreConstants.EMPTY);
+			try {
+				Matcher patternMatcher = pattern.matcher(htmlContent);
+				htmlContent = patternMatcher.replaceAll(CoreConstants.EMPTY);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		String xmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		if (htmlContent.indexOf(xmlDeclaration) != -1) {
+		if (htmlContent.indexOf(xmlDeclaration) != -1)
 			htmlContent = StringHandler.replace(htmlContent, xmlDeclaration, CoreConstants.EMPTY);
-		}
 
 		return htmlContent.trim();
 	}
