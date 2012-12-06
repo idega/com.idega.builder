@@ -129,6 +129,7 @@ import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 import com.idega.util.URIUtil;
+import com.idega.util.datastructures.map.MapUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.util.reflect.MethodInvoker;
@@ -3780,7 +3781,7 @@ public class BuilderLogic implements Singleton {
 //		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
 		componentHTML = StringHandler.replace(componentHTML, "xf:itemset", "div");
 		componentHTML = StringHandler.replace(componentHTML, "xf:item", "div");
-		
+
 		if (StringUtil.isEmpty(componentHTML)) {
 			logger.warning("HTML code is empty!");
 			return null;
@@ -4088,14 +4089,16 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public ICPage findPageForModule(IWApplicationContext iwac, String instanceId) {
-		if (instanceId == null) {
-			return null;
-		}
+		return findPageForModule(iwac.getIWMainApplication(), instanceId);
+	}
 
-		Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwac);
-		if (pages == null || pages.isEmpty()) {
+	public ICPage findPageForModule(IWMainApplication iwma, String instanceId) {
+		if (instanceId == null)
 			return null;
-		}
+
+		Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwma);
+		if (MapUtil.isEmpty(pages))
+			return null;
 
 		Iterator<PageTreeNode> allPages = pages.values().iterator();
 		ICPage page = null;

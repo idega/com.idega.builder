@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import com.idega.builder.data.IBPageName;
@@ -39,12 +38,12 @@ import com.idega.util.ListUtil;
 
 /**
  * <p>
- * Data structure that holds an in memory cache of the Builder 
+ * Data structure that holds an in memory cache of the Builder
  * Page tree structure.
  * </p>
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>,
- * <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>, 
- * 
+ * <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>,
+ *
  * @version 1.0
  */
 public class PageTreeNode implements ICTreeNode, Serializable {
@@ -66,15 +65,15 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	protected PageTreeNode(int id, String name) {
 		this(id, name, -1, false, false);
 	}
-	
+
 	protected PageTreeNode(Integer pageId, String name) {
 		this(pageId.intValue(), name, -1, false, false);
 	}
-	
+
 	protected PageTreeNode(Integer pageId, String name, int order) {
 		this(pageId.intValue(), name, order, false, false);
 	}
-	
+
 	protected PageTreeNode(int id, String name, int order) {
 		this(id, name, order, false, false);
 	}
@@ -82,7 +81,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	protected PageTreeNode(Integer id, String name, boolean isCategory, boolean isHidden) {
 		this(id.intValue(), name, -1, isCategory, isHidden);
 	}
-	
+
 	protected PageTreeNode(int id, String name, boolean isCategory, boolean isHidden) {
 		this(id, name, -1, isCategory, isHidden);
 	}
@@ -90,43 +89,35 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	protected PageTreeNode(Integer pageId, String name, int order, boolean isCategory, boolean isHidden) {
 		this(pageId.intValue(),name,order,isCategory, isHidden);
 	}
-	
+
 	protected PageTreeNode(int id, String name, int order, boolean isCategory, boolean isHidden) {
 		this._id = id;
 		this._name = name;
 		this.childPageIds = new ArrayList<Integer>();
-		//this._extra = null;
 		this._order = order;
 		this._isCategory = isCategory;
 		this._isHidden = isHidden;
 	}
 
-	/**
-	 *
-	 */
-	public PageTreeNode(int id, IWApplicationContext iwc) {
-		setApplicationContext(iwc);
-		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(iwc);
+	public PageTreeNode(int id, IWApplicationContext iwac) {
+		setApplicationContext(iwac);
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(iwac.getIWMainApplication());
 		PageTreeNode node = tree.get(new Integer(id));
-		/*if (node != null) {
-			node = fixTreeOrder(node);
-		}*/
 		if (node != null) {
 			copyNode(node);
-		}
-		else {
+		} else {
 			this._id = id;
-			this.childPageIds = new Vector<Integer>();
+			this.childPageIds = new ArrayList<Integer>();
 		}
 	}
-	
+
 	public PageTreeNode(PageTreeNode clonedNode){
 		copyNode(clonedNode);
 	}
-	
+
 	/**
 	 * <p>
-	 * Copies all the properties from node clonedNode to 
+	 * Copies all the properties from node clonedNode to
 	 * this node
 	 * </p>
 	 * @param clonedNode
@@ -139,7 +130,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		this._order = clonedNode._order;
 		this._isCategory = clonedNode._isCategory;
 		this._isHidden = clonedNode._isHidden;
-		
+
 		//this._extra = node._extra;
 		this.setPageNames(clonedNode.getPageNames());
 	}
@@ -157,10 +148,10 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	public void setNodeName(String name) {
 		this._name = name;
 	}
-	
+
 	protected static Map<Integer, Map<String, String>> preloadAllNamesFromDatabase() {
 		Map<Integer, Map<String, String>> names = new HashMap<Integer, Map<String, String>>();
-		Collection<IBPageName> col = TreeNodeFinder.getAllPageNames();		
+		Collection<IBPageName> col = TreeNodeFinder.getAllPageNames();
 		if (!ListUtil.isEmpty(col)) {
 			for (IBPageName nameEntry: col) {
 				int pageId = nameEntry.getPageId();
@@ -168,39 +159,39 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 				Map<String, String> localizedNames = names.get(locId);
 				if (localizedNames == null) {
 					localizedNames = new HashMap<String, String>();
-					names.put(locId, localizedNames);					
+					names.put(locId, localizedNames);
 				}
-				
+
 				putLocalizeName(nameEntry, localizedNames);
-			}		
+			}
 		}
-		
+
 		return names;
 	}
-	
+
 	protected Map<String, String> loadNamesFromDatabase(int pageId) {
 		Map<String, String> localizedNames = new HashMap<String, String>();
-		Collection<IBPageName> col = TreeNodeFinder.getAllPageNames(pageId);		
+		Collection<IBPageName> col = TreeNodeFinder.getAllPageNames(pageId);
 		if (!ListUtil.isEmpty(col)) {
 			for (IBPageName nameEntry: col) {
 				putLocalizeName(nameEntry,localizedNames);
-			}		
+			}
 		}
 		return localizedNames;
 	}
-	
+
 	protected static void putLocalizeName(IBPageName nameEntry, Map<String, String> localizedNames){
 		int localeId = nameEntry.getLocaleId();
-						
+
 		Locale loc = ICLocaleBusiness.getLocale(localeId);
-		
+
 		StringBuffer localizedKey = new StringBuffer(loc.getLanguage());
 		String country = loc.getCountry();
 		if (country != null && !country.equals("")) {
 			localizedKey.append("_");
 			localizedKey.append(country);
 		}
-		
+
 		localizedNames.put(localizedKey.toString(), nameEntry.getPageName());
 	}
 
@@ -287,13 +278,14 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		return tree;
 	}
 
-	/**
-	 *
-	 */
+	@Override
 	public Collection<PageTreeNode> getChildren() {
-		return getChildren(getTree(getApplicationContext()));
+		return getChildren(getTree(getApplicationContext() == null ?
+				IWMainApplication.getDefaultIWMainApplication() :
+				getApplicationContext().getIWMainApplication())
+		);
 	}
-	
+
 	protected Collection<PageTreeNode> getChildren(Map<Integer, PageTreeNode> tree){
 		List<PageTreeNode> pages = new ArrayList<PageTreeNode>();
 		Collection<Integer> childIds = getChildIds();
@@ -320,6 +312,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public Iterator<PageTreeNode> getChildrenIterator() {
 	   return getChildren().iterator();
 	}
@@ -327,6 +320,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public boolean getAllowsChildren() {
 		return true;
 	}
@@ -334,12 +328,13 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public ICTreeNode getChildAtIndex(int childIndex) {
 		Collection<PageTreeNode> children = getChildren();
 		if (ListUtil.isEmpty(children)) {
 			return null;
 		}
-		
+
 		List<PageTreeNode> temp = new ArrayList<PageTreeNode>(children);
 		return childIndex < temp.size() ? temp.get(childIndex) : null;
 	}
@@ -347,6 +342,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public int getChildCount() {
 		return this.childPageIds.size();
 	}
@@ -354,6 +350,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public int getIndex(ICTreeNode node) {
 		return 0;
 	}
@@ -361,14 +358,19 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public ICTreeNode getParentNode() {
-		PageTreeNode parent = getTree(getApplicationContext()).get(getParentId());
+		PageTreeNode parent = getTree(getApplicationContext() == null ?
+				IWMainApplication.getDefaultIWMainApplication() :
+				getApplicationContext().getIWMainApplication()
+		).get(getParentId());
 		return parent;
 	}
 
 	/**
 	 *
 	 */
+	@Override
 	public boolean isLeaf() {
 		int children = getChildCount();
 		if (children > 0) {
@@ -382,6 +384,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 * Returns the node name for this node
 	 */
+	@Override
 	public String getNodeName() {
 		return this._name;
 	}
@@ -389,36 +392,37 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 * Returns the Localized node name for this node
 	 */
+	@Override
 	public String getNodeName(Locale locale){
 		return getLocalizedNodeName(locale);
 	}
-	
+
 	public String getLocalizedNodeName(IWContext iwc) {
 		Locale curr = iwc.getCurrentLocale();
 		return getLocalizedNodeName(curr);
 	}
-	
+
 	public String getLocalizedNodeName(Locale locale) {
 		Map<String, String> pageNames = getPageNames();
 		if (pageNames == null||pageNames.isEmpty()) {
 			return getNodeName();
 		}
-	
+
 		StringBuffer localeString = new StringBuffer(locale.getLanguage());
 		String country = locale.getCountry();
 		if (country != null && !country.equals("")) {
 			localeString.append("_");
 			localeString.append(country);
 		}
-			
+
 		String localizedName = pageNames.get(localeString.toString());
 		if (localizedName != null && !localizedName.equals("")) {
 			return localizedName;
 		}
-		
+
 		return getNodeName();
-	}	
-	
+	}
+
 	public void setLocalizedNodeName(String locale, String name, IWContext iwc) {
 		Map<String, String> pageNames = getPageNames();
 		pageNames.put(locale, name);
@@ -427,10 +431,11 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	public int getPageId(){
 		return this._id;
 	}
-	
+
 	/**
 	 *
 	 */
+	@Override
 	public int getNodeID() {
 		return getPageId();
 	}
@@ -438,6 +443,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	/**
 	 *
 	 */
+	@Override
 	public int getSiblingCount() {
 		return (0);
 	}
@@ -457,7 +463,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	public boolean addChild(PageTreeNode child) {
 		return addChild(child,null);
 	}
-	
+
 	/**
 	 *
 	 */
@@ -465,7 +471,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		if (child == null) {
 			return false;
 		}
-		
+
 		child.setParent(this);
 		Integer childId = new Integer(child.getId());
 		List<Integer> childPageIds = getChildIds();
@@ -487,7 +493,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 					} else {
 						 childNodeList = getChildren(tree);
 					}
-					
+
 					if (!ListUtil.isEmpty(childNodeList)) {
 						List<PageTreeNode> temp = new ArrayList<PageTreeNode>(childNodeList);
 						for (ListIterator<PageTreeNode> it = temp.listIterator(); it.hasNext();) {
@@ -523,47 +529,50 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	 * Gets the tree and preloads it and stores in cache
 	 */
 	public static Map<Integer, PageTreeNode> getTree(IWApplicationContext iwac) {
-		return getTree(iwac,true);
+		return getTree(iwac.getIWMainApplication());
+
 	}
-	
+	public static Map<Integer, PageTreeNode> getTree(IWMainApplication iwma) {
+		return getTree(iwma, true);
+	}
+
 	/**
 	 * Gets the tree and preloads it if you set the boolean loadIfEmpty to true
 	 */
-	public static Map<Integer, PageTreeNode> getTree(IWApplicationContext iwc, boolean loadIfEmpty) {
+	public static Map<Integer, PageTreeNode> getTree(IWMainApplication iwma, boolean loadIfEmpty) {
 		Map<Integer, PageTreeNode> tree = null;
 		try {
-			tree = getCacheManager(iwc).getCache(getCacheName(),10000,true,true);
+			tree = IWCacheManager2.getInstance(iwma).getCache(getCacheName(), 10000, true, true);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		if (tree == null) {
-			getTreeFromDatabase(tree, iwc);
-		}
-		else if (tree.isEmpty() && loadIfEmpty) {
-			getTreeFromDatabase(tree, iwc);
+			getTreeFromDatabase(tree, iwma);
+		} else if (tree.isEmpty() && loadIfEmpty) {
+			getTreeFromDatabase(tree, iwma);
 		}
 
 		return tree;
 	}
-	
-	private static Map<Integer, PageTreeNode> getTreeFromDatabase(Map<Integer, PageTreeNode> tree, IWApplicationContext iwac) {
-		synchronized(iwac.getIWMainApplication()) {
+
+	private static Map<Integer, PageTreeNode> getTreeFromDatabase(Map<Integer, PageTreeNode> tree, IWMainApplication iwma) {
+		synchronized (iwma) {
 			Map<Integer, PageTreeNode> dbTree = getTreeFromDatabase();
 			if (dbTree == null) {
 				return tree;
 			}
-			
+
 			if (tree == null) {
 				tree = new Hashtable<Integer, PageTreeNode>();
 			}
-			
+
 			Map.Entry<Integer, PageTreeNode> entry = null;
 			for (Iterator<Map.Entry<Integer, PageTreeNode>> it = dbTree.entrySet().iterator(); it.hasNext();) {
 				entry = it.next();
 				tree.put(entry.getKey(), entry.getValue());
 			}
 		}
-		
+
 		return tree;
 	}
 
@@ -577,23 +586,17 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	}
 
 	/**
-	 * <p>
-	 * </p>
-	 * @param iwc
-	 * @return
-	 */
-	private static IWCacheManager2 getCacheManager(IWApplicationContext iwc) {
-		return IWCacheManager2.getInstance(iwc.getIWMainApplication());
-	}
-
-	/**
 	 * Clears the tree from cache
 	 * @param iwc
 	 */
-	public static void clearTree(IWApplicationContext iwc){
-		getTree(iwc,false).clear();
+	public static void clearTree(IWApplicationContext iwac) {
+		clearTree(iwac.getIWMainApplication());
 	}
-	
+
+	public static void clearTree(IWMainApplication iwma) {
+		getTree(iwma, false).clear();
+	}
+
 	/**
 	 *
 	 */
@@ -611,7 +614,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 			return false;
 		}
 	}
-	
+
 	protected IWApplicationContext getApplicationContext(){
 		if(this.applicationContext==null){
 			try{
@@ -631,11 +634,12 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	public boolean isCategory() {
 		return this._isCategory;
 	}
-	
+
 	public boolean isHiddenInMenu() {
 		return this._isHidden;
 	}
-	
+
+	@Override
 	public String getId(){
 		return Integer.toString(getNodeID());
 	}
@@ -650,12 +654,12 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		return this.pageNames;
 	}
 
-	
+
 	public void setPageNames(Map<String, String> pageNames){
 		this.pageNames=pageNames;
 	}
 
-	
+
 	/**
 	 * @param applicationContext the applicationContext to set
 	 */
@@ -663,7 +667,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		this.applicationContext = applicationContext;
 	}
 
-	
+
 	/**
 	 * @return the parentId
 	 */
@@ -671,37 +675,37 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		return this.parentId;
 	}
 
-	
+
 	/**
 	 * @param parentId the parentId to set
 	 */
 	public void setParentId(Integer parentId) {
 		this.parentId = parentId;
 	}
-	
+
 	public void setOrder(int order){
 		this._order = order;
 	}
-	
+
 	public int getOrder (){
 		return this._order;
 	}
-	
+
 	public PageTreeNode fixTreeOrder(PageTreeNode node){
 		if (node == null)
 			return null;
 		if (node.getChildCount() == 0)
 			return node;
-		
+
 		List<PageTreeNode> unsortedNodes = new ArrayList<PageTreeNode>();
 		for (Object o: node.getChildren()) {
 			if (o instanceof PageTreeNode) {
-				unsortedNodes.add((PageTreeNode) o); 
+				unsortedNodes.add((PageTreeNode) o);
 			} else {
 				LOGGER.warning("Object " + o + " is not instance of " + PageTreeNode.class);
 			}
 		}
-		
+
 		List<PageTreeNode> sortedNodes = new ArrayList<PageTreeNode>();
 		List<PageTreeNode> nodesLeft = new ArrayList<PageTreeNode>();
 
@@ -717,37 +721,37 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 					LOGGER.warning("There is null in unsorted pages collection: " + unsortedNodes);
 					continue;
 				}
-				
+
 				if ((childNode.getOrder() > 0) && (childNode.getOrder() <= sortedNodes.size())){
-					if (sortedNodes.get(childNode.getOrder() - 1) == null){				
+					if (sortedNodes.get(childNode.getOrder() - 1) == null){
 						sortedNodes.set(childNode.getOrder() - 1, childNode);
 					} else {
 						nodesLeft.add(childNode);
-						unsortedNodes.set(i, null);		
+						unsortedNodes.set(i, null);
 					}
 				} else {
 					nodesLeft.add(childNode);
-					unsortedNodes.set(i, null);		
+					unsortedNodes.set(i, null);
 				}
 			}
-			
+
 			int nodesLeftIndex = 0;
 			for (int i = 0; i < sortedNodes.size(); i++) {
 				PageTreeNode childNode = null;
 				if (sortedNodes.get(i) == null) {
 					childNode = null;
-					
+
 					if (nodesLeft.size() > 0 && nodesLeftIndex < nodesLeft.size()) {
 						childNode = nodesLeft.get(nodesLeftIndex);
 					}
 					if (childNode == null) {
 						continue;
 					}
-					
+
 					childNode.setOrder(i+1);
 					sortedNodes.set(i, childNode);
 					nodesLeftIndex++;
-					
+
 					BuilderService bservice = null;
 					try {
 						bservice = BuilderServiceFactory.getBuilderService(this.applicationContext);
@@ -758,7 +762,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 					if (page != null) {
 						page.setTreeOrder(i+1);
 						page.store();
-					}							
+					}
 				}
 				try {
 					childNode = sortedNodes.get(i);
@@ -772,17 +776,18 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		} catch (IDOStoreException e) {
 			e.printStackTrace();
 			return node;
-		}	
+		}
 		node.setChildPageIds(sortedNodesIds);
 		return node;
 	}
-	
+
 	public void setChildPageIds(List<Integer> childPageIds){
 		this.childPageIds = childPageIds;
 	}
 
+	@Override
 	public String getNodeName(Locale locale, IWApplicationContext iwac) {
 		return getLocalizedNodeName(locale);
 	}
-	
+
 }

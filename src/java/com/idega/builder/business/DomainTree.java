@@ -11,7 +11,9 @@ package com.idega.builder.business;
 
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import com.idega.builder.data.IBStartPage;
 import com.idega.builder.data.IBStartPageHome;
 import com.idega.core.builder.data.ICDomain;
@@ -27,24 +29,24 @@ import com.idega.idegaweb.IWApplicationContext;
  * Cache for each domain and its page and templates tree
  * </p>
  *  Last modified: $Date: 2007/04/27 14:59:45 $ by $Author: eiki $
- * 
+ *
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
  * @version $Revision: 1.5 $
  */
 public class DomainTree extends DefaultTreeNode {
-	
+
 	private static final String PAGES_ID = "pages";
 	private static final String TEMPLATES_ID = "templates";
 	private ICDomain domain;
 	private static String DOMAIN_TREE_KEY="ic_domain_tree_";
-	
+
 	private final int PAGEVIEWER = 0;
 	private final int TEMPLATEVIEWER = 1;
 
 	public DomainTree(ICDomain domain){
 		this.domain=domain;
 	}
-	
+
 	public static DomainTree getDomainTree(IWApplicationContext iwac){
 		ICDomain domain = BuilderLogic.getInstance().getCurrentDomain();
 		String domainKey = DOMAIN_TREE_KEY+domain.getPrimaryKey();
@@ -56,13 +58,13 @@ public class DomainTree extends DefaultTreeNode {
 		}
 		return node;
 	}
-	
+
 	public static void clearCache(IWApplicationContext iwac){
 		ICDomain domain = iwac.getDomain();
 		String domainKey = DOMAIN_TREE_KEY+domain.getPrimaryKey();
 		iwac.removeApplicationAttribute(domainKey);
 	}
-	
+
 	/**
 	 * <p>
 	 * TODO tryggvil describe method initialize
@@ -80,7 +82,7 @@ public class DomainTree extends DefaultTreeNode {
 	 * </p>
 	 * @param iwac
 	 */
-	private void initialize(IWApplicationContext iwc,int type) {
+	private void initialize(IWApplicationContext iwc, int type) {
 			int id = -1;
 			ICTreeNode parent = null;
 			if (type == this.PAGEVIEWER) {
@@ -127,19 +129,19 @@ public class DomainTree extends DefaultTreeNode {
 	private Collection getStartPages(ICDomain domain) throws IDOLookupException, FinderException {
 		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllPagesByDomain(((Integer) domain.getPrimaryKey()).intValue());
 	}
-	
+
 	private Collection getTemplateStartPages(ICDomain domain) throws IDOLookupException, FinderException {
 		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKey()).intValue());
-	}	
-	
+	}
+
 	public ICTreeNode getPagesNode(){
 		return getSubNode("Pages",PAGES_ID);
 	}
-	
+
 	public ICTreeNode getTemplatesNode(){
-		return getSubNode("Templates",TEMPLATES_ID);	
+		return getSubNode("Templates",TEMPLATES_ID);
 	}
-	
+
 	protected ICTreeNode getSubNode(String nodeName,String id){
 		DefaultTreeNode pagesNode = null;
 		Collection children = getChildren();
@@ -155,5 +157,5 @@ public class DomainTree extends DefaultTreeNode {
 		}
 		return pagesNode;
 	}
-	
+
 }
