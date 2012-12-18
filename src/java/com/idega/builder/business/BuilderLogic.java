@@ -4171,8 +4171,19 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public String getFullPageUrlByPageType(User user, String pageType, boolean checkFirstlyNearestPages) {
-		String serverURL = getIWMainApplication().getSettings().getProperty(IWConstants.SERVER_URL_PROPERTY_NAME);
-		String pageUri;
+		String serverURL = null;
+		if (isDevelopementState()) {
+			serverURL = getIWMainApplication().getSettings().getProperty(
+					IWConstants.SERVER_URL_PROPERTY_NAME,
+					CoreConstants.DEVELOPEMENT_SERVER_URL
+					);
+		} else {
+			serverURL = getIWMainApplication().getSettings().getProperty(
+					IWConstants.SERVER_URL_PROPERTY_NAME
+					);
+		}
+		
+		String pageUri = null;
 
 		pageUri = getPageUri(user, pageType, checkFirstlyNearestPages);
 
@@ -4534,5 +4545,19 @@ public class BuilderLogic implements Singleton {
 
 	private IWMainApplication getIWMainApplication() {
 		return IWMainApplication.getDefaultIWMainApplication();
+	}
+	
+	/**
+	 * <p>Takes property from /workspace/developer/applicationproperties named
+	 * "is_developement_mode". Check this property, when you need to add code
+	 * necessary for development, but useless to production environment.</p>
+	 * @return <code>true</code> if it is developing environment, 
+	 * <code>false</code> otherwise.
+	 * @see CoreConstants#DEVELOPEMENT_STATE_PROPERTY
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
+	protected boolean isDevelopementState() {
+		return getIWMainApplication().getSettings().getBoolean(
+				CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
 	}
 }
