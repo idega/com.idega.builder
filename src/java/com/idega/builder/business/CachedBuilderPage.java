@@ -282,7 +282,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 				if (webdavUri.startsWith(basePath)) {
 					getRepositoryService().createFolder(basePath);
 				}
-				RepositoryItem file = getRepositoryService().getRepositoryItem(webdavUri);
+				RepositoryItem file = getRepositoryService().getRepositoryItemAsRootUser(webdavUri);
 				if (!file.exists()) {
 					file.createNewFile();
 				}
