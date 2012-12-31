@@ -230,7 +230,7 @@ public class EditModuleBlock extends Block {
 		String propertiesContainerId = new StringBuffer("propertiesContainerId").append(random).toString();
 		propertiesContainer.setId(propertiesContainerId);
 		header.setStyleClass("componentPropertiesListHeader");
-		header.setOnClick(new StringBuffer("manageComponentPropertiesList('").append(propertiesContainerId).append("');").toString());
+		header.setMarkupAttributeMultivalued("onclick", new StringBuffer("manageComponentPropertiesList('").append(propertiesContainerId).append("');").toString());
 		
 		// Properties
 		ComponentProperty property = null;
@@ -262,7 +262,7 @@ public class EditModuleBlock extends Block {
 			propertyName = new Span(new Text(property.getDisplayName(iwc.getCurrentLocale())));
 			
 			String methodName = property.getName();
-			propertyName.setOnClick(new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(methodName).append("', '").append(instanceId).append("', ").append(needReloadPropertyBox(methodName, property.getClassName())).append(");").toString());
+			propertyName.setMarkupAttributeMultivalued("onclick", new StringBuffer("getPropertyBox('").append(propertyId).append("', '").append(methodName).append("', '").append(instanceId).append("', ").append(needReloadPropertyBox(methodName, property.getClassName())).append(");").toString());
 			item.add(propertyName);
 			
 			if (isPropertySet) {

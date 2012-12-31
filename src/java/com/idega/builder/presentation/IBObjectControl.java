@@ -97,7 +97,7 @@ public class IBObjectControl extends PresentationObjectContainer {
 		
 		//	Main container
 		this.containerLayer = new Layer(Layer.DIV);
-		this.containerLayer.setZIndex(this.number);
+		this.containerLayer.setStyleAttribute("z-index", this.number + "px");
 		this.containerLayer.setStyleClass("moduleContainer");
 		super.add(this.containerLayer);
 		

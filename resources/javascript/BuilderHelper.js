@@ -601,14 +601,12 @@ function addSelectedModuleCallback(component, id) {
 	var lastModule = null;
 	if (modules.length == 0) {
 		elementToInsertBefore = container.firstChild;
-	}
-	else {
+	} else {
 		lastModule = modules[modules.length - 1];
 		var elementAfterLastModule = lastModule.nextSibling;	// The proper place - after the last module container
 		if (elementAfterLastModule == null) {
 			elementToInsertBefore = container.lastChild;
-		}
-		else {
+		} else {
 			elementToInsertBefore = elementAfterLastModule;
 		}
 	}
@@ -628,7 +626,7 @@ function addSelectedModuleCallback(component, id) {
 	//	Registering actions for Drag&Drop
 	modules = getNeededElementsFromList(container.childNodes, 'moduleContainer');
 	var newModule = $(modules[modules.length - 1]);
-	var moduleNames = getElementsByClassName(newModule, 'div', 'moduleName');
+	var moduleNames = getElementsByClassName(newModule, 'span', 'moduleNameTooltip');
 	for (var i = 0; i < moduleNames.length; i++) {
 		registerDragAndDropActionsForModuleNameElement($(moduleNames[i]));
 	}
@@ -652,9 +650,11 @@ function addSelectedModuleCallback(component, id) {
 		highlightElement(elementToHighlight, 4000, '#ffffff');
 	}
 	
-	try {
-		ArticleEditorHelper.initializeJavaScriptActionsForEditingAndCreatingArticles();
-	} catch(e) {}
+	if (typeof ArticleEditorHelper != 'undefined') {
+		try {
+			ArticleEditorHelper.initializeJavaScriptActionsForEditingAndCreatingArticles();
+		} catch(e) {}
+	}
 }
 
 function manageComponentPropertiesList(id) {	

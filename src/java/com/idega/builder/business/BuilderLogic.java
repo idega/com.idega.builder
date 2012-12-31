@@ -29,7 +29,6 @@ import javax.faces.render.RenderKitFactory;
 
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
 import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -216,7 +215,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	@Autowired
 	private JQuery jQuery;
 
-	protected BuilderLogic() {
+	private BuilderLogic() {
 		// empty
 	}
 
@@ -239,7 +238,6 @@ public class BuilderLogic extends DefaultSpringBean {
 	public CachedBuilderPage getCachedBuilderPage(String key) {
 		return getPageCacher().getCachedBuilderPage(key);
 	}
-//	.getICPage()
 
 	public ICPage getICPage(String key) {
 		return getPageCacher().getCachedBuilderPage(key).getICPage();
@@ -911,6 +909,17 @@ public class BuilderLogic extends DefaultSpringBean {
 	public String getCurrentIBPage(IWContext iwc) {
 		String theReturn = null;
 		String requestURI = iwc.getRequestURI();
+		if (!requestURI.startsWith(PAGES_PREFIX)) {
+			requestURI = iwc.getReferer();
+			if (requestURI == null) {
+				requestURI = iwc.getRequestURI();
+			} else {
+				int pagesIndex = requestURI.indexOf(PAGES_PREFIX);
+				requestURI = pagesIndex < 0 ? iwc.getRequestURI() : requestURI.substring(pagesIndex);
+				int paramsIndex = requestURI.indexOf("/?");
+				requestURI = paramsIndex > 0 ? requestURI.substring(0, paramsIndex) : requestURI;
+			}
+		}
 
 		if(IWMainApplication.useNewURLScheme){
 		//if (requestURI.startsWith(iwc.getIWMainApplication().getBuilderPagePrefixURI())) {
@@ -938,7 +947,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			}*/
 			try{
 				ICDomain domain = iwc.getDomain();
-				return getPageKeyByURI(requestURI,domain);
+				return getPageKeyByURI(requestURI, domain);
 			}
 			catch(NumberFormatException nfe){
 				//nothing printed out
@@ -2460,7 +2469,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		//pasteImage.setOnClick(pasteAction.toString());
 		Span paste = new Span(new Text(iwrb.getLocalizedString("paste", "Paste")));
 		pasteButtonContainer.setTitle(title.toString());
-		pasteButtonContainer.setOnClick(pasteAction.toString());
+		pasteButtonContainer.setMarkupAttributeMultivalued("onclick", pasteAction.toString());
 		//pasteButtonContainer.add(pasteImage);
 		pasteButtonContainer.add(paste);
 		pasteButtonContainer.setStyleClass("pasteModuleIconContainer");
@@ -3753,13 +3762,11 @@ public class BuilderLogic extends DefaultSpringBean {
 
 	private Document getXMLDocumentFromComponentHTML(String componentHTML, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
 			boolean omitComments) {
-		if (StringUtil.isEmpty(componentHTML)) {
+		if (StringUtil.isEmpty(componentHTML))
 			return null;
-		}
 
-		if (cleanCode) {
+		if (cleanCode)
 			componentHTML = getCleanedHtmlContent(componentHTML, omitDocTypeDeclaration, omitHtmlEnvelope, omitComments);
-		}
 
 		//	Removing <!--... ms-->
 		Matcher commentsMatcher = getCommentRemplacementPattern().matcher(componentHTML);
@@ -3777,6 +3784,8 @@ public class BuilderLogic extends DefaultSpringBean {
 		componentHTML = componentHTML.replaceAll("&iacute;", "&#237;");
 //		componentHTML = componentHTML.replaceAll("&lt;", "&#60;");
 //		componentHTML = componentHTML.replaceAll("&gt;", "&#62;");
+		componentHTML = StringHandler.replace(componentHTML, "xf:itemset", "div");
+		componentHTML = StringHandler.replace(componentHTML, "xf:item", "div");
 
 		if (StringUtil.isEmpty(componentHTML)) {
 			LOGGER.warning("HTML code is empty!");
@@ -3817,7 +3826,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		cleaner.setOmitComments(omitComments);
 		cleaner.setOmitXmlDeclaration(true);
 		cleaner.setUseCdataForScriptAndStyle(false);
-		
+
 		try {
 			cleaner.clean();
 			htmlContent = cleaner.getPrettyXmlAsString();
@@ -3825,21 +3834,24 @@ public class BuilderLogic extends DefaultSpringBean {
 			LOGGER.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
 			return null;
 		}
-		
+
 		return getCleanedFromXmlDeclaration(htmlContent);
 	}
 
 	private String getCleanedFromXmlDeclaration(String htmlContent) {
 		// Removing <?xml version... />
 		for (Pattern pattern: getXmlEncodingReplacementPatterns()) {
-			Matcher patternMatcher = pattern.matcher(htmlContent);
-			htmlContent = patternMatcher.replaceAll(CoreConstants.EMPTY);
+			try {
+				Matcher patternMatcher = pattern.matcher(htmlContent);
+				htmlContent = patternMatcher.replaceAll(CoreConstants.EMPTY);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		String xmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-		if (htmlContent.indexOf(xmlDeclaration) != -1) {
+		if (htmlContent.indexOf(xmlDeclaration) != -1)
 			htmlContent = StringHandler.replace(htmlContent, xmlDeclaration, CoreConstants.EMPTY);
-		}
 
 		return htmlContent.trim();
 	}
@@ -3944,7 +3956,6 @@ public class BuilderLogic extends DefaultSpringBean {
 		return findComponentInList(page.getChildren(), instanceId);
 	}
 
-	@SuppressWarnings("unchecked")
 	private UIComponent findComponentInList(List<UIComponent> children, String instanceId) {
 		if (children == null || instanceId == null) {
 			return null;
@@ -3952,7 +3963,7 @@ public class BuilderLogic extends DefaultSpringBean {
 
 		UIComponent component = null;
 		UIComponent componentFromCycle = null;
-		Map facets = null;
+		Map<String, UIComponent> facets = null;
 		List<UIComponent> cFromMap = null;
 		boolean foundComponent = false;
 		for (int i = 0; (i < children.size() && !foundComponent); i++) {
@@ -3968,8 +3979,8 @@ public class BuilderLogic extends DefaultSpringBean {
 					facets = component.getFacets();
 					if (facets != null) {
 						cFromMap = new ArrayList<UIComponent>();
-						for (Iterator it = facets.values().iterator(); it.hasNext();) {
-							cFromMap.add((UIComponent) it.next());
+						for (Iterator<UIComponent> it = facets.values().iterator(); it.hasNext();) {
+							cFromMap.add(it.next());
 						}
 						componentFromCycle = findComponentInList(cFromMap, instanceId);
 					}
@@ -4070,15 +4081,17 @@ public class BuilderLogic extends DefaultSpringBean {
 		return false;
 	}
 
-	public ICPage findPageForModule(IWContext iwc, String instanceId) {
-		if (instanceId == null) {
-			return null;
-		}
+	public ICPage findPageForModule(IWApplicationContext iwac, String instanceId) {
+		return findPageForModule(iwac.getIWMainApplication(), instanceId);
+	}
 
-		Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwc);
-		if (pages == null || pages.isEmpty()) {
+	public ICPage findPageForModule(IWMainApplication iwma, String instanceId) {
+		if (instanceId == null)
 			return null;
-		}
+
+		Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwma);
+		if (MapUtil.isEmpty(pages))
+			return null;
 
 		Iterator<PageTreeNode> allPages = pages.values().iterator();
 		ICPage page = null;
@@ -4151,8 +4164,19 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public String getFullPageUrlByPageType(User user, String pageType, boolean checkFirstlyNearestPages) {
-		String serverURL = getIWMainApplication().getSettings().getProperty(IWConstants.SERVER_URL_PROPERTY_NAME);
-		String pageUri;
+		String serverURL = null;
+		if (isDevelopementState()) {
+			serverURL = getIWMainApplication().getSettings().getProperty(
+					IWConstants.SERVER_URL_PROPERTY_NAME,
+					CoreConstants.DEVELOPEMENT_SERVER_URL
+					);
+		} else {
+			serverURL = getIWMainApplication().getSettings().getProperty(
+					IWConstants.SERVER_URL_PROPERTY_NAME
+					);
+		}
+
+		String pageUri = null;
 
 		pageUri = getPageUri(user, pageType, checkFirstlyNearestPages);
 
@@ -4232,6 +4256,13 @@ public class BuilderLogic extends DefaultSpringBean {
 				if(!ListUtil.isEmpty(children)){
 					searchTops.addAll(children);
 				}
+
+				ICTreeNode parent = startPage.getParentNode();
+				Collection siblings = parent != null ? parent.getChildren() : new ArrayList();
+				if(!ListUtil.isEmpty(siblings)){
+					searchTops.addAll(siblings);
+				}
+
 				nearestPage = getPageByPageType(searchTops, pageType);
 			}
 		}
@@ -4276,7 +4307,7 @@ public class BuilderLogic extends DefaultSpringBean {
 
 				children = page.getChildren();
 				if (!ListUtil.isEmpty(children)) {
-					return getPageByPageType(children, pageType);
+					getPageByPageType(children, pageType);
 				}
 			}
 
@@ -4507,5 +4538,19 @@ public class BuilderLogic extends DefaultSpringBean {
 
 	private IWMainApplication getIWMainApplication() {
 		return IWMainApplication.getDefaultIWMainApplication();
+	}
+
+	/**
+	 * <p>Takes property from /workspace/developer/applicationproperties named
+	 * "is_developement_mode". Check this property, when you need to add code
+	 * necessary for development, but useless to production environment.</p>
+	 * @return <code>true</code> if it is developing environment,
+	 * <code>false</code> otherwise.
+	 * @see CoreConstants#DEVELOPEMENT_STATE_PROPERTY
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
+	protected boolean isDevelopementState() {
+		return getIWMainApplication().getSettings().getBoolean(
+				CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
 	}
 }
