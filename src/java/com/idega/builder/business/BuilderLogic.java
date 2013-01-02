@@ -132,6 +132,7 @@ import com.idega.util.RenderUtils;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 import com.idega.util.URIUtil;
+import com.idega.util.datastructures.map.MapUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.util.reflect.MethodInvoker;
@@ -505,16 +506,13 @@ public class BuilderLogic extends DefaultSpringBean {
 			GroupDAO dao = ELUtil.getInstance().getBean(GroupDAO.class);
 			Group group = dao.findGroup(new Integer(groupId));
 
-			List groups = AccessControl.getPermissionGroups(group);
+			List<Group> groups = AccessControl.getPermissionGroups(group);
 			if (groups != null) {
-				Iterator iter = groups.iterator();
-				while (iter.hasNext()) {
-					Group item = (Group) iter.next();
-					groupIds.add(item.getID());
+				for (Iterator<Group> iter = groups.iterator(); iter.hasNext();) {
+					groupIds.add(iter.next().getID());
 				}
 			}
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			// empty block
 		}
 
@@ -534,8 +532,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			LOGGER.severe(obj + ": removed");
 			parentObject.getChildren().remove(index);
 			parentObject.getChildren().add(index, PresentationObject.NULL_CLONE_OBJECT);
-		}
-		else if (obj.isContainer()) {
+		} else if (obj.isContainer()) {
 			if (obj instanceof Table) {
 				Table tab = (Table) obj;
 				int cols = tab.getColumns();
@@ -544,10 +541,9 @@ public class BuilderLogic extends DefaultSpringBean {
 					for (int y = 1; y <= rows; y++) {
 						PresentationObjectContainer moc = tab.containerAt(x, y);
 						if (moc != null) {
-							List l = moc.getChildren();
+							List<UIComponent> l = moc.getChildren();
 							if (l != null) {
-								ListIterator iterT = l.listIterator();
-								while (iterT.hasNext()) {
+								for (ListIterator<UIComponent> iterT = l.listIterator(); iterT.hasNext();) {
 									int index2 = iterT.nextIndex();
 									Object itemT = iterT.next();
 									if (itemT instanceof PresentationObject) {
@@ -558,12 +554,10 @@ public class BuilderLogic extends DefaultSpringBean {
 						}
 					}
 				}
-			}
-			else {
-				List list = obj.getChildren();
+			} else {
+				List<UIComponent> list = obj.getChildren();
 				if (list != null) {
-					ListIterator iter = list.listIterator();
-					while (iter.hasNext()) {
+					for (ListIterator<UIComponent> iter = list.listIterator(); iter.hasNext();) {
 						int index2 = iter.nextIndex();
 						PresentationObject item = (PresentationObject) iter.next();
 						filterForPermission(groupIds, item, (PresentationObjectContainer) obj, index2, iwc);
@@ -586,38 +580,31 @@ public class BuilderLogic extends DefaultSpringBean {
 		boolean isPresentationObject = obj instanceof  PresentationObject;
 
 		//Some very special cases, added the boolean to make it faster
-		/*if (isPresentationObject && obj instanceof Image) {
-			obj = transformImage(pageKey, obj, iwc);
-		}
-		else*/ if ( isPresentationObject && ((PresentationObject)obj).isContainer()) {
+		if (isPresentationObject && ((PresentationObject)obj).isContainer()) {
 			if (obj instanceof Table) {
 				getTransformedTable(currentPage, pageKey, obj, iwc, clipboardEmpty);
-			}
-			else {
-				List list = obj.getChildren();
+			} else {
+				List<UIComponent> list = obj.getChildren();
 				if (list != null && !list.isEmpty()) {
-					ListIterator iter = list.listIterator();
-					while (iter.hasNext()) {
+					for (ListIterator<UIComponent> iter = list.listIterator(); iter.hasNext();) {
 						int index2 = iter.nextIndex();
-						UIComponent item = (UIComponent) iter.next();
+						UIComponent item = iter.next();
 						/**
 						 * If parent is Table
 						 */
 						if (index == -1) {
 							getTransformedObject(currentPage,pageKey, item, index2, (PresentationObjectContainer) obj, parentKey, iwc);
-						}
-						else {
+						} else {
 							String newParentKey = null;
 							//Ugly Hack of handling the regions inside HTML template based pages. This needs to change.
 							//TODO: Remove this instanceof case, to make that possible then the getICObjectInstanceID
 							//		method needs to be changed to return String
-							if(obj instanceof HtmlPageRegion){
+							if (obj instanceof HtmlPageRegion){
 								HtmlPageRegion region = (HtmlPageRegion)obj;
 								//newParentKey is normally an ICObjectInstanceId or -1 to mark the top page
 								//but here we make a workaround.
 								newParentKey = region.getRegionId();
-							}
-							else{
+							} else{
 								newParentKey = getInstanceId(obj);
 							}
 
@@ -660,8 +647,7 @@ public class BuilderLogic extends DefaultSpringBean {
 
 
 						}
-					}
-					else {
+					} else {
 						Layer marker = getLabelMarker(instanceId, regionLabel);
 						Layer buttons = addButtonsLayer(marker, addModuleUri, regionLabel, iwrb, marker.getId());
 						container.add(marker);
@@ -670,8 +656,7 @@ public class BuilderLogic extends DefaultSpringBean {
 							marker.add(getLabelIcon(instanceId, iwc, regionLabel));
 							if (container.isLocked()){
 								buttons.add(getLockedIcon(instanceId, iwc, regionLabel));
-							}
-							else{
+							} else {
 								buttons.add(getUnlockedIcon(instanceId, iwc));
 							}
 						}
@@ -880,20 +865,21 @@ public class BuilderLogic extends DefaultSpringBean {
 	 * @param requestURI
 	 * @return
 	 */
-	public String getPageKeyByURICached(String pageUri){
-		Iterator iter = getPageCacher().getPageCacheMap().values().iterator();
-		for (Iterator it = iter; it.hasNext(); ) {
-			CachedBuilderPage page = (CachedBuilderPage) it.next();
-			if (page == null) {
-				return null;
+	public String getPageKeyByURICached(String pageUri) {
+		for (Iterator<ViewNode> iter = getPageCacher().getPageCacheMap().values().iterator(); iter.hasNext();) {
+			ViewNode node = iter.next();
+			if (!(node instanceof CachedBuilderPage)) {
+				LOGGER.warning("Object" + node + " is not cached Builder page");
+				continue;
 			}
+
+			CachedBuilderPage page = (CachedBuilderPage) node;
 			String cachedPageUri = page.getURIWithContextPath();
-			if (cachedPageUri == null) {
+			if (cachedPageUri == null)
 				return null;
-			}
-			if (cachedPageUri.equals(pageUri)) {
+
+			if (cachedPageUri.equals(pageUri))
 				return page.getPageKey();
-			}
 		}
 		return null;
 	}
@@ -1727,11 +1713,10 @@ public class BuilderLogic extends DefaultSpringBean {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
 				if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
-					List extend = xml.getUsingTemplate();
+					List<String> extend = xml.getUsingTemplate();
 					if (extend != null) {
-						Iterator i = extend.iterator();
-						while (i.hasNext()) {
-							lockRegion((String) i.next(), parentObjectInstanceID);
+						for (Iterator<String> i = extend.iterator(); i.hasNext();) {
+							lockRegion(i.next(), parentObjectInstanceID);
 						}
 					}
 				}
@@ -1753,11 +1738,10 @@ public class BuilderLogic extends DefaultSpringBean {
 			xml.store();
 			if (parentObjectInstanceID.equals("-1")) {
 				if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
-					List extend = xml.getUsingTemplate();
+					List<String> extend = xml.getUsingTemplate();
 					if (extend != null) {
-						Iterator i = extend.iterator();
-						while (i.hasNext()) {
-							String child = (String) i.next();
+						for (Iterator<String> i = extend.iterator(); i.hasNext();) {
+							String child = i.next();
 							unlockRegion(child, parentObjectInstanceID, null);
 						}
 					}
@@ -1841,7 +1825,7 @@ public class BuilderLogic extends DefaultSpringBean {
 				useThread = false;
 			}
 			else {
-				List children = region.getChildren();
+				List<XMLElement> children = region.getChildren();
 				if (children == null || children.size() == 0) {
 					useThread = false;
 				}
@@ -1966,18 +1950,17 @@ public class BuilderLogic extends DefaultSpringBean {
 			return false;
 		}
 		try {
-			Class c = null;
+			Class<? extends UIComponent> c = null;
 			IWBundle iwb = null;
 			if ("-1".equals(instanceId)) {
 				c = com.idega.presentation.Page.class;
 				iwb = iwma.getBundle(PresentationObject.CORE_IW_BUNDLE_IDENTIFIER);
-			}
-			else {
+			} else {
 				ICObjectInstance instance = ((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(objectId);
 				c = instance.getObject().getObjectClass();
 				iwb = instance.getObject().getBundle(iwma);
 			}
-			//IWPropertyList complist = iwb.getComponentList();
+
 			IWPropertyList component = iwb.getComponentPropertyList(c.getName());
 			IWPropertyList methodlist = component.getPropertyList(IBPropertyHandler.METHODS_KEY);
 			if (methodlist == null) {
@@ -2335,19 +2318,8 @@ public class BuilderLogic extends DefaultSpringBean {
 		this.pageCacher=pageCacherInstance;
 	}
 
-	private IBPageHelper ibPageHelper;
-	/**
-	 * Return the singleton instance of IBPageHelper
-	 * @return
-	 */
-	public synchronized IBPageHelper getIBPageHelper(){
-		if(this.ibPageHelper==null){
-			setIBPageHelper(new IBPageHelper());
-		}
-		return this.ibPageHelper;
-	}
-	public void setIBPageHelper(IBPageHelper ibPageHelper){
-		this.ibPageHelper=ibPageHelper;
+	public synchronized IBPageHelper getIBPageHelper() {
+		return IBPageHelper.getInstance();
 	}
 
 	private IBXMLWriter xmlWriter;
@@ -2900,7 +2872,6 @@ public class BuilderLogic extends DefaultSpringBean {
 
 			for (int i = 0; i < unsortedNodes.size(); i++) {
 				PageTreeNode node = unsortedNodes.get(i);
-//			if (node.getOrder() > 0){
 				if ((node.getOrder() > 0) && (node.getOrder() <= sortedNodes.size())){
 					if (sortedNodes.get(node.getOrder() - 1) == null){
 						sortedNodes.set(node.getOrder() - 1, node);
@@ -2934,11 +2905,9 @@ public class BuilderLogic extends DefaultSpringBean {
 				}
 			}
 		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return coll;
 		} catch (IDOStoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return coll;
 		}
@@ -2946,29 +2915,15 @@ public class BuilderLogic extends DefaultSpringBean {
 		return sortedNodes;
 	}
 
-
-//	public boolean wasMoved(String child, String parent){
-//		String oldParent = child.substring(0, child.length()-1);
-//		if (oldParent.equals(parent))
-//			return false;
-//		else {
-//			saveChanges(child, parent);
-//			return true;
-//		}
-//	}
-//	public void saveChanges(String child, String parent){
-//
-//	}
-
-	public String getTopLevelTemplateId(Collection templates) {
+	public String getTopLevelTemplateId(Collection<?> templates) {
 		String id = "-1";
 		if (templates == null) {
 			return id;
 		}
-		Iterator it = templates.iterator();
+
 		PageTreeNode node = null;
 		Object o = null;
-		while (it.hasNext()) {
+		for (Iterator<?> it = templates.iterator(); it.hasNext();) {
 			o = it.next();
 			if (o instanceof PageTreeNode) {
 				node = (PageTreeNode) o;
@@ -2980,17 +2935,15 @@ public class BuilderLogic extends DefaultSpringBean {
 		return id;
 	}
 
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
 		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
 	}
 
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder) {
-		//return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, treeOrder);
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder) {
 		return getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, treeOrder);
-//		String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String orderTree
 	}
 
-	public boolean deletePage(String pageId, boolean deleteChildren, Map tree, int userId, ICDomain domain) {
+	public boolean deletePage(String pageId, boolean deleteChildren, Map<Integer, PageTreeNode> tree, int userId, ICDomain domain) {
 		return getIBPageHelper().deletePage(pageId, deleteChildren, tree, userId, domain);
 	}
 
@@ -3111,7 +3064,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			return null;
 		}
 		Document d = (Document) doc.getDocument();
-		Iterator elements = d.getDescendants();
+		Iterator<?> elements = d.getDescendants();
 		if (elements == null) {
 			return null;
 		}
@@ -3120,7 +3073,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		Attribute elementId = null;
 		Object o = null;
 		List<String> ids = new ArrayList<String>();
-		for (Iterator it = elements; it.hasNext();) {
+		for (Iterator<?> it = elements; it.hasNext();) {
 			o = it.next();
 			if (o instanceof Element) {
 				element = (Element) o;
@@ -3512,9 +3465,9 @@ public class BuilderLogic extends DefaultSpringBean {
 		}
 
 		List <String> cacheKeys = new ArrayList<String>();
-		Map cached = cache.getCacheMap();
+		Map<?, ?> cached = cache.getCacheMap();
 		if (cached != null) {
-			for (Iterator it = cached.keySet().iterator(); it.hasNext(); ) {
+			for (Iterator<?> it = cached.keySet().iterator(); it.hasNext(); ) {
 				cacheKeys.add(it.next().toString());
 			}
 		}
@@ -4125,7 +4078,7 @@ public class BuilderLogic extends DefaultSpringBean {
 				serverName = mostlyCachedDomain.getServerName();
 			}
 			ICDomain domain = ((ICDomainHome) IDOLookup.getHome(ICDomain.class)).findDomainByServernameOrDefault(serverName);
-			Collection groups = domain.getTopLevelGroupsUnderDomain();
+			Collection<?> groups = domain.getTopLevelGroupsUnderDomain();
 			if (mostlyCachedDomain instanceof CachedDomain) {
 				((CachedDomain) mostlyCachedDomain).setTopLevelGroupsUnderDomain(groups);
 				BaseFilter.reInitializeCachedDomainOnNextRequest();
@@ -4196,7 +4149,6 @@ public class BuilderLogic extends DefaultSpringBean {
 		return getNearestPageForUserHomePageOrCurrentPageByPageType(usr, iwc, pageType);
 	}
 
-	@SuppressWarnings("unchecked")
 	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(User user, IWContext iwc, String pageType) {
 		ICPage startPage = null;
 		ICPage nearestPage = null;
@@ -4240,7 +4192,6 @@ public class BuilderLogic extends DefaultSpringBean {
 	 * @param pageType
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public ICPage getNearestPageForUserHomePage(User user, String pageType) {
 		ICPage startPage = null;
 		ICPage nearestPage = null;
@@ -4252,13 +4203,13 @@ public class BuilderLogic extends DefaultSpringBean {
 			if(startPage!=null){
 				Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
 				searchTops.add(startPage);
-				Collection children = startPage.getChildren();
+				Collection<ICTreeNode> children = startPage.getChildren();
 				if(!ListUtil.isEmpty(children)){
 					searchTops.addAll(children);
 				}
 
 				ICTreeNode parent = startPage.getParentNode();
-				Collection siblings = parent != null ? parent.getChildren() : new ArrayList();
+				Collection<ICTreeNode> siblings = parent != null ? parent.getChildren() : new ArrayList<ICTreeNode>();
 				if(!ListUtil.isEmpty(siblings)){
 					searchTops.addAll(siblings);
 				}
@@ -4289,7 +4240,6 @@ public class BuilderLogic extends DefaultSpringBean {
 		return startPage;
 	}
 
-	@SuppressWarnings("unchecked")
 	private ICPage getPageByPageType(Collection<ICTreeNode> pages, String pageType) {
 		if (ListUtil.isEmpty(pages)) {
 			return null;
@@ -4397,7 +4347,6 @@ public class BuilderLogic extends DefaultSpringBean {
 
 		try {
 			ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
-			@SuppressWarnings("unchecked")
 			Collection<ICPage> icpages = home.findBySubType(pageSubType, false);
 
 			return icpages;
@@ -4549,8 +4498,8 @@ public class BuilderLogic extends DefaultSpringBean {
 	 * @see CoreConstants#DEVELOPEMENT_STATE_PROPERTY
 	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
 	 */
+	@Override
 	protected boolean isDevelopementState() {
-		return getIWMainApplication().getSettings().getBoolean(
-				CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
+		return getIWMainApplication().getSettings().getBoolean(CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
 	}
 }

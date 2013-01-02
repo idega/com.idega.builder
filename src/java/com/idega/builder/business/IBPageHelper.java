@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.faces.component.UIComponent;
 
 import com.idega.builder.data.IBPageBMPBean;
 import com.idega.builder.data.IBStartPage;
@@ -62,6 +63,7 @@ import com.idega.xml.XMLElement;
  * @version 1.0
  */
 public class IBPageHelper implements Singleton  {
+
 	public static final String PAGE = ICPageBMPBean.PAGE;
 	public static final String TEMPLATE = ICPageBMPBean.TEMPLATE;
 	public static final String DRAFT = ICPageBMPBean.DRAFT;
@@ -73,26 +75,26 @@ public class IBPageHelper implements Singleton  {
 	private final String LINK_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
 	private final int PAGEVIEWER = 0;
 	private final int TEMPLATEVIEWER = 1;
-	//private static IBPageHelper _instance = null;
-	IBPageHelper() {
-		// empty
+
+	private static IBPageHelper instance = new IBPageHelper();
+
+	private IBPageHelper() {}
+
+	public static final IBPageHelper getInstance() {
+		return instance;
 	}
-	
-	public static IBPageHelper getInstance() {
-		return getBuilderLogic().getIBPageHelper();
-	}
-	
+
 	protected static BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}
-	
+
 	/**
 	 * Creates a new IBPage. Sets its name, type and parent and stores it to the database.
-	 * If the parentId is null the page is stored as top level page. 
+	 * If the parentId is null the page is stored as top level page.
 	 * If the type is equal to template the value of the templateId is ignored.
 	 * If the parentId and the tree parameter are valid it also stores the page in
 	 * the cached IWContext tree.
-	 * Example: 
+	 * Example:
 	 * top level template:
 	 * createPageOrTemplateToplevelOrWithParent("main template", null, "T", null, a tree, a context);
 	 * page with parent (42) using template (13):
@@ -108,8 +110,8 @@ public class IBPageHelper implements Singleton  {
 	 * @param creatorContext
 	 *
 	 * @return The id of the new IBPage
-	 */	
-	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map tree, IWContext creatorContext) {
+	 */
+	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map<Integer, PageTreeNode> tree, IWContext creatorContext) {
 		int domainId = -1;
 		if (parentId == null) {
 			// that means top level
@@ -122,7 +124,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		return createNewPage(parentId, name, type, templateId,tree, creatorContext, null, domainId);
 	}
-	
+
 	/**
 	 * Creates a new IBPage. Sets its name and type and stores it to the database.
 	 * If the parentId and the tree parameter are valid it also stores the page in
@@ -136,7 +138,7 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, Map tree) {
+	public int createNewPage(String parentId, String name, String type, String templateId, Map<Integer, PageTreeNode> tree) {
 		return createNewPage(parentId, name, type, templateId, tree, null, null);
 	}
 	/**
@@ -153,7 +155,7 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext) {
+	public int createNewPage(String parentId, String name, String type, String templateId, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext) {
 		return createNewPage(parentId, name, type, templateId, tree, creatorContext, null);
 	}
 	/**
@@ -171,7 +173,7 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType) {
+	public int createNewPage(String parentId, String name, String type, String templateId, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType) {
 		return createNewPage(parentId, name, type, templateId, null, tree, creatorContext, subType, -1);
 	}
 	/**
@@ -191,7 +193,7 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, String format, String sourceMarkup) {
+	public int createNewPage(String parentId, String name, String type, String templateId, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, String format, String sourceMarkup) {
 		return createNewPage(parentId, name, type, templateId, null, tree, creatorContext, subType, -1,format,sourceMarkup);
 	}
 	/**
@@ -211,11 +213,11 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, Map tree, IWUserContext creatorContext, String subType, int domainId){
+	public int createNewPage(String parentId, String name, String type, String templateId, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId){
 		String pageUri = null;
 		return createNewPage(parentId,name,type,templateId,pageUri,tree,creatorContext,subType,domainId);
 	}
-	
+
 	/**
 	 * Creates a new IBPage. Sets its name and type and stores it to the database.
 	 * If the parentId and the tree parameter are valid it also stores the page in
@@ -234,12 +236,10 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId){
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId){
 		return createNewPage(parentId,name,type,templateId,pageUri,tree,creatorContext,subType,domainId,null,null);
 	}
 
-	
-	
 	/**
 	 * Creates a new IBPage. Sets its name and type and stores it to the database.
 	 * If the parentId and the tree parameter are valid it also stores the page in
@@ -260,15 +260,14 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
 		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
 	}
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
 
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
 		boolean isTopLevel=false;
-		if(parentId==null){
+		if (parentId == null)
 			isTopLevel=true;
-		}
 
 		int treeOrderInt = 0;
 		try {
@@ -280,13 +279,13 @@ public class IBPageHelper implements Singleton  {
 			System.out.println("TREE ORDER NOT SET. SETTING NODE AS LAST IN LEVEL");
 //			e.printStackTrace();
 			treeOrderInt = setAsLastInLevel(isTopLevel, parentId);
-		}				
-		
+		}
+
 		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 		if (name == null) {
 			name = "Untitled";
 		}
-		ibPage.setName(name);	
+		ibPage.setName(name);
 		if(format != null){
 			ibPage.setFormat(format);
 		} else {
@@ -307,7 +306,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		file.setMimeType(com.idega.core.file.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
 		ibPage.setFile(file);
-		
+
 		ICPage parentpage = null;
 		if (parentId != null) {
 			try {
@@ -316,10 +315,10 @@ public class IBPageHelper implements Singleton  {
 				e.printStackTrace();
 			}
 		}
-		
+
 		//Set the pageUri to a generated value if not set
 		if(pageUri==null){
-			
+
 			try {
 				if(parentId!=null){
 					//Create a pageUrl object to create the name with a generated name by default if not set
@@ -336,11 +335,11 @@ public class IBPageHelper implements Singleton  {
 			}
 		}
 		ibPage.setDefaultPageURI(pageUri);
-		
+
 		if (parentpage != null) {
 			ibPage.setHidePageInMenu(parentpage.isHidePageInMenu());
 		}
-		
+
 		if (type.equals(PAGE)) {
 			ibPage.setType(ICPageBMPBean.PAGE);
 		}
@@ -362,7 +361,7 @@ public class IBPageHelper implements Singleton  {
 		else {
 			ibPage.setType(ICPageBMPBean.PAGE);
 		}
-		
+
 //		if(treeOrder != null) {
 			try {
 //				ibPage.setTreeOrder(Integer.parseInt(treeOrder));
@@ -370,9 +369,9 @@ public class IBPageHelper implements Singleton  {
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
-			}			
+			}
 //		}
-		
+
 		int tid = -1;
 		if (templateId != null) {
 			try {
@@ -423,7 +422,7 @@ public class IBPageHelper implements Singleton  {
 					}
 					page.setDomainId(domainId);
 					page.store();
-					
+
 					DomainTree.clearCache(creatorContext == null ? IWMainApplication.getDefaultIWApplicationContext() : creatorContext.getApplicationContext());
 				}
 			}
@@ -432,7 +431,7 @@ public class IBPageHelper implements Singleton  {
 			e.printStackTrace();
 			return (-1);
 		}
-		
+
 		if(IBPageBMPBean.FORMAT_IBXML.equals(ibPage.getFormat())) {
 			//Special handling of the format IBXML
 			if(tid != -1 ){
@@ -443,9 +442,8 @@ public class IBPageHelper implements Singleton  {
 					e.printStackTrace();
 				}
 				Page current = currentXMLPage.getPopulatedPage();
-				List children = current.getChildrenRecursive();
+				List<UIComponent> children = current.getChildrenRecursive();
 				if (children != null) {
-					Iterator it = children.iterator();
 					boolean copyInstancePermissions = false;
 					try {
 						copyInstancePermissions = ((DPTCopySession)IBOLookup.getSessionInstance(creatorContext,DPTCopySession.class)).doCopyInstancePermissions();
@@ -454,8 +452,7 @@ public class IBPageHelper implements Singleton  {
 					} catch (RemoteException e2) {
 						e2.printStackTrace();
 					}
-					while (it.hasNext()) {
-						//TODO Is it safe?!?
+					for (Iterator<UIComponent> it = children.iterator(); it.hasNext();) {
 						Object next = it.next();
 						if (next instanceof PresentationObject) {
 							PresentationObject obj = (PresentationObject) next;
@@ -466,11 +463,10 @@ public class IBPageHelper implements Singleton  {
 						}
 					}
 				}
-				
+
 				currentXMLPage.store();
 			}
-		}
-		else{
+		} else {
 			//handling for all other formats than IBXML
 			CachedBuilderPage cPage = getBuilderLogic().getCachedBuilderPage(ibPage.getPageKey());
 			cPage.initializeEmptyPage();
@@ -481,7 +477,7 @@ public class IBPageHelper implements Singleton  {
 		if (tree != null) {
 			PageTreeNode node = new PageTreeNode(id, name, treeOrderInt);
 			if (parentId != null) {
-				PageTreeNode parent = (PageTreeNode) tree.get(Integer.valueOf(parentId));
+				PageTreeNode parent = tree.get(Integer.valueOf(parentId));
 				if (parent != null) {
 					parent.addChild(node);
 				}
@@ -502,13 +498,13 @@ public class IBPageHelper implements Singleton  {
 				// of other formats than IBXML
 			}
 		}
-		
+
 		//This resets the redirect to /pages or /workspace
 		BaseFilter.reInitializeCachedDomainOnNextRequest();
 
-		return (id);
+		return id;
 	}
-	
+
 	/**
 	 * Writes this page to the given OutputStream stream.
 	 * Called from the update method
@@ -521,10 +517,10 @@ public class IBPageHelper implements Singleton  {
 				//String theString = new String(this.toString().getBytes(),CoreConstants.ENCODING_UTF8);
 
 				StringReader sr = new StringReader(fileSource);
-				
+
 				OutputStreamWriter out = new OutputStreamWriter(stream,CoreConstants.ENCODING_UTF8);
-				
-				
+
+
 				int bufferlength=1000;
 				char[] buf = new char[bufferlength];
 				int read = sr.read(buf);
@@ -540,7 +536,7 @@ public class IBPageHelper implements Singleton  {
 			e.printStackTrace(System.err);
 		}
 	}
-	
+
 	public boolean addElementToPage(ICPage ibPage, int[] templateObjInstID, IWUserContext iwuc) {
 		System.out.println("addElementToPage begins");
 		if (templateObjInstID != null) {
@@ -689,7 +685,7 @@ public class IBPageHelper implements Singleton  {
 					if (xml == null) {
 						return false;
 					}
-					
+
 					List map = xml.getUsingTemplate();
 					if ((map != null) && (!map.isEmpty())) {
 						return false;
@@ -711,7 +707,7 @@ public class IBPageHelper implements Singleton  {
 		}
 	}
 
-	
+
 	/**
 	 * Moves the page without authentication check
 	 * @param pageId
@@ -722,7 +718,7 @@ public class IBPageHelper implements Singleton  {
 	public boolean movePage(int pageId, int newParentPageId, ICDomain domain) {
 		return movePage(pageId, newParentPageId, -1, domain);
 	}
-	
+
 	/**
 	 * Moves the page by id pageId to under the page with id newParentPageId
 	 * @return true if the move was successful, false otherwise
@@ -739,7 +735,7 @@ public class IBPageHelper implements Singleton  {
 			if (!ibpage.isPage()) {
 				throw new Exception("Method only implemented for regular pages not templates");
 			}
-			
+
 			if (domain != null) {
 				// Checking if current page is top level page
 				IBStartPage start = null;
@@ -761,8 +757,8 @@ public class IBPageHelper implements Singleton  {
 				// If current page is a top level page, we need to delete it
 				if (found && start != null) {
 					start.remove();
-					//If current page is start page, we need to set other top level page as start page					
-					if(domain.getStartPageID() == pageId){						
+					//If current page is start page, we need to set other top level page as start page
+					if(domain.getStartPageID() == pageId){
 						Collection startPages = getStartPages(domain);
 							for (Iterator iter = startPages.iterator(); iter.hasNext();) {
 								IBStartPage element = (IBStartPage) iter.next();
@@ -775,13 +771,13 @@ public class IBPageHelper implements Singleton  {
 					getBuilderLogic().clearAllCachedPages();
 				}
 			}
-			
+
 			PageTreeNode childNode = null;
 			Map tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
 			if (tree != null) {
 				childNode = (PageTreeNode) tree.get((new Integer(ibpage.getPageKey())));
 			}
-			
+
 			ICPage parent = (ICPage) ibpage.getParentNode();
 			if (parent != null) {
 				parent.removeChild(ibpage);
@@ -790,7 +786,7 @@ public class IBPageHelper implements Singleton  {
 			} else {
 				tree.remove(childNode);
 			}
-			
+
 			ICPage newParent = getICPageHome().findByPrimaryKey(new Integer(newParentPageId));
 			if (newParent != null) {
 				newParent.addChild(ibpage);
@@ -868,14 +864,14 @@ public class IBPageHelper implements Singleton  {
 								}
 							}
 						}
-					} 
-					
-//					System.err.println("[IBPageHelper] Page that is the start page of the domain can't be deleted.");	
+					}
+
+//					System.err.println("[IBPageHelper] Page that is the start page of the domain can't be deleted.");
 				}
 				// everything is fine. Now delete the top level page
 				correspondingStartPage.remove();
 				// choose the start page or start template of the domain as new parent for the children
-				newParentForChildren = domainStartPageOrStartTemplate; 
+				newParentForChildren = domainStartPageOrStartTemplate;
 				if (tree != null) {
 					parentNode = (PageTreeNode) tree.get(domainStartPageOrStartTemplate.getIDInteger());
 				}
@@ -913,7 +909,7 @@ public class IBPageHelper implements Singleton  {
 			if (tree != null) {
 				// finally remove the deleted page from the tree
 				tree.remove(ibpage.getIDInteger());
-			}				
+			}
 		}
 		catch (Exception e) {
 			try {
@@ -940,10 +936,10 @@ public class IBPageHelper implements Singleton  {
 				return false;
 			}
 		}
-		
+
 		//if this was the last page we need to check the redirect to pages or workspace again
 		BaseFilter.reInitializeCachedDomainOnNextRequest();
-		
+
 		return true;
 	}
 	/**
@@ -969,22 +965,22 @@ public class IBPageHelper implements Singleton  {
 			}
 		}
 	}
-	
+
 	public TreeViewer getTreeViewer(IWContext iwc, boolean setBasicParameters, boolean siteTree) {
 		if (siteTree) {
 			return getTreeViewer(iwc, this.PAGEVIEWER, setBasicParameters);
 		}
 		return getTreeViewer(iwc, this.TEMPLATEVIEWER, setBasicParameters);
 	}
-	
+
 	public TreeViewer getPageTreeViewer(IWContext iwc) {
 		return getTreeViewer(iwc, this.PAGEVIEWER, true);
 	}
-	
+
 	public TreeViewer getTemplateTreeViewer(IWContext iwc) {
 		return getTreeViewer(iwc, this.TEMPLATEVIEWER, true);
 	}
-	
+
 	private TreeViewer getTreeViewer(IWContext iwc, int type, boolean setBasicParameters) {
 		ICDomain domain = getBuilderLogic().getCurrentDomain(iwc);
 		int id = -1;
@@ -1028,15 +1024,15 @@ public class IBPageHelper implements Singleton  {
 		}
 		return viewer;
 	}
-	
+
 	/**
 	 * @return list of PageTreeNode
 	 */
 	public List getFirstLevelPageTreeNodesDomainFirst(IWContext iwc) throws IDOLookupException, FinderException {
 		return getFirstLevelPageTreeNodesDomainPageFirstDependingOnType(iwc, this.PAGEVIEWER);
 	}
-	
-	/** 
+
+	/**
 	 * @return list of PageTreeNode
 	 */
 	public List getFirstLevelPageTreeNodesTemplateDomainFirst(IWContext iwc) throws IDOLookupException, FinderException {
@@ -1060,15 +1056,15 @@ public class IBPageHelper implements Singleton  {
 		}
 		return pages;
 	}
-		
+
 	private Collection getStartPages(ICDomain domain) throws IDOLookupException, FinderException {
 		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllPagesByDomain(((Integer) domain.getPrimaryKey()).intValue());
 	}
-	
+
 	private Collection getTemplateStartPages(ICDomain domain) throws IDOLookupException, FinderException {
 		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKey()).intValue());
 	}
-	
+
 	protected ICPageHome getICPageHome() {
 		try {
 			return (ICPageHome) IDOLookup.getHome(ICPage.class);
@@ -1077,7 +1073,7 @@ public class IBPageHelper implements Singleton  {
 			throw new IDORuntimeException(e);
 		}
 	}
-	
+
 	private IBStartPage createTopLevelPage() {
 		IBStartPageHome home = null;
 		try {
@@ -1095,12 +1091,12 @@ public class IBPageHelper implements Singleton  {
 		}
 		return page;
 	}
-	
+
 	public boolean isPageTopLevelPage(int pageID, ICDomain domain) {
 		if (domain == null) {
 			return false;
 		}
-		
+
 		IBStartPage start = null;
 		boolean found = false;
 		Collection startPages = null;
@@ -1126,16 +1122,16 @@ public class IBPageHelper implements Singleton  {
 		}
 		return found;
 	}
-	
+
 	public void createTopLevelPageFromExistingPage(int pageID, ICDomain domain, IWUserContext creatorContext) {
 		if (domain == null || creatorContext == null){
 			return;
 		}
-		
+
 		if (isPageTopLevelPage(pageID, domain)) {
 			return;
 		}
-		
+
 		IBStartPage page = createTopLevelPage();
 		if (page == null) {
 			return;
@@ -1145,10 +1141,10 @@ public class IBPageHelper implements Singleton  {
 		page.setPageId(pageID);
 		page.setDomainId(domain.getID());
 		page.store();
-			
+
 		DomainTree.clearCache(creatorContext.getApplicationContext());
 	}
-	
+
 	public boolean movePageToTopLevel(int pageID, IWContext iwc) {
 		if (pageID <= 0 || iwc == null) {
 			return false;
@@ -1157,7 +1153,7 @@ public class IBPageHelper implements Singleton  {
 		if (domain == null) {
 			return false;
 		}
-		
+
 		ICPage currentPage = null;
 		try {
 			currentPage = getICPageHome().findByPrimaryKey(pageID);
@@ -1168,7 +1164,7 @@ public class IBPageHelper implements Singleton  {
 		if (currentPage == null) {
 			return false;
 		}
-		
+
 		TreeableEntity parentEntity = currentPage.getParentEntity();
 		if (parentEntity instanceof ICPage) {
 			ICPage parentPage = (ICPage) parentEntity;
@@ -1178,9 +1174,9 @@ public class IBPageHelper implements Singleton  {
 				e.printStackTrace();
 			}
 		}
-		
+
 		createTopLevelPageFromExistingPage(pageID, domain, iwc);
-		
+
 		Map pageTreeCacheMap = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
 		PageTreeNode node = (PageTreeNode) pageTreeCacheMap.get(new Integer(pageID));
 		Integer parentID = node.getParentId();
@@ -1191,45 +1187,45 @@ public class IBPageHelper implements Singleton  {
 		}
 		node = new PageTreeNode(pageID, currentPage.getName());
 		pageTreeCacheMap.put(new Integer(node.getNodeID()), node);
-		
+
 		getBuilderLogic().clearAllCachedPages();
-		
+
 		return true;
 	}
-	
+
 	public void setTreeOrder(int id, int order){
-		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
 		PageTreeNode childNode = null;
 		if (tree != null) {
 			childNode = tree.get(id);
 			childNode.setOrder(order);
 		}
 	}
-	
+
 	public int getTreeOrder(int id){
-		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
-		PageTreeNode childNode = null;		
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
+		PageTreeNode childNode = null;
 		if (tree != null) {
 			childNode = tree.get(id);
 			return childNode.getOrder();
-		}		
+		}
 		return -1;
 	}
-	
+
 	public void changeTreeOrder(int pageId, int change) {
-		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());		
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWMainApplication.getDefaultIWApplicationContext());
 		if (tree == null) {
 			return;
 		}
-		
+
 		PageTreeNode page = tree.get(pageId);
 		if (page == null) {
 			return;
 		}
-		
+
 		page.setOrder(page.getOrder() + change);
 	}
-	
+
 	public int setAsLastInLevel(boolean isTopLevel, String parentId){
 		BuilderLogic blogic = BuilderLogic.getInstance();
 		if (isTopLevel){
@@ -1238,8 +1234,8 @@ public class IBPageHelper implements Singleton  {
 			return topLevelPages.size()+1;
 		}
 		else{
-			return blogic.getICPage(parentId).getChildCount()+1;			
+			return blogic.getICPage(parentId).getChildCount()+1;
 		}
 	}
-	
+
 }
