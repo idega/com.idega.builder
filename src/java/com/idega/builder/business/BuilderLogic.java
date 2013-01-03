@@ -84,6 +84,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
 import com.idega.event.EventLogic;
+import com.idega.idegaweb.DefaultIWBundle;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWApplicationContextFactory;
 import com.idega.idegaweb.IWBundle;
@@ -4557,7 +4558,6 @@ public class BuilderLogic implements Singleton {
 	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
 	 */
 	protected boolean isDevelopementState() {
-		return getIWMainApplication().getSettings().getBoolean(
-				CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
+		return !DefaultIWBundle.isProductionEnvironment();
 	}
 }
