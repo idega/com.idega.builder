@@ -247,21 +247,11 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			return icPage.getPageValue();
 		}
 
-		InputStream stream = null;
 		try {
-			stream = getRepositoryService().getInputStream(webdavUri);
+			return getRepositoryService().getInputStreamAsRoot(webdavUri);
 		} catch (Exception e) {}
 
-		if (stream == null) {
-			try {
-				RepositoryItem file = getRepositoryService().getRepositoryItemAsRootUser(webdavUri);
-				stream = file.getInputStream();
-			} catch (Exception e) {
-				throw new RuntimeException("Error getting file: " + webdavUri, e);
-			}
-		}
-
-		return stream;
+		return null;
 	}
 
 	/**
