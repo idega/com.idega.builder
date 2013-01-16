@@ -277,7 +277,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 					file.createNewFile();
 				}
 
-				return getRepositoryService().getOutputStream(webdavUri);
+				return getRepositoryService().getOutputStreamAsRoot(webdavUri);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
