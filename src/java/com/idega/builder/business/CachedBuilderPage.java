@@ -28,6 +28,7 @@ import com.idega.data.IDOLookup;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.repository.bean.RepositoryItem;
 import com.idega.util.CoreConstants;
+import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 
 /**
@@ -312,11 +313,11 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 
 		String fileName = webDavUri.substring(webDavUri.lastIndexOf(CoreConstants.SLASH) + 1 );
 		String base = webDavUri.substring(0, webDavUri.indexOf(fileName));
-		if (base.endsWith(CoreConstants.SLASH))
-			base = base.substring(0, base.length() - 1);
+		if (!base.endsWith(CoreConstants.SLASH))
+			base = base.concat(CoreConstants.SLASH);
 		boolean result = false;
 		try {
-			result = getRepositoryService().uploadFileAndCreateFoldersFromStringAsRoot(base, fileName, source, "text/xml");
+			result = getRepositoryService().updateFileContents(base + fileName, StringHandler.getStreamFromString(source), true) != null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
