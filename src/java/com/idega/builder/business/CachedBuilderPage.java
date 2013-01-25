@@ -317,7 +317,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 			base = base.concat(CoreConstants.SLASH);
 		boolean result = false;
 		try {
-			result = getRepositoryService().updateFileContents(base + fileName, StringHandler.getStreamFromString(source), true) != null;
+			result = getRepositoryService().updateFileContentsAsRoot(base + fileName, StringHandler.getStreamFromString(source), true) != null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
