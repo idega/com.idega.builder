@@ -4250,35 +4250,33 @@ public class BuilderLogic implements Singleton {
 	 */
 	@SuppressWarnings("unchecked")
 	public ICPage getNearestPageForUserHomePage(User user, String pageType) {
-		ICPage startPage = null;
-		ICPage nearestPage = null;
-
-		if (user != null) {
-			//	Trying to get nearest page to user's home page
-			startPage = getUsersHomePage(user);
-
-			if(startPage!=null){
-				Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
-				searchTops.add(startPage);
-				Collection children = startPage.getChildren();
-				if(!ListUtil.isEmpty(children)){
-					searchTops.addAll(children);
-				}
-
-				ICTreeNode parent = startPage.getParentNode();
-				Collection siblings = parent != null ? parent.getChildren() : new ArrayList();
-				if(!ListUtil.isEmpty(siblings)){
-					searchTops.addAll(siblings);
-				}
-
-				nearestPage = getPageByPageType(searchTops, pageType);
-			}
-		}
-
-		if (startPage == null) {
-			logger.warning("Didn't find start page for search: " + pageType + ", user: " + user);
+		if (user == null) {
+			logger.warning("User is not provided");
 			return null;
 		}
+		
+		ICPage startPage = getUsersHomePage(user);
+		if (startPage == null) {
+			logger.warning("Didn't find start page for user: " + user);
+			return null;
+		}
+		
+		ICPage nearestPage = null;
+		Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
+		searchTops.add(startPage);
+		Collection children = startPage.getChildren();
+		if (!ListUtil.isEmpty(children))
+			searchTops.addAll(children);
+
+		ICTreeNode parent = startPage.getParentNode();
+		Collection siblings = parent != null ? parent.getChildren() : new ArrayList();
+		if (!ListUtil.isEmpty(siblings))
+			searchTops.addAll(siblings);
+
+		nearestPage = getPageByPageType(searchTops, pageType);
+		if (nearestPage != null)
+			logger.info("Found nearest page (ID: " + nearestPage.getId() + ", URI: " + nearestPage.getDefaultPageURI() + ") by page type " +
+					pageType + " to user's " + user + " home page (ID: " + startPage.getId() + ", URI: " + startPage.getDefaultPageURI() + ")");
 
 		return nearestPage;
 	}
@@ -4299,9 +4297,8 @@ public class BuilderLogic implements Singleton {
 
 	@SuppressWarnings("unchecked")
 	private ICPage getPageByPageType(Collection<ICTreeNode> pages, String pageType) {
-		if (ListUtil.isEmpty(pages)) {
+		if (ListUtil.isEmpty(pages))
 			return null;
-		}
 
 		ICPage page = null;
 		Collection<ICTreeNode> children = null;
@@ -4325,7 +4322,6 @@ public class BuilderLogic implements Singleton {
 	}
 
 	protected String getPageUri(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-
 		User user = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
 	}
@@ -4374,42 +4370,34 @@ public class BuilderLogic implements Singleton {
 		ICPage icPage = null;
 		String messageForException = "No page found by page type: " + pageType;
 
-		if (checkFirstlyNearestPages) {
+		if (checkFirstlyNearestPages)
 			icPage = getNearestPageForUserHomePage(user, pageType);
-		}
 
 		if (icPage == null) {
+			logger.warning("Did not find page by type " + pageType + " for user " + user + " near to it's home page");
+			
 			Collection<ICPage> icpages = getPages(pageType);
-
-			if (icpages == null || icpages.isEmpty()) {
+			if (icpages == null || icpages.isEmpty())
 				throw new RuntimeException(messageForException);
-			}
 
 			icPage = icpages.iterator().next();
 		}
 
-		if (icPage == null) {
+		if (icPage == null)
 			throw new RuntimeException(messageForException);
-		}
 
 		String uri = icPage.getDefaultPageURI();
-
-		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
+		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX))
 			uri = CoreConstants.PAGES_URI_PREFIX + uri;
-		}
 
 		return getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
 
 	protected Collection<ICPage> getPages(String pageSubType) {
-
 		try {
 			ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
-			@SuppressWarnings("unchecked")
 			Collection<ICPage> icpages = home.findBySubType(pageSubType, false);
-
 			return icpages;
-
 		} catch (Exception e) {
 			throw new RuntimeException("Exception while resolving icpages by subType: "+pageSubType, e);
 		}
