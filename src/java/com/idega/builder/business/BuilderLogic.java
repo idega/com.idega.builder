@@ -4263,14 +4263,16 @@ public class BuilderLogic implements Singleton {
 			searchTops.addAll(children);
 
 		ICTreeNode parent = startPage.getParentNode();
-		Collection siblings = parent != null ? parent.getChildren() : new ArrayList();
+		Collection siblings = parent != null ? parent.getChildren() : new ArrayList<ICTreeNode>();
 		if (!ListUtil.isEmpty(siblings))
 			searchTops.addAll(siblings);
 
+		//	TODO: it fails to find page in children of children of start page!
+		
 		nearestPage = getPageByPageType(searchTops, pageType);
 		if (nearestPage == null)
 			logger.warning("Didn't find nearest page by page type " + pageType + " to user's " + user + " home page (ID: " + startPage.getId() +
-					", URI: " + startPage.getDefaultPageURI() + ")");
+					", URI: " + startPage.getDefaultPageURI() + "). Searched in " + searchTops);
 		else
 			logger.info("Found nearest page (ID: " + nearestPage.getId() + ", URI: " + nearestPage.getDefaultPageURI() + ") by page type " +
 					pageType + " to user's " + user + " home page (ID: " + startPage.getId() + ", URI: " + startPage.getDefaultPageURI() + ")");
