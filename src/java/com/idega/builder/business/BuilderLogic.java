@@ -4152,11 +4152,9 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public String getFullPageUrlByPageType(User user, IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-
 		String serverURL = iwc.getServerURL();
 		String pageUri;
-
-		if(user == null)
+		if (user == null)
 			pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
 		else
 			pageUri = getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
@@ -4199,7 +4197,6 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(IWContext iwc, String pageType) {
-
 		User usr = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getNearestPageForUserHomePageOrCurrentPageByPageType(usr, iwc, pageType);
 	}
@@ -4211,9 +4208,8 @@ public class BuilderLogic implements Singleton {
 
 		if (user != null) {
 			nearestPage = getNearestPageForUserHomePage(user,pageType);
-			if(nearestPage!=null){
+			if (nearestPage != null)
 				return nearestPage;
-			}
 		}
 
 		//	Trying to get nearest page to current page
@@ -4223,9 +4219,8 @@ public class BuilderLogic implements Singleton {
 			e.printStackTrace();
 		}
 
-
 		if (startPage == null) {
-			logger.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + user);
+			logger.warning("Didn't find start page! Searching for page with type: " + pageType + " for user: " + user);
 			return null;
 		}
 
@@ -4234,8 +4229,7 @@ public class BuilderLogic implements Singleton {
 		if (parentNode == null) {
 			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page and its children
 			children.add(startPage);
-		}
-		else {
+		} else {
 			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
 		}
 
@@ -4243,7 +4237,7 @@ public class BuilderLogic implements Singleton {
 		return nearestPage;
 	}
 	/**
-	 * Only searches the users main home page and below that for the pagetype
+	 * Only searches the users main home page and below that for the page type
 	 * @param currentUser
 	 * @param pageType
 	 * @return
@@ -4274,7 +4268,10 @@ public class BuilderLogic implements Singleton {
 			searchTops.addAll(siblings);
 
 		nearestPage = getPageByPageType(searchTops, pageType);
-		if (nearestPage != null)
+		if (nearestPage == null)
+			logger.warning("Didn't find nearest page by page type " + pageType + " to user's " + user + " home page (ID: " + startPage.getId() +
+					", URI: " + startPage.getDefaultPageURI() + ")");
+		else
 			logger.info("Found nearest page (ID: " + nearestPage.getId() + ", URI: " + nearestPage.getDefaultPageURI() + ") by page type " +
 					pageType + " to user's " + user + " home page (ID: " + startPage.getId() + ", URI: " + startPage.getDefaultPageURI() + ")");
 
@@ -4331,11 +4328,8 @@ public class BuilderLogic implements Singleton {
 		String messageForException = "No page found by page type: " + pageType;
 
 		if (checkFirstlyNearestPages) {
-
-			if(user == null) {
-
+			if (user == null) {
 				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
-
 			} else {
 				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(user, iwc, pageType);
 			}
@@ -4346,22 +4340,18 @@ public class BuilderLogic implements Singleton {
 		if (icPage == null) {
 			Collection<ICPage> icpages = getPages(pageType);
 
-			if (icpages == null || icpages.isEmpty()) {
+			if (icpages == null || icpages.isEmpty())
 				throw new RuntimeException(messageForException);
-			}
 
 			icPage = icpages.iterator().next();
 		}
 
-		if (icPage == null) {
+		if (icPage == null)
 			throw new RuntimeException(messageForException);
-		}
 
 		String uri = icPage.getDefaultPageURI();
-
-		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
+		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX))
 			uri = CoreConstants.PAGES_URI_PREFIX + uri;
-		}
 
 		return iwc.getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
