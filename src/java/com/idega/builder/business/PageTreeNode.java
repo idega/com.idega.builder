@@ -790,4 +790,8 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		return getLocalizedNodeName(locale);
 	}
 
+	@Override
+	public String toString() {
+		return getId();
+	}
 }
