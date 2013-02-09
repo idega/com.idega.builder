@@ -28,7 +28,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.render.RenderKitFactory;
 
 import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
+import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.PrettyXmlSerializer;
+import org.htmlcleaner.TagNode;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -3769,20 +3772,28 @@ public class BuilderLogic extends DefaultSpringBean {
 
 	private String getCleanedHtmlContent(InputStream htmlStream, String htmlContent, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
 			boolean omitComments) {
+
 		if (htmlStream == null && htmlContent == null) {
 			return null;
 		}
-
-		HtmlCleaner cleaner = htmlStream == null ? new HtmlCleaner(htmlContent) : new HtmlCleaner(htmlStream);
-		cleaner.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
-		cleaner.setOmitHtmlEnvelope(omitHtmlEnvelope);
-		cleaner.setOmitComments(omitComments);
-		cleaner.setOmitXmlDeclaration(true);
-		cleaner.setUseCdataForScriptAndStyle(false);
+		
+		CleanerProperties props = new CleanerProperties();
+		props.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
+		props.setOmitHtmlEnvelope(omitHtmlEnvelope);
+		props.setOmitComments(omitComments);
+		props.setOmitXmlDeclaration(true);
+		props.setUseCdataForScriptAndStyle(false);
+		HtmlCleaner cleaner = new HtmlCleaner(props);
 
 		try {
-			cleaner.clean();
-			htmlContent = cleaner.getPrettyXmlAsString();
+			TagNode nodes = null;
+			if (htmlStream != null) {
+				nodes = cleaner.clean(htmlStream);
+			} else {
+				nodes = cleaner.clean(htmlContent);
+			}
+			htmlContent = repairHtml5Doctype(new PrettyXmlSerializer(props).getAsString(nodes));
+
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error cleaning content" + (htmlContent == null ? CoreConstants.EMPTY : ":\n" + htmlContent), e);
 			return null;
@@ -4501,5 +4512,13 @@ public class BuilderLogic extends DefaultSpringBean {
 	@Override
 	protected boolean isDevelopementState() {
 		return getIWMainApplication().getSettings().getBoolean(CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
+	}
+	
+	/**
+	 * HtmlCleaner does not properly support HTML5 doctype declaration: <!DOCTYPE html>.
+	 * Fix HtmlCleaner output so it is correctly rendered in the output.
+	 */
+	private String repairHtml5Doctype(String htmlContent) {
+		return htmlContent.replace("<!DOCTYPE HTML null \"\">", "<!DOCTYPE HTML>");
 	}
 }
