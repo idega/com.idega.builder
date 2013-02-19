@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Namespace;
-import org.jdom.Text;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Attribute;
+import org.jdom2.Content;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.Namespace;
+import org.jdom2.Text;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
@@ -28,9 +29,9 @@ import com.idega.xml.XMLParser;
  * <p>
  * Class to convert IBXML and HTML to the new Facelet formats.
  * </p>
- * 
+ *
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson </a>
- * 
+ *
  * Last modified: $Date: 2009/01/14 15:35:25 $ by $Author: tryggvil $
  * @version $Id: BuilderFaceletConverter.java,v 1.2 2009/01/14 15:35:25 tryggvil Exp $
  */
@@ -44,7 +45,7 @@ public class BuilderFaceletConverter {
 		return formatTo;
 	}
 
-	public void setFormatTo(String formatTo) {		
+	public void setFormatTo(String formatTo) {
 		this.formatTo = formatTo;
 		if(isLegacyConvert()){
 			//We'll switch to a namespace without a prefix:
@@ -75,7 +76,7 @@ public class BuilderFaceletConverter {
 
 	public static final String sHtmlNamespace = "http://www.w3.org/1999/xhtml";
 	public Namespace htmlNamespace = Namespace.getNamespace(sHtmlNamespace);
-	
+
 	private CachedBuilderPage page;
 
 	public BuilderFaceletConverter(CachedBuilderPage page, String pageFormatTo,
@@ -85,7 +86,7 @@ public class BuilderFaceletConverter {
 		setFormatFrom(page.getPageFormat());
 		this.stringSourceMarkup = stringSourceMarkup;
 	}
-	
+
 	public BuilderFaceletConverter(String pageFormatFrom, String pageFormatTo,
 			String stringSourceMarkup) {
 		setFormatTo(pageFormatTo);
@@ -155,10 +156,10 @@ public class BuilderFaceletConverter {
 
 						tidy.parse(stream, baos);
 						text = baos.toString(CoreConstants.ENCODING_UTF8);
-						
+
 						text = text.replaceAll("html xmlns=\"http://www.w3.org/1999/xhtml\"", "html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:ui=\"http://java.sun.com/jsf/facelets\"");
 						text = rewriteRegionTags(text);
-						
+
 						this.stringSourceMarkup = text;
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -209,7 +210,7 @@ public class BuilderFaceletConverter {
 			 * try{ UIComponent region = getRegion(regionId);
 			 * renderChild(ctx,region); } catch(ClassCastException cce){
 			 * cce.printStackTrace(); }
-			 * 
+			 *
 			 * out.write(t[1]);
 			 */
 			newString += t[1];
@@ -220,14 +221,9 @@ public class BuilderFaceletConverter {
 	private void transformElementToFacelet(Element oldElement,
 			Element newElement) {
 
-		// String text = oldElement.getText();
-		// if(text!=null){
-		// newElement.setText(text);
-		// }
-
-		List attributes = oldElement.getAttributes();
-		for (Iterator iterator = attributes.iterator(); iterator.hasNext();) {
-			Attribute attribute = (Attribute) iterator.next();
+		List<Attribute> attributes = oldElement.getAttributes();
+		for (Iterator<Attribute> iterator = attributes.iterator(); iterator.hasNext();) {
+			Attribute attribute = iterator.next();
 			String name = attribute.getName();
 			String value = attribute.getValue();
 
@@ -254,8 +250,8 @@ public class BuilderFaceletConverter {
 
 		}
 
-		List children = oldElement.getContent();
-		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+		List<Content> children = oldElement.getContent();
+		for (Iterator<Content> iterator = children.iterator(); iterator.hasNext();) {
 			Object child = iterator.next();
 			if (child instanceof Element) {
 				Element childElement = (Element) child;
@@ -271,11 +267,11 @@ public class BuilderFaceletConverter {
 				}
 
 				if (childElement.getName().equals("property")&&!isLegacyConvert()) {
-					List nameChildren = getChildren(childElement, "name");
-					List valueChildren = getChildren(childElement, "value");
+					List<Element> nameChildren = getChildren(childElement, "name");
+					List<Element> valueChildren = getChildren(childElement, "value");
 					if (nameChildren.size() == 1) {
-						Element nameChild = (Element) nameChildren.get(0);
-						Element valueChild = (Element) valueChildren.get(0);
+						Element nameChild = nameChildren.get(0);
+						Element valueChild = valueChildren.get(0);
 
 						Attribute newNameAttribute = new Attribute("name",
 								sBuilderNamespace);
@@ -304,10 +300,10 @@ public class BuilderFaceletConverter {
 
 	}
 
-	private List getChildren(Element oldElement, String name) {
-		ArrayList list = new ArrayList();
-		List children = oldElement.getContent();
-		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+	private List<Element> getChildren(Element oldElement, String name) {
+		List<Element> list = new ArrayList<Element>();
+		List<Content> children = oldElement.getContent();
+		for (Iterator<Content> iterator = children.iterator(); iterator.hasNext();) {
 			Object child = iterator.next();
 			if (child instanceof Element) {
 				Element element = (Element) child;

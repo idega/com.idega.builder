@@ -4,7 +4,7 @@ package com.idega.builder.bean;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 import com.idega.business.IBOSession;
 
@@ -68,16 +68,16 @@ public interface BuilderEngine extends IBOSession {
 	 * @see com.idega.builder.bean.BuilderEngineBean#moveModule
 	 */
 	public boolean moveModule(String instanceId, String pageKey, String formerParentId, String newParentId, String neighbourInstanceId, boolean insertAbove) throws RemoteException;
-	
+
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#isModuleInClipboard
 	 */
 	public String[] isModuleInClipboard();
-	
+
 	/**
 	 * @see com.idega.builder.bean.BuilderEngineBean#removeProperty
 	 */
 	public boolean removeProperty(String pageKey, String moduleId, String propertyName);
-	
+
 	public boolean needReloadPropertyBox();
 }

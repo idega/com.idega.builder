@@ -32,11 +32,11 @@ import org.htmlcleaner.CleanerProperties;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.PrettyXmlSerializer;
 import org.htmlcleaner.TagNode;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -3776,7 +3776,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		if (htmlStream == null && htmlContent == null) {
 			return null;
 		}
-		
+
 		CleanerProperties props = new CleanerProperties();
 		props.setOmitDoctypeDeclaration(omitDocTypeDeclaration);
 		props.setOmitHtmlEnvelope(omitHtmlEnvelope);
@@ -3816,6 +3816,9 @@ public class BuilderLogic extends DefaultSpringBean {
 		String xmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		if (htmlContent.indexOf(xmlDeclaration) != -1)
 			htmlContent = StringHandler.replace(htmlContent, xmlDeclaration, CoreConstants.EMPTY);
+		String xmlNamespace = "xmlns:xml=\"xml\"";
+		if (htmlContent.indexOf(xmlNamespace) != -1)
+			htmlContent = StringHandler.replace(htmlContent, xmlNamespace, CoreConstants.EMPTY);
 
 		return htmlContent.trim();
 	}
@@ -4513,7 +4516,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	protected boolean isDevelopementState() {
 		return getIWMainApplication().getSettings().getBoolean(CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
 	}
-	
+
 	/**
 	 * HtmlCleaner does not properly support HTML5 doctype declaration: <!DOCTYPE html>.
 	 * Fix HtmlCleaner output so it is correctly rendered in the output.

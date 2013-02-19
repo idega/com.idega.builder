@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 
 import javax.faces.component.UIComponent;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 import com.idega.builder.business.BuilderConstants;
 import com.idega.builder.business.BuilderLogic;
