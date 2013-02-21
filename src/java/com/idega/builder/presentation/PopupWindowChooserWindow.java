@@ -11,6 +11,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
+import com.idega.util.CoreConstants;
 
 /**
  * Title:
@@ -24,7 +25,7 @@ import com.idega.presentation.ui.Window;
 public class PopupWindowChooserWindow extends AbstractChooserWindow {
 
 private String _windowString;
-public static final String replaceMent = "æ";
+public static final String replaceMent = "ï¿½";
 public static final String replaceMentCommon = "+";
 
   public PopupWindowChooserWindow() {
@@ -32,7 +33,8 @@ public static final String replaceMentCommon = "+";
     this.setStatus(true);
   }
 
-  public void displaySelection(IWContext iwc) {
+  @Override
+public void displaySelection(IWContext iwc) {
 
     if ( iwc.getParameter("mode") != null && iwc.getParameter("mode").equals("submit")) {
       try {
@@ -172,31 +174,31 @@ public static final String replaceMentCommon = "+";
     int iWidth = 500;
     int iPage = 1;
 
-    if (toolbar.equals("Y")) {
+    if (toolbar.equals(CoreConstants.Y)) {
 			bToolbar = true;
 		}
-    if (location.equals("Y")) {
+    if (location.equals(CoreConstants.Y)) {
 			bLocation = true;
 		}
-    if (directories.equals("Y")) {
+    if (directories.equals(CoreConstants.Y)) {
 			bDirectories = true;
 		}
-    if (statusbar.equals("Y")) {
+    if (statusbar.equals(CoreConstants.Y)) {
 			bStatusbar = true;
 		}
-    if (menubar.equals("Y")) {
+    if (menubar.equals(CoreConstants.Y)) {
 			bMenubar = true;
 		}
-    if (titlebar.equals("Y")) {
+    if (titlebar.equals(CoreConstants.Y)) {
 			bTitlebar = true;
 		}
-    if (scrollbars.equals("Y")) {
+    if (scrollbars.equals(CoreConstants.Y)) {
 			bScrollbars = true;
 		}
-    if (resizable.equals("Y")) {
+    if (resizable.equals(CoreConstants.Y)) {
 			bResizable = true;
 		}
-    if (fullscreen.equals("Y")) {
+    if (fullscreen.equals(CoreConstants.Y)) {
 			bFullscreen = true;
 		}
 

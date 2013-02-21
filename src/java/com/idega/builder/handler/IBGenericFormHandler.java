@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.idega.builder.form.data.Field;
 import com.idega.presentation.IWContext;
+import com.idega.util.CoreConstants;
 /**
  * Title:        idegaWeb Generic Form Handler
  * Description:  A class to parse forms and get output in a structured format
@@ -18,7 +20,7 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	private Map parameterDescriptions;
 	private Map parameterTypes;
 	private List parameterNames;
-	
+
 	private static final String COLON = ":";
 	private static final String TAB = "\t";
 	private static final String NEWLINE = "\n";
@@ -30,30 +32,30 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 	public static final String DATE_TYPE = JavaTypesHandler.DATE_TYPE;
 	public static final String TIMESTAMP_TYPE = JavaTypesHandler.TIMESTAMP_TYPE;
 	public static final String TIME_TYPE = JavaTypesHandler.TIME_TYPE;
-	
+
 	public IBGenericFormHandler() {
 		this.parameterDescriptions = new HashMap();
 		this.parameterTypes = new HashMap();
 		this.parameterNames = new ArrayList();
 	}
-	
+
 	public void addProcessedParameter(String parameterName, String parameterDescription, String parameterType) {
 		getDescMap().put(parameterName, parameterDescription);
 		getTypesMap().put(parameterName, parameterType);
 		this.parameterNames.add(parameterName);
 	}
-	
+
 	/*public void addProcessedParameter(String parameterName,String parameterDescription,String parameterType){
 	  addProcessedParameter(parameterName,parameterDescription,STRING_TYPE);
 	}*/
 	private Map getDescMap() {
 		return this.parameterDescriptions;
 	}
-	
+
 	private Map getTypesMap() {
 		return this.parameterTypes;
 	}
-	
+
 	/**
 	 * Formats the output of the form with descriptions in front of values and newlines between values
 	 */
@@ -93,7 +95,7 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 		return buffer.toString();
 	}
 
-	
+
 	/**
 	 * Formats the output of the form with descriptions in front of values and newlines between values
 	 */
@@ -120,14 +122,14 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 					}
 					field = new Field(paramName, values.toString());
 				}
-				
+
 				list.add(field);
 			}
 		}
-		
+
 		return list;
 	}
-	
+
 	public String getParameterValue(IWContext iwc, String parameterName) {
 		String[] paramValues = iwc.getParameterValues(parameterName);
 		if (paramValues != null && paramValues.length >= 1) {
@@ -135,16 +137,16 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 		}
 		return null;
 	}
-	
+
 	private String getDescriptionForParameter(String parameterName) {
 		return (String) getDescMap().get(parameterName);
 	}
-	
+
 	private String getTypeForParameter(String parameterName) {
 		String type = (String) getTypesMap().get(parameterName);
 		return type == null ? STRING_TYPE : type;
 	}
-	
+
 	private String getProcessedValueForDisplay(IWContext iwc, String parameterName, String parameterValue) {
 		String parameterType = getTypeForParameter(parameterName);
 		if (parameterType.equals(STRING_TYPE)) {
@@ -154,7 +156,7 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 			return parameterValue;
 		}
 		else if (parameterType.equals(BOOLEAN_TYPE)) {
-			if (parameterValue.equalsIgnoreCase("Y") || parameterValue.equalsIgnoreCase("T")) {
+			if (parameterValue.equalsIgnoreCase(CoreConstants.Y) || parameterValue.equalsIgnoreCase("T")) {
 				/**
 				 * @todo: Localize
 				 */
@@ -191,7 +193,8 @@ public class IBGenericFormHandler implements java.lang.Cloneable {
 		}
 		return parameterValue;
 	}
-	
+
+	@Override
 	public Object clone() {
 		try {
 			IBGenericFormHandler newHandler = (IBGenericFormHandler) super.clone();
