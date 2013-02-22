@@ -378,8 +378,8 @@ public class IBPermissionWindow extends Window {
 								groupsToRemove);
 					}
 				}
-			}
-			else {
+			} else {
+				logWarning("Invalid category (" + category + ") or component ID (" + componentId + ")");
 				dispose(iwc);
 				throw new RuntimeException("identifier or permissionCategory not set or does not match");
 			}

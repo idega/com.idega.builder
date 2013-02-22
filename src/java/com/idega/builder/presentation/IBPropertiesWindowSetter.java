@@ -1,11 +1,11 @@
 /*
  * $Id: IBPropertiesWindowSetter.java,v 1.40 2007/05/24 11:31:12 valdas Exp $
- * 
+ *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
- * 
+ *
  * This software is the proprietary information of Idega hf. Use is subject to
  * license terms.
- * 
+ *
  */
 package com.idega.builder.presentation;
 
@@ -62,13 +62,14 @@ public class IBPropertiesWindowSetter extends Page {
 	protected boolean isChangingProperty(IWContext iwc) {
 		String sValue = iwc.getParameter(IS_CHANGING_PROPERTY_BOOLEAN_PARAMETER);
 		if (sValue != null) {
-			if (sValue.equals("Y")) {
+			if (sValue.equals(CoreConstants.Y)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		boolean propertyChange = false;
 		Script script = this.getAssociatedScript();
@@ -84,7 +85,7 @@ public class IBPropertiesWindowSetter extends Page {
 		Form form = new Form();
 		//no need for a loading layer here, only slows it down
 		form.setToShowLoadingOnSubmit(false);
-		
+
 		add(form);
 		form.maintainParameter(IC_OBJECT_INSTANCE_ID_PARAMETER);
 		Parameter param1 = new Parameter(SAVE_PROPERTY_PARAMETER, "true");
@@ -195,7 +196,7 @@ public class IBPropertiesWindowSetter extends Page {
 					/**
 					 * @todo This is a shitty-mix solution for the
 					 *       LocalizedPageNameHandler. Have to fix this later.
-					 * 
+					 *
 					 */
 					String langString = iwc.getParameter(valueParams[i] + "a");
 					if (langString != null) {
@@ -228,7 +229,7 @@ public class IBPropertiesWindowSetter extends Page {
 			ICObjectClass = BuilderLogic.getInstance().getObjectClass(icObjectInstanceIDint);
 		}
 		String namePrefix = "ib_property_";
-	
+
 		MethodFinder methodFinder = MethodFinder.getInstance();
 		Class parameters[] = null;
 		boolean isMethodIdentifier = false;
@@ -263,7 +264,7 @@ public class IBPropertiesWindowSetter extends Page {
 				handlerClass = IBPropertyHandler.getInstance().getMethodParameterProperty(iwc, icObjectInstanceID,
 					propertyName, i, IBPropertyHandler.METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
 			}
-			
+
 			// if
 			// (handlerClass.equals("com.idega.builder.handler.LocalizedPageNameHandler"))
 			// {
@@ -272,12 +273,12 @@ public class IBPropertiesWindowSetter extends Page {
 			// tmp = new StringBuffer(sValue);
 			// else
 			// tmp = new StringBuffer("");
-			//				
+			//
 			// tmp.append(";");
 			// String langValue = iwc.getParameter("ib_property_0a");
 			// if (langValue != null)
 			// tmp.append(langValue);
-			//					
+			//
 			// sValue = tmp.toString();
 			// }
 			PresentationObject handlerBox = IBPropertyHandler.getInstance().getPropertySetterComponent(iwc,
@@ -346,7 +347,7 @@ public class IBPropertiesWindowSetter extends Page {
 		}
 		getBuilderLogic().removeProperty(iwma, pageKey, instanceId, key, values);
 	}
-	
+
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}
