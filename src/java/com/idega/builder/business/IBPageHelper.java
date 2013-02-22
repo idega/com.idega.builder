@@ -111,7 +111,7 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map<Integer, PageTreeNode> tree, IWContext creatorContext) {
+	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId, Map<Integer, ? extends ICTreeNode> tree, IWContext creatorContext) {
 		int domainId = -1;
 		if (parentId == null) {
 			// that means top level
@@ -213,7 +213,7 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId){
+	public int createNewPage(String parentId, String name, String type, String templateId, Map<Integer, ? extends ICTreeNode> tree, IWUserContext creatorContext, String subType, int domainId){
 		String pageUri = null;
 		return createNewPage(parentId,name,type,templateId,pageUri,tree,creatorContext,subType,domainId);
 	}
@@ -236,7 +236,7 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId){
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode> tree, IWUserContext creatorContext, String subType, int domainId){
 		return createNewPage(parentId,name,type,templateId,pageUri,tree,creatorContext,subType,domainId,null,null);
 	}
 
@@ -260,11 +260,13 @@ public class IBPageHelper implements Singleton  {
 	 *
 	 * @return The id of the new IBPage
 	 */
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode> tree,
+			IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup){
 		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
 	}
 
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, PageTreeNode> tree, IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
+	public <T extends ICTreeNode> int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, T> tree,
+			IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
 		boolean isTopLevel=false;
 		if (parentId == null)
 			isTopLevel=true;
@@ -362,15 +364,11 @@ public class IBPageHelper implements Singleton  {
 			ibPage.setType(ICPageBMPBean.PAGE);
 		}
 
-//		if(treeOrder != null) {
-			try {
-//				ibPage.setTreeOrder(Integer.parseInt(treeOrder));
-				ibPage.setTreeOrder(treeOrderInt);
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
-//		}
+		try {
+			ibPage.setTreeOrder(treeOrderInt);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		int tid = -1;
 		if (templateId != null) {
@@ -426,8 +424,7 @@ public class IBPageHelper implements Singleton  {
 					DomainTree.clearCache(creatorContext == null ? IWMainApplication.getDefaultIWApplicationContext() : creatorContext.getApplicationContext());
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return (-1);
 		}
@@ -477,12 +474,16 @@ public class IBPageHelper implements Singleton  {
 		if (tree != null) {
 			PageTreeNode node = new PageTreeNode(id, name, treeOrderInt);
 			if (parentId != null) {
-				PageTreeNode parent = tree.get(Integer.valueOf(parentId));
-				if (parent != null) {
-					parent.addChild(node);
+				ICTreeNode parentNode = tree.get(Integer.valueOf(parentId));
+				if (parentNode instanceof PageTreeNode) {
+					PageTreeNode parent = (PageTreeNode) parentNode;
+					if (parent != null) {
+						parent.addChild(node);
+					}
 				}
 			}
-			tree.put(new Integer(node.getNodeID()), node);
+
+			tree.put(Integer.valueOf(node.getNodeID()), (T) node);
 		}
 		if ((templateId != null) && (!templateId.equals(""))) {
 			try{
@@ -655,7 +656,7 @@ public class IBPageHelper implements Singleton  {
 		}
 		CachedBuilderPage xml = BuilderLogic.getInstance().getCachedBuilderPage(pageId);
 		if (xml.getType().equals(CachedBuilderPage.TYPE_TEMPLATE)) {
-			List map = xml.getUsingTemplate();
+			List<String> map = xml.getUsingTemplate();
 			return ((map == null) || (map.isEmpty()));
 		}
 		return true;
@@ -686,7 +687,7 @@ public class IBPageHelper implements Singleton  {
 						return false;
 					}
 
-					List map = xml.getUsingTemplate();
+					List<String> map = xml.getUsingTemplate();
 					if ((map != null) && (!map.isEmpty())) {
 						return false;
 					}
