@@ -739,4 +739,12 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public ICPage getUsersHomePage(User user){
 		return getBuilderLogic().getUsersHomePage(user);
 	}
+	@Override
+	public ICPage findPageForModule(IWMainApplication iwma, String instanceId) {
+		return getBuilderLogic().findPageForModule(iwma, instanceId);
+	}
+	@Override
+	public boolean isBuilderApplicationRunning(IWUserContext iwuc) {
+		return getBuilderLogic().isBuilderApplicationRunning(iwuc);
+	}
 }
