@@ -986,7 +986,7 @@ public class IBPropertyHandler implements Singleton{
 			return null;
 		}
 		
-		boolean refillProperties = !(component.getObjectType().equals(ComponentRegistry.COMPONENT_TYPE_JSF_UICOMPONENT));
+		boolean refillProperties = !(component.getObjectType().equals(ComponentRegistry.COMPONENT_TYPE_JSF_UICOMPONENT)) || ListUtil.isEmpty(properties);
 		if (refillProperties) {
 			properties = new ArrayList<ComponentProperty>();
 			fillProperties(iwb, componentClassName, properties, iwma, currentLocale, component);
