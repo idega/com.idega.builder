@@ -1803,10 +1803,10 @@ public class BuilderLogic extends DefaultSpringBean {
 	 * @param parentObjectInstanceID
 	 * @param newICObjectID
 	 * @param label
-	 * @param slideSession
+	 * @param repositorySession
 	 * @return
 	 */
-	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, RepositorySession slideSession) {
+	public String addNewModule(String pageKey, String parentObjectInstanceID, int newICObjectID, String label, RepositorySession repositorySession) {
 		IBXMLPage page = null;
 		try {
 			page = getIBXMLPage(pageKey);
@@ -1815,7 +1815,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			return null;
 		}
 
-		if (slideSession != null) {
+		if (repositorySession != null) {
 			//	Will check if can use thread
 			XMLElement region = null;
 			try {
@@ -1834,7 +1834,7 @@ public class BuilderLogic extends DefaultSpringBean {
 				}
 			}
 			if (!useThread) {
-				slideSession = null;
+				repositorySession = null;
 			}
 		}
 
@@ -1843,7 +1843,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			return null;
 		}
 
-		if (savePage(page, slideSession)) {
+		if (savePage(page, repositorySession)) {
 			return id;
 		}
 		return null;

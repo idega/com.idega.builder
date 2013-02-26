@@ -11,7 +11,7 @@ import javax.ejb.FinderException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.idega.builder.app.IBApplication;
-import com.idega.builder.business.BuilderSlideListenerBean;
+import com.idega.builder.business.BuilderRepositoryListenerBean;
 import com.idega.builder.business.ComponentPropertyHandler;
 import com.idega.builder.business.IBMainServiceBean;
 import com.idega.builder.business.IBPropertyHandler;
@@ -111,7 +111,7 @@ public class IWBundleStarter implements IWBundleStartable {
 
 		updateBuilderPageUris();
 
-		registerSlideListener(starterBundle);
+		registerRepositoryListener(starterBundle);
 	}
 
 	/**
@@ -202,11 +202,11 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.unloadInstance(IBPropertyHandler.class);
 	}
 
-	public void registerSlideListener(IWBundle bundle){
+	public void registerRepositoryListener(IWBundle bundle){
 		// FIXME: This is the way it should be but doesn't work because of the startTemporaryBundleStarers() method in IWMainApplicationStarter
 		if (bundle != null) {
 			//add it as a repository change listener for caching purposes
-			getRepositoryService().addRepositoryChangeListeners(new BuilderSlideListenerBean());
+			getRepositoryService().addRepositoryChangeListeners(new BuilderRepositoryListenerBean());
 		}
 	}
 

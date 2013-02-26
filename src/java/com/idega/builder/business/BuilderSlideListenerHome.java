@@ -7,5 +7,5 @@ import java.rmi.RemoteException;
 
 public interface BuilderSlideListenerHome extends IBOHome {
 
-	public BuilderSlideListener create() throws CreateException, RemoteException;
+	public BuilderRepositoryListener create() throws CreateException, RemoteException;
 }

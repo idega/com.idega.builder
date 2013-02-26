@@ -26,7 +26,7 @@ import com.idega.util.CoreConstants;
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
  * @version $Revision: 1.6 $
  */
-public class BuilderSlideListenerBean extends IBOServiceBean implements BuilderSlideListener {
+public class BuilderRepositoryListenerBean extends IBOServiceBean implements BuilderRepositoryListener {
 
 	private static final long serialVersionUID = 2891763087583075763L;
 
