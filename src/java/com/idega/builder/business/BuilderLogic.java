@@ -89,6 +89,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
 import com.idega.event.EventLogic;
+import com.idega.idegaweb.DefaultIWBundle;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWApplicationContextFactory;
 import com.idega.idegaweb.IWBundle;
@@ -4111,11 +4112,9 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public String getFullPageUrlByPageType(User user, IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-
 		String serverURL = iwc.getServerURL();
 		String pageUri;
-
-		if(user == null)
+		if (user == null)
 			pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
 		else
 			pageUri = getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
@@ -4158,7 +4157,6 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public ICPage getNearestPageForUserHomePageOrCurrentPageByPageType(IWContext iwc, String pageType) {
-
 		User usr = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getNearestPageForUserHomePageOrCurrentPageByPageType(usr, iwc, pageType);
 	}
@@ -4169,9 +4167,8 @@ public class BuilderLogic extends DefaultSpringBean {
 
 		if (user != null) {
 			nearestPage = getNearestPageForUserHomePage(user,pageType);
-			if(nearestPage!=null){
+			if (nearestPage != null)
 				return nearestPage;
-			}
 		}
 
 		//	Trying to get nearest page to current page
@@ -4181,9 +4178,8 @@ public class BuilderLogic extends DefaultSpringBean {
 			e.printStackTrace();
 		}
 
-
 		if (startPage == null) {
-			LOGGER.warning("Didn't find start page! Searching for :" + pageType + ", by user: " + user);
+			LOGGER.warning("Didn't find start page! Searching for page with type: " + pageType + " for user: " + user);
 			return null;
 		}
 
@@ -4192,8 +4188,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		if (parentNode == null) {
 			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page and its children
 			children.add(startPage);
-		}
-		else {
+		} else {
 			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
 		}
 
@@ -4201,41 +4196,44 @@ public class BuilderLogic extends DefaultSpringBean {
 		return nearestPage;
 	}
 	/**
-	 * Only searches the users main home page and below that for the pagetype
+	 * Only searches the users main home page and below that for the page type
 	 * @param currentUser
 	 * @param pageType
 	 * @return
 	 */
 	public ICPage getNearestPageForUserHomePage(User user, String pageType) {
-		ICPage startPage = null;
-		ICPage nearestPage = null;
-
-		if (user != null) {
-			//	Trying to get nearest page to user's home page
-			startPage = getUsersHomePage(user);
-
-			if(startPage!=null){
-				Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
-				searchTops.add(startPage);
-				Collection<ICTreeNode> children = startPage.getChildren();
-				if(!ListUtil.isEmpty(children)){
-					searchTops.addAll(children);
-				}
-
-				ICTreeNode parent = startPage.getParentNode();
-				Collection<ICTreeNode> siblings = parent != null ? parent.getChildren() : new ArrayList<ICTreeNode>();
-				if(!ListUtil.isEmpty(siblings)){
-					searchTops.addAll(siblings);
-				}
-
-				nearestPage = getPageByPageType(searchTops, pageType);
-			}
-		}
-
-		if (startPage == null) {
-			LOGGER.warning("Didn't find start page for search: " + pageType + ", user: " + user);
+		if (user == null) {
+			LOGGER.warning("User is not provided");
 			return null;
 		}
+
+		ICPage startPage = getUsersHomePage(user);
+		if (startPage == null) {
+			LOGGER.warning("Didn't find start page for user: " + user);
+			return null;
+		}
+
+		ICPage nearestPage = null;
+		Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
+		searchTops.add(startPage);
+		Collection<ICTreeNode> children = startPage.getChildren();
+		if (!ListUtil.isEmpty(children))
+			searchTops.addAll(children);
+
+		ICTreeNode parent = startPage.getParentNode();
+		Collection<ICTreeNode> siblings = parent != null ? parent.getChildren() : new ArrayList<ICTreeNode>();
+		if (!ListUtil.isEmpty(siblings))
+			searchTops.addAll(siblings);
+
+		//	TODO: it fails to find page in children of children of start page!
+
+		nearestPage = getPageByPageType(searchTops, pageType);
+		if (nearestPage == null)
+			LOGGER.warning("Didn't find nearest page by page type " + pageType + " to user's " + user + " home page (ID: " + startPage.getId() +
+					", URI: " + startPage.getDefaultPageURI() + "). Searched in " + searchTops);
+		else
+			LOGGER.info("Found nearest page (ID: " + nearestPage.getId() + ", URI: " + nearestPage.getDefaultPageURI() + ") by page type " +
+					pageType + " to user's " + user + " home page (ID: " + startPage.getId() + ", URI: " + startPage.getDefaultPageURI() + ")");
 
 		return nearestPage;
 	}
@@ -4255,9 +4253,8 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	private ICPage getPageByPageType(Collection<ICTreeNode> pages, String pageType) {
-		if (ListUtil.isEmpty(pages)) {
+		if (ListUtil.isEmpty(pages))
 			return null;
-		}
 
 		ICPage page = null;
 		Collection<ICTreeNode> children = null;
@@ -4281,7 +4278,6 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	protected String getPageUri(IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-
 		User user = iwc.isLoggedOn() ? iwc.getCurrentUser() : null;
 		return getPageUri(user, iwc, pageType, checkFirstlyNearestPages);
 	}
@@ -4291,11 +4287,8 @@ public class BuilderLogic extends DefaultSpringBean {
 		String messageForException = "No page found by page type: " + pageType;
 
 		if (checkFirstlyNearestPages) {
-
-			if(user == null) {
-
+			if (user == null) {
 				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(iwc, pageType);
-
 			} else {
 				icPage = getNearestPageForUserHomePageOrCurrentPageByPageType(user, iwc, pageType);
 			}
@@ -4306,22 +4299,18 @@ public class BuilderLogic extends DefaultSpringBean {
 		if (icPage == null) {
 			Collection<ICPage> icpages = getPages(pageType);
 
-			if (icpages == null || icpages.isEmpty()) {
+			if (icpages == null || icpages.isEmpty())
 				throw new RuntimeException(messageForException);
-			}
 
 			icPage = icpages.iterator().next();
 		}
 
-		if (icPage == null) {
+		if (icPage == null)
 			throw new RuntimeException(messageForException);
-		}
 
 		String uri = icPage.getDefaultPageURI();
-
-		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
+		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX))
 			uri = CoreConstants.PAGES_URI_PREFIX + uri;
-		}
 
 		return iwc.getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
@@ -4330,41 +4319,34 @@ public class BuilderLogic extends DefaultSpringBean {
 		ICPage icPage = null;
 		String messageForException = "No page found by page type: " + pageType;
 
-		if (checkFirstlyNearestPages) {
+		if (checkFirstlyNearestPages)
 			icPage = getNearestPageForUserHomePage(user, pageType);
-		}
 
 		if (icPage == null) {
-			Collection<ICPage> icpages = getPages(pageType);
+			LOGGER.warning("Did not find page by type " + pageType + " for user " + user + " near to it's home page");
 
-			if (icpages == null || icpages.isEmpty()) {
+			Collection<ICPage> icpages = getPages(pageType);
+			if (icpages == null || icpages.isEmpty())
 				throw new RuntimeException(messageForException);
-			}
 
 			icPage = icpages.iterator().next();
 		}
 
-		if (icPage == null) {
+		if (icPage == null)
 			throw new RuntimeException(messageForException);
-		}
 
 		String uri = icPage.getDefaultPageURI();
-
-		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX)) {
+		if (!uri.startsWith(CoreConstants.PAGES_URI_PREFIX))
 			uri = CoreConstants.PAGES_URI_PREFIX + uri;
-		}
 
 		return getIWMainApplication().getTranslatedURIWithContext(uri);
 	}
 
 	protected Collection<ICPage> getPages(String pageSubType) {
-
 		try {
 			ICPageHome home = (ICPageHome) IDOLookup.getHome(ICPage.class);
 			Collection<ICPage> icpages = home.findBySubType(pageSubType, false);
-
 			return icpages;
-
 		} catch (Exception e) {
 			throw new RuntimeException("Exception while resolving icpages by subType: "+pageSubType, e);
 		}
@@ -4514,7 +4496,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	 */
 	@Override
 	protected boolean isDevelopementState() {
-		return getIWMainApplication().getSettings().getBoolean(CoreConstants.DEVELOPEMENT_STATE_PROPERTY, Boolean.FALSE);
+		return !DefaultIWBundle.isProductionEnvironment();
 	}
 
 	/**
