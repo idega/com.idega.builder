@@ -18,6 +18,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.idega.core.builder.data.ICPage;
@@ -250,7 +251,9 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 
 		try {
 			return getRepositoryService().getInputStreamAsRoot(webdavUri);
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error getting input stream for page: " + webdavUri, e);
+		}
 
 		return null;
 	}

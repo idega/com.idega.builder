@@ -34,6 +34,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.util.CoreConstants;
 import com.idega.util.IOUtil;
+import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -353,7 +354,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @return A List of elements. Null if the element has no children or is null.
 	 * @todo Wrap the Element class to hide all implementation of the XML parser.
 	 */
-	List getChildren(XMLElement element) {
+	List<XMLElement> getChildren(XMLElement element) {
 		if (element == null) {
 			return null;
 		}
@@ -362,20 +363,16 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			return null;
 		}
 
-		List li = element.getChildren();
-
-		return li;
+		return  element.getChildren();
 	}
 
 	@Override
-	public List getAttributes(XMLElement element) {
+	public List<XMLAttribute> getAttributes(XMLElement element) {
 		if (element == null) {
 			return null;
 		}
 
-		List li = element.getAttributes();
-
-		return li;
+		return element.getAttributes();
 	}
 
 	@Override

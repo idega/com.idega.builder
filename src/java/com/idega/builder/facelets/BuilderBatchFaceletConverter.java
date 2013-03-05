@@ -26,10 +26,8 @@ public class BuilderBatchFaceletConverter {
 
 	public static final String beanIdentifier = "builderBatchFaceletConverter";
 
-	BuilderLogic bLogic = BuilderLogic.getInstance();
-
 	public void convertAllPagesToFaceletsLegacy(){
-		PageCacher cacher = bLogic.getPageCacher();
+		PageCacher cacher = BuilderLogic.getInstance().getPageCacher();
 		Iterator<CachedBuilderPage> iter = cacher.getAllPages();
 		while(iter.hasNext()){
 			CachedBuilderPage page = iter.next();
@@ -50,7 +48,7 @@ public class BuilderBatchFaceletConverter {
 	}
 
 	public void convertAllPagesToFaceletsCompliant(){
-		PageCacher cacher = bLogic.getPageCacher();
+		PageCacher cacher = BuilderLogic.getInstance().getPageCacher();
 		Iterator<CachedBuilderPage> iter = cacher.getAllPages();
 		while(iter.hasNext()){
 			CachedBuilderPage page = iter.next();
