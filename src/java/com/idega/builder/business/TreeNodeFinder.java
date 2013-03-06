@@ -150,9 +150,9 @@ public class TreeNodeFinder {
 
 			StringBuffer sql = new StringBuffer();
 			/**
-			 * @todo til ağ útiloka dpt_síğur í famtíğinni şarf ağ sækja relationship 
-			 * útfrá child en ekki parent annar getur komiğ plús í tréğ şar sem hann 
-			 * á ekki heima ş.e. ağ childpage.getColumnType() = pages.PAGE
+			 * @todo til aÃ° Ãºtiloka dpt_sÃ­Ã°ur Ã­ famtÃ­Ã°inni Ã¾arf aÃ° sÃ¦kja relationship 
+			 * ÃºtfrÃ¡ child en ekki parent annar getur komiÃ° plÃºs Ã­ trÃ©Ã° Ã¾ar sem hann 
+			 * Ã¡ ekki heima Ã¾.e. aÃ° childpage.getColumnType() = pages.PAGE
 			 */
 			sql.append("select * from ");
 			sql.append(pages.getEntityName() ).append( "_tree t, ");
