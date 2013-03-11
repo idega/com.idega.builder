@@ -3589,9 +3589,11 @@ public class BuilderLogic extends DefaultSpringBean {
 		}
 
 		String rendered = writer.toString();
-		if (rendered == null) {
+		if (rendered == null)
 			return null;
-		}
+
+		rendered = StringHandler.replace(rendered, "idega:seterror", "div");
+		rendered = StringHandler.replace(rendered, "idega:setError", "div");
 
 		if (cleanCode) {
 			rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
