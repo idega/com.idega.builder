@@ -7,7 +7,7 @@ import com.idega.presentation.IWContext;
  * Title:        IC
  * Description:
  * Copyright:    Copyright (c) 2001 idega.is All Rights Reserved
- * Company:      idega margmiðlun
+ * Company:      idega margmiÃ°lun
  * @author idega 2001 - <a href="mailto:idega@idega.is">idega team</a>
  * @version 1.0
  */

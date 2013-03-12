@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
  * Copyright:    Copyright (c) 2001 idega.is All Rights Reserved
 
- * Company:      idega margmiðlun
+ * Company:      idega margmiÃ°lun
 
  * @author idega 2001 - <a href="mailto:idega@idega.is">idega team</a>
 

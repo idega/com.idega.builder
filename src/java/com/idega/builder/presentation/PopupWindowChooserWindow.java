@@ -25,7 +25,7 @@ import com.idega.util.CoreConstants;
 public class PopupWindowChooserWindow extends AbstractChooserWindow {
 
 private String _windowString;
-public static final String replaceMent = "�";
+public static final String replaceMent = "æ";
 public static final String replaceMentCommon = "+";
 
   public PopupWindowChooserWindow() {
