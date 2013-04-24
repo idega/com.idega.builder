@@ -541,19 +541,20 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	 * Gets the tree and preloads it if you set the boolean loadIfEmpty to true
 	 */
 	public static Map<Integer, PageTreeNode> getTree(IWMainApplication iwma, boolean loadIfEmpty) {
-		Map<Integer, PageTreeNode> tree = null;
+		Map<Integer, PageTreeNode> cache = null;
 		try {
-			tree = IWCacheManager2.getInstance(iwma).getCache(getCacheName(), 10000, true, true);
+			cache = IWCacheManager2.getInstance(iwma).getCache(getCacheName(), 10000, true, true);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		if (MapUtil.isEmpty(tree)) {
-			getTreeFromDatabase(tree, iwma);
-		} else if (MapUtil.isEmpty(tree) && loadIfEmpty) {
-			getTreeFromDatabase(tree, iwma);
+
+		Map<Integer, PageTreeNode> copy = new Hashtable<Integer, PageTreeNode>(cache);
+		if (MapUtil.isEmpty(copy) && loadIfEmpty) {
+			getTreeFromDatabase(copy, iwma);
+			cache.putAll(copy);
 		}
 
-		return tree;
+		return copy;
 	}
 
 	private static Map<Integer, PageTreeNode> getTreeFromDatabase(Map<Integer, PageTreeNode> tree, IWMainApplication iwma) {
