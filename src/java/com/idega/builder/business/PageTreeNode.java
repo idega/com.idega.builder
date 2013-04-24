@@ -35,6 +35,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.util.ListUtil;
+import com.idega.util.datastructures.map.MapUtil;
 
 /**
  * <p>
@@ -546,9 +547,9 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		if (tree == null) {
+		if (MapUtil.isEmpty(tree)) {
 			getTreeFromDatabase(tree, iwma);
-		} else if (tree.isEmpty() && loadIfEmpty) {
+		} else if (MapUtil.isEmpty(tree) && loadIfEmpty) {
 			getTreeFromDatabase(tree, iwma);
 		}
 
