@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -212,7 +211,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 			e.printStackTrace();
 		}
 
-		Map<Integer, PageTreeNode> tree = new Hashtable<Integer, PageTreeNode>();
+		Map<Integer, PageTreeNode> tree = new HashMap<Integer, PageTreeNode>();
 
 		if (page != null) {
 			for (Iterator<ICPage> pagesIter = page.iterator(); pagesIter.hasNext();) {
@@ -361,10 +360,15 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	 */
 	@Override
 	public ICTreeNode getParentNode() {
-		PageTreeNode parent = getTree(getApplicationContext() == null ?
+		Integer parentId = getParentId();
+		if (parentId == null)
+			return null;
+
+		Map<Integer, PageTreeNode> tree = getTree(getApplicationContext() == null ?
 				IWMainApplication.getDefaultIWMainApplication() :
 				getApplicationContext().getIWMainApplication()
-		).get(getParentId());
+		);
+		PageTreeNode parent = tree.get(parentId);
 		return parent;
 	}
 
@@ -548,7 +552,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 			e.printStackTrace();
 		}
 
-		Map<Integer, PageTreeNode> copy = new Hashtable<Integer, PageTreeNode>(cache);
+		Map<Integer, PageTreeNode> copy = cache == null ? new HashMap<Integer, PageTreeNode>() : new HashMap<Integer, PageTreeNode>(cache);
 		if (MapUtil.isEmpty(copy) && loadIfEmpty) {
 			getTreeFromDatabase(copy, iwma);
 			cache.putAll(copy);
@@ -562,10 +566,6 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 			Map<Integer, PageTreeNode> dbTree = getTreeFromDatabase();
 			if (dbTree == null) {
 				return tree;
-			}
-
-			if (tree == null) {
-				tree = new Hashtable<Integer, PageTreeNode>();
 			}
 
 			Map.Entry<Integer, PageTreeNode> entry = null;
