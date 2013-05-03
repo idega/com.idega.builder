@@ -2852,6 +2852,9 @@ public class BuilderLogic extends DefaultSpringBean {
 	public boolean changePageName(int id, String newName, IWContext iwc) {
 		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWContext.getInstance());
 		PageTreeNode node = tree.get(id);
+		if (node == null)
+			return false;
+
 		node.setNodeName(newName);
 		node.setLocalizedNodeName(iwc.getCurrentLocale().getLanguage(), newName, iwc);
 

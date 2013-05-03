@@ -558,6 +558,17 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 			cache.putAll(copy);
 		}
 
+		List<Integer> toRemove = new ArrayList<Integer>();
+		for (Map.Entry<Integer, PageTreeNode> page: copy.entrySet()) {
+			if (page == null)
+				continue;
+
+			if (page.getValue() == null && page.getKey() != null) {
+				toRemove.add(page.getKey());
+			}
+		}
+		copy.entrySet().removeAll(toRemove);
+
 		return copy;
 	}
 
