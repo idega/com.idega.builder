@@ -26,6 +26,7 @@ import com.idega.presentation.ui.StyledAbstractChooserWindow;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -38,7 +39,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 	private static final int _width = 280;
 	private static final int _height = 400;
 	private static final String _linkStyle = "font-family:Arial,Helvetica,sans-serif;font-size:8pt;color:#000000;text-decoration:none;";
-	
+
 	private String mainStyleClass = "main";
 	/**
 	 *
@@ -62,7 +63,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 			addScript();
 			this.fromEditor = true;
 		}
-		
+
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		setTitle(iwrb.getLocalizedString("select_page", "Select page"));
 		addTitle(iwrb.getLocalizedString("select_page", "Select page"), TITLE_STYLECLASS);
@@ -82,7 +83,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 			save.setAsImageButton(true);
 			save.setToEncloseByForm(false);
 			save.setOnClick("javascript:save2();");
-			
+
 			Text URLText = new Text(iwrb.getLocalizedString("url", "URL") + ":");
 			URLText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			Text targetText = new Text(iwrb.getLocalizedString("target", "Target") + ":");
@@ -107,7 +108,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 			TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
 			viewer.setLocation((IWLocation) this.getLocation().clone());
 			viewer.getLocation().setSubID(1);
-			
+
 			table.add(viewer,1,2);
 
 			add(table,iwc);
@@ -122,7 +123,7 @@ public class StyledIBPageChooserWindow extends StyledAbstractChooserWindow {
 			}
 
 			Link link = new Link();
-			link.setURL("#");
+			link.setURL(CoreConstants.HASH);
 			link.setNoTextObject(true);
 			viewer.setLinkPrototype(link);
 			viewer.setTreeStyle(_linkStyle);

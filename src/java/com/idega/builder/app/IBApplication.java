@@ -111,7 +111,7 @@ public class IBApplication extends IWApplication {
 			return urlString+ "&view=preview";
 		}
 	}
-	
+
 	protected static String getContentPDFPreviewURL(IWContext iwc) {
 			return iwc.getIWMainApplication().getTranslatedURIWithContext("/servlet/IWPDFServlet?view=pdfpreview");
 	}
@@ -154,7 +154,7 @@ public class IBApplication extends IWApplication {
 		if (!settings.isSetDefaultCharacterEncoding()) {
 			settings.setDefaultCharacterEncoding(CoreConstants.ENCODING_UTF8);
 		}
-		
+
 		BuilderLogic.getInstance().startBuilderSession(iwc);
 		//To prevent constant realoding when many frames are loaded at the same time
 		List l = (List) iwc.getSessionAttribute("ib_startup_class_list");
@@ -163,7 +163,7 @@ public class IBApplication extends IWApplication {
 			iwc.setSessionAttribute("ib_startup_class_list", l);
 		}
 		l.add(IBToolBar.class);
-		
+
 		//	Setting default encoding
 	}
 	/**
@@ -188,7 +188,7 @@ public class IBApplication extends IWApplication {
 	@Override
 	public void main(IWContext iwc) {
 		startIBApplication(iwc);
-		
+
 	    IWMainApplication iwma = iwc.getIWMainApplication();
 	    if(iwma.getProductInfo().isMajorPlatformVersionEqualOrHigherThan(3)){
 	    		//Not add the top for new versions
@@ -196,7 +196,7 @@ public class IBApplication extends IWApplication {
 	    else{
 			add(IBBanner.class);
 	    }
-	    
+
 		if (iwc.getParameter("toolbar") != null) {
 			iwc.setSessionAttribute("toolbar", iwc.getParameter("toolbar"));
 		}
@@ -276,13 +276,13 @@ public class IBApplication extends IWApplication {
 			setSpanPixels(3, 25);
 			setScrolling(3, false);
 		}
-		
+
 		@Override
 		public void print(IWContext iwc) throws Exception{
 			//debug:
 			super.print(iwc);
 		}
-		
+
 		@Override
 		public void encodeBegin(FacesContext context) throws IOException{
 			//debug:
@@ -298,7 +298,7 @@ public class IBApplication extends IWApplication {
 			//debug:
 			super.encodeEnd(context);
 		}
-		
+
 	}
 	/**
 	 *@author     palli
@@ -365,28 +365,28 @@ public class IBApplication extends IWApplication {
 				viewer.getLocation().setApplicationClass(IBApplication.class);
 				viewer.getLocation().isInFrameSet(true);
 				//        System.out.println("IBApplication: viewer.getLocation() = "+viewer.getLocation());
-				
+
 				//String page_id = iwc.getParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER);
 				BuilderService bs = BuilderServiceFactory.getBuilderService(iwc);
 				String page_id = String.valueOf(bs.getCurrentPageId(iwc));
 				if (page_id != null) {
 					BuilderLogic.getInstance().setCurrentIBPage(iwc,page_id);
 				}
-				
+
 
 				boolean startupInProgress = startupInProgress(iwc);
 				if (!startupInProgress && iwc.getParameter("reload") != null) {
 					if (noCurtain) {
-						
+
 						//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET1_FRAME + "'].location.reload();");
-						
+
 						getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
 						//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
 						//this is a workaround since the reaload doesn't work:
 						getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.href='"+getContentEditURL(iwc)+"'");
 						getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-					
-					
+
+
 					}
 					else {
 						//getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].location.reload();");
@@ -396,8 +396,8 @@ public class IBApplication extends IWApplication {
 						getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
 					}
 				}
-				
-				
+
+
 				//=======
 				//	TreeViewer viewer = com.idega.builder.business.IBPageHelper.getInstance().getPageTreeViewer(iwc);
 				//	add(viewer);
@@ -451,16 +451,16 @@ public class IBApplication extends IWApplication {
 			boolean startupInProgress = startupInProgress(iwc);
 			if (!startupInProgress && iwc.getParameter("reload") != null) {
 				if (noCurtain) {
-					
+
 					//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET1_FRAME + "'].location.reload();");
-					
+
 					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_TOOLBAR_FRAME + "'].location.reload()");
 					//getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.reload()");
 					//this is a workaround since the reaload doesn't work:
 					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_CONTENT_FRAME + "'].location.href='"+getContentEditURL(iwc)+"'");
 					getParentPage().setOnLoad("parent.frames['" + IB_FRAMESET2_FRAME + "'].frames['" + IB_STATUS_FRAME + "'].location.reload()");
-				
-				
+
+
 				}
 				else {
 					//getParentPage().setOnLoad("parent.parent.frames['" + IB_FRAMESET2_FRAME + "'].location.reload();");
@@ -552,7 +552,7 @@ public class IBApplication extends IWApplication {
 				pageText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 				Text templateText = new Text("Template Tree:");
 				templateText.setStyleAttribute("margin","3px");
-				
+
 				templateText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
 				//Text libraryText = new Text("Library Tree:");
 				//libraryText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_SMALL);
@@ -611,32 +611,32 @@ public class IBApplication extends IWApplication {
 			IWBundle iwb = this.getBundle(iwc);
 			IWResourceBundle iwrb = this.getResourceBundle(iwc);
 			addStyleSheetURL(iwb.getVirtualPathWithFileNameString("style/builder.css"));
-			
+
 			String controlParameter = "builder_controlparameter";
 			//setBackgroundColor(IWConstants.DEFAULT_INTERFACE_COLOR);
 			//setLightShadowColor(IWConstants.DEFAULT_LIGHT_INTERFACE_COLOR);
 			//setDarkShadowColor(IWConstants.DEFAULT_DARK_INTERFACE_COLOR);
 			setAllMargins(0);
-						
+
 			String action = iwc.getParameter(controlParameter);
 			if (action == null) {
 				action = ACTION_BUILDER;
 			}
 			if (action.equals(ACTION_BUILDER)) {
-				
+
 				Image separator = iwb.getImage("toolbar_separator.gif");
 				separator.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
-				
+
 				//Image tool_new = iwb.getImage("shared/toolbar/new.gif", "shared/toolbar/new1.gif", "New Page", 20, 20);
 				Image tool_new = iwb.getImage("new_16.gif", iwrb.getLocalizedString("tooltip.new_page","New Page/Template"), 16, 16);
-				
-				
+
+
 				Link link_new = new Link(tool_new);
 				link_new.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
-				
+
 				link_new.setWindowToOpen(IBCreatePageWindow.class);
 				add(link_new);
-//				
+//
 				//BUTTON THAT ARE NOT USED, TODO MAKE SAVE/PUBLISH WORK
 //				Image tool_open = iwb.getImage("shared/toolbar/open.gif", "Open Page", 20, 20);
 //				tool_open.setHorizontalSpacing(2);
@@ -652,24 +652,24 @@ public class IBApplication extends IWApplication {
 //				Link link_save_as = new Link(tool_save_as);
 //				link_save_as.setWindowToOpen(IBSaveAsPageWindow.class);
 //				toolbarTable.add(tool_save_as, xpos, 1);
-//				
-				
+//
+
 				//Image tool_move = iwb.getImage("shared/toolbar/move.gif", "shared/toolbar/move1.gif", "Move Page", 20, 20);
 				Image tool_move = iwb.getImage("move_16.gif", iwrb.getLocalizedString("tooltip.move_page","Move Page/Template"), 16, 16);
-			
+
 				Link link_move = new Link(tool_move);
 				link_move.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
 				link_move.setWindowToOpen(IBMovePageWindow.class);
 				add(link_move);
-				
+
 				//Image tool_delete = iwb.getImage("shared/toolbar/delete.gif", "shared/toolbar/delete1.gif", "Delete Page", 20, 20);
 				Image tool_delete = iwb.getImage("del_16.gif", iwrb.getLocalizedString("tooltip.delete_page","Delete Page/Template"), 16, 16);
-				
+
 				Link link_delete = new Link(tool_delete);
 				link_delete.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
 				link_delete.setWindowToOpen(IBDeletePageWindow.class);
 				add(link_delete);
-				
+
 				// export pages and templates
 				///Image tool_export = iwb.getImage("shared/toolbar/move.gif", "shared/toolbar/move1.gif", "Export Pages", 20, 20);
 				Image tool_export = iwb.getImage("exportdata_16.gif", iwrb.getLocalizedString("tooltip.export_pages","Export Pages/Templates"), 16, 16);
@@ -691,15 +691,15 @@ public class IBApplication extends IWApplication {
 				add(propertiesIcon);
 				PresentationObject permissionIcon = getPermissionIcon(iwc);
 				add(permissionIcon);
-				
+
 				/*//	Button to hide all regions and attach events for showing/hiding region
 				Image hideRegionsImage = iwb.getImage("new_16.gif", iwrb.getLocalizedString("tooltip.hide_regions", "Hide Regions"), 16, 16);
 				hideRegionsImage.setOnClick("setActionsForRegion('"+IB_FRAMESET2_FRAME+"', '"+IB_CONTENT_FRAME+"');");
 				Link hideRegionsLink = new Link(hideRegionsImage);
 				hideRegionsLink.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
-				hideRegionsLink.setURL("#");
+				hideRegionsLink.setURL(CoreConstants.NUMBER_SIGN);
 				add(hideRegionsLink);*/
-				
+
 				add((Image) separator.clone());
 
 //				Image tool_1 = iwb.getImage("shared/toolbar/back.gif", "shared/toolbar/back1.gif", "Go back", 20, 20);
@@ -712,7 +712,7 @@ public class IBApplication extends IWApplication {
 //				Link link_2 = new Link(tool_2);
 //				link_2.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].history.go(1)");
 //				toolbarTable.add(link_2, xpos, 1);
-				
+
 				Image tool_3 = iwb.getImage("stop_16.gif", iwrb.getLocalizedString("tooltip.stop_loading","Stop Loading Page"), 16, 16);
 				//Image tool_3 = iwb.getImage("shared/toolbar/stop.gif", "shared/toolbar/stop1.gif", "Stop loading", 20, 20);
 
@@ -726,9 +726,9 @@ public class IBApplication extends IWApplication {
 				Link link_4 = new Link(tool_4);
 				link_4.setURL("javascript:parent.frames['" + IB_CONTENT_FRAME + "'].location.reload()");
 				link_4.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
-				
+
 				add(link_4);
-				
+
 				Image leftMenuImage = null;
 				if (noCurtain) {
 					leftMenuImage = iwb.getImage("shared/toolbar/show_curtain.gif", "shared/toolbar/show_curtain1.gif",iwrb.getLocalizedString("tooltip.show_curtain","Show Curtain"), 16, 16);
@@ -736,7 +736,7 @@ public class IBApplication extends IWApplication {
 				else {
 					leftMenuImage = iwb.getImage("shared/toolbar/no_curtain.gif", "shared/toolbar/no_curtain1.gif", iwrb.getLocalizedString("tooltip.show_curtain","Hide Curtain"), 16, 16);
 				}
-	
+
 				Link leftMenuLink = new Link(leftMenuImage);
 				leftMenuLink.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
 				leftMenuLink.setTarget(Link.TARGET_PARENT_WINDOW);
@@ -749,11 +749,11 @@ public class IBApplication extends IWApplication {
 					leftMenuLink.addParameter("toolbar", "remove");
 				}
 				leftMenuLink.addParameter(Page.IW_FRAME_CLASS_PARAMETER, IBApplication.class);
-				
+
 				add(leftMenuLink);
-				
+
 				add((Image) separator.clone());
-		
+
 				add(getLocaleMenu(iwc));
 				/**
 				 * @todo Move to extension thingie
@@ -771,7 +771,7 @@ public class IBApplication extends IWApplication {
 					Iterator it = extension.iterator();
 					while (it.hasNext()) {
 						IBToolbarButton b = (IBToolbarButton) it.next();
-						
+
 						if (b.getIsSeparator()){
 							add((Image) separator.clone());
 						}
@@ -782,7 +782,7 @@ public class IBApplication extends IWApplication {
 						}
 					}
 				}
-			
+
 			}
 			endStartup(iwc, IBToolBar.class);
 		}
@@ -826,10 +826,10 @@ public class IBApplication extends IWApplication {
 		public PresentationObject getPropertiesIcon(IWContext iwc) {
 			IWBundle iwb = this.getBundle(iwc);
 			IWResourceBundle iwrb = this.getResourceBundle(iwc);
-			
+
 			//Image image = iwb.getImage("shared/toolbar/page_properties.gif", "shared/toolbar/page_properties1.gif", "Page Properties", 20, 20);
 			Image image = iwb.getImage("prefs_16.gif", iwrb.getLocalizedString("tooltip.page_properties","Page Properties"), 16, 16);
-			
+
 			Link link = new Link(image);
 			link.setStyleClass(STYLE_CLASS_TOOLBAR_BUTTON);
 			link.setWindowToOpen(IBPropertiesWindow.class);
@@ -849,7 +849,7 @@ public class IBApplication extends IWApplication {
 		public PresentationObject getPermissionIcon(IWContext iwc) {
 			IWBundle iwb = this.getBundle(iwc);
 			IWResourceBundle iwrb = this.getResourceBundle(iwc);
-			
+
 			//Image image = iwb.getImage("shared/toolbar/permissions.gif", "shared/toolbar/permissions1.gif", "Page Permissions", 20, 20);
 			Image image = iwb.getImage("lock_16.gif", iwrb.getLocalizedString("tooltip.page_permissions","Page Permissions"), 16, 16);
 
@@ -860,7 +860,7 @@ public class IBApplication extends IWApplication {
 			link.addParameter(IBPermissionWindow._PARAMETERSTRING_PERMISSION_CATEGORY, AccessController.CATEGORY_PAGE_INSTANCE);
 			return link;
 		}
-		
+
 /**
 		 *@return    The bundleIdentifier value
 		 */
@@ -918,7 +918,7 @@ public class IBApplication extends IWApplication {
 				toolTable.setWidth("100%");
 				toolTable.setCellpadding(0);
 				toolTable.setCellspacing(0);
-				
+
 				Image editImage = _iwrb.getImage("shared/status/edit1.gif", "Edit", 64, 17);
 				editImage.setOnClickImage(_iwrb.getImage("shared/status/edit.gif"));
 				Link editLink = new Link(editImage);
@@ -926,14 +926,14 @@ public class IBApplication extends IWApplication {
 				editLink.setURL(getContentEditURL(iwc));
 				toolTable.add(editLink, 1, 1);
 				getParentPage().setOnLoad("javascript: swapImage('" + editImage.getName() + "','','" + _iwrb.getImage("shared/status/edit.gif").getURL() + "',1)");
-				
+
 				Image previewImage = _iwrb.getImage("shared/status/preview1.gif", "Preview", 64, 17);
 				previewImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
 				Link previewLink = new Link(previewImage);
 				previewLink.setTarget(IBApplication.IB_CONTENT_FRAME);
 				previewLink.setURL(getContentPreviewURL(iwc));
 				toolTable.add(previewLink, 2, 1);
-				
+
 				/*
 				Image previewPDFImage = _iwrb.getImage("shared/status/preview1.gif", "Preview PDF", 64, 17);
 				previewPDFImage.setOnClickImage(_iwrb.getImage("shared/status/preview.gif"));
@@ -942,11 +942,11 @@ public class IBApplication extends IWApplication {
 				previewPDFLink.setURL(getContentPDFPreviewURL(iwc));
 				toolTable.add(previewPDFLink, 3, 1);
 				*/
-				
+
 				boolean isSuperUser = false;
 				isSuperUser = iwc.isSuperAdmin();
 				boolean isBuilderUser = iwc.getAccessController().hasRole(StandardRoles.ROLE_KEY_BUILDER,iwc);
-				
+
 				/*
 				//Display the simple template page
 				if (isSuperUser||isBuilderUser) {
@@ -961,7 +961,7 @@ public class IBApplication extends IWApplication {
 					toolTable.add(sourceLink, 4, 1);
 				}
 				*/
-				
+
 				//Display the source tab only if the current user is the SuperUser
 				if (isSuperUser||isBuilderUser) {
 					Image sourceImage = _iwrb.getImage("shared/status/source1.gif", "Source", 64, 17);
@@ -970,7 +970,7 @@ public class IBApplication extends IWApplication {
 					sourceLink.setTarget(IBApplication.IB_CONTENT_FRAME);
 					toolTable.add(sourceLink, 5, 1);
 				}
-				
+
 				String id=null;
                 try {
                     id = Integer.toString(this.getBuilderService(iwc).getCurrentPageId(iwc));
@@ -1009,13 +1009,13 @@ public class IBApplication extends IWApplication {
 					name = "Page name";
 				}
 				//        String name = Text.NON_BREAKING_SPACE + BuilderLogic.getInstance().getCurrentIBXMLPage(iwc).getName();
-			
+
 				CachedBuilderPage currentPage = BuilderLogic.getInstance().getPageCacher().getCachedBuilderPage(BuilderLogic.getInstance().getCurrentIBPage(iwc));
-				
+
 				String currentPageKey = currentPage.getPageKey();
 				String pageUri = currentPage.getPageUri();
 				String templateKey = currentPage.getTemplateKey();
-				
+
 				//TODO FIX STYLES
 				Link uriLink = null;
 				if(pageUri!=null){
@@ -1025,13 +1025,13 @@ public class IBApplication extends IWApplication {
 					uriLink.setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_LARGE);
 					uriLink.setTarget(Link.TARGET_NEW_WINDOW);
 				}
-				
+
 				Text pageName = new Text(name);
 				pageName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 				toolbarTable.add(tilerCell, 1, 1);
 				toolbarTable.add(pageName, 2, 1);
-				
-				
+
+
 				if(templateKey!=null){
 					CachedBuilderPage template = BuilderLogic.getInstance().getCachedBuilderPage(templateKey);
 					if(template!=null){
@@ -1041,7 +1041,7 @@ public class IBApplication extends IWApplication {
 						toolbarTable.add(templateName, 2, 1);
 					}
 				}
-				
+
 				if(uriLink!=null){
 					Text prefix = new Text("  -  ( ");
 					prefix.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
@@ -1051,7 +1051,7 @@ public class IBApplication extends IWApplication {
 					suffix.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 					toolbarTable.add(suffix, 2, 1);
 				}
-				
+
 				toolbarTable.add(toolTable, 3, 1);
 			}
 			else if (action.equals(ACTION_TEMPLATES)) {

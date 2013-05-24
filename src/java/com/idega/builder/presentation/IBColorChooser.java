@@ -4,6 +4,7 @@ import com.idega.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.AbstractChooser;
+import com.idega.util.CoreConstants;
 import com.idega.util.text.TextSoap;
 
 /**
@@ -41,9 +42,9 @@ public Class getChooserWindowClass() {
 
   public void setSelected(String color){
     super.setChooserValue(color,color);
-    super.setParameterValue("color",TextSoap.findAndCut(color,"#"));
+    super.setParameterValue("color",TextSoap.findAndCut(color, CoreConstants.HASH));
   }
-  
+
   @Override
   public String getChooserHelperVarName() {
 	return "Color_chooser_helper";
