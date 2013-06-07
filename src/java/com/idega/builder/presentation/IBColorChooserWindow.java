@@ -21,6 +21,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.CoreConstants;
 import com.idega.util.IWColor;
 import com.idega.util.text.TextSoap;
 
@@ -72,7 +73,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		IWColor color = new IWColor(0, 0, 0);
 		IWColor iwColor = null;
 		try {
-			iwColor = new IWColor(IWColor.getIntFromHex(TextSoap.findAndCut(this._colorString, "#")));
+			iwColor = new IWColor(IWColor.getIntFromHex(TextSoap.findAndCut(this._colorString, CoreConstants.HASH)));
 		}
 		catch (Exception e) {
 			iwColor = null;
@@ -144,7 +145,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 				link = new Link(image);
 				table.add(link, b, a);
 				if (this.fromEditor) {
-					link.setURL("#");
+					link.setURL(CoreConstants.HASH);
 					link.setOnClick("save('" + color.getHexColorString() + "')");
 				}
 				else {
@@ -166,7 +167,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 				B = 0;
 			}
 		}
-		
+
 		if (!this.fromEditor) {
 			Block block = new Block();
 			block.add(table);
@@ -300,7 +301,7 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 			form.add(formTable);
 			return form;
 		}
-		
+
 		return table;
 	}
 
@@ -364,8 +365,8 @@ public class IBColorChooserWindow extends AbstractChooserWindow {
 		if (iwc.isParameterSet("color") && iwc.getParameter("color").length() > 0) {
 			this._colorString = iwc.getParameter("color");
 		}
-		if (this._colorString != null && this._colorString.indexOf("#") == -1) {
-			this._colorString = "#" + this._colorString;
+		if (this._colorString != null && this._colorString.indexOf(CoreConstants.HASH) == -1) {
+			this._colorString = CoreConstants.HASH + this._colorString;
 		}
 
 		if (iwc.isParameterSet("red") && iwc.isParameterSet("green") && iwc.isParameterSet("blue")) {

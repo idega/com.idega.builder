@@ -23,6 +23,7 @@ import com.idega.presentation.ui.AbstractChooserWindow;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -58,7 +59,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 			addScript();
 			this.fromEditor = true;
 		}
-		
+
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		addTitle(iwrb.getLocalizedString("select_page", "Select page"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		setStyles();
@@ -77,7 +78,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 			save.setAsImageButton(true);
 			save.setToEncloseByForm(false);
 			save.setOnClick("javascript:save2();");
-			
+
 			Text URLText = new Text(iwrb.getLocalizedString("url", "URL") + ":");
 			URLText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			Text targetText = new Text(iwrb.getLocalizedString("target", "Target") + ":");
@@ -91,7 +92,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 			add(table);
 			add(new Break());
 		}
-		
+
 		Text text = new Text(iwrb.getLocalizedString("select_page", "Select page") + ":");
 		text.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		add(text);
@@ -113,7 +114,7 @@ public class IBPageChooserWindow extends AbstractChooserWindow {
 			}
 
 			Link link = new Link();
-			link.setURL("#");
+			link.setURL(CoreConstants.HASH);
 			link.setNoTextObject(true);
 			viewer.setLinkPrototype(link);
 			viewer.setTreeStyle(_linkStyle);

@@ -567,7 +567,11 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 				toRemove.add(page.getKey());
 			}
 		}
-		copy.entrySet().removeAll(toRemove);
+		if (toRemove.size() > 0) {
+			copy = new HashMap<Integer, PageTreeNode>();
+			getTreeFromDatabase(copy, iwma);
+			cache.putAll(copy);
+		}
 
 		return copy;
 	}

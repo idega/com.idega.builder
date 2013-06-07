@@ -4070,7 +4070,13 @@ public class BuilderLogic extends DefaultSpringBean {
 		ICPage page = null;
 		String pageId = null;
 		for (Iterator<PageTreeNode> it = allPages; it.hasNext();) {
-			pageId = it.next().getId();
+			PageTreeNode pageNode = it.next();
+			if (pageNode == null)
+				continue;
+
+			pageId = pageNode.getId();
+			if (pageId == null)
+				continue;
 
 			try {
 				page = getICPageHome().findByPrimaryKey(pageId);

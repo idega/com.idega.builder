@@ -2,10 +2,8 @@
 /.project
 .settings/
 target/
-.classpath
 .project
-.settings
-
 .settings
 .classpath
 .project
+bin/
