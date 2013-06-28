@@ -503,6 +503,9 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 						List<PageTreeNode> temp = new ArrayList<PageTreeNode>(childNodeList);
 						for (ListIterator<PageTreeNode> it = temp.listIterator(); it.hasNext();) {
 							PageTreeNode node = it.next();
+							if (node == null)
+								continue;
+
 							if (node._order == -1 || node._order > child._order) {
 								int i = it.previousIndex();
 								childPageIds.add(i, childId);

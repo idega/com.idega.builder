@@ -4059,39 +4059,43 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public ICPage findPageForModule(IWMainApplication iwma, String instanceId) {
-		if (instanceId == null)
+		if (StringUtil.isEmpty(instanceId))
 			return null;
 
-		Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwma);
-		if (MapUtil.isEmpty(pages))
-			return null;
+		try {
+			Map<Integer, PageTreeNode> pages = PageTreeNode.getTree(iwma);
+			if (MapUtil.isEmpty(pages))
+				return null;
 
-		Iterator<PageTreeNode> allPages = pages.values().iterator();
-		ICPage page = null;
-		String pageId = null;
-		for (Iterator<PageTreeNode> it = allPages; it.hasNext();) {
-			PageTreeNode pageNode = it.next();
-			if (pageNode == null)
-				continue;
+			Iterator<PageTreeNode> allPages = pages.values().iterator();
+			ICPage page = null;
+			String pageId = null;
+			for (Iterator<PageTreeNode> it = allPages; it.hasNext();) {
+				PageTreeNode pageNode = it.next();
+				if (pageNode == null)
+					continue;
 
-			pageId = pageNode.getId();
-			if (pageId == null)
-				continue;
+				pageId = pageNode.getId();
+				if (pageId == null)
+					continue;
 
-			try {
-				page = getICPageHome().findByPrimaryKey(pageId);
-			} catch(Exception e) {
-				page = null;
-			}
-			if (page != null && page.getIsFormattedInIBXML()) {
 				try {
-					if (getIBXMLWriter().findModule(getIBXMLPage(pageId), instanceId) != null) {
-						return page;
+					page = getICPageHome().findByPrimaryKey(pageId);
+				} catch(Exception e) {
+					page = null;
+				}
+				if (page != null && !page.getDeleted() && page.getIsFormattedInIBXML()) {
+					try {
+						if (getIBXMLWriter().findModule(getIBXMLPage(pageId), instanceId) != null) {
+							return page;
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Unable to find page by instance ID: " + instanceId, e);
 		}
 
 		return null;
