@@ -1,5 +1,5 @@
 /*
- * $Id: BuilderSlideListenerBean.java,v 1.6 2008/07/11 07:31:00 valdas Exp $
+ * $Id: BuilderRepositoryListenerBean.java,v 1.6 2008/07/11 07:31:00 valdas Exp $
  * Created on 29.5.2006 in project com.idega.builder
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -13,26 +13,15 @@ import javax.jcr.RepositoryException;
 import javax.jcr.observation.Event;
 import javax.jcr.observation.EventIterator;
 
-import com.idega.business.IBOServiceBean;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import com.idega.util.CoreConstants;
 
-
-/**
- * <p>
- * TODO tryggvil Describe Type BuilderSlideListener
- * </p>
- *  Last modified: $Date: 2008/07/11 07:31:00 $ by $Author: valdas $
- *
- * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
- * @version $Revision: 1.6 $
- */
-public class BuilderRepositoryListenerBean extends IBOServiceBean implements BuilderRepositoryListener {
-
-	private static final long serialVersionUID = 2891763087583075763L;
-
-	protected BuilderLogic getBuilderLogic(){
-		return BuilderLogic.getInstance();
-	}
+@Service
+@Scope(BeanDefinition.SCOPE_SINGLETON)
+public class BuilderRepositoryListenerBean implements BuilderRepositoryListener {
 
 	@Override
 	public void onEvent(EventIterator events) {
@@ -45,7 +34,7 @@ public class BuilderRepositoryListenerBean extends IBOServiceBean implements Bui
 				String uri = event.getPath();
 				if (uri.startsWith(CoreConstants.PAGES_PATH) && uri.indexOf("idega_theme") == -1 && uri.indexOf("article_viewer_template") == -1 &&
 						uri.indexOf("idega_video_page") == -1 && uri.indexOf("egov") == -1) {
-					getBuilderLogic().clearAllCachedPages();
+					BuilderLogic.getInstance().clearAllCachedPages();
 				}
 			}
 		} catch (RepositoryException e) {
