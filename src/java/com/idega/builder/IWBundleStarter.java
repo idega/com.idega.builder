@@ -81,8 +81,6 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.addImplementor(ICDynamicPageTrigger.class, DynamicPageTrigger.class);
 
 		// services registration
-		//IBOLookup.registerImplementationForBean(ICDomain.class, IBDomainBMPBean.class);
-		//IBOLookup.registerImplementationForBean(ICPage.class, IBPageBMPBean.class);
 		IBOLookup.registerImplementationForBean(BuilderService.class, IBMainServiceBean.class);
 		IBOLookup.registerImplementationForBean(BuilderPageWriterService.class, IBMainServiceBean.class);
 
@@ -97,7 +95,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		}*/
 
 		try {
-			AuthenticationBusiness authentication = (AuthenticationBusiness) IBOLookup.getServiceInstance(starterBundle.getApplication().getIWApplicationContext(), AuthenticationBusiness.class);
+			AuthenticationBusiness authentication = IBOLookup.getServiceInstance(starterBundle.getApplication().getIWApplicationContext(), AuthenticationBusiness.class);
 			authentication.addAuthenticationListener(new UserLoggedInListener());
 		}
 		catch (IBOLookupException e) {
