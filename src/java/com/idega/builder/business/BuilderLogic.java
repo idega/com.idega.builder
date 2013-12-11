@@ -3942,7 +3942,7 @@ public class BuilderLogic implements Singleton {
 	private synchronized IWSlideService getSlideService() {
 		if (slideService == null) {
 			try {
-				slideService = (IWSlideService) IBOLookup.getServiceInstance(CoreUtil.getIWContext(), IWSlideService.class);
+				slideService = IBOLookup.getServiceInstance(CoreUtil.getIWContext(), IWSlideService.class);
 			} catch (IBOLookupException e) {
 				e.printStackTrace();
 				return null;
@@ -3971,7 +3971,7 @@ public class BuilderLogic implements Singleton {
 
 		UIComponent component = null;
 		UIComponent componentFromCycle = null;
-		Map facets = null;
+		Map<String, UIComponent> facets = null;
 		List<UIComponent> cFromMap = null;
 		boolean foundComponent = false;
 		for (int i = 0; (i < children.size() && !foundComponent); i++) {
@@ -3987,8 +3987,8 @@ public class BuilderLogic implements Singleton {
 					facets = component.getFacets();
 					if (facets != null) {
 						cFromMap = new ArrayList<UIComponent>();
-						for (Iterator it = facets.values().iterator(); it.hasNext();) {
-							cFromMap.add((UIComponent) it.next());
+						for (Iterator<UIComponent> it = facets.values().iterator(); it.hasNext();) {
+							cFromMap.add(it.next());
 						}
 						componentFromCycle = findComponentInList(cFromMap, instanceId);
 					}
@@ -4089,6 +4089,45 @@ public class BuilderLogic implements Singleton {
 		return false;
 	}
 
+	public List<ICPage> findPagesForModule(Class<? extends UIComponent> theClass) {
+		if (theClass == null) {
+			return null;
+		}
+
+		try {
+			ICObjectHome icObjectHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
+			ICObject icObject = icObjectHome.findByClassName(theClass.getName());
+			if (icObject == null) {
+				return null;
+			}
+
+			ICObjectInstanceHome icObjectInstanceHome = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+			Collection<ICObjectInstance> instances = icObjectInstanceHome.getByICObject(icObject);
+			if (ListUtil.isEmpty(instances)) {
+				return null;
+			}
+
+			ICPageHome icPageHome = (ICPageHome) IDOLookup.getHome(ICPage.class);
+			List<ICPage> pagesWithModules = new ArrayList<ICPage>();
+			for (ICObjectInstance instance: instances) {
+				ICPage page = null;
+				try {
+					page = icPageHome.findByPrimaryKey(instance.getIBPageID());
+				} catch (FinderException e) {}
+				if (page != null) {
+					pagesWithModules.add(page);
+				}
+			}
+			return pagesWithModules;
+		} catch (FinderException e) {
+			logger.log(Level.WARNING, "Module by class name " + theClass + " is not registered");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 	public ICPage findPageForModule(IWApplicationContext iwac, String instanceId) {
 		return findPageForModule(iwac.getIWMainApplication(), instanceId);
 	}
@@ -4181,7 +4220,7 @@ public class BuilderLogic implements Singleton {
 					IWConstants.SERVER_URL_PROPERTY_NAME
 					);
 		}
-		
+
 		String pageUri = null;
 
 		pageUri = getPageUri(user, pageType, checkFirstlyNearestPages);
@@ -4248,13 +4287,13 @@ public class BuilderLogic implements Singleton {
 			logger.warning("User is not provided");
 			return null;
 		}
-		
+
 		ICPage startPage = getUsersHomePage(user);
 		if (startPage == null) {
 			logger.warning("Didn't find start page for user: " + user);
 			return null;
 		}
-		
+
 		ICPage nearestPage = null;
 		Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
 		searchTops.add(startPage);
@@ -4268,7 +4307,7 @@ public class BuilderLogic implements Singleton {
 			searchTops.addAll(siblings);
 
 		//	TODO: it fails to find page in children of children of start page!
-		
+
 		nearestPage = getPageByPageType(searchTops, pageType);
 		if (nearestPage == null)
 			logger.warning("Didn't find nearest page by page type " + pageType + " to user's " + user + " home page (ID: " + startPage.getId() +
@@ -4367,7 +4406,7 @@ public class BuilderLogic implements Singleton {
 
 		if (icPage == null) {
 			logger.warning("Did not find page by type " + pageType + " for user " + user + " near to it's home page");
-			
+
 			Collection<ICPage> icpages = getPages(pageType);
 			if (icpages == null || icpages.isEmpty())
 				throw new RuntimeException(messageForException);
@@ -4527,12 +4566,12 @@ public class BuilderLogic implements Singleton {
 	private IWMainApplication getIWMainApplication() {
 		return IWMainApplication.getDefaultIWMainApplication();
 	}
-	
+
 	/**
 	 * <p>Takes property from /workspace/developer/applicationproperties named
 	 * "is_developement_mode". Check this property, when you need to add code
 	 * necessary for development, but useless to production environment.</p>
-	 * @return <code>true</code> if it is developing environment, 
+	 * @return <code>true</code> if it is developing environment,
 	 * <code>false</code> otherwise.
 	 * @see CoreConstants#DEVELOPEMENT_STATE_PROPERTY
 	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
