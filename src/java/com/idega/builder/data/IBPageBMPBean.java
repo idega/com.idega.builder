@@ -20,16 +20,13 @@ import com.idega.repository.data.Resource;
  */
 public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.builder.data.ICPage, Storable, Resource {
 
-	
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
 	private static final long serialVersionUID = -4666056246854621035L;
+
 	public final static String FORMAT_IBXML=BuilderLogic.PAGE_FORMAT_IBXML;
 	public final static String FORMAT_HTML=BuilderLogic.PAGE_FORMAT_HTML;
 	public final static String FORMAT_JSP_1_2=BuilderLogic.PAGE_FORMAT_JSP_1_2;
-	
-	
+	public final static String FACELET = BuilderLogic.PAGE_FORMAT_FACELET;
+
 	/*private final static String ENTITY_NAME = "IB_PAGE";
 	private final static String FILE_COLUMN = "FILE_ID";
 	private final static String NAME_COLUMN = "NAME";
@@ -45,7 +42,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	private final static String PAGE_FORMAT="PAGE_FORMAT";
 	private final static String PAGE_URI="PAGE_URI";
 	private ICFile _file;
-	
+
 
 	public final static String PAGE = "P";
 	public final static String TEMPLATE = "T";
@@ -105,10 +102,10 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	public String getName() {
 		return (getStringColumnValue(getColumnName()));
 	}
-	
+
 	public String getName(Locale locale) {
 		int localeID = ICLocaleBusiness.getLocaleId(locale);
-		
+
 		try {
 			IBPageNameHome home = (IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class);
 			IBPageName name = home.findByPageIdAndLocaleId(((Integer) getPrimaryKey()).intValue(), localeID);
@@ -167,7 +164,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 			return (false);
 		}
 	}
-	
+
 	public boolean isCategory() {
 		return getBooleanColumnValue(IS_CATEGORY, false);
 	}
@@ -175,7 +172,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	public void setIsCategory(boolean isCategory) {
 		setColumn(IS_CATEGORY, isCategory);
 	}
-	
+
 
 	public void setDeleted(boolean deleted) {
 		if (deleted) {
@@ -252,7 +249,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 			} catch (CreateException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 		file.setFileValue(stream);
 	}
@@ -344,7 +341,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 		}
 		super.update();
 	}
-	
+
 	public void insert() throws SQLException {
 		ICFile file = getFile();
 		if (file != null) {
@@ -473,10 +470,10 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	public int getTreeOrder() {
 		return getIntColumnValue(TREE_ORDER);
 	}
-	
+
 	public Object write(ObjectWriter writer, IWContext iwc) throws RemoteException {
 		ICFile file = getFile();
-		// special case: file is empty 
+		// special case: file is empty
 		// do not create files of deleted pages
 		if (file.isEmpty() && ! getDeleted()) {
 			// file value is empty get a xml description of the page
@@ -490,18 +487,18 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 			pageData.setName(getName());
 			return writer.write(pageData, iwc);
 		}
-		// normal way to handle pages 
+		// normal way to handle pages
 		return writer.write(this, iwc);
 	}
-	
+
 	public Object read(ObjectReader reader, IWContext iwc) throws RemoteException {
 		return reader.read(this, iwc);
 	}
-	
+
 	public void setFormat(String format){
 		this.setColumn(PAGE_FORMAT,format);
 	}
-	
+
 	public String getFormat(){
 		String format = getStringColumnValue(PAGE_FORMAT);
 		//This is to maintain backwards compatabilty, default is IBXML:
@@ -511,7 +508,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 		setFormat(format);
 		return format;
 	}
-	
+
 	public boolean getIsFormattedInIBXML(){
 		String format = getFormat();
 		if(format!=null){
@@ -519,7 +516,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 		}
 		return true;
 	}
-	
+
 	public boolean getIsFormattedInHTML(){
 		String format = getFormat();
 		if(format!=null){
@@ -527,7 +524,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 		}
 		return false;
 	}
-	
+
 	public boolean getIsFormattedInJSP(){
 		String format = getFormat();
 		if(format!=null){
@@ -542,11 +539,11 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 		ICFile file = getFile();
 		if ( file!=null && (((GenericEntity)file).getEntityState() == STATE_NOT_IN_SYNCH_WITH_DATASTORE) ){
 			this.setEntityState(STATE_NOT_IN_SYNCH_WITH_DATASTORE);
-		}	
-		
+		}
+
 		return super.getEntityState();
 	}
-	
+
 	public java.util.Collection ejbFindByTemplate(Integer templateID)throws javax.ejb.FinderException{
 	    Table table = new Table(this);
 	    	SelectQuery query = new SelectQuery(table);
@@ -554,7 +551,7 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	    	query.addCriteria(new MatchCriteria(table,getColumnTemplateID(),MatchCriteria.EQUALS,templateID));
 	    	return idoFindPKsByQuery(query);
 	}
-	
+
 	public Integer ejbFindByPageUri(String pageUri,int domainId)throws javax.ejb.FinderException{
 	    Table table = new Table(this);
 	    	SelectQuery query = new SelectQuery(table);
@@ -563,8 +560,8 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	    	//query.addCriteria(new MatchCriteria(table,DOMAIN_ID,MatchCriteria.EQUALS,domainId));
 	    	return (Integer)idoFindOnePKByQuery(query);
 	}
-	
-	
+
+
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}
@@ -586,13 +583,13 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	public String getPageKey(){
 		return getPrimaryKey().toString();
 	}
-	
-	
+
+
 	public String getDefaultPageURI(){
 		String uri = getStringColumnValue(PAGE_URI);
 		return uri;
 	}
-	
+
 	public void setDefaultPageURI(String pageUri){
 		setColumn(PAGE_URI,pageUri);
 	}
@@ -604,12 +601,12 @@ public class IBPageBMPBean extends ICPageBMPBean implements com.idega.core.build
 	    	query.addCriteria(new MatchCriteria(table,PAGE_URI,MatchCriteria.IS,(String)null));
 	    	return idoFindPKsByQuery(query);
 	}
-	
+
 	public Collection ejbFindAllSimpleTemplates() throws FinderException{
 	    SelectQuery query = idoSelectQuery();
 	    query.addCriteria(new MatchCriteria(idoQueryTable(),getColumnSubType(),MatchCriteria.LIKE,SUBTYPE_SIMPLE_TEMPLATE));
 	    	return idoFindPKsByQuery(query);
 	}
-	
+
 	*/
 }

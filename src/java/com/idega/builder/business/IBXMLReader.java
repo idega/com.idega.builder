@@ -42,6 +42,7 @@ import com.idega.presentation.Table;
 import com.idega.repository.data.RefactorClassRegistry;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.reflect.PropertyCache;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLElement;
@@ -56,13 +57,13 @@ import com.idega.xml.XMLException;
  * @version 1.0
  */
 public class IBXMLReader {
-	
+
 	protected static final String ID_PREFIX = "id";
 
 	public static final Logger logger = Logger.getLogger(IBXMLReader.class.getName());
-	
+
 	public static final String UUID_PREFIX = ICObjectBusiness.UUID_PREFIX;
-	
+
 	/**
 	 *<p>
 	 *Constructor only used by BuilderLogic
@@ -75,27 +76,18 @@ public class IBXMLReader {
 	 *
 	 */
 	private void setAllBuilderControls(UIComponent parent, boolean setTo) {
-		//List list = parent.getChildren();
-		//if (list != null) {
-			//Iterator it = list.iterator();
-			Iterator it = parent.getFacetsAndChildren();
-			while (it.hasNext()) {
-				try{
-					UIComponent obj = (UIComponent) it.next();
-					if(obj instanceof PresentationObject){
-						((PresentationObject)obj).setUseBuilderObjectControl(setTo);
-						((PresentationObject)obj).setBelongsToParent(true);
-						//if (obj instanceof PresentationObjectContainer) {
-						//	setAllBuilderControls((PresentationObjectContainer) obj, setTo);
-						//}
-						setAllBuilderControls(obj, setTo);
-					}
+		for (Iterator<UIComponent> it = parent.getFacetsAndChildren(); it.hasNext();) {
+			try {
+				UIComponent obj = it.next();
+				if (obj instanceof PresentationObject) {
+					((PresentationObject)obj).setUseBuilderObjectControl(setTo);
+					((PresentationObject)obj).setBelongsToParent(true);
+					setAllBuilderControls(obj, setTo);
 				}
-				catch(ClassCastException cce){
-					cce.printStackTrace();
-				}
+			} catch (ClassCastException cce) {
+				cce.printStackTrace();
 			}
-		//}
+		}
 	}
 
 	/**
@@ -110,8 +102,7 @@ public class IBXMLReader {
 			return null;
 		}
 		XMLElement pageXML = ibxml.getPageElement(root);
-		List pageAttr = pageXML.getAttributes();
-		Iterator attr = pageAttr.iterator();
+		List<XMLAttribute> pageAttr = pageXML.getAttributes();
 
 		boolean hasTemplate = false;
 		boolean isTemplate = false;
@@ -119,8 +110,8 @@ public class IBXMLReader {
 		String dptRootPage = null;
 
 		// Parse the page attributes
-		while (attr.hasNext()) {
-			XMLAttribute at = (XMLAttribute) attr.next();
+		for (Iterator<XMLAttribute> attr = pageAttr.iterator(); attr.hasNext();) {
+			XMLAttribute at = attr.next();
 			if (at.getName().equalsIgnoreCase(IBXMLConstants.TEMPLATE_STRING)) {
 				hasTemplate = true;
 				String pageId = at.getValue();
@@ -129,25 +120,25 @@ public class IBXMLReader {
 				parentContainer.setIsExtendingTemplate();
 				parentContainer.setTemplateId(at.getValue());
 				setAllBuilderControls(parentContainer, false);
-			}
-			else if (at.getName().equalsIgnoreCase(IBXMLConstants.PAGE_TYPE)) {
+
+			} else if (at.getName().equalsIgnoreCase(IBXMLConstants.PAGE_TYPE)) {
 				String value = at.getValue();
 				if (value.equals(IBXMLConstants.PAGE_TYPE_TEMPLATE) || value.equals(IBXMLConstants.PAGE_TYPE_DPT_TEMPLATE)) {
 					isTemplate = true;
 				}
-			}
-			else if (at.getName().equalsIgnoreCase(IBXMLConstants.ID_STRING)) {
+
+			} else if (at.getName().equalsIgnoreCase(IBXMLConstants.ID_STRING)) {
 				pageKey = at.getValue();
-			}
-			else if (at.getName().equalsIgnoreCase(IBXMLConstants.REGION_LOCKED)) {
+
+			} else if (at.getName().equalsIgnoreCase(IBXMLConstants.REGION_LOCKED)) {
 				if (at.getValue().equals("true")) {
 					isLocked = true;
 				}
 				else {
 					isLocked = false;
 				}
-			} 
-			else if (at.getName().equalsIgnoreCase(IBXMLConstants.DPT_ROOTPAGE_STRING)) {
+
+			} else if (at.getName().equalsIgnoreCase(IBXMLConstants.DPT_ROOTPAGE_STRING)) {
 				dptRootPage = at.getValue();
 			}
 		}
@@ -155,15 +146,13 @@ public class IBXMLReader {
 		//If the page does not extend a template it has no parent container
 		if (!hasTemplate) {
 			parentContainer = new BuilderPage();
-		}
-		else {
+		} else {
 			setTemplateObjectsForPage(ibxml);
 		}
 
 		if (isLocked) {
 			parentContainer.lock();
-		}
-		else {
+		} else {
 			parentContainer.unlock();
 		}
 
@@ -171,8 +160,7 @@ public class IBXMLReader {
 		if (isTemplate) {
 			parentContainer.setIsTemplate();
 			ibxml.setType(IBXMLConstants.PAGE_TYPE_TEMPLATE);
-		}
-		else {
+		} else {
 			parentContainer.setIsPage();
 			ibxml.setType(IBXMLConstants.PAGE_TYPE_PAGE);
 		}
@@ -181,8 +169,7 @@ public class IBXMLReader {
 		try {
 			int id = Integer.parseInt(pageKey);
 			parentContainer.setPageID(id);
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			try {
 				parentContainer.setPageID(Integer.parseInt(ibxml.getPageKey()));
 			}
@@ -190,50 +177,48 @@ public class IBXMLReader {
 				//      System.err.println("NumberFormatException - ibxml.getKey():"+ibxml.getKey()+" not Integer");
 			}
 		}
-		
+
 		//sets dptRootpageID
 		try {
-			if(dptRootPage!=null) {
+			if (dptRootPage!=null) {
 				parentContainer.getDynamicPageTrigger().setRootPage(dptRootPage);
 			}
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
-		
+
 		parentContainer.setTitle(ibxml.getName());
 
 		if (pageXML.hasChildren()) {
-			List children = pageXML.getChildren();
-			Iterator it = children.iterator();
+			List<XMLElement> children = pageXML.getChildren();
 
-			while (it.hasNext()) {
-				XMLElement child = (XMLElement) it.next();
-				
+			for (Iterator<XMLElement> it = children.iterator(); it.hasNext();) {
+				XMLElement child = it.next();
+
 				if (child.getName().equalsIgnoreCase(IBXMLConstants.PROPERTY_STRING)) {
 					setProperty(child, parentContainer);
-				}
-				else if (child.getName().equalsIgnoreCase(IBXMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(IBXMLConstants.MODULE_STRING)) {
+
+				} else if (child.getName().equalsIgnoreCase(IBXMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(IBXMLConstants.MODULE_STRING)) {
 					if (!parentContainer.getIsExtendingTemplate()) {
 						parseElement(child, parentContainer, ibxml);
 					}
 					else if (!parentContainer.isLocked()) {
 						parseElement(child, parentContainer, ibxml);
 					}
-				}
-				else if (child.getName().equalsIgnoreCase(IBXMLConstants.REGION_STRING)) {
+
+				} else if (child.getName().equalsIgnoreCase(IBXMLConstants.REGION_STRING)) {
 					parseRegion(child, parentContainer, ibxml);
-				}
-				else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_PAGE_LINK)) {
+
+				} else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_PAGE_LINK)) {
 					changeDPTCrawlableLinkedPageProperty(child, parentContainer);
-				}
-				else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_ROOT_PAGE)) {
+
+				} else if (child.getName().equalsIgnoreCase(IBXMLConstants.CHANGE_ROOT_PAGE)) {
 					changeDPTCrawlableCollectionLinkedPagesProperties(child, parentContainer);
-				}
-				else if (child.getName().equals(IBXMLConstants.CHANGE_IC_INSTANCE_ID)) {
+
+				} else if (child.getName().equals(IBXMLConstants.CHANGE_IC_INSTANCE_ID)) {
 					changeInstanceId(child, parentContainer);
-				}
-				else {
+
+				} else {
 					System.err.println("Unknown tag in xml description file : " + child.getName());
 				}
 			}
@@ -246,7 +231,7 @@ public class IBXMLReader {
 	 *
 	 */
 	void parseRegion(XMLElement reg, PresentationObjectContainer regionParent, CachedBuilderPage ibxml) {
-		List regionAttrList = reg.getAttributes();
+		List<XMLAttribute> regionAttrList = reg.getAttributes();
 		UIComponent newRegionParent = regionParent;
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
 			System.err.println("Table region has no attributes");
@@ -279,8 +264,7 @@ public class IBXMLReader {
 				if (regionAttrX != null) {
 					try {
 						x = regionAttrX.getIntValue();
-					}
-					catch (XMLException e) {
+					} catch (XMLException e) {
 						System.err.println("Unable to convert x region attribute to integer");
 						x = 1;
 					}
@@ -289,44 +273,33 @@ public class IBXMLReader {
 				if (regionAttrY != null) {
 					try {
 						y = regionAttrY.getIntValue();
-					}
-					catch (XMLException e) {
+					} catch (XMLException e) {
 						System.err.println("Unable to convert y region attribute to integer");
 						y = 1;
 					}
 				}
-			}
-			catch (NumberFormatException e) {
-				//Integer.parseInt(regionID.substring(0, regionID.indexOf(".")));
-				int indexOfDot = regionID.indexOf(".");
+			} catch (NumberFormatException e) {
+				//Integer.parseInt(regionID.substring(0, regionID.indexOf(CoreConstants.DOT)));
+				int indexOfDot = regionID.indexOf(CoreConstants.DOT);
 				if(indexOfDot!=-1){
 					String theRest = regionID.substring(indexOfDot + 1, regionID.length());
-					x = Integer.parseInt(theRest.substring(0, theRest.indexOf(".")));
-					y = Integer.parseInt(theRest.substring(theRest.indexOf(".") + 1, theRest.length()));
+					x = Integer.parseInt(theRest.substring(0, theRest.indexOf(CoreConstants.DOT)));
+					y = Integer.parseInt(theRest.substring(theRest.indexOf(CoreConstants.DOT) + 1, theRest.length()));
 				}
 			}
 		}
 
 		boolean parseChildren = true;
 		boolean emptyParent = false;
-		/*if (regionParent instanceof HtmlPage) {
-			HtmlPage hPage = (HtmlPage)regionParent;
-			HtmlPageRegion regionContainer = hPage.getRegion(regionID);
-			newRegionParent = regionContainer;
-			//regionContainer.setRegionId(regionID);
-			//hPage.add(newRegionParent,regionID);
-		}
-		else 
-		*/
 		if (regionParent instanceof com.idega.presentation.Page) {
-			if ((regionID == null) || (regionID.equals(""))) {
+			if ((regionID == null) || (regionID.equals(CoreConstants.EMPTY))) {
 				System.err.println("Missing id attribute for region tag");
 				return;
 			}
 			if (((Page) regionParent).getIsExtendingTemplate()) {
-				
+
 				newRegionParent = regionParent.getContainedObject(regionID);
-					
+
 				if (newRegionParent == null) {
 					if (label != null) {
 						newRegionParent = regionParent.getContainedLabeledObject(label.getValue());
@@ -368,13 +341,11 @@ public class IBXMLReader {
 				if (emptyParent){
 					((PresentationObjectContainer)newRegionParent).empty();
 				}
-				
-				List children = reg.getChildren();
-				Iterator childrenIt = children.iterator();
 
-				while (childrenIt.hasNext()) {
-					XMLElement element = (XMLElement)childrenIt.next();
-					parseElement(element , (PresentationObjectContainer) newRegionParent, ibxml);
+				List<XMLElement> children = reg.getChildren();
+				for (Iterator<XMLElement> childrenIt = children.iterator(); childrenIt.hasNext();) {
+					XMLElement element = childrenIt.next();
+					parseElement(element , newRegionParent, ibxml);
 				}
 			}
 		}
@@ -385,27 +356,23 @@ public class IBXMLReader {
 	 */
 	void setProperty(XMLElement property, UIComponent object) {
 		String key = null;
-		List values = new ArrayList();
+		List<String> values = new ArrayList<String>();
 
-		
-		//1. First check for <property name="" value="">:
-		
+
+		//1. First check for <property name=CoreConstants.EMPTY value=CoreConstants.EMPTY>:
 		String propertyName = property.getAttributeValue(IBXMLConstants.NAME_STRING);
 		String propertyValue = property.getAttributeValue(IBXMLConstants.VALUE_STRING);
-		
+
 		if(propertyValue!=null && propertyValue !=null){
 			values.add(propertyValue);
 			setComponentProperty(object, propertyName, values);
 			return;
 		}
-		
-		//2. If this isn't set after this check for children of the <property> element, this is the older way:
-		
-		List li = property.getChildren();
-		Iterator it = li.iterator();
 
-		while (it.hasNext()) {
-			XMLElement e = (XMLElement) it.next();
+		//2. If this isn't set after this check for children of the <property> element, this is the older way:
+		List<XMLElement> li = property.getChildren();
+		for (Iterator<XMLElement> it = li.iterator(); it.hasNext();) {
+			XMLElement e = it.next();
 
 			if (e.getName().equalsIgnoreCase(IBXMLConstants.NAME_STRING)) {
 				key = e.getTextTrim();
@@ -422,22 +389,21 @@ public class IBXMLReader {
 					setReflectionProperty(object, key, values);
 				}
 				catch(Exception e) {
-					e.printStackTrace();	
+					e.printStackTrace();
 				}
 			}
 			else {
-				//Backward compatability and possibly good for beanproperties, used by Image,Page and Table at least...
+				//Backward compatibility and possibly good for bean properties, used by Image,Page and Table at least...
 				//NOT into PropertyCache....
-				if(object instanceof PresentationObject){
-					//depracated stuff, the method in PO does the same as for a UIComponent in the "else part" 
+				if (object instanceof PresentationObject) {
+					//deprecated stuff, the method in PO does the same as for a UIComponent in the "else part"
 					//but is overridden by ancient classes that do different thing with it
 					String[] vals = new String[values.size()];
 					for (int i = 0; i < values.size(); i++){
-						vals[i] = (String) values.get(i);
+						vals[i] = values.get(i);
 					}
-					((PresentationObject)object).setProperty(key,vals);
-				}
-				else{
+					((PresentationObject) object).getAttributes().put(key,ListUtil.convertStringArrayToList(vals));
+				} else{
 					//UIComponent
 					object.getAttributes().put(key,values);
 				}
@@ -448,11 +414,11 @@ public class IBXMLReader {
 	/**
 	 *
 	 */
-	void setReflectionProperty(UIComponent instance, String methodIdentifier, List stringValues) {
+	void setReflectionProperty(UIComponent instance, String methodIdentifier, List<String> stringValues) {
 		ComponentPropertyHandler.getInstance().setReflectionProperty(instance, methodIdentifier, stringValues);
 	}
-	
-	void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
+
+	void setComponentProperty(UIComponent instance, String componentProperty, List<String> stringValues) {
 		ComponentPropertyHandler.getInstance().setComponentProperty(instance, componentProperty, stringValues);
 	}
 
@@ -460,10 +426,9 @@ public class IBXMLReader {
 	 *
 	 */
 	public UIComponent parseElement(XMLElement el, UIComponent parent, CachedBuilderPage ibxml) {
-	
 		UIComponent firstUICInstance = null;
-		
-		List at = el.getAttributes();
+
+		List<XMLAttribute> at = el.getAttributes();
 		boolean isLocked = true;
 
 		if ((at == null) || (at.isEmpty())) {
@@ -476,12 +441,10 @@ public class IBXMLReader {
 		String icObjectId = null;
 		ICObjectInstance icObjectInstance = null;
 		String label = null;
-		
-		Iterator it = at.iterator();
-		
+
 		//get the attributes for the module tag
-		while (it.hasNext()) {
-			XMLAttribute attr = (XMLAttribute) it.next();
+		for (Iterator<XMLAttribute> it = at.iterator(); it.hasNext();) {
+			XMLAttribute attr = it.next();
 			if (attr.getName().equalsIgnoreCase(IBXMLConstants.CLASS_STRING)) {
 				className = attr.getValue();
 			}
@@ -505,19 +468,19 @@ public class IBXMLReader {
 			}
 		}
 
-		
+
 		try {
 			//first create an instance
 			//try to do it first by the classname (definately an UIComponent and maybe a PresentationObject)
 			if (className != null) {
 				makeSureObjectExists(className);
-				
+
 				if(componentId!=null){
-					String pageKey = "";
+					String pageKey = CoreConstants.EMPTY;
 					try{
 						pageKey = ibxml.getPageKey();
 						icObjectInstance = getICObjectInstanceFromComponentId(componentId,className,pageKey);
-						
+
 						ICObject icObject = icObjectInstance.getObject();
 						if (icObject != null) {
 							Class<? extends UIComponent> objectClass = icObject.getObjectClass();
@@ -528,7 +491,7 @@ public class IBXMLReader {
 						System.err.println("[IBXMLReader] " + e.getMessage() + ": pageKey=" + pageKey + ";icObjectInstanceID=" + icObjectInstance);
 					}
 				}
-				
+
 				//finally try to instanciate just from class:
 				if(firstUICInstance==null){
 					try{
@@ -542,11 +505,11 @@ public class IBXMLReader {
 			}
 			//else if(icObjectInstanceId!=null){
 			//else if
-			
+
 			if(firstUICInstance!=null){
-				setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);	
-				
-				
+				setInstanceId(ibxml, firstUICInstance, componentId, icObjectId, icObjectInstance);
+
+
 				//TODO JSF Compat IS this necesery?
 				//This is a hack to refresh the property cache so that we don't get old properties.
 				//(this is used in JSF state restoring for PresentationObjects)
@@ -554,7 +517,7 @@ public class IBXMLReader {
 				PropertyCache.getInstance().clearPropertiesForKey(objectCacheKey);
 			//////
 			}
-			
+
 			//TODO are there any similar UIComponent containers we need to check for?
 			if (firstUICInstance instanceof PresentationObjectContainer) {
 				if (isLocked) {
@@ -577,11 +540,9 @@ public class IBXMLReader {
 					parent.getChildren().add(table);
 				}
 				if (el.hasChildren()) {
-					List children = el.getChildren();
-					Iterator itr = children.iterator();
-
-					while (itr.hasNext()) {
-						XMLElement child = (XMLElement) itr.next();
+					List<XMLElement> children = el.getChildren();
+					for (Iterator<XMLElement> itr = children.iterator(); itr.hasNext();) {
+						XMLElement child = itr.next();
 						if (child.getName().equalsIgnoreCase(IBXMLConstants.PROPERTY_STRING)) {
 							setProperty(child, table);
 						}
@@ -616,51 +577,44 @@ public class IBXMLReader {
 						System.err.println("InstanceID: " + BuilderLogic.getInstance().getInstanceId(firstUICInstance));
 					}
 				}
-				
+
 				//set the properties for it or do the same for its children
 				if (el.hasChildren()) {
-					List children = el.getChildren();
-					Iterator itr = children.iterator();
-
-					while (itr.hasNext()) {
-						XMLElement child = (XMLElement) itr.next();
+					List<XMLElement> children = el.getChildren();
+					for (Iterator<XMLElement> itr = children.iterator(); itr.hasNext();) {
+						XMLElement child = itr.next();
 						if (child.getName().equalsIgnoreCase(IBXMLConstants.PROPERTY_STRING)) {
 							setProperty(child, firstUICInstance);
-						}
-						else if (child.getName().equalsIgnoreCase(IBXMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(IBXMLConstants.MODULE_STRING)) {
+
+						} else if (child.getName().equalsIgnoreCase(IBXMLConstants.ELEMENT_STRING) || child.getName().equalsIgnoreCase(IBXMLConstants.MODULE_STRING)) {
 							parseElement(child, firstUICInstance, ibxml);
-						}
-						else if (child.getName().equalsIgnoreCase(IBXMLConstants.REGION_STRING)) {
+
+						} else if (child.getName().equalsIgnoreCase(IBXMLConstants.REGION_STRING)) {
 							parseRegion(child, (PresentationObjectContainer) firstUICInstance, ibxml);
-						}
-						else {
+
+						} else {
 							System.err.println("Unknown tag in xml description file : " + child.getName());
 						}
 					}
 				}
 			}
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			System.err.println("The specified class can not be found: " + className);
 			e.printStackTrace();
-		}
-		catch (java.lang.IllegalAccessException e2) {
+		} catch (java.lang.IllegalAccessException e2) {
 			System.err.println("Illegal access");
 			e2.printStackTrace();
-		}
-		catch (java.lang.InstantiationException e3) {
+		} catch (java.lang.InstantiationException e3) {
 			System.err.println("Unable to instanciate class: " + className);
 			e3.printStackTrace();
-		}
-		catch (Exception e4) {
+		} catch (Exception e4) {
 			System.err.println("Exception");
 			e4.printStackTrace();
 		}
-		
-		
+
 		return firstUICInstance;
 	}
-	
+
 	private void makeSureObjectExists(String className) {
 		ICObject icObject = null;
 		try {
@@ -676,7 +630,7 @@ public class IBXMLReader {
 				logger.log(Level.SEVERE, "Error while getting instance from class: " + className, e);
 				return;
 			}
-			
+
 			ICObject newICObject = null;
 			try {
 				newICObject = ICObjectBusiness.getInstance().createICObject();
@@ -686,18 +640,18 @@ public class IBXMLReader {
 			if (newICObject == null) {
 				return;
 			}
-			
+
 			String name = null;
 			String objectType = null;
 			String bundleIdentifier = null;
 			if (component instanceof PresentationObject) {
 				PresentationObject po = (PresentationObject) component;
-				
+
 				name = po.getBuilderName(CoreUtil.getIWContext());
 				bundleIdentifier = po.getBundleIdentifier();
 				objectType = po.getComponentType();
 			}
-			
+
 			if (name == null) {
 				if (className.indexOf(CoreConstants.DOT) != -1) {
 					name = className.substring(className.lastIndexOf(CoreConstants.DOT) + 1);
@@ -708,16 +662,16 @@ public class IBXMLReader {
 			newICObject.setObjectType(objectType == null ? ICObjectBMPBean.COMPONENT_TYPE_JSFUICOMPONENT : objectType);
 			newICObject.setBundleIdentifier(bundleIdentifier == null ? CoreConstants.CORE_IW_BUNDLE_IDENTIFIER : bundleIdentifier);
 			newICObject.store();
-			
+
 			ComponentRegistry registry = ComponentRegistry.getInstance(IWMainApplication.getDefaultIWMainApplication());
 			try {
 				registry.registerComponent(new ICObjectComponentInfo(newICObject));
 			} catch (ClassNotFoundException e) {
 				logger.log(Level.SEVERE, "Error while registering component in ComponentRegistry", e);
 			}
-			
+
 			logger.log(Level.INFO, "New ic_object for '" + className + "' was created successfully.");
-			
+
 			getBuilderLogic().clearAllCaches();
 		}
 	}
@@ -731,7 +685,7 @@ public class IBXMLReader {
 			return instance.getID();
 		}
 	}
-	
+
 	/**
 	 * Creates a new ICObjectInstance if none is found for the componentId (UUID) and className
 	 * @param componentId The unique id of the object
@@ -779,7 +733,7 @@ public class IBXMLReader {
 							e1.printStackTrace();
 						}
 					}
-					
+
 					instance.store();
 					return instance;
 				}
@@ -789,12 +743,12 @@ public class IBXMLReader {
 			}
 		}
 	}
-	
+
 	/**
 	 * <p>
 	 * TODO tryggvil describe method getICObjectHome
 	 * </p>
-	 * 
+	 *
 	 * @return
 	 */
 	public ICObjectInstanceHome getICObjectInstanceHome() {
@@ -820,7 +774,7 @@ public class IBXMLReader {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * @param ibxml
 	 * @param firstUICInstance
@@ -834,19 +788,19 @@ public class IBXMLReader {
 		if(componentId!=null && Character.isDigit(componentId.charAt(0)) ){
 			componentId = ID_PREFIX+componentId;
 		}
-		
+
 		if(firstUICInstance instanceof PresentationObject){
 			PresentationObject presentationObject = (PresentationObject) firstUICInstance;
 
 			int icObjectInstanceId=-1;
 			int icObjectId=-1;
-			
-			
+
+
 			//presentationObject.setICObjectInstance(icObjectInstance);
 			if(icObjectInstance!=null){
 				icObjectInstanceId=((Integer)icObjectInstance.getPrimaryKey()).intValue();
 			}
-			
+
 			if (sIcObjectId == null) {
 				//presentationObject.setICObject(icObjectInstance.getObject());
 				if(icObjectInstance!=null){
@@ -859,14 +813,14 @@ public class IBXMLReader {
 			else {
 				icObjectId=Integer.parseInt(sIcObjectId);
 			}
-			
+
 			//TODO JSF COMPAT FIND OUT WHAT THIS IS for??
 			// added by gummi@idega.is // - cache ObjectInstance
 			//NOT SURE BUT I THINK THIS WAS TO NOT STORE THE PAGE IT SELF?, EIKI dec 2008
 			if (!"0".equals(componentId)) {
 				cacheObjectInstance(ibxml, componentId, presentationObject);
 			}
-			
+
 			presentationObject.setBuilderIds(componentId, icObjectInstanceId, icObjectId);
 		}
 		else{
@@ -875,7 +829,7 @@ public class IBXMLReader {
 		}
 	}
 	void changeDPTCrawlableCollectionLinkedPagesProperties(XMLElement change, PresentationObjectContainer parent) {
-		List regionAttrList = change.getAttributes();
+		List<XMLAttribute> regionAttrList = change.getAttributes();
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
 			System.err.println("Table region has no attributes");
 			return;
@@ -890,11 +844,10 @@ public class IBXMLReader {
 		} catch (XMLException e1) {
 			e1.printStackTrace();
 		}
-		
-		List li = parent.getChildrenRecursive();
+
+		List<UIComponent> li = parent.getChildrenRecursive();
 		if (li != null) {
-			Iterator it = li.iterator();
-			while (it.hasNext()) {
+			for (Iterator<UIComponent> it = li.iterator(); it.hasNext();) {
 				PresentationObject obj = (PresentationObject) it.next();
 				if (obj instanceof DPTCrawlableContainer) {
 					DPTCrawlableContainer l = (DPTCrawlableContainer) obj;
@@ -909,9 +862,9 @@ public class IBXMLReader {
 			}
 		}
 	}
-	
+
 	void changeDPTCrawlableLinkedPageProperty(XMLElement change, PresentationObjectContainer parent) {
-		List regionAttrList = change.getAttributes();
+		List<XMLAttribute> regionAttrList = change.getAttributes();
 		if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
 			System.err.println("Table region has no attributes");
 			return;
@@ -929,10 +882,9 @@ public class IBXMLReader {
 		catch (com.idega.xml.XMLException e) {
 			e.printStackTrace();
 		}
-		List li = parent.getChildrenRecursive();
+		List<UIComponent> li = parent.getChildrenRecursive();
 		if (li != null) {
-			Iterator it = li.iterator();
-			while (it.hasNext()) {
+			for (Iterator<UIComponent> it = li.iterator(); it.hasNext();) {
 				PresentationObject obj = (PresentationObject) it.next();
 				if (obj instanceof DPTCrawlable) {
 					DPTCrawlable l = (DPTCrawlable) obj;
@@ -957,12 +909,11 @@ public class IBXMLReader {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		if (from != -1 && to != -1) {
-			List children = page.getChildrenRecursive();
+			List<UIComponent> children = page.getChildrenRecursive();
 			if (children != null) {
-				Iterator it = children.iterator();
-				while (it.hasNext()) {
+				for (Iterator<UIComponent> it = children.iterator(); it.hasNext();) {
 					PresentationObject obj = (PresentationObject) it.next();
 					if (obj.getICObjectInstanceID() == from) {
 						obj.changeInstanceIdForInheritedObject(to);
@@ -973,30 +924,27 @@ public class IBXMLReader {
 			}
 		}
 	}
-	
 
 	public void setTemplateObjectsForPage(CachedBuilderPage ibxml){
 	  cacheObjectInstance(ibxml, null, null);
 	}
 
 	public void cacheObjectInstance(CachedBuilderPage ibxml, String instanceKey, PresentationObject objectInstance){
-	  if(instanceKey != null){
-		ObjectInstanceCacher.putObjectIntanceInCache(instanceKey,objectInstance);
+	  if (instanceKey != null){
+		ObjectInstanceCacher.putObjectIntanceInCache(instanceKey, objectInstance);
 	  }
-	  //System.err.println("Cashing objectInstance: "+instanceKey);
+
 	  String pageKey = ibxml.getPageKey();
 	  String templatePageKey = ibxml.getTemplateKey();
-	  
-	  ObjectInstanceCacher.copyInstancesFromPageToPage(templatePageKey,pageKey);
 
-	  //System.err.println("Cashing objectInstance: "+instanceKey+" on page "+ ibxml.getKey()+" extending: "+ibxml.getTemplateId());
-	  if(instanceKey != null){
+	  ObjectInstanceCacher.copyInstancesFromPageToPage(templatePageKey,pageKey);
+	  if (instanceKey != null){
 		ObjectInstanceCacher.getObjectInstancesCachedForPage(ibxml.getPageKey()).put(instanceKey,objectInstance);
 	  }
 	}
-	
-	protected BuilderLogic getBuilderLogic(){
+
+	protected BuilderLogic getBuilderLogic() {
 		return BuilderLogic.getInstance();
 	}
-	
+
 }

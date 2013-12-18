@@ -19,6 +19,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 import com.idega.core.builder.data.ICPage;
+import com.idega.core.view.ViewNodeBase;
 import com.idega.exception.PageDoesNotExist;
 import com.idega.presentation.HtmlPage;
 import com.idega.presentation.IWContext;
@@ -27,43 +28,36 @@ import com.idega.util.CoreConstants;
 
 /**
  * This class is handles a Builder Page of format HTML.
- * This class is responsible for reading the HTML page stream but the parsing of the 
- * Html code and Region tags is handled by the class com.idega.presentation.HtmlPage.
- * 
+ * This class is responsible for reading the HTML page stream but the parsing of the
+ * HTML code and Region tags is handled by the class com.idega.presentation.HtmlPage.
+ *
  *  Last modified: $Date: 2009/01/14 15:07:19 $ by $Author: tryggvil $
- * 
+ *
  * @author <a href="mailto:tryggvil@idega.com">Tryggvi Larusson</a>
  * @version $Revision: 1.17 $
  */
 public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPage{
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
 	private static final long serialVersionUID = -4838223049441803865L;
+
 	private Page _populatedPage;
+
 	/**
 	 * @param verify
 	 * @param key
 	 */
 	public HtmlBasedPage(String pageKey) {
 		super(pageKey);
-		setComponentBased(true);
+		setViewNodeBase(ViewNodeBase.COMPONENT);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.builder.business.IBXMLPage#readPageStream(java.io.InputStream)
-	 */
+	@Override
 	protected void readPageStream(InputStream stream) throws PageDoesNotExist {
-		//HtmlPage hPage = new HtmlPage();
-		//hPage.setResource(stream);
-
 		try {
-			
-			InputStreamReader reader = new InputStreamReader(stream,CoreConstants.ENCODING_UTF8);//,encoding);
+			InputStreamReader reader = new InputStreamReader(stream, CoreConstants.ENCODING_UTF8);
 			int bufferlength=1000;
 			char[] buf = new char[bufferlength];
-			StringBuffer sbuffer = new StringBuffer();			
+			StringBuffer sbuffer = new StringBuffer();
 			int read = reader.read(buf);
 			while(read!=-1){
 				sbuffer.append(buf,0,read);
@@ -74,22 +68,14 @@ public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPa
 
 			reader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.builder.business.IBXMLAble#setSourceFromString(java.lang.String)
-	 */
 
-	/* (non-Javadoc)
-	 * @see com.idega.builder.business.IBXMLPage#getPopulatedPage()
-	 */
 	public Page getPopulatedPage() {
-		if(this._populatedPage==null){
+		if (this._populatedPage == null) {
 			HtmlPage hPage = new HtmlPage();
 			populatePage(hPage);
 			setPopulatedPage(hPage);
@@ -101,46 +87,47 @@ public class HtmlBasedPage extends CachedBuilderPage implements ComponentBasedPa
 		hPage.setHtml(this.getSourceAsString());
 		try {
 			ICPage icpage = this.getICPage();
-			hPage.setPageID(icpage.getID());
-		}
-		catch (EJBException e) {
+			hPage.setPageID(Integer.valueOf(icpage.getId()));
+		} catch (EJBException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void setPopulatedPage(Page page){
 		this._populatedPage=page;
 	}
 
+	@Override
 	public Page getNewPageCloned(){
 		return (Page) this.getPopulatedPage().clone();
 	}
-	
+
 	/**
-	 * Gets a new Page instanfce without any Builder checks. (not transformed for Builder Edit view)
+	 * Gets a new Page instance without any Builder checks. (not transformed for Builder Edit view)
 	 * @param iwc
 	 * @return
 	 */
+	@Override
 	public Page getNewPage(IWContext iwc){
 		return (Page) this.getPopulatedPage().clonePermissionChecked(iwc);
 	}
-	
+
+	@Override
 	public Page getPage(IWContext iwc){
 		return getNewPage(iwc);
 	}
-	
-	
+
+	@Override
 	public UIComponent createComponent(FacesContext context){
 		IWContext iwc = IWContext.getIWContext(context);
 		return getPage(iwc);
 	}
-	
+
+	@Override
 	public void initializeEmptyPage(){
 		try {
 			setSourceFromString("<html>\n<head>\n</head>\n<body>\n</body>\n</html>");
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

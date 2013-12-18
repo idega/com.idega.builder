@@ -24,7 +24,8 @@ import com.idega.xml.XMLElement;
 
 public class ComponentPropertyHandler implements Singleton {
 
-  private static Instantiator instantiator = new Instantiator() { public Object getInstance() { return new ComponentPropertyHandler();}};
+  private static Instantiator instantiator = new Instantiator() { @Override
+public Object getInstance() { return new ComponentPropertyHandler();}};
 
   private static final String XML_TYPE_TAG = "type";
   private static final String XML_VALUE_TAG = "value";
@@ -37,127 +38,33 @@ public class ComponentPropertyHandler implements Singleton {
   	return (ComponentPropertyHandler) SingletonRepository.getRepository().getInstance(ComponentPropertyHandler.class,instantiator);
   }
 
-     void setReflectionProperty(UIComponent instance,String methodIdentifier,List stringValues){
+     void setReflectionProperty(UIComponent instance,String methodIdentifier,List<String> stringValues){
       Method method = com.idega.util.reflect.MethodFinder.getInstance().getMethod(methodIdentifier,instance.getClass());
       if(method==null){
     	  throw new RuntimeException("Method: "+methodIdentifier+" not found for component: " + instance.getClass().getName());
       }
       setReflectionProperty(instance,method,stringValues);
      }
-     
-     void setComponentProperty(UIComponent instance, String componentProperty, List stringValues) {
+
+     void setComponentProperty(UIComponent instance, String componentProperty, List<String> stringValues) {
     	 ComponentProperty property = new ComponentProperty(componentProperty,instance.getClass());
     	 setPropertyValues(instance, property, stringValues);
      }
-     
+
      private static String[] emptyStringArray = new String[0];
-     
-     void setReflectionProperty(UIComponent instance,Method method,List stringPropertyValues){
+
+     void setReflectionProperty(UIComponent instance,Method method,List<String> stringPropertyValues){
      	Property property = new Property(method);
      	setPropertyValues(instance, property, stringPropertyValues);
      }
-     
-     void setPropertyValues(UIComponent instance, Property property, List stringPropertyValues) {
-     	String[] sPropertyValuesArray = (String[])stringPropertyValues.toArray(emptyStringArray);
+
+     void setPropertyValues(UIComponent instance, Property property, List<String> stringPropertyValues) {
+     	String[] sPropertyValuesArray = stringPropertyValues.toArray(emptyStringArray);
      	property.setPropertyValues(sPropertyValuesArray);
-     	
+
      	PropertyCache.getInstance().addProperty(BuilderLogic.getInstance().getInstanceId(instance),property);
      	property.setPropertyOnInstance(instance);
      }
-     
-     
-     
-     /*
-     void setReflectionProperty(PresentationObject instance,Method method,Vector stringValues){
-        //Object[] args = getObjectArguments(stringValues);
-        //method.invoke(instance,args);
-        try{
-          Object[] args = new Object[stringValues.size()];
-          Class[] parameterTypes = method.getParameterTypes();
-          for (int i = 0; i < parameterTypes.length; i++) {
-            if(parameterTypes[i]!=null){
-              args[i] = handleParameter(parameterTypes[i],(String)stringValues.get(i));
-            }
-          }
-          method.invoke(instance,args);
-        }
-        catch(Exception e){
-          System.err.println("Error in property '"+method.toString()+"' for ICObjectInstance="+instance.getICObjectInstanceID());
-          e.printStackTrace();
-        }
-    }
-
-
-    static Object handleParameter(Class parameterType,String stringValue)throws Exception{
-        Object argument=null;
-        if(parameterType.equals(Integer.class) || parameterType.equals(Integer.TYPE)){
-          //try{
-            argument = new Integer(stringValue);
-          //}
-          //catch(NumberFormatException e){
-          //  e.printStackTrace(System.out);
-          //}
-        }
-        else if(parameterType.equals(String.class)){
-            argument =  stringValue;
-        }
-        else if(parameterType.equals(Boolean.class) || parameterType.equals(Boolean.TYPE)){
-          if(stringValue.equals("Y")){
-            argument = Boolean.TRUE;
-          }
-          else if(stringValue.equals("N")){
-            argument = Boolean.FALSE;
-          }
-          else{
-            argument = new Boolean(stringValue);
-          }
-        }
-        else if(parameterType.equals(Float.class) || parameterType.equals(Float.TYPE)){
-          argument = new Float(stringValue);
-        }
-        else if(parameterType.equals(ICPage.class)){
-          //try {
-            argument = ((com.idega.core.builder.data.ICPageHome)com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(stringValue));
-          //}
-          //catch (Exception ex) {
-          //  ex.printStackTrace(System.err);
-          //}
-        }
-        else if(parameterType.equals(ICFile.class)){
-          try {
-            argument = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(stringValue));
-          }
-          catch (Exception ex) {
-            ex.printStackTrace(System.err);
-          }
-        }
-//        else if(parameterType.equals(IBTemplatePage.class)){
-//          try {
-//            argument = new IBTemplatePage(Integer.parseInt(stringValue));
-//          }
-//          catch (Exception ex) {
-//            ex.printStackTrace(System.err);
-//          }
-//        }
-        else if(parameterType.equals(Image.class)){
-          //try {
-            argument = new Image(Integer.parseInt(stringValue));
-          //}
-          //catch (Exception ex) {
-          //  ex.printStackTrace(System.err);
-          //}
-        }
-        //REMOVE AND MAKE GENERIC! ask tryggvi and eiki
-        else if(parameterType.equals(Group.class)){
-          try {
-            argument = (Group) ((GroupHome)com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer( stringValue.substring(stringValue.lastIndexOf('_')+1, stringValue.length()) ));
-          }
-          catch (Exception ex) {
-            ex.printStackTrace(System.err);
-          }
-        }
-        return argument;
-    }*/
 
      public Object handleElementProperty(XMLElement el){
       XMLElement typeEl = el.getChild(XML_TYPE_TAG);
@@ -175,20 +82,5 @@ public class ComponentPropertyHandler implements Singleton {
       }
       return null;
     }
-
-/*
-    public PresentationObject getSetPropertyComponent(String className,String name){
-      if(className.equals("int")){
-        return new IntegerInput(name);
-      }
-      else if(className.equals("java.lang.String")){
-        return new TextInput(name);
-      }
-      else if(className.equals("boolean")){
-        return new BooleanInput(name);
-      }
-      return null;
-    }
-*/
 
 }

@@ -205,11 +205,11 @@ public class BuilderLogic extends DefaultSpringBean {
 		}
 	};
 
-	public static final String PAGE_FORMAT_IBXML="IBXML";
-	public static final String PAGE_FORMAT_HTML="HTML";
-	public static final String PAGE_FORMAT_JSP_1_2="JSP_1_2";
-	public static final String PAGE_FORMAT_FACELET="FACELET";
-	public static final String PAGE_FORMAT_IBXML2="IBXML2";
+	public static final String PAGE_FORMAT_IBXML=ICPageBMPBean.FORMAT_IBXML;
+	public static final String PAGE_FORMAT_HTML=ICPageBMPBean.FORMAT_HTML;
+	public static final String PAGE_FORMAT_JSP_1_2=ICPageBMPBean.FORMAT_JSP_1_2;
+	public static final String PAGE_FORMAT_FACELET=ICPageBMPBean.FORMAT_FACELET;
+	public static final String PAGE_FORMAT_IBXML2=ICPageBMPBean.FORMAT_IBXML2;
 
 	private final String[] pageFormats = {PAGE_FORMAT_IBXML,PAGE_FORMAT_IBXML2,PAGE_FORMAT_HTML,PAGE_FORMAT_JSP_1_2,PAGE_FORMAT_FACELET};
 

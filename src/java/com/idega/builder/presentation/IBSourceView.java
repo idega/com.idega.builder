@@ -27,14 +27,14 @@ import com.idega.webface.WFUtil;
 
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company: idega
- * 
+ *
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
 public class IBSourceView extends Window {
 	private static final String SOURCE_PARAMETER = "ib_page_source";
 	private static final String IB_SOURCE_ACTION = "ib_page_source_action";
-	private static final String IB_PAGE_FORMAT = "ib_page_fomat";
+	private static final String IB_PAGE_FORMAT = "ib_page_format";
 	private static final String PARAM_TEMPLATEURL = "templateurl";
 
 	public IBSourceView() {
@@ -46,17 +46,17 @@ public class IBSourceView extends Window {
 	public void main(IWContext iwc) {
 		setPrintScriptSourcesDirectly(false);
 		this.setStyleAttribute("margin:0px;overflow:hidden;background-color:#ffffff;");
-		
+
 		Layer sourceView = new Layer();
 		sourceView.setStyleClass("sourceView");
 		add(sourceView);
-		
+
 		IWBundle iwb = this.getBundle(iwc);
-		
+
 		Web2Business web2 = WFUtil.getBeanInstance(iwc, Web2Business.SPRING_BEAN_IDENTIFIER);
 		sourceView.add(PresentationUtil.getJavaScriptSourceLine(web2.getCodePressScriptFilePath()));
 		PresentationUtil.addStyleSheetToHeader(iwc, iwb.getVirtualPathWithFileNameString("style/builder.css"));
-		
+
 		String action = iwc.getParameter(IB_SOURCE_ACTION);
 		if (action != null) {
 			if (action.equals("update")) {
@@ -86,15 +86,15 @@ public class IBSourceView extends Window {
 				}
 			}
 		}
-		
+
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
-		
+
 		Layer sourceViewButtonsLeft = new Layer();
 		sourceViewButtonsLeft.setStyleClass("sourceViewButtonsLeft");
-	
+
 		Layer sourceViewButtonsRight = new Layer();
 		sourceViewButtonsRight.setStyleClass("sourceViewButtonsRight");
-		
+
 		//temporary hack for opera and safari to fix their flawed handling of css height attribute
 		boolean isFubarBrowserForNow = iwc.isSafari() || iwc.isOpera();
 		if(isFubarBrowserForNow){
@@ -102,7 +102,7 @@ public class IBSourceView extends Window {
 			sourceViewButtonsLeft.setStyleAttribute("height", "15%");
 			sourceViewButtonsRight.setStyleAttribute("height", "15%");
 		}
-	
+
 		Form form = new Form();
 		try {
 			String pageKey = getCurrentPageKey(iwc);
@@ -110,10 +110,10 @@ public class IBSourceView extends Window {
 			HtmlInputTextarea area = new HtmlInputTextarea();
 			area.setId(SOURCE_PARAMETER);
 			area.setWrap("OFF");
-			
+
 			//enable syntax coloring!
 			area.setStyleClass("codepress html linenumbers-on");
-			
+
 			if(isFubarBrowserForNow){
 				area.setStyle("height: 83%");
 			}
@@ -124,37 +124,37 @@ public class IBSourceView extends Window {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		form.add(sourceViewButtonsLeft);
 		form.add(sourceViewButtonsRight);
-		
+
 		//right
 		String templateString = iwrb.getLocalizedString("sourceview.template_text","HTML template regions are defined like so:<br/><code>&lt;!-- TemplateBeginEditable name=\"MyUniqueRegionId1\" --&gt;<br/>MyUniqueRegionId1<br/>&lt;!-- TemplateEndEditable --&gt;</code>");
 		Text templateText = new Text(templateString);
 		templateText.setStyleClass("helpText");
 		sourceViewButtonsRight.add(templateText);
-		
+
 		SubmitButton button = new SubmitButton("Save", IB_SOURCE_ACTION, "update");
 		button.setAccessKey("s");
 		sourceViewButtonsRight.add(button);
-		
+
 		DropdownMenu menu = getFormatDropdown(iwc);
 		sourceViewButtonsRight.add(menu);
-		
+
 		//left
 		TextInput templateGrabInput = new TextInput(PARAM_TEMPLATEURL,"http://");
 		sourceViewButtonsLeft.add(templateGrabInput);
 		SubmitButton templateGrabButton = new SubmitButton(iwrb.getLocalizedString("sourceview.grab_button_text","Grab template from URL"), IB_SOURCE_ACTION, "grab");
 		sourceViewButtonsLeft.add(templateGrabButton);
-		
+
 		String templateGrabString =  iwrb.getLocalizedString("sourceview.grab_warning","Warning: Grabbing the url will get the html and write over this template and change its type to HTML");
 		Text grabText = new Text(templateGrabString);
 		grabText.setStyleClass("helpText");
 		sourceViewButtonsLeft.add(grabText);
 		sourceView.add(form);
-		
+
 	}
-	
+
 	private String getCurrentPageKey(IWContext iwc) {
 		return iwc.getParameter("pageForSourceId");
 	}
@@ -165,7 +165,7 @@ public class IBSourceView extends Window {
 			getBuilderLogic().setPageSource(iwc, pageFormat, sourceString);
 			return;
 		}
-		
+
 		getBuilderLogic().setPageSource(pageKey, pageFormat, sourceString);
 	}
 
@@ -173,7 +173,7 @@ public class IBSourceView extends Window {
 		String pageKey = getBuilderLogic().getCurrentIBPage(iwc);
 		new HtmlTemplateGrabber(url, pageKey);
 	}
-	
+
 	public DropdownMenu getFormatDropdown(IWContext iwc) {
 		ICPage page;
 		// The default format:
@@ -186,11 +186,11 @@ public class IBSourceView extends Window {
 			e.printStackTrace();
 		}
 		DropdownMenu menu = new DropdownMenu(IB_PAGE_FORMAT);
-		Map formats = getBuilderLogic().getPageFormatsSupportedAndDescription();
-		Set keySet = formats.keySet();
-		for (Iterator iter = keySet.iterator(); iter.hasNext();) {
-			String format = (String) iter.next();
-			String description = (String) formats.get(format);
+		Map<String, String> formats = getBuilderLogic().getPageFormatsSupportedAndDescription();
+		Set<String> keySet = formats.keySet();
+		for (Iterator<String> iter = keySet.iterator(); iter.hasNext();) {
+			String format = iter.next();
+			String description = formats.get(format);
 			menu.addMenuElement(format,description);
 		}
 		menu.setSelectedElement(pageFormat);
@@ -200,7 +200,7 @@ public class IBSourceView extends Window {
 	protected BuilderLogic getBuilderLogic() {
 		return BuilderLogic.getInstance();
 	}
-	
+
 	@Override
 	public String getBundleIdentifier(){
 		return BuilderConstants.IW_BUNDLE_IDENTIFIER;
