@@ -162,10 +162,10 @@ public class IWBundleStarter implements IWBundleStartable {
 
 		try {
 			ICPageHome pHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
-			Collection pages = pHome.findAllPagesWithoutUri();
+			Collection<ICPage> pages = pHome.findAllPagesWithoutUri();
 			int domainId=-1;
-			for (Iterator iter = pages.iterator(); iter.hasNext();) {
-				ICPage page = (ICPage) iter.next();
+			for (Iterator<ICPage> iter = pages.iterator(); iter.hasNext();) {
+				ICPage page = iter.next();
 				//TODO: implemennt support for domainId:
 				try{
 					PageUrl newUrl = new PageUrl(page,domainId);
