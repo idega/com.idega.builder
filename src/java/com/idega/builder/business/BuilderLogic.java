@@ -4054,6 +4054,45 @@ public class BuilderLogic extends DefaultSpringBean {
 		return false;
 	}
 
+	public List<ICPage> findPagesForModule(Class<? extends UIComponent> theClass) {
+		if (theClass == null) {
+			return null;
+		}
+
+		try {
+			ICObjectHome icObjectHome = (ICObjectHome) IDOLookup.getHome(ICObject.class);
+			ICObject icObject = icObjectHome.findByClassName(theClass.getName());
+			if (icObject == null) {
+				return null;
+			}
+
+			ICObjectInstanceHome icObjectInstanceHome = (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+			Collection<ICObjectInstance> instances = icObjectInstanceHome.getByICObject(icObject);
+			if (ListUtil.isEmpty(instances)) {
+				return null;
+			}
+
+			ICPageHome icPageHome = (ICPageHome) IDOLookup.getHome(ICPage.class);
+			List<ICPage> pagesWithModules = new ArrayList<ICPage>();
+			for (ICObjectInstance instance: instances) {
+				ICPage page = null;
+				try {
+					page = icPageHome.findByPrimaryKey(instance.getIBPageID());
+				} catch (FinderException e) {}
+				if (page != null) {
+					pagesWithModules.add(page);
+				}
+			}
+			return pagesWithModules;
+		} catch (FinderException e) {
+			LOGGER.log(Level.WARNING, "Module by class name " + theClass + " is not registered");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 	public ICPage findPageForModule(IWApplicationContext iwac, String instanceId) {
 		return findPageForModule(iwac.getIWMainApplication(), instanceId);
 	}

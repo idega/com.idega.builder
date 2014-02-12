@@ -9,12 +9,15 @@
  */
 package com.idega.builder.view;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.faces.application.ViewHandler;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.CachedBuilderPage;
@@ -25,21 +28,24 @@ import com.idega.core.view.DefaultViewNode;
 import com.idega.core.view.ViewNode;
 import com.idega.core.view.ViewNodeBase;
 import com.idega.presentation.IWContext;
+import com.idega.util.CoreConstants;
+import com.idega.util.RequestUtil;
 import com.idega.util.StringHandler;
+import com.idega.util.StringUtil;
 
 /**
  * <p>
  * Root node for builder pages for each domain
  * </p>
  *  Last modified: $Date: 2007/07/27 15:42:50 $ by $Author: civilis $
- * 
+ *
  * @author <a href="mailto:tryggvil@idega.com">tryggvil</a>
  * @version $Revision: 1.2 $
  */
 public class BuilderDomainViewNode extends DefaultViewNode {
 
 	private ICDomain domain;
-	
+
 	/**
 	 * @param viewId
 	 * @param parent
@@ -49,101 +55,131 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 		setDomain(domain);
 	}
 
-
-	/*public ViewHandler getViewHandler() {
-		if(this.builderPageViewHandler==null){
-			ViewNode parentNode = getParent();
-			ViewHandler parentViewHandler = parentNode.getViewHandler();
-			setViewHandler(new BuilderPageViewHandler(parentViewHandler));
-		}
-		return this.builderPageViewHandler;
-	}*/
-	
 	@Override
 	public void setViewHandler(ViewHandler viewHandler) {
-		//this.builderPageViewHandler=viewHandler;
 		super.setViewHandler(viewHandler);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.idega.core.view.DefaultViewNode#loadChild(java.lang.String)
 	 */
 	@Override
-	protected ViewNode loadChild(String childId) {
-		//return super.loadChild(childId);
-		ViewNode node =  getPageCacher().getCachedBuilderPage(childId);
-		if(node==null){
-			BuilderPageException be =  new BuilderPageException("Page with id="+childId+" not found");
+	protected ViewNode loadChild(String childId) throws BuilderPageException {
+		ViewNode node = getPageCacher().getCachedBuilderPage(childId);
+		if (node == null) {
+			BuilderPageException be = new BuilderPageException("Page with ID=" + childId + " not found");
 			be.setCode(BuilderPageException.CODE_NOT_FOUND);
 			be.setPageUri(childId);
 			throw be;
 		}
 		return node;
 	}
-	
+
 	protected BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}
-	
+
 	protected PageCacher getPageCacher(){
 		return getBuilderLogic().getPageCacher();
 	}
-	
+
 	@Override
 	protected Map<String, ViewNode> getChildrenMap(){
 		return getPageCacher().getPageCacheMap();
 	}
-	
-	protected ViewNode getDefaultNode(FacesContext context){
+
+	private ViewNode getDefaultNode(FacesContext context) throws BuilderPageException {
 		IWContext iwc = IWContext.getIWContext(context);
 		String pageKey = getBuilderLogic().getCurrentIBPage(iwc);
-		
-		
+		String uri = iwc.getRequestURI();
+		if (StringUtil.isEmpty(pageKey)) {
+			pageKey = getBuilderLogic().getPageKeyByURICached(uri);
+		}
+		if (StringUtil.isEmpty(pageKey)) {
+			String redirect = RequestUtil.getRedirectUriByApplicationProperty(iwc.getRequest(), HttpServletResponse.SC_NOT_FOUND);
+			if (!StringUtil.isEmpty(redirect)) {
+				try {
+					Logger.getLogger(getClass().getName()).warning("Redirecting to " + redirect + " because page with URI " + uri + " can not be found");
+					iwc.getResponse().sendRedirect(redirect);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+
+			BuilderPageException be = new BuilderPageException("Page with URI " + uri + " not found");
+			be.setCode(BuilderPageException.CODE_NOT_FOUND);
+			be.setPageUri(uri);
+			throw be;
+		}
+
 		ViewNode defaultChild = getChild(pageKey);
-		if(defaultChild.equals(this)){
-			throw new RuntimeException("Page with id="+pageKey+" does not exit");
+		if (defaultChild.equals(this)) {
+			throw new RuntimeException("Page with id="+pageKey+" does not exist");
 		}
 		return defaultChild;
 	}
-	
+
 	@Override
-	public UIComponent createComponent(FacesContext context){
-		ViewNode defaultChild = getDefaultNode(context);
-		return defaultChild.createComponent(context);
+	public UIComponent createComponent(FacesContext context) {
+		try {
+			ViewNode defaultChild = getDefaultNode(context);
+			return defaultChild.createComponent(context);
+		} catch (BuilderPageException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isComponentBased(){
-		FacesContext context = FacesContext.getCurrentInstance();
-		ViewNode defaultChild = getDefaultNode(context);
-		return defaultChild.isComponentBased();
+	public boolean isComponentBased() {
+		try {
+			FacesContext context = FacesContext.getCurrentInstance();
+			ViewNode defaultChild = getDefaultNode(context);
+			return defaultChild.isComponentBased();
+		} catch (BuilderPageException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
-	
+
 	@Override
 	public ViewNodeBase getViewNodeBase() {
-		FacesContext context = FacesContext.getCurrentInstance();
-		ViewNode defaultChild = getDefaultNode(context);
-		return defaultChild.getViewNodeBase();
+		try {
+			FacesContext context = FacesContext.getCurrentInstance();
+			ViewNode defaultChild = getDefaultNode(context);
+			if (defaultChild != null) {
+				return defaultChild.getViewNodeBase();
+			}
+		} catch (BuilderPageException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-	
+
 	@Override
 	public String getResourceURI(){
-		FacesContext context = FacesContext.getCurrentInstance();
-		ViewNode defaultChild = getDefaultNode(context);
-		return defaultChild.getResourceURI();
+		try {
+			FacesContext context = FacesContext.getCurrentInstance();
+			ViewNode defaultChild = getDefaultNode(context);
+			return defaultChild.getResourceURI();
+		} catch (BuilderPageException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-	
-	
+
+
 	@Override
 	public ViewNode getChild(String childViewId) {
 		//parse the url:
-		if(isPageId(childViewId)){
+		if (isPageId(childViewId)) {
 			return super.getChild(childViewId);
-		}
-		else{
+		} else {
 			String newUrl = getUrlParsedInstandardFormat(childViewId);
 			ViewNode viewNode = getViewNodeCached(newUrl);
-			if(viewNode==null){
+			if (viewNode == null) {
 				viewNode = getViewNodeLoadedFromDB(newUrl);
 			}
 			return viewNode;
@@ -155,9 +191,9 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 	 * @return
 	 */
 	private ViewNode getViewNodeLoadedFromDB(String pageUri) {
-		String pagesPrefix = "/pages";
+		String pagesPrefix = CoreConstants.PAGES_URI_PREFIX;
 		String requestUri = pageUri;
-		if(!pageUri.startsWith(pagesPrefix)){
+		if (!pageUri.startsWith(pagesPrefix)) {
 			requestUri=pagesPrefix+pageUri;
 		}
 		//We have to add a /pages prefix because the method getPageKeyByURI() expects it
@@ -171,12 +207,11 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 	 */
 	private ViewNode getViewNodeCached(String newUrl) {
 		//iterate over the viewnodes and check if the url exists:
-		Iterator valueIter = getPageCacher().getPageCacheMap().values().iterator();
-		while (valueIter.hasNext()) {
-			ViewNode node = (ViewNode) valueIter.next();
+		for (Iterator<ViewNode> valueIter = getPageCacher().getPageCacheMap().values().iterator(); valueIter.hasNext();) {
+			ViewNode node = valueIter.next();
 			CachedBuilderPage page = (CachedBuilderPage)node;
-			if(newUrl!=null){
-				if(newUrl.equals(page.getPageUri())){
+			if (newUrl != null) {
+				if (newUrl.equals(page.getPageUri())) {
 					return node;
 				}
 			}
@@ -189,15 +224,18 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 	 * @return
 	 */
 	private boolean isPageId(String childViewId) {
-		try{
-			if(childViewId.endsWith(StringHandler.SLASH)){
+		if (StringUtil.isEmpty(childViewId)) {
+			return false;
+		}
+
+		try {
+			if (childViewId.endsWith(StringHandler.SLASH)) {
 				//remove the potential '/' character in the ending:
 				childViewId = childViewId.substring(0,childViewId.length()-1);
 			}
 			Integer.parseInt(childViewId);
 			return true;
-		}
-		catch(NumberFormatException nfe){
+		} catch(NumberFormatException nfe){
 			return false;
 		}
 	}
@@ -209,22 +247,25 @@ public class BuilderDomainViewNode extends DefaultViewNode {
 	 * @return
 	 */
 	private String getUrlParsedInstandardFormat(String childViewId) {
-		if(childViewId.equals(StringHandler.SLASH)){
-			return childViewId;
+		if (StringUtil.isEmpty(childViewId)) {
+			return null;
 		}
-		else{
+
+		if (childViewId.equals(StringHandler.SLASH)){
+			return childViewId;
+		} else {
 			String returnUrl = childViewId;
 			if(returnUrl.startsWith(StringHandler.SLASH)){
 				//do nothing
 			}
 			else{
-				returnUrl = "/"+returnUrl;
+				returnUrl = StringHandler.SLASH+returnUrl;
 			}
 			if(returnUrl.endsWith(StringHandler.SLASH)){
 				//do nothing
 			}
 			else{
-				returnUrl = returnUrl+"/";
+				returnUrl = returnUrl+StringHandler.SLASH;
 			}
 			return returnUrl;
 		}
