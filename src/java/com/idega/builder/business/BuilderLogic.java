@@ -69,6 +69,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.component.bean.RenderedComponent;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
@@ -80,6 +81,7 @@ import com.idega.core.data.ICTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
+import com.idega.data.IDOContainer;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
@@ -4090,6 +4092,11 @@ public class BuilderLogic implements Singleton {
 	}
 
 	public List<ICPage> findPagesForModule(Class<? extends UIComponent> theClass) {
+		return findPagesForModule(theClass, true);
+	}
+
+	@SuppressWarnings("deprecation")
+	private List<ICPage> findPagesForModule(Class<? extends UIComponent> theClass, boolean reTry) {
 		if (theClass == null) {
 			return null;
 		}
@@ -4120,9 +4127,19 @@ public class BuilderLogic implements Singleton {
 			}
 			return pagesWithModules;
 		} catch (FinderException e) {
-			logger.log(Level.WARNING, "Module by class name " + theClass + " is not registered");
+			logger.warning("Module by class name " + theClass.getName() + " is not registered");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, "Unable to find any page with module " + theClass.getName(), e);
+		}
+
+		if (reTry) {
+			clearAllCachedPages();
+			IBOLookup.clearAllCache();
+			IDOContainer.getInstance().flushAllBeanCache();
+			IDOContainer.getInstance().flushAllQueryCache();
+			IWCacheManager2.getInstance(getIWMainApplication()).reset();
+			IWCacheManager.getInstance(getIWMainApplication()).clearAllCaches();
+			return findPagesForModule(theClass, false);
 		}
 
 		return null;
