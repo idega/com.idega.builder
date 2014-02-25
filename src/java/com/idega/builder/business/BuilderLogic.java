@@ -74,7 +74,11 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.builder.presentation.ICPropertyHandler;
+<<<<<<< HEAD
 import com.idega.core.business.DefaultSpringBean;
+=======
+import com.idega.core.cache.IWCacheManager2;
+>>>>>>> c55357482cf8c57da278349a390371bc9f77f8e4
 import com.idega.core.component.bean.RenderedComponent;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;
@@ -84,6 +88,7 @@ import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
+import com.idega.data.IDOContainer;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
@@ -4054,6 +4059,11 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public List<ICPage> findPagesForModule(Class<? extends UIComponent> theClass) {
+		return findPagesForModule(theClass, true);
+	}
+
+	@SuppressWarnings("deprecation")
+	private List<ICPage> findPagesForModule(Class<? extends UIComponent> theClass, boolean reTry) {
 		if (theClass == null) {
 			return null;
 		}
@@ -4086,7 +4096,17 @@ public class BuilderLogic extends DefaultSpringBean {
 		} catch (FinderException e) {
 			LOGGER.log(Level.WARNING, "Module by class name " + theClass + " is not registered");
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING, "Unable to find any page with module " + theClass.getName(), e);
+		}
+
+		if (reTry) {
+			clearAllCachedPages();
+			IBOLookup.clearAllCache();
+			IDOContainer.getInstance().flushAllBeanCache();
+			IDOContainer.getInstance().flushAllQueryCache();
+			IWCacheManager2.getInstance(getIWMainApplication()).reset();
+			IWCacheManager.getInstance(getIWMainApplication()).clearAllCaches();
+			return findPagesForModule(theClass, false);
 		}
 
 		return null;
