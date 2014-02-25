@@ -20,7 +20,7 @@ import java.util.Locale;
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class LibraryTreeNode implements ICTreeNode {
+public class LibraryTreeNode implements ICTreeNode<LibraryTreeNode> {
   /**
    *
    */
@@ -30,7 +30,7 @@ public class LibraryTreeNode implements ICTreeNode {
   /**
   *
   */
- public Collection getChildren() {
+ public Collection<LibraryTreeNode> getChildren() {
    /**@todo: Implement this com.idega.core.ICTreeNode method*/
    throw new java.lang.UnsupportedOperationException("Method getChildren() not yet implemented.");
  }
@@ -38,7 +38,7 @@ public class LibraryTreeNode implements ICTreeNode {
   /**
    *
    */
-  public Iterator getChildrenIterator() {
+  public Iterator<LibraryTreeNode> getChildrenIterator() {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
     throw new java.lang.UnsupportedOperationException("Method getChildrenIterator() not yet implemented.");
   }
@@ -54,7 +54,7 @@ public class LibraryTreeNode implements ICTreeNode {
   /**
    *
    */
-  public ICTreeNode getChildAtIndex(int childIndex) {
+  public LibraryTreeNode getChildAtIndex(int childIndex) {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
     throw new java.lang.UnsupportedOperationException("Method getChildAtIndex() not yet implemented.");
   }
@@ -70,7 +70,7 @@ public class LibraryTreeNode implements ICTreeNode {
   /**
    *
    */
-  public int getIndex(ICTreeNode node) {
+  public int getIndex(LibraryTreeNode node) {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
     throw new java.lang.UnsupportedOperationException("Method getIndex() not yet implemented.");
   }
@@ -78,7 +78,7 @@ public class LibraryTreeNode implements ICTreeNode {
   /**
    *
    */
-  public ICTreeNode getParentNode() {
+  public LibraryTreeNode getParentNode() {
     /**@todo: Implement this com.idega.core.ICTreeNode method*/
     throw new java.lang.UnsupportedOperationException("Method getParentNode() not yet implemented.");
   }

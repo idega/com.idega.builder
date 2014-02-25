@@ -23,7 +23,10 @@ import com.idega.data.IDOLookupException;
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class IBObjectLibraryBMPBean extends com.idega.data.TreeableEntityBMPBean implements com.idega.builder.data.IBObjectLibrary {
+public class IBObjectLibraryBMPBean extends com.idega.data.TreeableEntityBMPBean<com.idega.builder.data.IBObjectLibrary> implements com.idega.builder.data.IBObjectLibrary {
+
+	private static final long serialVersionUID = 141627079122065838L;
+	
 	private final static String ENTITY_NAME = "IB_LIBRARY";
 	private final static String FILE_COLUMN = "FILE_ID";
 	private final static String OWNER_COLUMN = "USER_ID";

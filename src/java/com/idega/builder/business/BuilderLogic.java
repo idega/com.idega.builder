@@ -74,11 +74,8 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.builder.presentation.ICPropertyHandler;
-<<<<<<< HEAD
 import com.idega.core.business.DefaultSpringBean;
-=======
 import com.idega.core.cache.IWCacheManager2;
->>>>>>> c55357482cf8c57da278349a390371bc9f77f8e4
 import com.idega.core.component.bean.RenderedComponent;
 import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.core.component.data.ICObject;

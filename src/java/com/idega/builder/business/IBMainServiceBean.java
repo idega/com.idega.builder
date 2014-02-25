@@ -635,7 +635,6 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public String getLocalizedPageName(String pageKey, Locale locale) {
 		try {
 			IBPageNameHome pageNameHome = (IBPageNameHome) IDOLookup.getHome(IBPageName.class);

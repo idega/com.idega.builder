@@ -97,13 +97,13 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#getPageTree
 	 */
 	@Override
-	public ICTreeNode getPageTree(int startNodeId, int userId) throws RemoteException, RemoteException;
+	public ICTreeNode<?> getPageTree(int startNodeId, int userId) throws RemoteException, RemoteException;
 
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#getPageTree
 	 */
 	@Override
-	public ICTreeNode getPageTree(int startNodeId) throws RemoteException, RemoteException;
+	public ICTreeNode<?> getPageTree(int startNodeId) throws RemoteException, RemoteException;
 
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#unload
@@ -169,7 +169,7 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#createNewPage
 	 */
 	@Override
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode> tree,
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode<?>> tree,
 			IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup);
 
 	/**
@@ -177,7 +177,7 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 */
 	@Override
 	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId,
-			Map<Integer, ? extends ICTreeNode> tree, IWContext creatorContext);
+			Map<Integer, ? extends ICTreeNode<?>> tree, IWContext creatorContext);
 
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#setProperty
@@ -195,7 +195,7 @@ public interface IBMainService extends IBOService, BuilderService, BuilderPageWr
 	 * @see com.idega.builder.business.IBMainServiceBean#deletePage
 	 */
 	@Override
-	public boolean deletePage(String pageId, boolean deleteChildren, Map<Integer, ? extends ICTreeNode> tree, int userId, ICDomain domain);
+	public boolean deletePage(String pageId, boolean deleteChildren, Map<Integer, ? extends ICTreeNode<?>> tree, int userId, ICDomain domain);
 
 	/**
 	 * @see com.idega.builder.business.IBMainServiceBean#checkDeletePage
