@@ -46,7 +46,7 @@ import com.idega.util.datastructures.map.MapUtil;
  *
  * @version 1.0
  */
-public class PageTreeNode implements ICTreeNode, Serializable {
+public class PageTreeNode implements ICTreeNode<PageTreeNode>, Serializable {
 
 	private static final long serialVersionUID = -6879671702204042851L;
 	private static final Logger LOGGER = Logger.getLogger(PageTreeNode.class.getName());
@@ -329,7 +329,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	 *
 	 */
 	@Override
-	public ICTreeNode getChildAtIndex(int childIndex) {
+	public PageTreeNode getChildAtIndex(int childIndex) {
 		Collection<PageTreeNode> children = getChildren();
 		if (ListUtil.isEmpty(children)) {
 			return null;
@@ -351,7 +351,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	 *
 	 */
 	@Override
-	public int getIndex(ICTreeNode node) {
+	public int getIndex(PageTreeNode node) {
 		return 0;
 	}
 
@@ -359,7 +359,7 @@ public class PageTreeNode implements ICTreeNode, Serializable {
 	 *
 	 */
 	@Override
-	public ICTreeNode getParentNode() {
+	public PageTreeNode getParentNode() {
 		Integer parentId = getParentId();
 		if (parentId == null)
 			return null;

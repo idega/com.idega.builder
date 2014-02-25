@@ -1,6 +1,5 @@
 package com.idega.builder.data;
 
-
 import java.util.Collection;
 import java.util.Locale;
 
@@ -15,13 +14,13 @@ public interface IBPageNameHome extends IDOHome {
 
 	public IBPageName findByPrimaryKey(Object pk) throws FinderException;
 
-	public Collection findAllByPageIdAndLocaleId(int pageId, int localeId) throws FinderException;
+	public Collection<IBPageName> findAllByPageIdAndLocaleId(int pageId, int localeId) throws FinderException;
 
 	public IBPageName findByPageIdAndLocaleId(int pageId, int localeId) throws FinderException;
 
-	public Collection findAllByPageId(int pageId) throws FinderException;
+	public Collection<IBPageName> findAllByPageId(int pageId) throws FinderException;
 
-	public Collection findAll() throws FinderException;
-	
-	public Collection findAllByPhrase(String phrase, Locale locale) throws FinderException;
+	public Collection<IBPageName> findAll() throws FinderException;
+
+	public Collection<IBPageName> findAllByPhrase(String phrase, Locale locale) throws FinderException;
 }

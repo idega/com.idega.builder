@@ -81,7 +81,6 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
-import com.idega.core.data.ICTreeNode;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.view.ViewManager;
 import com.idega.core.view.ViewNode;
@@ -4237,10 +4236,10 @@ public class BuilderLogic extends DefaultSpringBean {
 			return null;
 		}
 
-		ICTreeNode parentNode = startPage.getParentNode();
-		Collection<ICTreeNode> children = null;
+		ICPage parentNode = startPage.getParentNode();
+		Collection<ICPage> children = null;
 		if (parentNode == null) {
-			children = new ArrayList<ICTreeNode>(1);	//	Checking "start" page and its children
+			children = new ArrayList<ICPage>(1);		//	Checking "start" page and its children
 			children.add(startPage);
 		} else {
 			children = parentNode.getChildren();		//	Checking "start" page's siblings and children
@@ -4268,14 +4267,14 @@ public class BuilderLogic extends DefaultSpringBean {
 		}
 
 		ICPage nearestPage = null;
-		Collection<ICTreeNode> searchTops = new ArrayList<ICTreeNode>();
+		Collection<ICPage> searchTops = new ArrayList<ICPage>();
 		searchTops.add(startPage);
-		Collection<ICTreeNode> children = startPage.getChildren();
+		Collection<ICPage> children = startPage.getChildren();
 		if (!ListUtil.isEmpty(children))
 			searchTops.addAll(children);
 
-		ICTreeNode parent = startPage.getParentNode();
-		Collection<ICTreeNode> siblings = parent != null ? parent.getChildren() : new ArrayList<ICTreeNode>();
+		ICPage parent = startPage.getParentNode();
+		Collection<ICPage> siblings = parent != null ? parent.getChildren() : new ArrayList<ICPage>();
 		if (!ListUtil.isEmpty(siblings))
 			searchTops.addAll(siblings);
 
@@ -4306,14 +4305,14 @@ public class BuilderLogic extends DefaultSpringBean {
 		return startPage;
 	}
 
-	private ICPage getPageByPageType(Collection<ICTreeNode> pages, String pageType) {
+	private ICPage getPageByPageType(Collection<ICPage> pages, String pageType) {
 		if (ListUtil.isEmpty(pages))
 			return null;
 
 		ICPage page = null;
-		Collection<ICTreeNode> children = null;
-		for (ICTreeNode node: pages) {
-			page = getICPage(node.getId());
+		Collection<ICPage> children = null;
+		for (ICPage childPage: pages) {
+			page = childPage;
 
 			if (page != null) {
 				if (pageType.equals(page.getSubType())) {

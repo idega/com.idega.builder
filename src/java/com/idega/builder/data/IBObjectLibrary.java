@@ -1,7 +1,9 @@
 package com.idega.builder.data;
 
+import com.idega.data.TreeableEntity;
 
-public interface IBObjectLibrary extends com.idega.data.TreeableEntity
+
+public interface IBObjectLibrary extends TreeableEntity<IBObjectLibrary>
 {
  public void delete()throws java.sql.SQLException;
  public java.lang.String getColumnFile();

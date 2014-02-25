@@ -198,7 +198,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	 * @see com.idega.core.builder.business.BuilderService#getPageTree(int, int)
 	 */
 	@Override
-	public ICTreeNode getPageTree(int startNodeId, int userId) throws RemoteException
+	public ICTreeNode<PageTreeNode> getPageTree(int startNodeId, int userId) throws RemoteException
 	{
 		// TODO Implement access control by userId
 		return new PageTreeNode(startNodeId,this.getIWApplicationContext());
@@ -207,7 +207,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	 * @see com.idega.core.builder.business.BuilderService#getPageTree(int)
 	 */
 	@Override
-	public ICTreeNode getPageTree(int startNodeId) throws RemoteException
+	public ICTreeNode<PageTreeNode> getPageTree(int startNodeId) throws RemoteException
 	{
 		return getPageTree(startNodeId,-1);
 	}
@@ -312,21 +312,21 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 
 	@Override
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode> tree,
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode<?>> tree,
 			IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup) {
 		return getBuilderLogic().getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType,
 				domainId, format, sourceMarkup);
 	}
 
 	@Override
-	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode> tree,
+	public int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, ? extends ICTreeNode<?>> tree,
 			IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
 		return getBuilderLogic().getIBPageHelper().createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, treeOrder);
 	}
 
 	@Override
 	public int createPageOrTemplateToplevelOrWithParent(String name, String parentId, String type, String templateId,
-			Map<Integer, ? extends ICTreeNode> tree, IWContext creatorContext) {
+			Map<Integer, ? extends ICTreeNode<?>> tree, IWContext creatorContext) {
 		return getBuilderLogic().getIBPageHelper().createPageOrTemplateToplevelOrWithParent(name, parentId, type, templateId, tree, creatorContext);
 	}
 
@@ -341,7 +341,7 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	}
 
 	@Override
-	public boolean deletePage(String pageId, boolean deleteChildren, Map<Integer, ? extends ICTreeNode> tree, int userId, ICDomain domain) {
+	public boolean deletePage(String pageId, boolean deleteChildren, Map<Integer, ? extends ICTreeNode<?>> tree, int userId, ICDomain domain) {
 		return getBuilderLogic().getIBPageHelper().deletePage(pageId, deleteChildren, tree, userId, domain);
 	}
 

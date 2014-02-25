@@ -14,9 +14,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -32,11 +32,10 @@ import com.idega.data.IDOLookup;
  * @version 1.0
  */
 public class TreeNodeFinder {
-	
-	public static Collection getAllPageNames() {
+
+	public static Collection<IBPageName> getAllPageNames() {
 		try {
-			Collection col = ((IBPageNameHome)IDOLookup.getHome(IBPageName.class)).findAll();
-			
+			Collection<IBPageName> col = ((IBPageNameHome)IDOLookup.getHome(IBPageName.class)).findAll();
 			return col;
 		}
 		catch (RemoteException e) {
@@ -45,14 +44,13 @@ public class TreeNodeFinder {
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
-	public static Collection getAllPageNames(int pageId) {
+
+	public static Collection<IBPageName> getAllPageNames(int pageId) {
 		try {
-			Collection col = ((IBPageNameHome)IDOLookup.getHome(IBPageName.class)).findAllByPageId(pageId);
-			
+			Collection<IBPageName> col = ((IBPageNameHome)IDOLookup.getHome(IBPageName.class)).findAllByPageId(pageId);
 			return col;
 		}
 		catch (RemoteException e) {
@@ -61,11 +59,11 @@ public class TreeNodeFinder {
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
-	public static List listOfAllPages() {
+
+	public static List<ICPage> listOfAllPages() {
 		try {
 			ICPage pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			StringBuffer sql = new StringBuffer("select * from ");
@@ -85,7 +83,7 @@ public class TreeNodeFinder {
 			sql.append("' or ");
 			sql.append(ICPageBMPBean.getColumnDeleted());
 			sql.append(" is null)");
-			
+
 			sql.append(" order by ").append(ICPageBMPBean.getColumnTreeOrder())
 			.append(", ").append(pages.getIDColumnName()).append(" desc");
 
@@ -97,7 +95,7 @@ public class TreeNodeFinder {
 		}
 	}
 
-	public static List listOfAllTemplates() {
+	public static List<ICPage> listOfAllTemplates() {
 		try {
 			ICPage pages = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
 			StringBuffer sql = new StringBuffer("select * from ");
@@ -129,7 +127,7 @@ public class TreeNodeFinder {
 		}
 	}
 
-	public static List listOfAllDrafts() {
+	public static List<?> listOfAllDrafts() {
 		return (null);
 	}
 
@@ -137,8 +135,8 @@ public class TreeNodeFinder {
 	 *
 	 * @return
 	 */
-	public static List listOfAllPageRelationships() throws SQLException {
-		List ret = null;
+	public static List<Integer> listOfAllPageRelationships() throws SQLException {
+		List<Integer> ret = null;
 		ICPage pages = null;
 		Connection conn = null;
 		Statement stmt = null;
@@ -150,8 +148,8 @@ public class TreeNodeFinder {
 
 			StringBuffer sql = new StringBuffer();
 			/**
-			 * @todo til að útiloka dpt_síður í famtíðinni þarf að sækja relationship 
-			 * útfrá child en ekki parent annar getur komið plús í tréð þar sem hann 
+			 * @todo til að útiloka dpt_síður í famtíðinni þarf að sækja relationship
+			 * útfrá child en ekki parent annar getur komið plús í tréð þar sem hann
 			 * á ekki heima þ.e. að childpage.getColumnType() = pages.PAGE
 			 */
 			sql.append("select * from ");
@@ -169,7 +167,7 @@ public class TreeNodeFinder {
 			sql.append(" = '");
 			sql.append(ICPageBMPBean.DPT_PAGE);
 			sql.append("')");
-			
+
 			sql.append(" order by p.").append(ICPageBMPBean.getColumnTreeOrder())
 			.append(", p.").append(pages.getIDColumnName());
 
@@ -182,7 +180,7 @@ public class TreeNodeFinder {
 
 					if (parentId != -1 && childId != -1) {
 						if (ret == null) {
-							ret = new Vector();
+							ret = new ArrayList<Integer>();
 						}
 
 						ret.add(new Integer(parentId));
@@ -193,12 +191,12 @@ public class TreeNodeFinder {
 		}
 	    finally {
 	    	// do not hide an existing exception
-	    	try { 
+	    	try {
 	    		if (result != null) {
 	    			result.close();
 		      	}
 	    	}
-		    catch (SQLException resultCloseEx) {		    	
+		    catch (SQLException resultCloseEx) {
 		    	System.err.println("[TreeNodeFinder] result set could not be closed");
 		     	resultCloseEx.printStackTrace(System.err);
 		    }
@@ -217,12 +215,12 @@ public class TreeNodeFinder {
 		     	System.err.println("[TreeNodeFinder] statement could not be closed");
 		     	statementCloseEx.printStackTrace(System.err);
 		    }
-	    }		
+	    }
 		return (ret);
 	}
 
-	public static List listOfAllTemplateRelationships() throws SQLException {
-		List ret = null;
+	public static List<Integer> listOfAllTemplateRelationships() throws SQLException {
+		List<Integer> ret = null;
 		ICPage pages = null;
 		Connection conn = null;
 		Statement stmt = null;
@@ -248,7 +246,7 @@ public class TreeNodeFinder {
 			sql.append(" = '");
 			sql.append(ICPageBMPBean.DPT_TEMPLATE);
 			sql.append("')");
-			
+
 			sql.append(" order by p.").append(ICPageBMPBean.getColumnTreeOrder())
 			.append(", p.").append(pages.getIDColumnName());
 
@@ -261,7 +259,7 @@ public class TreeNodeFinder {
 
 					if (parentId != -1 && childId != -1) {
 						if (ret == null) {
-							ret = new Vector();
+							ret = new ArrayList<Integer>();
 						}
 
 						ret.add(new Integer(parentId));
@@ -272,12 +270,12 @@ public class TreeNodeFinder {
 		}
 	    finally {
 	    	// do not hide an existing exception
-	    	try { 
+	    	try {
 	    		if (result != null) {
 	    			result.close();
 		      	}
 	    	}
-		    catch (SQLException resultCloseEx) {		    	
+		    catch (SQLException resultCloseEx) {
 		    	System.err.println("[TreeNodeFinder] result set could not be closed");
 		     	resultCloseEx.printStackTrace(System.err);
 		    }
@@ -300,7 +298,7 @@ public class TreeNodeFinder {
 	    return (ret);
 	}
 
-	public static List listOfAllDraftRelationships() {
+	public static List<?> listOfAllDraftRelationships() {
 		return (null);
 	}
 }
