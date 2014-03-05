@@ -4095,7 +4095,6 @@ public class BuilderLogic implements Singleton {
 		return findPagesForModule(theClass, true);
 	}
 
-	@SuppressWarnings("deprecation")
 	private List<ICPage> findPagesForModule(Class<? extends UIComponent> theClass, boolean reTry) {
 		if (theClass == null) {
 			return null;
@@ -4133,16 +4132,21 @@ public class BuilderLogic implements Singleton {
 		}
 
 		if (reTry) {
-			clearAllCachedPages();
-			IBOLookup.clearAllCache();
-			IDOContainer.getInstance().flushAllBeanCache();
-			IDOContainer.getInstance().flushAllQueryCache();
-			IWCacheManager2.getInstance(getIWMainApplication()).reset();
-			IWCacheManager.getInstance(getIWMainApplication()).clearAllCaches();
+			doClearAllCaches();
 			return findPagesForModule(theClass, false);
 		}
 
 		return null;
+	}
+
+	@SuppressWarnings("deprecation")
+	public void doClearAllCaches() {
+		clearAllCachedPages();
+		IBOLookup.clearAllCache();
+		IDOContainer.getInstance().flushAllBeanCache();
+		IDOContainer.getInstance().flushAllQueryCache();
+		IWCacheManager2.getInstance(getIWMainApplication()).reset();
+		IWCacheManager.getInstance(getIWMainApplication()).clearAllCaches();
 	}
 
 	public ICPage findPageForModule(IWApplicationContext iwac, String instanceId) {
