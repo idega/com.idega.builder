@@ -9,6 +9,8 @@
  */
 package com.idega.builder.business;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +32,7 @@ import com.idega.exception.PageDoesNotExist;
 import com.idega.repository.bean.RepositoryItem;
 import com.idega.util.CoreConstants;
 import com.idega.util.StringHandler;
+import com.idega.util.CoreUtil;
 import com.idega.util.StringUtil;
 
 /**
@@ -60,6 +63,15 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	private List<String> pageKeysUsingThisTemplate;
 	private String pageUri;
 	private String templateKey;
+
+	/**
+	public IBXMLPage(){
+		//Default constructor
+	}
+	private IBXMLPage(boolean verify) {
+		setVerifyXML(verify);
+		//_parser = new XMLParser(verify);
+	}*/
 
 	public CachedBuilderPage(String key) {
 		super(key, BuilderLogic.getInstance().getBuilderPageRootViewNode());
