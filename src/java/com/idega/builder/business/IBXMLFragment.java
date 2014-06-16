@@ -108,21 +108,24 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
   /**
    *
    */
-  public void setType(String type) {
+  @Override
+public void setType(String type) {
     this._type = type;
   }
 
   /**
    *
    */
-  public XMLElement getRootElement() {
+  @Override
+public XMLElement getRootElement() {
     return(this._rootElement);
   }
 
   /**
    *
    */
-  public XMLElement getPageRootElement() {
+  @Override
+public XMLElement getPageRootElement() {
     if (this._rootElement != null) {
 			return(this._rootElement.getChild(IBXMLConstants.PAGE_STRING));
 		}
@@ -134,7 +137,8 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
   /**
    *
    */
-  public List getAttributes(XMLElement element) {
+  @Override
+public List getAttributes(XMLElement element) {
     if (element != null) {
 			return(element.getAttributes());
 		}
@@ -146,7 +150,8 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
   /**
    *
    */
-  public void setSourceFromString(String xmlRepresentation) throws Exception {
+  @Override
+public void setSourceFromString(String xmlRepresentation) throws Exception {
     StringReader reader = new StringReader(xmlRepresentation);
     XMLParser parser = new XMLParser();
     XMLDocument doc = parser.parse(reader);
@@ -155,11 +160,12 @@ public class IBXMLFragment extends IBXMLAbstractContainer { //implements IBXMLAb
     update();
   }
 
-  public synchronized boolean update() {
-    return(true);
+  public boolean update() {
+    return true;
   }
 
-  public String toString() {
+  @Override
+public String toString() {
     return(null);
   }
 }

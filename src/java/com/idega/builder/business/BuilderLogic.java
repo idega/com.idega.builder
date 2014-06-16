@@ -2323,7 +2323,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		this.pageCacher=pageCacherInstance;
 	}
 
-	public synchronized IBPageHelper getIBPageHelper() {
+	public IBPageHelper getIBPageHelper() {
 		return IBPageHelper.getInstance();
 	}
 
@@ -3536,8 +3536,13 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	@SuppressWarnings("unchecked")
-	public synchronized String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanCode, boolean omitDocTypeDeclaration,
-			boolean omitHtmlEnvelope) {
+	public String getRenderedComponent(
+			UIComponent component,
+			IWContext iwc,
+			boolean cleanCode,
+			boolean omitDocTypeDeclaration,
+			boolean omitHtmlEnvelope
+	) {
 		if (iwc == null || component == null) {
 			return null;
 		}

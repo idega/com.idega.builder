@@ -443,7 +443,7 @@ public class IBPageHelper implements Singleton  {
 				if (children != null) {
 					boolean copyInstancePermissions = false;
 					try {
-						copyInstancePermissions = ((DPTCopySession)IBOLookup.getSessionInstance(creatorContext,DPTCopySession.class)).doCopyInstancePermissions();
+						copyInstancePermissions = IBOLookup.getSessionInstance(creatorContext,DPTCopySession.class).doCopyInstancePermissions();
 					} catch (IBOLookupException e2) {
 						e2.printStackTrace();
 					} catch (RemoteException e2) {
@@ -511,7 +511,7 @@ public class IBPageHelper implements Singleton  {
 	 * Called from the update method
 	 * @param stream
 	 */
-	protected synchronized void storeStream(OutputStream stream, String fileSource) {
+	protected void storeStream(OutputStream stream, String fileSource) {
 		try {
 				//convert the string to utf-8
 				//String theString = new String(this.toString().getBytes(),"ISO-8859-1");
@@ -553,7 +553,7 @@ public class IBPageHelper implements Singleton  {
 			if (children != null) {
 				boolean copyInstancePermissions = false;
 				try {
-					copyInstancePermissions = ((DPTCopySession)IBOLookup.getSessionInstance(iwuc,DPTCopySession.class)).doCopyInstancePermissions();
+					copyInstancePermissions = IBOLookup.getSessionInstance(iwuc,DPTCopySession.class).doCopyInstancePermissions();
 				} catch (IBOLookupException e2) {
 					e2.printStackTrace();
 				} catch (RemoteException e2) {
@@ -592,7 +592,7 @@ public class IBPageHelper implements Singleton  {
 			try {
 				int object_id = obj.getICObjectID();
 				int ic_instance_id = obj.getICObjectInstanceID();
-				DPTCopySession cSession = (DPTCopySession)IBOLookup.getSessionInstance(iwuc,DPTCopySession.class);
+				DPTCopySession cSession = IBOLookup.getSessionInstance(iwuc,DPTCopySession.class);
 				ICObjectInstanceHome icObjInstHome = ((ICObjectInstanceHome) IDOLookup.getHomeLegacy(ICObjectInstance.class));
 				Object instanceKey = new Integer(ic_instance_id);
 				Object instancePK = cSession.getNewValue(ICObjectInstance.class,instanceKey);
@@ -779,7 +779,7 @@ public class IBPageHelper implements Singleton  {
 				childNode = (PageTreeNode) tree.get((new Integer(ibpage.getPageKey())));
 			}
 
-			ICPage parent = (ICPage) ibpage.getParentNode();
+			ICPage parent = ibpage.getParentNode();
 			if (parent != null) {
 				parent.removeChild(ibpage);
 				PageTreeNode parentNode = (PageTreeNode) tree.get(new Integer(parent.getPageKey()));
@@ -827,7 +827,7 @@ public class IBPageHelper implements Singleton  {
 			int pageIdInt = Integer.parseInt(pageId);
 			ICPage ibpage = getICPageHome().findByPrimaryKey(pageIdInt);
 			boolean isPage = ibpage.isPage();
-			ICPage parent = (ICPage) ibpage.getParentNode();
+			ICPage parent = ibpage.getParentNode();
 			PageTreeNode childNode = (tree == null) ? null : (PageTreeNode) tree.get(ibpage.getIDInteger());
 			PageTreeNode parentNode = null;
 			ICPage newParentForChildren = null;

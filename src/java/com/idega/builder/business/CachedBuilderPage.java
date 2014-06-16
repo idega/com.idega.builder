@@ -9,8 +9,6 @@
  */
 package com.idega.builder.business;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,7 +30,6 @@ import com.idega.exception.PageDoesNotExist;
 import com.idega.repository.bean.RepositoryItem;
 import com.idega.util.CoreConstants;
 import com.idega.util.StringHandler;
-import com.idega.util.CoreUtil;
 import com.idega.util.StringUtil;
 
 /**
@@ -340,7 +337,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 		return result;
 	}
 
-	public synchronized boolean store() {
+	public boolean store() {
 		try {
 			ICPage icPage = getICPage();
 			icPage.setFormat(this.getPageFormat());
@@ -371,7 +368,7 @@ public abstract class CachedBuilderPage extends DefaultViewNode implements ViewN
 	 * Called from the update method
 	 * @param stream
 	 */
-	protected synchronized void storeStream(OutputStream stream) {
+	protected void storeStream(OutputStream stream) {
 		try {
 			String theString = this.toString();
 			StringReader sr = new StringReader(theString);

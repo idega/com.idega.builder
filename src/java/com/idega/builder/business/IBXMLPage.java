@@ -136,7 +136,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 
 
 	@Override
-	public synchronized boolean store() {
+	public boolean store() {
 		/*try {
 			ICPage ibpage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHome(ICPage.class)).findByPrimaryKey(new Integer(getPageKey()));
 			ibpage.setFormat(this.getPageFormat());
@@ -170,7 +170,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 * @param stream
 	 */
 	@Override
-	protected synchronized void storeStream(OutputStream stream) {
+	protected void storeStream(OutputStream stream) {
 		XMLDocument doc = getXMLDocument();
 		if (doc == null) {
 			LOGGER.warning("XMLDocument is not initialized for page " + getPageUri() + " (ID: " + getPageKey() + ")");
@@ -203,9 +203,7 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 	 */
 	public Page getPopulatedPage() {
 		if (this._populatedPage==null) {
-			synchronized(BuilderLogic.getInstance()) {
-				setPopulatedPage(getBuilderLogic().getIBXMLReader().getPopulatedPage(this));
-			}
+			setPopulatedPage(getBuilderLogic().getIBXMLReader().getPopulatedPage(this));
 		}
 		return this._populatedPage;
 	}
@@ -554,21 +552,17 @@ public class IBXMLPage extends CachedBuilderPage implements IBXMLAble,ComponentB
 			String oldId = getTemplateKey();
 			if (!newTemplateId.equals(oldId)) {
 				setTemplateKey(newTemplateId);
-				synchronized(BuilderLogic.getInstance()) {
-					String currentPageId = getPageKey();
-					setTemplateId(newTemplateId);
-					getBuilderLogic().getCachedBuilderPage(newTemplateId).addPageUsingThisTemplate(currentPageId);
-					getBuilderLogic().getCachedBuilderPage(oldId).removePageAsUsingThisTemplate(currentPageId);
-				}
+				String currentPageId = getPageKey();
+				setTemplateId(newTemplateId);
+				getBuilderLogic().getCachedBuilderPage(newTemplateId).addPageUsingThisTemplate(currentPageId);
+				getBuilderLogic().getCachedBuilderPage(oldId).removePageAsUsingThisTemplate(currentPageId);
 			}
 		}
 	}
 
 	public boolean setTemplateId(String id) {
-		synchronized(BuilderLogic.getInstance()) {
-			if (getBuilderLogic().getIBXMLWriter().setAttribute(this, "-1", IBXMLConstants.TEMPLATE_STRING, id)) {
-				return this.store();
-			}
+		if (getBuilderLogic().getIBXMLWriter().setAttribute(this, "-1", IBXMLConstants.TEMPLATE_STRING, id)) {
+			return this.store();
 		}
 		return false;
 	}

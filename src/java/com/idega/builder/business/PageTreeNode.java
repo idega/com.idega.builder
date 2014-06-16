@@ -580,17 +580,15 @@ public class PageTreeNode implements ICTreeNode<PageTreeNode>, Serializable {
 	}
 
 	private static Map<Integer, PageTreeNode> getTreeFromDatabase(Map<Integer, PageTreeNode> tree, IWMainApplication iwma) {
-		synchronized (iwma) {
-			Map<Integer, PageTreeNode> dbTree = getTreeFromDatabase();
-			if (dbTree == null) {
-				return tree;
-			}
+		Map<Integer, PageTreeNode> dbTree = getTreeFromDatabase();
+		if (dbTree == null) {
+			return tree;
+		}
 
-			Map.Entry<Integer, PageTreeNode> entry = null;
-			for (Iterator<Map.Entry<Integer, PageTreeNode>> it = dbTree.entrySet().iterator(); it.hasNext();) {
-				entry = it.next();
-				tree.put(entry.getKey(), entry.getValue());
-			}
+		Map.Entry<Integer, PageTreeNode> entry = null;
+		for (Iterator<Map.Entry<Integer, PageTreeNode>> it = dbTree.entrySet().iterator(); it.hasNext();) {
+			entry = it.next();
+			tree.put(entry.getKey(), entry.getValue());
 		}
 
 		return tree;

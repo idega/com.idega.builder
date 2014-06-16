@@ -149,7 +149,7 @@ public class PageCacher {
 	/**
 	 * Method flagAllPagesInvalid.
 	 */
-	public synchronized void flagAllPagesInvalid() {
+	public void flagAllPagesInvalid() {
 		getPageCacheMap().clear();
 	}
 

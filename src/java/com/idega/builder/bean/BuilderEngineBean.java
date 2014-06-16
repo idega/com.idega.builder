@@ -168,9 +168,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 		}
 		boolean result = false;
 		RepositorySession session = getRepositorySession(CoreUtil.getIWContext());
-		synchronized (BuilderLogic.getInstance()) {
-			result = BuilderLogic.getInstance().deleteModule(pageKey, parentId, instanceId, session);
-		}
+		result = BuilderLogic.getInstance().deleteModule(pageKey, parentId, instanceId, session);
 		if (result && session != null) {
 			BuilderLogic.getInstance().clearAllCachedPages();
 		}
@@ -394,9 +392,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			containerId = null;
 		}
 
-		synchronized (BuilderLogic.getInstance()) {
-			uuid = BuilderLogic.getInstance().addNewModule(pageKey, parentInstanceId, objectId, containerId, session);
-		}
+		uuid = BuilderLogic.getInstance().addNewModule(pageKey, parentInstanceId, objectId, containerId, session);
 		if (uuid == null) {
 			return null;
 		}
