@@ -13,16 +13,17 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.Text;
-import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.business.CachedBuilderPage;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreConstants;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
+import com.idega.util.xml.XmlUtil;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLParser;
 /**
@@ -137,7 +138,7 @@ public class BuilderFaceletConverter {
 						transformElementToFacelet(pageElement, newPageElement);
 
 						XMLOutputter out = new XMLOutputter();
-						out.setFormat(Format.getPrettyFormat());
+						out.setFormat(XmlUtil.getPrettyFormat(IWMainApplication.getDefaultIWMainApplication().getSettings()));
 						this.stringSourceMarkup = out.outputString(faceletDoc);
 					}
 				} else if (getFormatFrom().equals(BuilderLogic.PAGE_FORMAT_HTML)) {

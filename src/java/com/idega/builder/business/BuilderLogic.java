@@ -35,7 +35,6 @@ import org.htmlcleaner.TagNode;
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -1860,7 +1859,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		if (o instanceof Document) {
 			Document d = (Document) o;
 			XMLOutputter out = new XMLOutputter();
-			out.setFormat(Format.getPrettyFormat());
+			out.setFormat(XmlUtil.getPrettyFormat(getApplication().getSettings()));
 			try {
 				page.setSourceFromString(out.outputString(d));
 			} catch (Exception e) {
@@ -3707,7 +3706,7 @@ public class BuilderLogic extends DefaultSpringBean {
 
 	private XMLOutputter getJDOMOutputter() {
 		if (outputter == null) {
-			outputter = new XMLOutputter(Format.getPrettyFormat());
+			outputter = new XMLOutputter(XmlUtil.getPrettyFormat(getApplication().getSettings()));
 		}
 		return outputter;
 	}
