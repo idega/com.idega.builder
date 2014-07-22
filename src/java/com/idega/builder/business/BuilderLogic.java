@@ -3895,7 +3895,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	public String generateResourcePath(String base, String scope, String fileName) {
 		RepositoryService service = getRepositoryService();
 		StringBuffer path = new StringBuffer(getYearMonthPath(base)).append(BuilderConstants.SLASH);
-		path.append(service.createUniqueFileName(base, scope)).append(BuilderConstants.DOT);
+		path.append(service.createUniqueFileName(path.toString(), scope)).append(BuilderConstants.DOT);
 		path.append(fileName);
 		return path.toString();
 	}
