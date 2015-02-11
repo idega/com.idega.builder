@@ -18,6 +18,7 @@ import javax.ejb.CreateException;
 import com.idega.builder.data.IBPageName;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.data.IDOContainer;
 import com.idega.data.IDOLookup;
 
 /**
@@ -85,6 +86,9 @@ public class IBPageUpdater {
 			name.setLocaleId(localeId);
 			name.setPageName(pageName);
 			name.store();
+
+			IDOContainer.getInstance().flushAllBeanCache();
+			IDOContainer.getInstance().flushAllQueryCache();
 
 			return true;
 		}
