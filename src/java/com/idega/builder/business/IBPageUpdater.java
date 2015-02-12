@@ -11,10 +11,14 @@ package com.idega.builder.business;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 
 import com.idega.builder.data.IBPageName;
+import com.idega.builder.data.IBPageProperty;
+import com.idega.builder.data.IBPagePropertyHome;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOLookup;
@@ -91,6 +95,30 @@ public class IBPageUpdater {
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	public static boolean addLocalizedPageProperty(int pageId, int localeId, String propertyValue,String propertyKey) {
+		try {
+			IBPagePropertyHome iBPagePropertyHome = (IBPagePropertyHome) com.idega.data.IDOLookup.getHome(IBPageProperty.class);
+			IBPageProperty property = iBPagePropertyHome.getProperty(pageId, localeId, propertyKey);
+			if (property == null) {
+				property = iBPagePropertyHome.create();
+				property.setPageId(pageId);
+				property.setLocaleId(localeId);
+				property.setPropertyKey(propertyKey);
+			}
+			property.setPropertyValue(propertyValue);
+			property.store();
+			
+			return true;
+		}catch (Exception e) {
+			Logger.getLogger(IBPageUpdater.class.getName()).log(
+					Level.WARNING, 
+					"Failed updating page property by pageid: " + pageId + ", localeId: " +localeId + ", propertyKey: " + propertyKey,
+					e
+			);
 		}
 		
 		return false;

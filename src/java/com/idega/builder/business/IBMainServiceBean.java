@@ -272,6 +272,10 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean changePageName(int ID, String newName, IWContext iwc) {
 		return getBuilderLogic().changePageName(ID, newName, iwc);
 	}
+	public boolean changePageDescription(int ID, String description, IWContext iwc) {
+		return getBuilderLogic().changePageDescription(ID, description, iwc);
+	}
+	
 
 	@Override
 	public Collection<PageTreeNode> getTopLevelPages(IWContext iwc){

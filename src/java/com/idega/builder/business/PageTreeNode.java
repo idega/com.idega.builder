@@ -20,9 +20,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.idega.builder.data.IBPageName;
+import com.idega.builder.data.IBPageProperty;
+import com.idega.builder.data.IBPagePropertyHome;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.core.builder.data.ICPage;
@@ -61,6 +64,7 @@ public class PageTreeNode implements ICTreeNode<PageTreeNode>, Serializable {
 	private boolean _isHidden = false;
 	private transient Map<String, String> pageNames;
 	private Integer parentId;
+	private transient Map<String, String> pageDescriptions;
 
 	protected PageTreeNode(int id, String name) {
 		this(id, name, -1, false, false);
@@ -178,6 +182,39 @@ public class PageTreeNode implements ICTreeNode<PageTreeNode>, Serializable {
 			}
 		}
 		return localizedNames;
+	}
+	private Logger getLogger(){
+		return Logger.getLogger(PageTreeNode.class.getName());
+	}
+	private void addLocalizedProperty(Map<String, String> map,IBPageProperty property){
+		Locale loc = ICLocaleBusiness.getLocale(property.getLocaleId());
+
+		StringBuffer localizedKey = new StringBuffer(loc.getLanguage());
+		String country = loc.getCountry();
+		if (country != null && !country.equals("")) {
+			localizedKey.append("_");
+			localizedKey.append(country);
+		}
+
+		map.put(localizedKey.toString(), property.getPropertyValue());
+	}
+	protected Map<String, String> loadDescriptionsFromDatabase(int pageId) {
+		try{
+			IBPagePropertyHome iBPagePropertyHome = (IBPagePropertyHome) com.idega.data.IDOLookup.getHome(IBPageProperty.class);
+			
+			Collection<IBPageProperty> properties = iBPagePropertyHome.getPropertiesForAllLocales(pageId, IBPageProperty.KEY_DESCRIPTION);
+			if(ListUtil.isEmpty(properties)){
+				return new HashMap<String, String>(0);
+			}
+			Map<String, String> descriptions = new HashMap<String, String>(properties.size());
+			for (IBPageProperty property: properties) {
+				addLocalizedProperty(descriptions, property);
+			}
+			return descriptions;
+		}catch (Exception e) {
+			getLogger().log(Level.WARNING, "Failed loading descriptions of page: " + pageId, e);
+		}
+		return new HashMap<String, String>(0);
 	}
 
 	protected static void putLocalizeName(IBPageName nameEntry, Map<String, String> localizedNames){
@@ -427,12 +464,32 @@ public class PageTreeNode implements ICTreeNode<PageTreeNode>, Serializable {
 
 		return getNodeName();
 	}
+	
+	public String getLocalizedNodeDescription(Locale locale) {
+		Map<String, String> descriptions = getPageDescriptions();
+		if (descriptions == null||descriptions.isEmpty()) {
+			return null;
+		}
+
+		StringBuffer localeString = new StringBuffer(locale.getLanguage());
+		String country = locale.getCountry();
+		if (country != null && !country.equals("")) {
+			localeString.append("_");
+			localeString.append(country);
+		}
+
+		return descriptions.get(localeString.toString());
+	}
 
 	public void setLocalizedNodeName(String locale, String name, IWContext iwc) {
 		Map<String, String> pageNames = getPageNames();
 		pageNames.put(locale, name);
 	}
 
+	public void setLocalizedNodeDescription(String locale, String description) {
+		Map<String, String> descriptions = getPageDescriptions();
+		descriptions.put(locale, description);
+	}
 	public int getPageId(){
 		return this._id;
 	}
@@ -671,6 +728,13 @@ public class PageTreeNode implements ICTreeNode<PageTreeNode>, Serializable {
 		}
 		return this.pageNames;
 	}
+	public Map<String, String> getPageDescriptions() {
+		if (pageDescriptions!=null) {
+			return pageDescriptions;
+		}
+		pageDescriptions=loadDescriptionsFromDatabase(getPageId());
+		return pageDescriptions;
+	}
 
 
 	public void setPageNames(Map<String, String> pageNames){
@@ -812,4 +876,5 @@ public class PageTreeNode implements ICTreeNode<PageTreeNode>, Serializable {
 	public String toString() {
 		return getId();
 	}
+
 }

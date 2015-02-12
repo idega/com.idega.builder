@@ -45,6 +45,7 @@ import com.idega.block.web2.business.JQuery;
 import com.idega.block.web2.business.Web2Business;
 import com.idega.builder.bean.AdminToolbarSession;
 import com.idega.builder.bean.AdvancedProperty;
+import com.idega.builder.data.IBPageProperty;
 import com.idega.builder.facelets.BuilderFaceletConverter;
 import com.idega.builder.presentation.AddModuleBlock;
 import com.idega.builder.presentation.AdminToolbar;
@@ -2860,6 +2861,17 @@ public class BuilderLogic extends DefaultSpringBean {
 
 		return IBPageUpdater.addLocalizedPageName(id, ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()), newName);
 	}
+	public boolean changePageDescription(int id, String newDescription, IWContext iwc) {
+		Map<Integer, PageTreeNode> tree = PageTreeNode.getTree(IWContext.getInstance());
+		PageTreeNode node = tree.get(id);
+		if (node == null)
+			return false;
+
+		node.setLocalizedNodeDescription(iwc.getCurrentLocale().getLanguage(), newDescription);
+
+		return IBPageUpdater.addLocalizedPageProperty(id, ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()), newDescription, IBPageProperty.KEY_DESCRIPTION);
+	}
+
 
 	public Collection<PageTreeNode> getTopLevelTemplates(IWApplicationContext iwac) {
 		return DomainTree.getDomainTree(iwac).getTemplatesNode().getChildren();
