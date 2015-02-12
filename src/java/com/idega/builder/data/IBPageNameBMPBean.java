@@ -27,7 +27,7 @@ import com.idega.util.CoreConstants;
 
 /**
  * This class does something very clever.....
- * 
+ *
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
@@ -48,6 +48,7 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
 	 */
+	@Override
 	public String getEntityName() {
 		return TABLE_NAME;
 	}
@@ -55,6 +56,7 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()
 	 */
+	@Override
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addManyToOneRelationship(PAGE_ID, "page id", ICPage.class);
@@ -62,54 +64,66 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
 		addAttribute(PAGE_NAME, "Localized page name", true, true, String.class);
 	}
 
+	@Override
 	public void setPageName(String name) {
 		setColumn(PAGE_NAME, name);
 	}
 
+	@Override
 	public String getPageName() {
 		return getStringColumnValue(PAGE_NAME);
 	}
 
+	@Override
 	public int getLocaleId() {
 		return getIntColumnValue(LOCALE_ID);
 	}
 
+	@Override
 	public void setLocaleId(int id) {
 		setColumn(LOCALE_ID, id);
 	}
 
+	@Override
 	public void setLocaleId(Integer id) {
 		setColumn(LOCALE_ID, id);
 	}
 
+	@Override
 	public ICLocale getLocale() {
 		return (ICLocale) getColumnValue(LOCALE_ID);
 	}
 
+	@Override
 	public void setLocale(ICLocale locale) {
 		setColumn(LOCALE_ID, locale);
 	}
 
+	@Override
 	public int getPageId() {
 		return getIntColumnValue(PAGE_ID);
 	}
 
+	@Override
 	public void setPageId(int id) {
 		setColumn(PAGE_ID, id);
 	}
 
+	@Override
 	public void setPageId(Integer id) {
 		setColumn(PAGE_ID, id);
 	}
 
+	@Override
 	public ICPage getPage() {
 		return (ICPage) getColumnValue(PAGE_ID);
 	}
 
+	@Override
 	public void setPage(ICPage page) {
 		setColumn(PAGE_ID, page);
 	}
-	
+
 	public Collection ejbFindAllByPageIdAndLocaleId(int pageId, int localeId) throws FinderException {
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(getTableName());
@@ -121,38 +135,38 @@ public class IBPageNameBMPBean extends GenericEntity implements IBPageName {
     sql.append(LOCALE_ID);
     sql.append(" = ");
     sql.append(localeId);
-    
+
     return super.idoFindIDsBySQL(sql.toString());
 	}
-	
+
 	public Integer ejbFindByPageIdAndLocaleId(int pageId, int localeId) throws FinderException {
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(getTableName());
-    sql.append(" where ");
-    sql.append(PAGE_ID);
-    sql.append(" = ");
-    sql.append(pageId);
-    sql.append(" and ");
-    sql.append(LOCALE_ID);
-    sql.append(" = ");
-    sql.append(localeId);
-    
-    return (Integer) super.idoFindOnePKBySQL(sql.toString());
+	    StringBuffer sql = new StringBuffer("select IB_PAGE_NAME_ID from ");
+	    sql.append(getTableName());
+	    sql.append(" where ");
+	    sql.append(PAGE_ID);
+	    sql.append(" = ");
+	    sql.append(pageId);
+	    sql.append(" and ");
+	    sql.append(LOCALE_ID);
+	    sql.append(" = ");
+	    sql.append(localeId);
+
+	    return (Integer) super.idoFindOnePKBySQL(sql.toString());
 	}
-	
-	
+
+
 	public Collection ejbFindAllByPageId(int pageId) throws FinderException {
-	    
+
 		SelectQuery query = idoSelectPKQuery();
 		Table table = idoQueryTable();
 	    query.addCriteria(new MatchCriteria(table,PAGE_ID,MatchCriteria.EQUALS,pageId));
 	    return idoFindPKsByQuery(query);
 	}
-	
+
 	public Collection ejbFindAll() throws FinderException {
-		return super.idoFindAllIDsBySQL();	
+		return super.idoFindAllIDsBySQL();
 	}
-	
+
 	public Collection ejbFindAllByPhrase(String phrase, Locale locale) throws FinderException {
 		IDOQuery query = idoQuery("select ").append(getIDColumnName()).append(" from ").append(getEntityName());
 		query.appendWhereEquals(LOCALE_ID, ICLocaleBusiness.getLocaleId(locale)).appendAnd().append("lower(").append(PAGE_NAME).append(")").appendLike();

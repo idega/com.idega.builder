@@ -21,6 +21,7 @@ import com.idega.builder.data.IBPageProperty;
 import com.idega.builder.data.IBPagePropertyHome;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
+import com.idega.data.IDOContainer;
 import com.idega.data.IDOLookup;
 
 /**
@@ -76,18 +77,22 @@ public class IBPageUpdater {
 		try {
 			name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).findByPageIdAndLocaleId(pageId, localeId);
 		} catch(Exception e) {
+			Logger.getLogger(IBPageUpdater.class.getName()).warning("Did not find localized name for page ID: " + pageId + ", locale ID: " + localeId);
 		}
-		
+
 		try {
 			if (name == null) {
 				name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).create();
 			}
-			
+
 			name.setPageId(pageId);
 			name.setLocaleId(localeId);
 			name.setPageName(pageName);
 			name.store();
-			
+
+			IDOContainer.getInstance().flushAllBeanCache();
+			IDOContainer.getInstance().flushAllQueryCache();
+
 			return true;
 		}
 		catch (RemoteException e) {
@@ -96,7 +101,7 @@ public class IBPageUpdater {
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 	public static boolean addLocalizedPageProperty(int pageId, int localeId, String propertyValue,String propertyKey) {
