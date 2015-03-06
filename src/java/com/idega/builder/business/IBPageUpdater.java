@@ -11,6 +11,8 @@ package com.idega.builder.business;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,14 +23,18 @@ import com.idega.builder.data.IBPageProperty;
 import com.idega.builder.data.IBPagePropertyHome;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
-import com.idega.data.IDOContainer;
 import com.idega.data.IDOLookup;
+import com.idega.util.CoreUtil;
+import com.idega.util.ListUtil;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class IBPageUpdater {
+
+	private static final Logger LOGGER = Logger.getLogger(IBPageUpdater.class.getName());
+
 	/**
 	 *
 	 */
@@ -73,37 +79,38 @@ public class IBPageUpdater {
 	}
 
 	public static boolean addLocalizedPageName(int pageId, int localeId, String pageName) {
-		IBPageName name = null;
+		Collection<IBPageName> names = null;
 		try {
-			name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).findByPageIdAndLocaleId(pageId, localeId);
-		} catch(Exception e) {
-			Logger.getLogger(IBPageUpdater.class.getName()).warning("Did not find localized name for page ID: " + pageId + ", locale ID: " + localeId);
+			names = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).findAllByPageIdAndLocaleId(pageId, localeId);
+		} catch (Exception e) {
+			LOGGER.warning("Did not find localized name for page ID: " + pageId + ", locale ID: " + localeId);
 		}
 
 		try {
-			if (name == null) {
-				name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).create();
+			if (ListUtil.isEmpty(names)) {
+				IBPageName name = ((com.idega.builder.data.IBPageNameHome) com.idega.data.IDOLookup.getHome(IBPageName.class)).create();
+				names = Arrays.asList(name);
 			}
 
-			name.setPageId(pageId);
-			name.setLocaleId(localeId);
-			name.setPageName(pageName);
-			name.store();
+			for (IBPageName name: names) {
+				name.setPageId(pageId);
+				name.setLocaleId(localeId);
+				name.setPageName(pageName);
+				name.store();
+			}
 
-			IDOContainer.getInstance().flushAllBeanCache();
-			IDOContainer.getInstance().flushAllQueryCache();
+			CoreUtil.clearAllCaches();
 
 			return true;
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		catch (CreateException e) {
+		} catch (CreateException e) {
 			e.printStackTrace();
 		}
 
 		return false;
 	}
+
 	public static boolean addLocalizedPageProperty(int pageId, int localeId, String propertyValue,String propertyKey) {
 		try {
 			IBPagePropertyHome iBPagePropertyHome = (IBPagePropertyHome) com.idega.data.IDOLookup.getHome(IBPageProperty.class);
@@ -116,16 +123,13 @@ public class IBPageUpdater {
 			}
 			property.setPropertyValue(propertyValue);
 			property.store();
-			
+
 			return true;
-		}catch (Exception e) {
-			Logger.getLogger(IBPageUpdater.class.getName()).log(
-					Level.WARNING, 
-					"Failed updating page property by pageid: " + pageId + ", localeId: " +localeId + ", propertyKey: " + propertyKey,
-					e
-			);
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Failed updating page property by pageid: " + pageId + ", localeId: " +localeId + ", propertyKey: " + propertyKey, e);
 		}
-		
+
 		return false;
 	}
+
 }
