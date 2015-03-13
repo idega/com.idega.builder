@@ -176,9 +176,17 @@ public class IBPermissionWindow extends Window {
 				}
 				else {
 					for (iter = directGroups.iterator(); iter.hasNext();) {
-						Group item = iter.next();
-						String groupId = String.valueOf(item.getID());
-						right.addElement(groupId, item.getName());
+						Object item = iter.next();
+
+						if (item instanceof Group) {
+							Group tmp = (Group) item;
+							String groupId = String.valueOf(tmp.getID());
+							right.addElement(groupId, tmp.getName());
+						} else if (item instanceof com.idega.user.data.Group) {
+							com.idega.user.data.Group tmp = (com.idega.user.data.Group) item;
+							String groupId = tmp.getId();
+							right.addElement(groupId, tmp.getName());
+						}
 					}
 				}
 			}
