@@ -272,10 +272,11 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	public boolean changePageName(int ID, String newName, IWContext iwc) {
 		return getBuilderLogic().changePageName(ID, newName, iwc);
 	}
+	@Override
 	public boolean changePageDescription(int ID, String description, IWContext iwc) {
 		return getBuilderLogic().changePageDescription(ID, description, iwc);
 	}
-	
+
 
 	@Override
 	public Collection<PageTreeNode> getTopLevelPages(IWContext iwc){
@@ -606,12 +607,16 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 
 	@Override
 	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
-		return getBuilderLogic().getRenderedComponent(iwc, component, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope);
+		return getRenderedComponent(iwc, component, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope, false);
+	}
+	@Override
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope, boolean resetWriter) {
+		return getBuilderLogic().getRenderedComponent(iwc, component, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope, resetWriter);
 	}
 
 	@Override
 	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanHtml, boolean omitDocTypeEnvelope, boolean omitHtmlEnvelope) {
-		return getBuilderLogic().getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope);
+		return getBuilderLogic().getRenderedComponent(component, iwc, cleanHtml, omitDocTypeEnvelope, omitHtmlEnvelope, false);
 	}
 
 	@Override

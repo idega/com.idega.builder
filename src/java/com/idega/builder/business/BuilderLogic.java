@@ -5,6 +5,7 @@
  */
 package com.idega.builder.business;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -130,6 +131,7 @@ import com.idega.user.data.bean.Group;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.FileUtil;
+import com.idega.util.IOUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.PresentationUtil;
@@ -3543,7 +3545,7 @@ public class BuilderLogic extends DefaultSpringBean {
 	 * @return String of rendered object or null
 	 */
 	public String getRenderedComponent(UIComponent component, IWContext iwc, boolean cleanCode) {
-		return getRenderedComponent(component, iwc, cleanCode, true, true);
+		return getRenderedComponent(component, iwc, cleanCode, true, true, false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -3552,86 +3554,107 @@ public class BuilderLogic extends DefaultSpringBean {
 			IWContext iwc,
 			boolean cleanCode,
 			boolean omitDocTypeDeclaration,
-			boolean omitHtmlEnvelope
+			boolean omitHtmlEnvelope,
+			boolean resetWriter
 	) {
 		if (iwc == null || component == null) {
 			return null;
 		}
 
-		iwc.setSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS, Boolean.TRUE);
-
 		HtmlBufferResponseWriterWrapper writer = null;
 		try {
-			writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
-			iwc.setResponseWriter(writer);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		if (writer == null) {
-			return null;
-		}
+			iwc.setSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS, Boolean.TRUE);
 
-		if (iwc.getViewRoot() == null) {
-			UIViewRoot root = new UIViewRoot();
-			root.setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
-			iwc.setViewRoot(root);
-		}
-
-		List<String> jsSources = null;
-		List<String> jsActions = null;
-		List<String> cssSources = null;
-		try {
-			RenderUtils.renderChild(iwc, component);
-
-			Object o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
-			if (o instanceof List) {
-				jsSources = (List<String>) o;
+			try {
+				writer = HtmlBufferResponseWriterWrapper.getInstance(iwc.getResponseWriter());
+				iwc.setResponseWriter(writer);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			if (writer == null) {
+				return null;
 			}
 
-			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
-			if (o instanceof List) {
-				jsActions = (List<String>) o;
+			if (iwc.getViewRoot() == null) {
+				UIViewRoot root = new UIViewRoot();
+				root.setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
+				iwc.setViewRoot(root);
 			}
 
-			o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
-			if (o instanceof List) {
-				cssSources = (List<String>) o;
+			List<String> jsSources = null;
+			List<String> jsActions = null;
+			List<String> cssSources = null;
+			try {
+				RenderUtils.renderChild(iwc, component);
+
+				Object o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
+				if (o instanceof List) {
+					jsSources = (List<String>) o;
+				}
+
+				o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
+				if (o instanceof List) {
+					jsActions = (List<String>) o;
+				}
+
+				o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
+				if (o instanceof List) {
+					cssSources = (List<String>) o;
+				}
+			} catch (Exception e){
+				e.printStackTrace();
+				return null;
+			} finally {
+				iwc.removeSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS);
+
+				iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
+				iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
+				iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
 			}
-		} catch (Exception e){
-			e.printStackTrace();
-			return null;
-		} finally {
-			iwc.removeSessionAttribute(CoreConstants.SINGLE_UICOMPONENT_RENDERING_PROCESS);
 
-			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
-			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
-			iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
-		}
+			String rendered = writer.toString();
+			if (rendered == null)
+				return null;
 
-		String rendered = writer.toString();
-		if (rendered == null)
-			return null;
+			rendered = StringHandler.replace(rendered, "idega:seterror", "div");
+			rendered = StringHandler.replace(rendered, "idega:setError", "div");
 
-		rendered = StringHandler.replace(rendered, "idega:seterror", "div");
-		rendered = StringHandler.replace(rendered, "idega:setError", "div");
-
-		if (cleanCode) {
-			rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
-		}
-
-		if (jsSources != null || jsActions != null || cssSources != null) {
-			Object addCSSDirectly = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
-			if (addCSSDirectly != null) {
-				iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
-			}
-			rendered = getRenderedComponentWithDynamicResources(getXMLDocumentFromComponentHTML(rendered, false, omitDocTypeDeclaration, omitHtmlEnvelope,
-					false), cssSources, jsSources, jsActions, addCSSDirectly instanceof Boolean ? (Boolean) addCSSDirectly : false);
 			if (cleanCode) {
-				rendered = getCleanedFromXmlDeclaration(rendered);
+				rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
+			}
+
+			if (jsSources != null || jsActions != null || cssSources != null) {
+				Object addCSSDirectly = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
+				if (addCSSDirectly != null) {
+					iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
+				}
+				rendered = getRenderedComponentWithDynamicResources(getXMLDocumentFromComponentHTML(rendered, false, omitDocTypeDeclaration, omitHtmlEnvelope,
+						false), cssSources, jsSources, jsActions, addCSSDirectly instanceof Boolean ? (Boolean) addCSSDirectly : false);
+				if (cleanCode) {
+					rendered = getCleanedFromXmlDeclaration(rendered);
+				}
+			}
+
+			return rendered;
+		} finally {
+			if (resetWriter) {
+				doResetWriter(writer);
 			}
 		}
+	}
 
-		return rendered;
+	private void doResetWriter(HtmlBufferResponseWriterWrapper writer) {
+		if (writer == null) {
+			return;
+		}
+
+		try {
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		IOUtil.close(writer);
+		writer = null;
 	}
 
 	private String getRenderedComponentWithDynamicResources(Document component, List<String> cssSources, List<String> jsSources, List<String> jsActions,
@@ -3735,8 +3758,16 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope) {
-		return getXMLDocumentFromComponentHTML(getRenderedComponent(component, iwc, cleanCode, omitDocTypeDeclaration, omitHtmlEnvelope), false,
-				omitDocTypeDeclaration, omitHtmlEnvelope, true);
+		return getRenderedComponent(iwc, component, cleanCode, omitDocTypeDeclaration, omitHtmlEnvelope, false);
+	}
+	public Document getRenderedComponent(IWContext iwc, UIComponent component, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope, boolean resetWriter) {
+		return getXMLDocumentFromComponentHTML(
+				getRenderedComponent(component, iwc, cleanCode, omitDocTypeDeclaration, omitHtmlEnvelope, resetWriter),
+				false,
+				omitDocTypeDeclaration,
+				omitHtmlEnvelope,
+				true
+		);
 	}
 
 	private Document getXMLDocumentFromComponentHTML(String componentHTML, boolean cleanCode, boolean omitDocTypeDeclaration, boolean omitHtmlEnvelope,
@@ -4460,7 +4491,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			iwc = CoreUtil.getIWContext();
 		}
 
-		String html = getRenderedComponent(component, iwc, true, true, true);
+		String html = getRenderedComponent(component, iwc, true, true, true, false);
 		if (StringUtil.isEmpty(html)) {
 			if (iwc != null) {
 				rendered.setErrorMessage(iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc)
