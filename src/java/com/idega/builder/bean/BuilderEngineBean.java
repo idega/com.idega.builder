@@ -22,6 +22,7 @@ import com.idega.core.builder.business.ICBuilderConstants;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -439,4 +440,10 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 			}
 		}
 	}
+
+	@Override
+	public String getDecryptedClassName(String encryptedClassName) {
+		return IWMainApplication.decryptClassName(encryptedClassName);
+	}
+
 }

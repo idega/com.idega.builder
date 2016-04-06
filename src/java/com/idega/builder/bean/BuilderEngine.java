@@ -80,4 +80,7 @@ public interface BuilderEngine extends IBOSession {
 	public boolean removeProperty(String pageKey, String moduleId, String propertyName);
 
 	public boolean needReloadPropertyBox();
+
+	public String getDecryptedClassName(String encryptedClassName);
+
 }
