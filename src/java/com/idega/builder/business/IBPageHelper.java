@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -41,9 +43,9 @@ import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.data.IDORuntimeException;
 import com.idega.data.TreeableEntity;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
@@ -79,6 +81,28 @@ public class IBPageHelper implements Singleton  {
 	private static IBPageHelper instance = new IBPageHelper();
 
 	private IBPageHelper() {}
+	
+	public ICPageHome getICPageHome() {
+		try {
+			return (ICPageHome) IDOLookup.getHome(ICPage.class);
+		} catch (IDOLookupException e) {
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, 
+					"Failed to get " + ICPageHome.class + " cause of: ", e);
+		}
+
+		return null;
+	}
+
+	private ICFileHome getICFileHome() {
+		try {
+			return (ICFileHome) IDOLookup.getHome(ICFile.class);
+		} catch (IDOLookupException e) {
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, 
+					"Failed to get " + ICFileHome.class + " cause of: ", e);
+		}
+
+		return null;
+	}
 
 	public static final IBPageHelper getInstance() {
 		return instance;
@@ -265,8 +289,30 @@ public class IBPageHelper implements Singleton  {
 		return createNewPage(parentId, name, type, templateId, pageUri, tree, creatorContext, subType, domainId, format, sourceMarkup, null);
 	}
 
-	public <T extends ICTreeNode> int createNewPage(String parentId, String name, String type, String templateId, String pageUri, Map<Integer, T> tree,
-			IWUserContext creatorContext, String subType, int domainId, String format, String sourceMarkup, String treeOrder){
+	public <T extends ICTreeNode> int createNewPage(
+			String parentId, 
+			String name, 
+			String type, 
+			String templateId, 
+			String pageUri, 
+			Map<Integer, T> tree,
+			IWUserContext creatorContext, 
+			String subType, 
+			int domainId, 
+			String format,
+			String sourceMarkup, 
+			String treeOrder){
+
+		ICPage template = null;
+		if (templateId != null) {
+			try {
+				template = getICPageHome().findByPrimaryKey(templateId);
+			} catch (FinderException e) {
+				Logger.getLogger(getClass().getName()).log(Level.WARNING, 
+						"Failed to get ICPage template by primary key: " + templateId);
+			}
+		}
+		
 		boolean isTopLevel=false;
 		if (parentId == null)
 			isTopLevel=true;
@@ -283,7 +329,7 @@ public class IBPageHelper implements Singleton  {
 			treeOrderInt = setAsLastInLevel(isTopLevel, parentId);
 		}
 
-		ICPage ibPage = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).createLegacy();
+		ICPage ibPage = getICPageHome().createLegacy();
 		if (name == null) {
 			name = "Untitled";
 		}
@@ -295,13 +341,10 @@ public class IBPageHelper implements Singleton  {
 		}
 		ICFile file;
 		try {
-			file = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+			file = getICFileHome().create();
 			if(sourceMarkup!=null){
 				storeStream(file.getFileValueForWrite(),sourceMarkup);
 			}
-		} catch (IDOLookupException e1) {
-			e1.printStackTrace();
-			return -1;
 		} catch (CreateException e1) {
 			e1.printStackTrace();
 			return -1;
@@ -371,15 +414,11 @@ public class IBPageHelper implements Singleton  {
 		}
 
 		int tid = -1;
-		if (templateId != null) {
-			try {
-				tid = Integer.parseInt(templateId);
-				ibPage.setTemplateId(tid);
-			}
-			catch (java.lang.NumberFormatException e) {
-				e.printStackTrace();
-			}
+
+		if (template != null) {
+			ibPage.setTemplateId(Integer.valueOf(template.getPrimaryKey().toString()));
 		}
+
 		if (subType != null) {
 			ibPage.setSubType(subType);
 		}
@@ -390,7 +429,7 @@ public class IBPageHelper implements Singleton  {
 				ibPage.setOwner(creatorContext);
 			}
 			if (!isTopLevel) {
-				ICPage ibPageParent = ((com.idega.core.builder.data.ICPageHome) com.idega.data.IDOLookup.getHomeLegacy(ICPage.class)).findByPrimaryKeyLegacy(Integer.parseInt(parentId));
+				ICPage ibPageParent = getICPageHome().findByPrimaryKeyLegacy(Integer.parseInt(parentId));
 				ibPageParent.addChild(ibPage);
 			}
 			else {
@@ -485,9 +524,9 @@ public class IBPageHelper implements Singleton  {
 
 			tree.put(Integer.valueOf(node.getNodeID()), (T) node);
 		}
-		if ((templateId != null) && (!templateId.equals(""))) {
+		if (template != null) {
 			try{
-				IBXMLPage page = BuilderLogic.getInstance().getPageCacher().getIBXML(templateId);
+				IBXMLPage page = BuilderLogic.getInstance().getPageCacher().getIBXML(template.getPrimaryKey().toString());
 				page.addPageUsingThisTemplate(Integer.toString(id));
 				Page templateParent = page.getPopulatedPage();
 				if (templateParent != null && !templateParent.isLocked()) {
@@ -1064,15 +1103,6 @@ public class IBPageHelper implements Singleton  {
 
 	private Collection getTemplateStartPages(ICDomain domain) throws IDOLookupException, FinderException {
 		return ((IBStartPageHome) IDOLookup.getHome(IBStartPage.class)).findAllTemplatesByDomain(((Integer) domain.getPrimaryKey()).intValue());
-	}
-
-	protected ICPageHome getICPageHome() {
-		try {
-			return (ICPageHome) IDOLookup.getHome(ICPage.class);
-		}
-		catch (Exception e) {
-			throw new IDORuntimeException(e);
-		}
 	}
 
 	private IBStartPage createTopLevelPage() {
