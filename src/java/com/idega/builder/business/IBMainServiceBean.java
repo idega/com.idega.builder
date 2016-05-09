@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
@@ -33,10 +35,15 @@ import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.core.component.bean.RenderedComponent;
 import com.idega.core.component.business.ComponentProperty;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
+import com.idega.core.component.data.ICObjectInstance;
+import com.idega.core.component.data.ICObjectInstanceHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWUserContext;
@@ -758,5 +765,81 @@ public class IBMainServiceBean extends IBOServiceBean implements IBMainService, 
 	@Override
 	public boolean isBuilderApplicationRunning(IWUserContext iwuc) {
 		return getBuilderLogic().isBuilderApplicationRunning(iwuc);
+	}
+
+	private ICObjectHome getICObjectHome() {
+		try {
+			return (ICObjectHome) IDOLookup.getHome(ICObject.class);
+		} catch (IDOLookupException e) {
+			getLogger().log(Level.WARNING, 
+					"Failed to get " + ICObjectHome.class + 
+					" cause of: ", e);
+		}
+
+		return null;
+	}
+
+	private ICObjectInstanceHome getICObjectInstanceHome() {
+		try {
+			return (ICObjectInstanceHome) IDOLookup.getHome(ICObjectInstance.class);
+		} catch (IDOLookupException e) {
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, 
+					"Failed to get " + ICObjectInstanceHome.class + " cause of: ", e);
+		}
+
+		return null;
+	}
+
+	private ICPageHome getICPageHome() {
+		try {
+			return (ICPageHome) IDOLookup.getHome(ICPage.class);
+		} catch (IDOLookupException e) {
+			getLogger().log(Level.WARNING, 
+					"Failed to get " + ICPageHome.class + " cause of: ", e);
+		}
+
+		return null;
+	}
+
+	@Override
+	public String getPageUrlByComponent(Class<? extends UIComponent> objectClass) {
+		if (objectClass != null) {
+			ICObject object = null;
+			try {
+				object = getICObjectHome().findByClassName(objectClass.getTypeName());
+			} catch (FinderException e) {
+				getLogger().log(Level.WARNING, 
+						"Failed to get ICObject by object class: " + objectClass);
+			}
+
+			if (object != null) {
+				Collection<ICObjectInstance> instances = null;
+				try {
+					instances = getICObjectInstanceHome()
+							.getByICObject(object);
+				} catch (FinderException e) {
+					getLogger().log(Level.WARNING, 
+							"Failed to get ICObjectInstances by ICObject id: " + object.getPrimaryKey());
+				}
+
+				if (!ListUtil.isEmpty(instances)) {
+					for (ICObjectInstance instance : instances) {
+						ICPage page = null;
+						try {
+							page = getIBPageHome().findByPrimaryKey(instance.getIBPageID());
+						} catch (RemoteException | FinderException e) {
+							getLogger().log(Level.WARNING, 
+									"Failed to get page by id: " + instance.getIBPageID());
+						}
+
+						if (page != null && page.isPublished() && !page.getDeleted()) {
+							return getPageURI((Integer) page.getPrimaryKey());
+						}
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 }
