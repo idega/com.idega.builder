@@ -4233,7 +4233,8 @@ public class BuilderLogic extends DefaultSpringBean {
 	}
 
 	public String getFullPageUrlByPageType(User user, IWContext iwc, String pageType, boolean checkFirstlyNearestPages) {
-		String serverURL = iwc.getServerURL();
+		String serverURL = CoreUtil.getServerURL(iwc.getRequest());
+
 		String pageUri;
 		if (user == null)
 			pageUri = getPageUri(iwc, pageType, checkFirstlyNearestPages);
