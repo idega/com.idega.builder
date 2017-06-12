@@ -26,6 +26,7 @@ import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageBMPBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
+import com.idega.util.database.ConnectionBroker;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -207,6 +208,8 @@ public class TreeNodeFinder {
 					if (conn != null) {
 						if (pages != null) {
 							pages.freeConnection(conn);
+						} else {
+							ConnectionBroker.freeConnection(conn);
 						}
 					}
 		    	}
@@ -286,6 +289,8 @@ public class TreeNodeFinder {
 					if (conn != null) {
 						if (pages != null) {
 							pages.freeConnection(conn);
+						} else {
+							ConnectionBroker.freeConnection(conn);
 						}
 					}
 		    	}
