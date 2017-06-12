@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -3548,8 +3550,19 @@ public class BuilderLogic extends DefaultSpringBean {
 		return getRenderedComponent(component, iwc, cleanCode, true, true, false);
 	}
 
-	@SuppressWarnings("unchecked")
 	public String getRenderedComponent(
+			UIComponent component,
+			IWContext iwc,
+			boolean cleanCode,
+			boolean omitDocTypeDeclaration,
+			boolean omitHtmlEnvelope,
+			boolean resetWriter
+	) {
+		RenderedComponent rendered = getRendered(component, iwc, cleanCode, omitDocTypeDeclaration, omitHtmlEnvelope, resetWriter);
+		return rendered == null ? null : rendered.getHtml();
+	}
+
+	private RenderedComponent getRendered(
 			UIComponent component,
 			IWContext iwc,
 			boolean cleanCode,
@@ -3589,17 +3602,23 @@ public class BuilderLogic extends DefaultSpringBean {
 
 				Object o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_SOURCE_FOR_HEADER);
 				if (o instanceof List) {
-					jsSources = (List<String>) o;
+					@SuppressWarnings("unchecked")
+					List<String> tmp = (List<String>) o;
+					jsSources = tmp;
 				}
 
 				o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_JAVA_SCRIPT_ACTION_FOR_BODY);
 				if (o instanceof List) {
-					jsActions = (List<String>) o;
+					@SuppressWarnings("unchecked")
+					List<String> tmp = (List<String>) o;
+					jsActions = tmp;
 				}
 
 				o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
 				if (o instanceof List) {
-					cssSources = (List<String>) o;
+					@SuppressWarnings("unchecked")
+					List<String> tmp = (List<String>) o;
+					cssSources = tmp;
 				}
 			} catch (Exception e){
 				e.printStackTrace();
@@ -3612,15 +3631,15 @@ public class BuilderLogic extends DefaultSpringBean {
 				iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
 			}
 
-			String rendered = writer.toString();
-			if (rendered == null)
+			String renderedHTML = writer.toString();
+			if (renderedHTML == null)
 				return null;
 
-			rendered = StringHandler.replace(rendered, "idega:seterror", "div");
-			rendered = StringHandler.replace(rendered, "idega:setError", "div");
+			renderedHTML = StringHandler.replace(renderedHTML, "idega:seterror", "div");
+			renderedHTML = StringHandler.replace(renderedHTML, "idega:setError", "div");
 
 			if (cleanCode) {
-				rendered = getCleanedHtmlContent(rendered, omitDocTypeDeclaration, omitHtmlEnvelope, false);
+				renderedHTML = getCleanedHtmlContent(renderedHTML, omitDocTypeDeclaration, omitHtmlEnvelope, false);
 			}
 
 			if (jsSources != null || jsActions != null || cssSources != null) {
@@ -3628,13 +3647,28 @@ public class BuilderLogic extends DefaultSpringBean {
 				if (addCSSDirectly != null) {
 					iwc.removeSessionAttribute(PresentationUtil.ATTRIBUTE_ADD_CSS_DIRECTLY);
 				}
-				rendered = getRenderedComponentWithDynamicResources(getXMLDocumentFromComponentHTML(rendered, false, omitDocTypeDeclaration, omitHtmlEnvelope,
-						false), cssSources, jsSources, jsActions, addCSSDirectly instanceof Boolean ? (Boolean) addCSSDirectly : false);
+				renderedHTML = getRenderedComponentWithDynamicResources(
+						getXMLDocumentFromComponentHTML(renderedHTML, false, omitDocTypeDeclaration, omitHtmlEnvelope, false),
+						cssSources,
+						jsSources,
+						jsActions,
+						addCSSDirectly instanceof Boolean ? (Boolean) addCSSDirectly : false
+				);
 				if (cleanCode) {
-					rendered = getCleanedFromXmlDeclaration(rendered);
+					renderedHTML = getCleanedFromXmlDeclaration(renderedHTML);
 				}
 			}
 
+			RenderedComponent rendered = new RenderedComponent();
+			rendered.setHtml(renderedHTML);
+			Set<String> resources = new HashSet<>();
+			if (!ListUtil.isEmpty(cssSources)) {
+				resources.addAll(cssSources);
+			}
+			if (!ListUtil.isEmpty(jsSources)) {
+				resources.addAll(jsSources);
+			}
+			rendered.setResources(new ArrayList<>(resources));
 			return rendered;
 		} finally {
 			if (resetWriter) {
@@ -4492,8 +4526,8 @@ public class BuilderLogic extends DefaultSpringBean {
 			iwc = CoreUtil.getIWContext();
 		}
 
-		String html = getRenderedComponent(component, iwc, true, true, true, false);
-		if (StringUtil.isEmpty(html)) {
+		rendered = getRendered(component, iwc, true, true, true, false);
+		if (rendered == null || StringUtil.isEmpty(rendered.getHtml())) {
 			if (iwc != null) {
 				rendered.setErrorMessage(iwc.getIWMainApplication().getBundle(BuilderConstants.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc)
 						.getLocalizedString("error_rendering_component", rendered.getErrorMessage()));
@@ -4502,7 +4536,6 @@ public class BuilderLogic extends DefaultSpringBean {
 		}
 
 		rendered.setErrorMessage(null);
-		rendered.setHtml(html);
 
 		return rendered;
 	}
