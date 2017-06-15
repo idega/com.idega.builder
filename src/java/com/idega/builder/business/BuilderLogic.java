@@ -3669,6 +3669,7 @@ public class BuilderLogic extends DefaultSpringBean {
 				resources.addAll(jsSources);
 			}
 			rendered.setResources(new ArrayList<>(resources));
+			rendered.setJsActions(jsActions);
 			return rendered;
 		} finally {
 			if (resetWriter) {
