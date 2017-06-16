@@ -36,6 +36,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.PrettyXmlSerializer;
 import org.htmlcleaner.TagNode;
 import org.jdom2.Attribute;
+import org.jdom2.Content;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
@@ -3595,7 +3596,7 @@ public class BuilderLogic extends DefaultSpringBean {
 			}
 
 			List<String> jsSources = null;
-			List<String> jsActions = null;
+			List<String> jsActions = new ArrayList<>();
 			List<String> cssSources = null;
 			try {
 				RenderUtils.renderChild(iwc, component);
@@ -3611,7 +3612,7 @@ public class BuilderLogic extends DefaultSpringBean {
 				if (o instanceof List) {
 					@SuppressWarnings("unchecked")
 					List<String> tmp = (List<String>) o;
-					jsActions = tmp;
+					jsActions.addAll(tmp);
 				}
 
 				o = iwc.getSessionAttribute(PresentationUtil.ATTRIBUTE_CSS_SOURCE_LINE_FOR_HEADER);
@@ -3692,8 +3693,7 @@ public class BuilderLogic extends DefaultSpringBean {
 		writer = null;
 	}
 
-	private String getRenderedComponentWithDynamicResources(Document component, List<String> cssSources, List<String> jsSources, List<String> jsActions,
-			boolean addCSSDirectly) {
+	private String getRenderedComponentWithDynamicResources(Document component, List<String> cssSources, List<String> jsSources, List<String> jsActions, boolean addCSSDirectly) {
 		if (component == null) {
 			return null;
 		}
@@ -3737,7 +3737,6 @@ public class BuilderLogic extends DefaultSpringBean {
 					actionsInSingleFunction.append(jsAction);
 				}
 				actionsInSingleFunction.append("}");
-				jsActions.clear();
 			}
 
 			if (!ListUtil.isEmpty(jsSources)) {
@@ -3748,8 +3747,10 @@ public class BuilderLogic extends DefaultSpringBean {
 				}
 			}
 
-			String action = PresentationUtil.getJavaScriptLinesLoadedLazily(resourcesToLoad, actionsInSingleFunction == null ? null :
-																															actionsInSingleFunction.toString());
+			String action = PresentationUtil.getJavaScriptLinesLoadedLazily(
+					resourcesToLoad,
+					actionsInSingleFunction == null ? null : actionsInSingleFunction.toString()
+			);
 			Collection<Element> includeScriptsAndExecuteActions = new ArrayList<Element>(1);
 			Element mainAction = new Element("script");
 			mainAction.setAttribute(new Attribute("type", "text/javascript"));
@@ -3759,16 +3760,45 @@ public class BuilderLogic extends DefaultSpringBean {
 		}
 
 		//	JavaScript actions
-		if (jsActions != null && !jsActions.isEmpty()) {
-			Collection<Element> actions = new ArrayList<Element>(jsActions.size());
-			for (String jsAction: jsActions) {
-				Element action = new Element("script");
-				action.setAttribute(new Attribute("type", "text/javascript"));
-				action.setText(jsAction);
-				actions.add(action);
+		if (jsActions != null) {
+			if (!jsActions.isEmpty()) {
+				Collection<Element> actions = new ArrayList<Element>(jsActions.size());
+				for (String jsAction: jsActions) {
+					Element action = new Element("script");
+					action.setAttribute(new Attribute("type", "text/javascript"));
+					action.setText(jsAction);
+					actions.add(action);
+				}
+
+				root.addContent(actions);
 			}
 
-			root.addContent(actions);
+			List<Element> scripts = XmlUtil.getElementsByXPath(root, "script", XmlUtil.XHTML_NAMESPACE_ID);
+			if (!ListUtil.isEmpty(scripts)) {
+				for (Element script: scripts) {
+					if (script == null) {
+						continue;
+					}
+
+					List<Content> content = script.getContent();
+					if (ListUtil.isEmpty(content)) {
+						continue;
+					}
+					String jsAction = getJDOMOutputter().outputString(content);
+					if (StringUtil.isEmpty(jsAction)) {
+						continue;
+					}
+
+					jsAction = StringHandler.replace(jsAction, "<!--", CoreConstants.EMPTY);
+					jsAction = StringHandler.replace(jsAction, "-->", CoreConstants.EMPTY);
+					jsAction = StringHandler.replace(jsAction, "//", CoreConstants.EMPTY);
+					jsAction = StringHandler.replace(jsAction, CoreConstants.NEWLINE, CoreConstants.EMPTY);
+					jsAction = StringHandler.replace(jsAction, CoreConstants.TAB, CoreConstants.EMPTY);
+					if (!StringUtil.isEmpty(jsAction) && !jsActions.contains(jsAction)) {
+						jsActions.add(jsAction);
+					}
+				}
+			}
 		}
 
 		return getJDOMOutputter().outputString(component);
