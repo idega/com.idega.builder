@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.faces.component.UIComponent;
 
@@ -718,15 +717,19 @@ public class IBXMLReader {
 			}
 			catch (FinderException exe) {
 				ICObjectInstance instance;
+				ICObject ico = null;
 				try {
 					instance = icoHome.create();
+					if (uniqueId != null && uniqueId.length() > 36) {
+						uniqueId = uniqueId.substring(0, 36);
+					}
 					instance.setUniqueId(uniqueId);
 					if (pageKey != null) {
 						instance.setIBPageByKey(pageKey);
 					}
 					if(className!=null){
 						try {
-							ICObject ico = getICObjectHome().findByClassName(className);
+							ico = getICObjectHome().findByClassName(className);
 							instance.setICObject(ico);
 						}
 						catch (FinderException e1) {
@@ -737,7 +740,9 @@ public class IBXMLReader {
 					instance.store();
 					return instance;
 				}
-				catch (CreateException e1) {
+				catch (Exception e1) {
+					logger.log(Level.WARNING, "Error creating " + ICObjectInstance.class.getSimpleName() + " with unique ID: " + uniqueId +
+							" and class name " + className + " for " + ICObject.class.getSimpleName() + " (" + ico + ") at page " + pageKey, e1);
 					throw new RuntimeException(e1);
 				}
 			}
