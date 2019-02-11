@@ -6,9 +6,9 @@ import com.idega.core.component.business.ICObjectBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWURL;
 import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.ClickableDiv;
 import com.idega.presentation.FrameSet;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Page;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
@@ -133,11 +133,11 @@ public IBPropertiesWindow() {
       add(table);
     	IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
-      Image b1 = iwrb.getLocalizedImageButton("close","CLOSE");
+      ClickableDiv b1 = iwrb.getLocalizedImageButton("close","CLOSE");
       b1.setOnClick("javascript:doClose()");
-      Image b2 = iwrb.getLocalizedImageButton("set","SET");
+      ClickableDiv b2 = iwrb.getLocalizedImageButton("set","SET");
       b2.setOnClick("javascript:doSet()");
-      Image b3 = iwrb.getLocalizedImageButton("apply","Apply");
+      ClickableDiv b3 = iwrb.getLocalizedImageButton("apply","Apply");
       b3.setOnClick("javascript:doApply()");
       Table t = new Table(3,1);
       t.setHeight("100%");
