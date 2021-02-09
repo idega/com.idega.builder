@@ -165,10 +165,18 @@ public class IBPermissionWindow extends Window {
 			Iterator<Group> iter = null;
 			if (directGroups != null) {
 				if (this.collectOld) {
-					List<String> oldValueIDs = new ArrayList<String>();
+					List<String> oldValueIDs = new ArrayList<>();
 					for (iter = directGroups.iterator(); iter.hasNext();) {
 						Group item = iter.next();
-						String groupId = String.valueOf(item.getID());
+						if (item == null) {
+							continue;
+						}
+						Integer id = item.getID();
+						if (id == null) {
+							continue;
+						}
+
+						String groupId = String.valueOf(id);
 						right.addElement(groupId, item.getName());
 						oldValueIDs.add(groupId);
 					}
@@ -180,8 +188,11 @@ public class IBPermissionWindow extends Window {
 
 						if (item instanceof Group) {
 							Group tmp = (Group) item;
-							String groupId = String.valueOf(tmp.getID());
-							right.addElement(groupId, tmp.getName());
+							Integer id = tmp.getID();
+							if (id != null) {
+								String groupId = String.valueOf(id);
+								right.addElement(groupId, tmp.getName());
+							}
 						} else if (item instanceof com.idega.user.data.Group) {
 							com.idega.user.data.Group tmp = (com.idega.user.data.Group) item;
 							String groupId = tmp.getId();
@@ -197,7 +208,15 @@ public class IBPermissionWindow extends Window {
 				}
 				for (iter = notDirectGroups.iterator(); iter.hasNext();) {
 					Group item = iter.next();
-					left.addElement(String.valueOf(item.getID()), item.getName());
+					if (item == null) {
+						continue;
+					}
+					Integer id = item.getID();
+					if (id == null) {
+						continue;
+					}
+
+					left.addElement(String.valueOf(id), item.getName());
 				}
 			}
 			// Submit
