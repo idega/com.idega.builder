@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.idega.builder.bean.PropertyHandlerBean;
 import com.idega.builder.handler.DropDownMenuSpecifiedChoiceHandler;
@@ -35,6 +37,7 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectHome;
 import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
@@ -100,7 +103,7 @@ public class IBPropertyHandler implements Singleton{
 	public static IBPropertyHandler getInstance() {
 		return (IBPropertyHandler) SingletonRepository.getRepository().getInstance(IBPropertyHandler.class,instantiator);
 	}
-	
+
 	public void removeMethod(IWBundle iwb, String componentKey, String methodIdentifier) {
 		IWPropertyList methods = getMethods(iwb, componentKey);
 		if (methods != null) {
@@ -154,7 +157,7 @@ public class IBPropertyHandler implements Singleton{
 	public IWPropertyList getMethods(IWBundle iwb, String componentKey) {
 		//IWPropertyList compList = iwb.getComponentList();
 		//IWPropertyList componentProperties = compList.getPropertyList(componentKey);
-		
+
 		//TODO GET PROPERTYLIST FOR JSF COMPONENTS
 		IWPropertyList componentProperties = iwb.getComponentPropertyList(componentKey);
 		if (componentProperties != null) {
@@ -180,7 +183,7 @@ public class IBPropertyHandler implements Singleton{
 		return 1;
 	}
 
-	/**	
+	/**
 	 * @return true if the Method Parameter property is a Primary Key
 	 */
 	boolean isMethodParameterPrimaryKey(IWMainApplication iwma, String instanceId, String methodIdentifier, int parameterIndex) {
@@ -197,9 +200,9 @@ public class IBPropertyHandler implements Singleton{
 		return false;
 	}
 
-	/**	
+	/**
 	 * Returns the real properties set for the property if the property is set with the specified keys
-	 * Returns the selectedValues[] if nothing found	
+	 * Returns the selectedValues[] if nothing found
 	 */
 	public String[] getPropertyValues(IWMainApplication iwma, IBXMLPage xml, String instanceId, String methodIdentifier, String[] selectedValues, boolean returnSelectedValueIfNothingFound) {
 		//if(selectedValues!=null){
@@ -233,7 +236,7 @@ public class IBPropertyHandler implements Singleton{
 			return null;
 		}
 	}
-	
+
 	public int getRowCountForTable(IWContext iwc, String instanceId) {
 		String pageKey = BuilderLogic.getInstance().getCurrentIBPage(iwc);
 		String theReturn = BuilderLogic.getInstance().getProperty(pageKey,instanceId, TABLE_ROWS_PROPERTY);
@@ -246,8 +249,8 @@ public class IBPropertyHandler implements Singleton{
 		}
 		return 1;
 	}
-  
-  
+
+
   /** Returns a proberty value.
    * This method is used (or can be used) by presentation objects that
    * implements the SpecifiedChoiceProvider interface. The presentation object
@@ -259,11 +262,11 @@ public class IBPropertyHandler implements Singleton{
     String theReturn = BuilderLogic.getInstance().getProperty(pageKey, instanceId, methodIdentifier);
     return theReturn;
   }
-  
+
 	/**
-	
+
 	 * Returns a property of a Method Parameter, Returns null if nothing set
-	
+
 	 */
 	public String getMethodParameterProperty(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String paramKey) {
 		try {
@@ -281,26 +284,26 @@ public class IBPropertyHandler implements Singleton{
 			return (null);
 		}
 	}
-	
+
 	private String getHandlerClassForJsfModule(String moduleClassName, String methodIdentifier) {
 		if (StringUtil.isEmpty(moduleClassName) || StringUtil.isEmpty(methodIdentifier)) {
 			return null;
 		}
-		
+
 		ComponentInfo info = ComponentRegistry.getInstance(IWMainApplication.getDefaultIWMainApplication()).getComponentByClassName(moduleClassName);
 		if (info == null) {
 			return null;
 		}
-		
+
 		for (ComponentProperty property: info.getProperties()) {
 			if (methodIdentifier.equals(property.getName()) && !StringUtil.isEmpty(property.getHandlerClass())) {
 				return property.getHandlerClass();
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private PresentationObject getHandlerInstance(IWContext iwc, String ICObjectInstanceID, String methodIdentifier, int parameterIndex, String name,
 			String stringValue, boolean oldGenerationChooser, String componentClassName) throws Exception {
 		String handlerClass = getMethodParameterProperty(iwc, ICObjectInstanceID, methodIdentifier, parameterIndex, METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
@@ -312,7 +315,7 @@ public class IBPropertyHandler implements Singleton{
 		}
 		ICPropertyHandler handler = getPropertyHandler(handlerClass);
 		PresentationObject handlerPresentation = handler.getHandlerObject(name, stringValue, iwc, oldGenerationChooser, ICObjectInstanceID, methodIdentifier);
-		
+
 		if (!oldGenerationChooser && handlerPresentation instanceof AbstractChooser) {
 			AbstractChooser chooser = (AbstractChooser) handlerPresentation;
 			if (chooser.getChooserHelperVarName() != null) {
@@ -322,15 +325,15 @@ public class IBPropertyHandler implements Singleton{
 			}
 		}
 
-    /* 
-     * special treatment for a drop down menu that gets the choice 
+    /*
+     * special treatment for a drop down menu that gets the choice
      * (that is the elements of the menu)
-     * directly from the presentation object 
+     * directly from the presentation object
      * (this presentation object must implement SpecifiedChoiceProvider).
      * see also method getPropertyValue(IWContext, ICObjectInstanceID,
      * String) of this class.
-     *  
-     */ 
+     *
+     */
     if (handler instanceof DropDownMenuSpecifiedChoiceHandler)  {
       // get the presentation object
       Class aClass = BuilderLogic.getInstance().getObjectClass(Integer.parseInt(ICObjectInstanceID));
@@ -353,11 +356,11 @@ public class IBPropertyHandler implements Singleton{
 			}
       }
     }
-    
+
 		/*
-		
+
 		 * Special treatment for tables
-		
+
 		 */
 		if (handler instanceof TableRowsHandler) {
 			int numberOfRows = getRowCountForTable(iwc, ICObjectInstanceID);
@@ -369,7 +372,7 @@ public class IBPropertyHandler implements Singleton{
 		}
 		return handlerPresentation;
 	}
-	
+
 	public String[] getPropertyDescriptions(IWContext iwc, String instanceId, String methodIdentifier) {
 		try {
 			int numberOfParametersForMethod = MethodFinder.getInstance().getArgumentClasses(methodIdentifier).length;
@@ -384,9 +387,22 @@ public class IBPropertyHandler implements Singleton{
 			return theReturn;
 		}
 	}
+
+	private ICFile getFile(int fileId) {
+		if (fileId > 0) {
+			try {
+				ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+				return fileHome.findByPrimaryKey(fileId);
+			} catch (Exception e) {
+				Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error getting file's (" + fileId + ") unique ID", e);
+			}
+		}
+		return null;
+	}
+
 	/**
 	 *
-	 */	
+	 */
 	public PresentationObject getPropertySetterComponent(IWContext iwc, String ICObjectInstanceID, String propertyName, int parameterIndex, Class<?> parameterClass,
 			String name, String stringValue) {
 		PresentationObject obj = null;
@@ -452,9 +468,9 @@ public class IBPropertyHandler implements Singleton{
 			obj = (PresentationObject) inserter;
 		}
 		/**
-		
+
 		 * @todo handle page, template, file if the inputs already hava a value
-		
+
 		 */
 		else if (parameterClass.equals(com.idega.core.file.data.ICFile.class)) {
 			IBFileChooser fileChooser = null;
@@ -465,7 +481,8 @@ public class IBPropertyHandler implements Singleton{
 				//extends block.media.presentation.FileChooser
 				int id = Integer.parseInt(stringValue);
 				IWMainApplication iwma = iwc.getIWMainApplication();
-				Cache cache = iwma.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
+				ICFile file = getFile(id);
+				Cache cache = iwma.getIWCacheManager().getCachedBlobObject(iwc, ICFile.class.getName(), file.getUniqueId(), file.getToken(), iwma);
 				fileChooser.setValue(cache.getEntity());
 			}
 			catch (Exception e) {
@@ -493,19 +510,19 @@ public class IBPropertyHandler implements Singleton{
 		}
 		return (obj);
 	}
-	
+
 	/**
 	 * New generation setter
 	 */
 	public PresentationObject getPropertySetterComponent(IWContext iwc, PropertyHandlerBean properties) {
 		boolean attributesSet = false;
-		
+
 		String propertyName = properties.getPropertyName();
 		String name = properties.getName();
 		String stringValue = properties.getValue();
 		Class<?> parameterClass = properties.getParameterClass();
 		int parameterIndex = properties.getParameterIndex();
-		
+
 		PresentationObject obj = null;
 		try {
 			obj = getHandlerInstance(iwc, properties.getObjectInstanceId(), propertyName, parameterIndex, name, stringValue, false, properties.getModuleClassName());
@@ -516,7 +533,7 @@ public class IBPropertyHandler implements Singleton{
 			setMarkupAttributes(obj, properties);
 			return obj;
 		}
-		
+
 		if (parameterClass.equals(java.lang.Integer.class) || parameterClass.equals(Integer.TYPE)) {
 			obj = new IntegerInput(name);
 			((IntegerInput) obj).setMaxlength(9);
@@ -539,26 +556,26 @@ public class IBPropertyHandler implements Singleton{
 		}
 		else if (parameterClass.equals(java.lang.Boolean.class) || parameterClass.equals(Boolean.TYPE)) {
 			IWResourceBundle iwrb = getBuilderLogic().getBuilderBundle().getResourceBundle(iwc);
-			
+
 			obj = new Layer();
 			obj.setStyleClass("booleanInput");
-			
+
 			RadioButton yes = new RadioButton(name);
 			yes.setValue(CoreConstants.BUILDER_MODULE_PROPERTY_YES_VALUE);
 			setMarkupAttributes(yes, properties);
 
 			Label label = new Label(new StringBuffer(iwrb.getLocalizedString("yes", "Yes")).toString(), yes);
-			
+
 			Span yesOption = new Span();
 			yesOption.add(yes);
 			yesOption.add(label);
-			
+
 			RadioButton no = new RadioButton(name);
 			no.setValue(CoreConstants.BUILDER_MODULE_PROPERTY_NO_VALUE);
 			setMarkupAttributes(no, properties);
-			
+
 			label = new Label(new StringBuffer(iwrb.getLocalizedString("no", "No")).toString(), no);
-			
+
 			Span noOption = new Span();
 			noOption.add(no);
 			noOption.add(label);
@@ -571,7 +588,7 @@ public class IBPropertyHandler implements Singleton{
 					no.setSelected(true);
 				}
 			}
-			
+
 			((Layer) obj).add(yesOption);
 			((Layer) obj).add(noOption);
 			attributesSet = true;
@@ -611,9 +628,9 @@ public class IBPropertyHandler implements Singleton{
 			obj = (PresentationObject) inserter;
 		}
 		/**
-		
+
 		 * @todo handle page, template, file if the inputs already hava a value
-		
+
 		 */
 		else if (parameterClass.equals(com.idega.core.file.data.ICFile.class)) {
 			IBFileChooser fileChooser = null;
@@ -624,7 +641,8 @@ public class IBPropertyHandler implements Singleton{
 				//extends block.media.presentation.FileChooser
 				int id = Integer.parseInt(stringValue);
 				IWMainApplication iwma = iwc.getIWMainApplication();
-				Cache cache = iwma.getIWCacheManager().getCachedBlobObject(ICFile.class.getName(), id, iwma);
+				ICFile file = getFile(id);
+				Cache cache = iwma.getIWCacheManager().getCachedBlobObject(iwc, ICFile.class.getName(), file.getUniqueId(), file.getToken(), iwma);
 				fileChooser.setValue(cache.getEntity());
 			}
 			catch (Exception e) {
@@ -655,16 +673,16 @@ public class IBPropertyHandler implements Singleton{
 		}
 		return obj;
 	}
-	
+
 	private void setMarkupAttributes(PresentationObject object, PropertyHandlerBean properties) {
 		if (object == null) {
 			return;
 		}
-		
+
 		if (object instanceof Table) {
 			Table t = (Table) object;
 			TableCell cell = null;
-			
+
 			int columns = t.getColumns() + 1;
 			int rows = t.getRows() + 1;
 			for (int i = 1; i < rows; i++) {
@@ -682,24 +700,24 @@ public class IBPropertyHandler implements Singleton{
 				}
 			}
 		}
-		
+
 		if (object.getChildren() != null) {
 			List children = object.getChildren();
 			for (int i = 0; i < children.size(); i++) {
 				setMarkupAttributesToObject(children.get(i), properties);
 			}
 		}
-		
+
 		if (object.getFacets() != null) {
 			Map children = object.getFacets();
 			for (Iterator it = children.values().iterator(); it.hasNext();) {
 				setMarkupAttributesToObject(it.next(), properties);
 			}
 		}
-		
+
 		setMarkupAttributesToObject(object, properties);
 	}
-	
+
 	private boolean setMarkupAttributesToObject(Object object, PropertyHandlerBean properties) {
 		if (!(object instanceof PresentationObject)) {
 			return false;
@@ -712,14 +730,14 @@ public class IBPropertyHandler implements Singleton{
 		po.setMarkupAttribute("multivalue", properties.isMultivalue());
 		po.setMarkupAttribute("parameterscount", properties.getParametersCount());
 		po.setStyleClass(properties.getStyleClass());
-		
+
 		return true;
 	}
-	
+
 	/**
-	
+
 	 *
-	
+
 	 */
 	public String getMethodIdentifier(IWProperty methodProperty) {
 		if (methodProperty.getType().equals(IWProperty.MAP_TYPE)) {
@@ -730,9 +748,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 * @todo Change so that this returns the Localized description
-	
+
 	 */
 	public String getMethodDescription(IWProperty methodProperty, Locale locale) {
 		if (methodProperty.getType().equals(IWProperty.MAP_TYPE)) {
@@ -743,9 +761,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 * @todo Change so that this returns the Localized description
-	
+
 	 */
 	public String getMethodDescription(String instanceId, String methodPropertyKey, IWContext iwc) {
 		try {
@@ -768,9 +786,9 @@ public class IBPropertyHandler implements Singleton{
 		return (null);
 	}
 	/**
-	
+
 	 * @todo Change so that this returns the Localized description
-	
+
 	 */
 	public String getMethodParameterDescription(IWProperty methodProperty, int parameterIndex, IWContext iwc) {
 		IWPropertyList parameter = getMethodParameterPropertyList(methodProperty, parameterIndex);
@@ -782,9 +800,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 * Returns a property of a Method Parameter, Returns null if nothing set
-	
+
 	 */
 	public String getMethodParameterProperty(IWProperty methodProperty, int parameterIndex, String propertyKey) {
 		IWPropertyList parameter = getMethodParameterPropertyList(methodProperty, parameterIndex);
@@ -796,9 +814,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 *
-	
+
 	 */
 	public String getMethodParameterHandlerClassName(IWProperty methodProperty, int parameterIndex) {
 		String theReturn = getMethodParameterProperty(methodProperty, parameterIndex, METHOD_PARAMETER_PROPERTY_HANDLER_CLASS);
@@ -810,9 +828,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 *
-	
+
 	 */
 	public IWPropertyList getMethodParameterPropertyList(IWProperty methodProperty) {
 		if (methodProperty.getType().equals(IWProperty.MAP_TYPE)) {
@@ -823,9 +841,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 *
-	
+
 	 */
 	public IWPropertyList getMethodParameterPropertyList(IWProperty methodProperty, int parameter) {
 		IWPropertyList parameters = getMethodParameterPropertyList(methodProperty);
@@ -838,9 +856,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 *
-	
+
 	 */
 	public List getAvailablePropertyHandlers() {
 		try {
@@ -853,9 +871,9 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 *
-	
+
 	 */
 	void preLoadPropertyHandlers() {
 		List l = getAvailablePropertyHandlers();
@@ -873,17 +891,17 @@ public class IBPropertyHandler implements Singleton{
 		}
 	}
 	/**
-	
+
 	 *
-	
+
 	 */
 	void putPropertyHandler(String key, Object handler) {
 		getPropertyHandlersMap().put(key, handler);
 	}
 	/**
-	
+
 	 *
-	
+
 	 */
 	private Map getPropertyHandlersMap() {
 		if (this.propertyHandlers == null) {
@@ -907,7 +925,7 @@ public class IBPropertyHandler implements Singleton{
 		return theReturn;
 	}
 
-	/**	
+	/**
 	 * @return false if property already set
 	 */
 	public boolean saveNewProperty(IWBundle iwb, String componentIdentifier, String methodIdentifier, String description, boolean isMultivalued, String[] handlers, String[] descriptions, boolean[] primaryKeys) throws Exception {
@@ -943,7 +961,7 @@ public class IBPropertyHandler implements Singleton{
 	public void setDropdownToChangeValue(DropdownMenu drop) {
 		//drop.setOnChange(com.idega.builder.presentation.IBPropertiesWindowSetter.MULTIVALUE_PROPERTY_CHANGE_FUNCTION_NAME + "()");
 	}
-	
+
 	private IBClassesFactory getBuilderClassesFactory() {
 		if (this.builderClassesFactory == null) {
 			this.builderClassesFactory = new IBClassesFactory();
@@ -961,7 +979,7 @@ public class IBPropertyHandler implements Singleton{
 	 */
 	public List<ComponentProperty> getComponentProperties(String instanceId, IWMainApplication iwma, Locale currentLocale) {
 		String componentClassName = null;
-		
+
 		IWBundle iwb = null;
 		//Hardcoded -1 for the top page
 		if ("-1".equals(instanceId) ) {
@@ -974,27 +992,27 @@ public class IBPropertyHandler implements Singleton{
 			iwb = obj.getBundle(iwma);
 			componentClassName = obj.getClassName();
 		}
-		
+
 		ComponentRegistry registry = ComponentRegistry.getInstance(iwma);
 		ComponentInfo component = registry.getComponentByClassName(componentClassName);
 		if (component == null) {
 			return null;
 		}
-		
+
 		List<ComponentProperty> properties = component.getProperties();
 		if (properties == null) {
 			return null;
 		}
-		
+
 		boolean refillProperties = !(component.getObjectType().equals(ComponentRegistry.COMPONENT_TYPE_JSF_UICOMPONENT)) || ListUtil.isEmpty(properties);
 		if (refillProperties) {
-			properties = new ArrayList<ComponentProperty>();
+			properties = new ArrayList<>();
 			fillProperties(iwb, componentClassName, properties, iwma, currentLocale, component);
 		}
 
 		return properties;
 	}
-	
+
 	private void fillProperties(IWBundle iwb, String className, List<ComponentProperty> properties, IWMainApplication iwma, Locale locale, ComponentInfo component) {
 		//	Try to populate the ComponentProperties from the IWPropertyList from bundle.pxml
 		IWPropertyList pList = getMethods(iwb, className);
@@ -1024,16 +1042,16 @@ public class IBPropertyHandler implements Singleton{
 			properties.add(desc);
 		}
 	}
-	
+
 	public BuilderLogic getBuilderLogic(){
 		return BuilderLogic.getInstance();
 	}
-	
+
 	public boolean isJsfComponent(IWContext iwc, String className) {
 		if (iwc == null || className == null) {
 			return false;
 		}
-		
+
 		ComponentRegistry registry = ComponentRegistry.getInstance(iwc.getIWMainApplication());
 		ComponentInfo component = registry.getComponentByClassName(className);
 		if (component == null) {
@@ -1041,5 +1059,5 @@ public class IBPropertyHandler implements Singleton{
 		}
 		return component.getObjectType().equals(ComponentRegistry.COMPONENT_TYPE_JSF_UICOMPONENT);
 	}
-	
+
 }
