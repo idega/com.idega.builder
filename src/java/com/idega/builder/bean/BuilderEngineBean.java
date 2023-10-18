@@ -6,6 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.faces.component.UIComponent;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.jdom2.Document;
 
@@ -44,7 +47,7 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 
 	@Override
 	public List<String> getBuilderInitInfo(String uri) {
-		List<String> info = new ArrayList<String>();
+		List<String> info = new ArrayList<>();
 		IWContext iwc = CoreUtil.getIWContext();
 		if (iwc == null) {
 			return info;
@@ -442,8 +445,31 @@ public class BuilderEngineBean extends IBOSessionBean implements BuilderEngine {
 	}
 
 	@Override
-	public String getDecryptedClassName(String encryptedClassName) {
+	public String getDecryptedClassName(String encryptedClassName, HttpServletRequest request, HttpServletResponse response, ServletContext context) {
+		if (StringUtil.isEmpty(encryptedClassName)) {
+			return null;
+		}
+
+		IWContext iwc = new IWContext(request, response, context);
+		if (!iwc.isSuperAdmin()) {
+			return null;
+		}
+
 		return IWMainApplication.decryptClassName(encryptedClassName);
+	}
+
+	@Override
+	public String getEncryptedClassName(String className, HttpServletRequest request, HttpServletResponse response, ServletContext context) {
+		if (StringUtil.isEmpty(className)) {
+			return null;
+		}
+
+		IWContext iwc = new IWContext(request, response, context);
+		if (!iwc.isSuperAdmin()) {
+			return null;
+		}
+
+		return IWMainApplication.getEncryptedClassName(className);
 	}
 
 }

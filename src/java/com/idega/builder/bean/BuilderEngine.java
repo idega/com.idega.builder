@@ -4,6 +4,10 @@ package com.idega.builder.bean;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.jdom2.Document;
 
 import com.idega.business.IBOSession;
@@ -81,6 +85,8 @@ public interface BuilderEngine extends IBOSession {
 
 	public boolean needReloadPropertyBox();
 
-	public String getDecryptedClassName(String encryptedClassName);
+	public String getDecryptedClassName(String encryptedClassName, HttpServletRequest request, HttpServletResponse response, ServletContext context);
+
+	public String getEncryptedClassName(String className, HttpServletRequest request, HttpServletResponse response, ServletContext context);
 
 }
